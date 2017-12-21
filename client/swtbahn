@@ -1,0 +1,622 @@
+#!/usr/bin/env python3
+
+"""
+
+Copyright (C) 2017 University of Bamberg, Software Technologies Research Group
+<https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+
+This file is part of the SWTbahn command line interface (swtbahn-cli), which is
+a client-server application to interactively control a BiDiB model railway.
+
+swtbahn-cli is licensed under the GNU GENERAL PUBLIC LICENSE (Version 3), see
+the LICENSE file at the project's top-level directory for details or consult
+<http://www.gnu.org/licenses/>.
+
+swtbahn-cli is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or any later version.
+
+swtbahn-cli is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more details.
+
+The following people contributed to the conception and realization of the
+present swtbahn-cli (in alphabetic order by surname):
+
+- Nicolas Gross <https://github.com/nicolasgross>
+
+"""
+
+import click, yaml, requests
+
+
+
+# ------------------------
+# --- global variables ---
+# ------------------------
+
+config_file = "swtbahn-config.yml"
+hostname = ""
+default_track_output = ""
+port = 0
+session_id = 0
+grab_id = 0
+server = ""
+
+
+
+# -----------------------
+# --- config handling ---
+# -----------------------
+
+def create_config(hostname, port, default_output):
+    try:
+        data = {'hostname': hostname, 'port': port,
+                'default_track_output': default_output, 'session_id': 0,
+                'grab_id': -1}
+        with open(config_file, 'w') as outfile:
+            yaml.dump(data, outfile, default_flow_style=False)
+        click.echo("Config saved")
+    except Exception as e:
+        click.echo(e, err=True)
+        return
+    global server
+    server = "http://" + hostname + ":" + str(port)
+    click.echo("Connection test:")
+    try:
+        response = requests.get(server)
+        if (response.text != "SWTbahn server"):
+            click.echo("No SWTbahn server on " + server, err=True)
+        else:
+            click.echo("Running SWTbahn server found on " + server)
+    except requests.exceptions.RequestException as e:
+        click.echo(e, err=True)
+
+
+def update_session_and_grab_id(session_id, grab_id):
+    try:
+        with open(config_file) as infile:
+            config = yaml.load(infile)
+        config['session_id'] = session_id
+        config['grab_id'] = grab_id
+        with open(config_file, 'w') as outfile:
+            yaml.dump(config, outfile, default_flow_style=False)
+    except Exception as e:
+        click.echo(e, err=True)
+
+
+def parse_config():
+    try:
+        with open(config_file) as infile:
+            config = yaml.load(infile)
+        global hostname, port, default_track_output, session_id, grab_id, server
+        hostname = config['hostname']
+        port = config['port']
+        default_track_output = config['default_track_output']
+        session_id = config['session_id']
+        grab_id = config['grab_id']
+        server = "http://" + hostname + ":" + str(port)
+        return False
+    except Exception as e:
+        return True
+
+
+
+# ------------------------------
+# --- command line interface ---
+# ------------------------------
+
+
+@click.group(help="Command-line interface for controlling the SWTbahn. "
+        "Use the config command first to set the hostname and port.")
+def cli():
+    pass
+
+
+@click.command(help="Configure hostname and port")
+@click.argument('hostname')
+@click.argument('port', type=click.IntRange(0, 65535))
+@click.argument('default_track_output')
+def config(hostname, port, default_track_output):
+    if (click.confirm("Only continue if you have NO train grabbed! Continue?")):
+        create_config(hostname, port, default_track_output)
+
+
+
+# --- admin ---
+
+@click.group(help="Admin functionality")
+def admin():
+    pass
+
+
+@click.command(help="Start the SWTbahn up")
+def startup():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/admin/startup")
+            if (response.status_code == requests.codes.ok):
+                click.echo("System is starting up\n")
+            else:
+                click.echo("System already running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Shut the SWTbahn down")
+def shutdown():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/admin/shutdown")
+            if (response.status_code == requests.codes.ok):
+                click.echo("System is stopping\n")
+                update_session_and_grab_id(0, -1)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Set the power state for a track output")
+@click.argument('state', type=click.Choice(['off', 'stop', 'soft_stop', 'go']))
+def set_track_output(state):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            mapping = {
+                    'off': 0,
+                    'stop': 1,
+                    'soft_stop': 2,
+                    'go': 3
+            }
+            response = requests.post(server + "/admin/set-track-output",
+                                     data = {'state': mapping.get(state)})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Track output state set\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+
+# --- controller ---
+
+@click.group(help="Controller functionality")
+def controller():
+    pass
+
+
+@click.command(help="Switch a point")
+@click.argument('point')
+@click.argument('state')
+def set_point(point, state):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/controller/set-point", 
+                    data = {'point': point, 'state': state})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Point " + point + " set to " + state + " \n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Set a signal")
+@click.argument('signal')
+@click.argument('state')
+def set_signal(signal, state):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/controller/set-signal", 
+                    data = {'signal': signal, 'state': state})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Signal " + signal + " set to " + state + " \n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+
+# --- driver ---
+
+@click.group(help="Driver functionality")
+def driver():
+    pass
+
+
+@click.command(help="Grab a train")
+@click.argument('train')
+def grab(train):
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global session_id, grab_id, server
+        if (session_id == 0 and grab_id == -1):
+            try:
+                response = requests.post(server + "/driver/grab-train",
+                                         data = {'train': train})
+                if (response.status_code == requests.codes.ok):
+                    ids = response.text.split(",")
+                    update_session_and_grab_id(int(ids[0]), int(ids[1]))
+                    click.echo("Grabbed train " + train + "\n")
+                else:
+                    click.echo("System not running or train not available!\n",
+                            err=True)
+            except requests.exceptions.RequestException as e:
+                click.echo(e, err=True)
+        else:
+            click.echo("You can only grab one train!")
+            return
+
+
+def process_id_feedback(feedback, success_message):
+    if (feedback == "invalid session id"):
+        update_session_and_grab_id(0, -1)
+        click.echo("Session id was not valid anymore\n", err=True)
+    elif (feedback == "invalid grab id"):
+        update_session_and_grab_id(0, -1)
+        click.echo("Grab id was not valid\n", err=True)
+    else:
+        click.echo(success_message)
+
+
+@click.command(help="Release your train")
+def release():
+    global session_id, grab_id, server
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        try:
+            response = requests.post(server + "/driver/release-train",
+                    data = {'session-id': session_id, 'grab-id': grab_id})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Released grabbed train\n")
+                update_session_and_grab_id(0, -1)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Set the dcc speed step of your train")
+@click.option('--backwards', '-b', help="The rear end of the train moves forward.",
+        is_flag=True)
+@click.option('--track_output', '-t', help="Use another track output than the "
+        "default one.", default="")
+@click.argument('speed', type=click.IntRange(0, 126))
+def set_dcc_speed(backwards, speed, track_output):
+    global session_id, grab_id, server, default_track_output
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        if (backwards and speed > 0):
+            speed *= -1
+        if (track_output == ""):
+            track_output = default_track_output
+        try:
+            response = requests.post(server + "/driver/set-dcc-train-speed",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'speed': speed, 'track-output': track_output})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "DCC train speed set to " +
+                        str(speed) + "\n")
+            else:
+                click.echo("System not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Set the calibrated speed step of your train")
+@click.option('--backwards', '-b', help="The rear end of the train moves forward.",
+        is_flag=True)
+@click.option('--track_output', '-t', help="Use another track output than the "
+        "default one.", default="")
+@click.argument('speed', type=click.IntRange(0, 9))
+def set_calibrated_speed(backwards, speed, track_output):
+    global session_id, grab_id, server, default_track_output
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        if (backwards and speed > 0):
+            speed *= -1
+        if (track_output == ""):
+            track_output = default_track_output
+        try:
+            response = requests.post(server + "/driver/set-calibrated-train-speed",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'speed': speed, 'track-output': track_output})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Calibrated train speed set "
+                        "to " + str(speed) + "\n")
+            else:
+                click.echo("System not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Emergency stop your train")
+@click.option('--track_output', '-t', help="Use another track output than the "
+        "default one.", default="")
+def emergency_stop(track_output):
+    global session_id, grab_id, server, default_track_output
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        if (track_output == ""):
+            track_output = default_track_output
+        try:
+            response = requests.post(server + "/driver/set-train-emergency-stop",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'track-output': track_output})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Train emergency stopped\n")
+            else:
+                click.echo("System not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Set a peripheral of your train")
+@click.option('--track_output', '-t', help="Use another track output than the "
+        "default one.", default="")
+@click.argument('peripheral')
+@click.argument('state', type=click.Choice(['off', 'on']))
+def set_peripheral(peripheral, state, track_output):
+    global session_id, grab_id, server, default_track_output
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        if (track_output == ""):
+            track_output = default_track_output
+        try:
+            mapping = {
+                    'off': 0,
+                    'on': 1,
+            }
+            response = requests.post(server + "/driver/set-train-peripheral",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'peripheral': peripheral, 'state': mapping.get(state),
+                        'track-output': track_output})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Train peripheral "
+                        + peripheral + " set to " + state + "\n")
+            else:
+                click.echo("System not running, invalid peripheral or invalid "
+                        "track output!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+
+# --- monitor ---
+
+@click.group(help="Monitor functionality")
+def monitor():
+    pass
+
+
+@click.command(help="Get the list of trains")
+def get_trains():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/trains")
+            if (response.status_code == requests.codes.ok):
+                if (response.text == ""):
+                    click.echo("No trains available")
+                else:
+                    click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the state of a train")
+@click.argument('train')
+def get_train_state(train):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/train-state",
+                    data = {'train': train})
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running or train unknown!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the list of peripherals of a train")
+@click.argument('train')
+def get_train_peripherals(train):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/train-peripherals",
+                    data = {'train': train})
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running or train unknown!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the list of track outputs")
+def get_track_outputs():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/track-outputs")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the list of points")
+def get_points():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/points")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the list of signals")
+def get_signals():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/signals")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the aspects of a point")
+@click.argument('point')
+def get_point_aspects(point):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/point-aspects",
+                    data = {'point': point})
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running or point unknown!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the aspects of a signal")
+@click.argument('signal')
+def get_signal_aspects(signal):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/signal-aspects",
+                    data = {'signal': signal})
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running or signal unknown!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the list of segments")
+def get_segments():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/segments")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+
+# --- assign commands to goups ---
+
+cli.add_command(config)
+cli.add_command(admin)
+cli.add_command(controller)
+cli.add_command(driver)
+cli.add_command(monitor)
+
+admin.add_command(startup)
+admin.add_command(shutdown)
+admin.add_command(set_track_output)
+
+controller.add_command(set_point)
+controller.add_command(set_signal)
+
+driver.add_command(grab)
+driver.add_command(release)
+driver.add_command(set_dcc_speed)
+driver.add_command(set_calibrated_speed)
+driver.add_command(emergency_stop)
+driver.add_command(set_peripheral)
+
+monitor.add_command(get_trains)
+monitor.add_command(get_train_state)
+monitor.add_command(get_train_peripherals)
+monitor.add_command(get_track_outputs)
+monitor.add_command(get_points)
+monitor.add_command(get_signals)
+monitor.add_command(get_point_aspects)
+monitor.add_command(get_signal_aspects)
+monitor.add_command(get_segments)
+
+
+
+if __name__ == '__main__':
+    cli()
+

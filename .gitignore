@@ -1,0 +1,7 @@
+bin/
+build/
+*.a
+*.o
+*.swp
+swtbahn-config.yml
+.syntastic_c_config
