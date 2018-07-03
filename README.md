@@ -40,7 +40,7 @@ dependencies
 4. Start the server: `./swtbahn-server <serial-device> <config-directory>
 <IP> <port>` (IP is the IP-address under which the server can be reached and
 port specifies on which port the server listens)  
-  For example: `./swtbahn-server /dev/ttyUSB0 ../../libbidib-system-test/config/ 141.13.106.27 2048`  
+  For example: `./swtbahn-server /dev/ttyUSB0 ../../../libbidib-system-test/config/ 141.13.106.27 2048`  
 5. Quit the server with Ctrl-C if you're done
 
 #### Client
@@ -61,12 +61,26 @@ different working directories which will lead to distinct configs.
 `swtbahn controller`, `swtbahn driver` and `swtbahn monitor`. If the system was
 not started by `swtbahn admin startup`, all the other commands won't work.  
   For example:  
-  `./swtbahn admin startup`  
-  ` ./swtbahn monitor get_trains`  
+  `./swtbahn admin startup`
+  `./swtbahn monitor get_segments`
+  `./swtbahn monitor get_trains`  
   `./swtbahn driver grab cargo`  
   `./swtbahn driver set_dcc_speed -b 5`  
 4. If you're done, you should shut the system down gracefully by invoking
 `swtbahn admin shutdown`
+
+#### Logging into the Raspberry Pi remotely
+Use `ssh` to the log in remotely. Suppose the Raspberry Pi is located at `141.13.106.30`.
+Then use the command `ssh pi@141.13.106.30`. 
+
+#### Strategy for finding the IP address of the Raspberry Pi
+1. Get a list of all devices on your subnet (e.g., 141.13.106.\*): nmap -sP 141.13.106.\*
+2. Try and SSH into each device with the user name “pi”, e.g., ssh pi@141.13.106.30
+
+#### Sending files from the Raspberry Pi to a client computer:
+Use `scp` on your client computer. For example, suppose you have SSH-ed into the Raspberry Pi, 
+located at `141.13.106.30` with the user `pi`. To copy the the file `/var/log/syslog` from the 
+Raspberry Pi, use the command `scp pi@141.13.106.30:/var/log/syslog syslog`
 
 
 ## Grab-id and session-id behaviour
