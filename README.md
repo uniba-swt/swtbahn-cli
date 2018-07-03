@@ -74,13 +74,13 @@ Use `ssh` to the log in remotely. Suppose the Raspberry Pi is located at `141.13
 Then use the command `ssh pi@141.13.106.30`. 
 
 #### Strategy for finding the IP address of the Raspberry Pi
-1. Get a list of all devices on your subnet (e.g., 141.13.106.\*): nmap -sP 141.13.106.\*
-2. Try and SSH into each device with the user name “pi”, e.g., ssh pi@141.13.106.30
+1. Get a list of all devices on your subnet (e.g., `141.13.106.*`): `nmap -sP 141.13.106.*`
+2. Try and SSH into each device with the user name `pi`, e.g., `ssh pi@141.13.106.30`
 
 #### Sending files from the Raspberry Pi to a client computer:
-Use `scp` on your client computer. For example, suppose you have SSH-ed into the Raspberry Pi, 
-located at `141.13.106.30` with the user `pi`. To copy the the file `/var/log/syslog` from the 
-Raspberry Pi, use the command `scp pi@141.13.106.30:/var/log/syslog syslog`
+Use `scp` on your client computer. For example, suppose the Raspberry Pi is located at 
+`141.13.106.30` and has the user `pi`. To copy the the file `/var/log/syslog` from the 
+Raspberry Pi via the user `pi`, use the command `scp pi@141.13.106.30:/var/log/syslog syslog`
 
 
 ## Grab-id and session-id behaviour
