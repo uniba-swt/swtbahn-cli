@@ -76,6 +76,7 @@ Then use the command `ssh pi@141.13.106.30`.
 #### Strategy for finding the IP address of the Raspberry Pi
 1. Get a list of all devices on your subnet (e.g., `141.13.106.*`): `nmap -sP 141.13.106.*`
 2. Try and SSH into each device with the user name `pi`, e.g., `ssh pi@141.13.106.30`
+3. Use the default password for the Raspbian operating system: raspberry
 
 #### Sending files from the Raspberry Pi to a client computer:
 Use `scp` on your client computer. For example, suppose the Raspberry Pi is located at 
