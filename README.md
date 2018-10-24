@@ -60,12 +60,13 @@ different working directories which will lead to distinct configs.
 3. Now you can use the commands from the categories `swtbahn admin`,
 `swtbahn controller`, `swtbahn driver` and `swtbahn monitor`. If the system was
 not started by `swtbahn admin startup`, all the other commands won't work.  
-  For example:
-  `./swtbahn admin startup`
-  `./swtbahn monitor get_segments`
-  `./swtbahn monitor get_trains`
-  `./swtbahn driver grab cargo`
-  `./swtbahn driver set_dcc_speed -b 5`  
+
+    For example:  
+    `./swtbahn admin startup`  
+    `./swtbahn monitor get_segments`  
+    `./swtbahn monitor get_trains`  
+    `./swtbahn driver grab cargo`  
+    `./swtbahn driver set_dcc_speed -b 5`  
 4. If you're done, you should shut the system down gracefully by invoking
 `swtbahn admin shutdown`
 
