@@ -61,7 +61,133 @@ boards:
       - id: seg29
         address: 0x1C
 
-  
+  - id: lightcontrol
+    signals-board:
+      - id: signal1
+        number: 0x00
+        aspects:
+          - id: yellow
+            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal2
+        number: 0x01
+        aspects:
+          - id: yellow
+            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal3
+        number: 0x02
+        aspects:
+          - id: yellow
+            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal4
+        number: 0x03
+        aspects:
+          - id: yellow
+            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal5
+        number: 0x04
+        aspects:
+          - id: yellow
+            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal6
+        number: 0x05
+        aspects:
+          - id: yellow
+            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal7
+        number: 0x06
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal8
+        number: 0x07
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal9
+        number: 0x08
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal10
+        number: 0x09
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal11
+        number: 0x0A
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal14
+        number: 0x0B
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signalends
+        number: 0x12
+        aspects:
+          - id: on
+            value: 0x00
+          - id: off
+            value: 0x01
+        initial: on
+      - id: lanterns
+        number: 0x13
+        aspects:
+          - id: on
+            value: 0x00
+          - id: off
+            value: 0x01
+        initial: on
+
   - id: onecontrol
     points-board:
       - id: point1
@@ -71,7 +197,7 @@ boards:
             value: 0x01
           - id: reverse
             value: 0x00
-        initial: normal
+        initial: reverse
       - id: point2
         number: 0x01
         aspects:
@@ -120,146 +246,3 @@ boards:
           - id: reverse
             value: 0x00
         initial: normal
-      
- - id: lightcontrol
-    signals-board:
-
-      - id: signal1
-        number: 0x00
-        aspects:
-          - id: stop
-            value: 0x00
-          - id: go
-            value: 0x01
-	      - id: gofull
-	        value: 0x02
-        initial: stop
-
-      - id: signal2
-        number: 0x01
-        aspects:
-          - id: stop
-            value: 0x00
-          - id: go
-            value: 0x01
-	      - id: gofull
-	        value: 0x02
-        initial: stop
-
-      - id: signal3
-        number: 0x02
-        aspects:
-          - id: stop
-            value: 0x00
-          - id: go
-            value: 0x01
-	      - id: gofull
-	        value: 0x02
-        initial: stop
-
-      - id: signal4
-        number: 0x03
-        aspects:
-          - id: stop
-            value: 0x00
-          - id: go
-            value: 0x01
-	      - id: gofull
-	        value: 0x02
-        initial: stop
-
-      - id: signal5
-        number: 0x04
-        aspects:
-          - id: stop
-            value: 0x00
-          - id: go
-            value: 0x01
-	      - id: gofull
-	        value: 0x02
-        initial: stop
-
-      - id: signal6
-        number: 0x05
-        aspects:
-          - id: stop
-            value: 0x00
-          - id: go
-            value: 0x01
-	      - id: gofull
-	        value: 0x02
-        initial: stop
-
-      - id: signal7
-	number: 0x06
-	aspects:
-	  - id: stop
-	    value: 0x00
-	  - id: go
-	    value: 0x01
-	initial: stop
-
-      - id: signal8
-	number: 0x07
-	aspects:
-	  - id: stop
-	    value: 0x00
-	  - id: go
-	    value: 0x01
-	initial: stop
-
-      - id: signal9
-	number: 0x08
-	aspects:
-	  - id: stop
-	    value: 0x00
-	  - id: go
-	    value: 0x01
-	initial: stop
-
-      - id: signal10
-	number: 0x09
-	aspects:
-	  - id: stop
-	    value: 0x00
-	  - id: go
-	    value: 0x01
-	initial: stop
-
-      - id: signal11
-	number: 0x0A
-	aspects:
-	  - id: stop
-	    value: 0x00
-	  - id: go
-	    value: 0x01
-	initial: stop
-
-      - id: signal14
-	number: 0x0B
-	aspects:
-	  - id: stop
-	    value: 0x00
-	  - id: go
-	    value: 0x01
-	initial: stop
-
-      - id: signalends
-	number: 0x12
-	aspects:
-	  - id: on
-	    value: 0x00
-	  - id: off
-	    value: 0x01
-	initial: off
-
-      - id: lanterns
-	number: 0x13
-	aspects:
-	  - id: on
-	    value: 0x00
-	  - id: off
-	    value: 0x01
-	initial: off
-			
-	

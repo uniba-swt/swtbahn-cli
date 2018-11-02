@@ -40,7 +40,7 @@ dependencies
 4. Start the server: `./swtbahn-server <serial-device> <config-directory>
 <IP> <port>` (IP is the IP-address under which the server can be reached and
 port specifies on which port the server listens)  
-  For example: `./swtbahn-server /dev/ttyUSB0 ../../../libbidib-system-test/config/ 141.13.106.27 2048`  
+  For example: `./swtbahn-server /dev/ttyUSB0 ../../configurations/swtbahn-lite/ 141.13.106.27 2048`  
 5. Quit the server with Ctrl-C if you're done
 
 #### Client
