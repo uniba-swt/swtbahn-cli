@@ -75,7 +75,39 @@ Use `ssh` to the log in remotely. Suppose the Raspberry Pi is located at `141.13
 Then use the command `ssh pi@141.13.106.30`. 
 
 #### Strategy for finding the IP address of the Raspberry Pi
-Use `ping raspberrypi.local` to find the IP address of the Raspberry Pi, where `raspberrypi.local` is its hostname.
+There are two Raspberry Pis with the hostnames `raspberrypi1` and `raspberrypi2`. 
+The [Raspberry Pi documentation](https://www.raspberrypi.org/documentation/remote-access/ip-address.md) 
+lists several strategies for finding the IP address of a Raspberry Pi.
+If you change the Raspberry Pi's hostname, e.g., by editing `/etc/hostname` or by using
+the Raspberry Pi Configuration application, Avahi will automatically change the .local mDNS address.
+The MAC address of all Raspberry Pis begin with `b8:27:eb`.
+
+1. **macOS:** 
+Try and resolve the Raspberry Pi's hostname, e.g., raspberrypi1.local, with multicast DNS:
+
+    `ping raspberrypi1.local`
+
+    If this fails, try the strategy for Linux.
+
+2. **Linux:** 
+Use `ifconfig` to find your subnet, e.g., `192.168.1._`. 
+Use the `nmap` command to scan your subnet for connected devices,
+and look for the Raspberry Pi's hostname in the results:
+
+    `nmap -sn 192.168.1.0/24`
+
+
+3. **Windows:** 
+Use `ipconfig` to find your subnet, e.g., `192.168.1._`.
+Install [nmap](https://nmap.org/download.html) and open the command line 
+as an administrator for nmap to display the hostnames in its results. 
+Use the `nmap` command to scan your subnet for connected devices, and 
+look for the Raspberry Pi's hostname in the results:
+
+    `nmap -sn 192.168.1.0/24`
+
+    Use the command `nmap -sn 192.168.1.0/24 | findstr /i "b8:27:eb"` to quickly 
+    see a list of Raspberry Pis (MAC addresses only).
 
 #### Sending files from the Raspberry Pi to a client computer:
 Use `scp` on your client computer. For example, suppose the Raspberry Pi is located at 
