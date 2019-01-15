@@ -197,7 +197,7 @@ boards:
             value: 0x01
           - id: reverse
             value: 0x00
-        initial: reverse
+        initial: normal
       - id: point2
         number: 0x01
         aspects:

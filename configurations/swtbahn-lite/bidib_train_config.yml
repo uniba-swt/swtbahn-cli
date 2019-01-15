@@ -1,6 +1,6 @@
 # Train configuration
 trains:
-  - id: cargo
+  - id: cargo_db
     dcc-address: 0x0001 # addr high | addr low
     dcc-speed-steps: 126
     calibration:
@@ -17,7 +17,9 @@ trains:
       - id: light
         bit: 4          # a value in range 0..31
         initial: 1
-  - id: regional
+      - id: light_passenger
+        bit: 9          # a value in range 0..31
+  - id: regional_odeg
     dcc-address: 0x0002
     dcc-speed-steps: 126
     calibration:
@@ -31,6 +33,61 @@ trains:
       - 105
       - 120
     peripherals:
-      - id: light
+      - id: head_light
         bit: 4
+        initial: 1
+      - id: cabin_light
+        bit: 0
+  - id: regional_brengdirect
+    dcc-address: 0x0004 # addr high | addr low
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4          # a value in range 0..31
+        initial: 1
+      - id: cabin_light
+        bit: 0          # a value in range 0..31
+  - id: cargo_bayern
+    dcc-address: 0x0005 # addr high | addr low
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: light
+        bit: 4          # a value in range 0..31
+        initial: 1
+  - id: cargo_green
+    dcc-address: 0x0006 # addr high | addr low
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: light
+        bit: 4          # a value in range 0..31
         initial: 1
