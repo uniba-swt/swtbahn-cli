@@ -206,11 +206,23 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 		for (size_t i = 0; i < query.length; i++) {
 			t_bidib_unified_accessory_state_query point_state =
 				bidib_get_point_state(query.ids[i]);
-			g_string_append_printf(points, "%s%s - state: %s",
+			
+			GString *execution_state = g_string_new("");
+			if (point_state.type == BIDIB_ACCESSORY_BOARD) {
+				g_string_printf(execution_state, "(target state%s reached)", 
+				                point_state.board_accessory_state.execution_state ? 
+				                " not" : "");
+			}
+			char execution_state_str[execution_state->len + 1];
+			strcpy(execution_state_str, execution_state->str);
+			g_string_free(execution_state, true);
+			
+			g_string_append_printf(points, "%s%s - state: %s %s",
 			                       i != 0 ? "\n" : "", query.ids[i],
 			                       point_state.type == BIDIB_ACCESSORY_BOARD ?
 			                       point_state.board_accessory_state.state_id :
-			                       point_state.dcc_accessory_state.state_id);
+			                       point_state.dcc_accessory_state.state_id,
+			                       execution_state_str);
 			bidib_free_unified_accessory_state_query(point_state);
 		}
 		bidib_free_id_list_query(query);
