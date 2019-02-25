@@ -36,13 +36,25 @@
 #include "server.h"
 #include "param_verification.h"
 
+#include "train_engine_linear.h"
+
 #define MAX_TRAINS 32
 
 
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned int next_grab_id = 0;
-static GString *grabbed_trains[MAX_TRAINS] = {NULL};
+
+
+typedef struct {
+	GString *name;
+	t_tick_data engine_data;
+	void (*engine_reset_function)(t_tick_data *engine_data);
+	void (*engine_logic_function)(t_tick_data *engine_data);
+	void (*engine_tick_function)(t_tick_data *engine_data);	
+} t_train_data;
+
+static t_train_data grabbed_trains[MAX_TRAINS] = {{.name = NULL}};
 
 
 static void increment_next_grab_id(void) {
@@ -57,7 +69,7 @@ bool train_grabbed(const char *train) {
 	bool grabbed = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < MAX_TRAINS; i++) {
-		if (grabbed_trains[i] != NULL && !strcmp(grabbed_trains[i]->str, train)) {
+		if (grabbed_trains[i].name != NULL && !strcmp(grabbed_trains[i].name->str, train)) {
 			grabbed = true;
 			break;
 		}
@@ -69,15 +81,15 @@ bool train_grabbed(const char *train) {
 static int grab_train(const char *train) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < MAX_TRAINS; i++) {
-		if (grabbed_trains[i] != NULL && !strcmp(grabbed_trains[i]->str, train)) {
+		if (grabbed_trains[i].name != NULL && !strcmp(grabbed_trains[i].name->str, train)) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return -1;
 		}
 	}
 	int start = next_grab_id;
-	if (grabbed_trains[next_grab_id] != NULL) {
+	if (grabbed_trains[next_grab_id].name != NULL) {
 		increment_next_grab_id();
-		while (grabbed_trains[next_grab_id] != NULL) {
+		while (grabbed_trains[next_grab_id].name != NULL) {
 			if (next_grab_id == start) {
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				syslog(LOG_ERR, "All grab ids in use");
@@ -88,7 +100,7 @@ static int grab_train(const char *train) {
 	}
 	int grab_id = next_grab_id;
 	increment_next_grab_id();
-	grabbed_trains[grab_id] = g_string_new(train);
+	grabbed_trains[grab_id].name = g_string_new(train);
 	syslog(LOG_NOTICE, "Train %s grabbed", train);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	return grab_id;
@@ -97,10 +109,10 @@ static int grab_train(const char *train) {
 static bool free_train(int grab_id) {
 	bool success = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	if (grabbed_trains[grab_id] != NULL) {
-		syslog(LOG_NOTICE, "Train %s released", grabbed_trains[grab_id]->str);
-		g_string_free(grabbed_trains[grab_id], TRUE);
-		grabbed_trains[grab_id] = NULL;
+	if (grabbed_trains[grab_id].name != NULL) {
+		syslog(LOG_NOTICE, "Train %s released", grabbed_trains[grab_id].name->str);
+		g_string_free(grabbed_trains[grab_id].name, TRUE);
+		grabbed_trains[grab_id].name = NULL;
 		success = true;
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -110,8 +122,8 @@ static bool free_train(int grab_id) {
 void free_all_grabbed_trains(void) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < MAX_TRAINS; i++) {
-		if (grabbed_trains[i] != NULL) {
-			g_string_free(grabbed_trains[i], TRUE);
+		if (grabbed_trains[i].name != NULL) {
+			g_string_free(grabbed_trains[i].name, TRUE);
 		}
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -189,7 +201,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			syslog(LOG_NOTICE, "Request: Set train speed - invalid session id");
 			onion_response_printf(res, "invalid session id");
 			return OCS_PROCESSED;
-		} else if (grab_id == -1 || grabbed_trains[grab_id] == NULL) {
+		} else if (grab_id == -1 || grabbed_trains[grab_id].name == NULL) {
 			syslog(LOG_ERR, "Request: Set train speed - bad grab id");
 			onion_response_printf(res, "invalid grab id");
 			return OCS_PROCESSED;
@@ -201,7 +213,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_set_train_speed(grabbed_trains[grab_id]->str,
+			if (bidib_set_train_speed(grabbed_trains[grab_id].name->str,
 		                              speed, data_track_output)) {
 				syslog(LOG_ERR, "Request: Set train speed - bad parameter values");
 				pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -209,7 +221,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			} else {
 				bidib_flush();
 				syslog(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
-				       grabbed_trains[grab_id]->str, speed);
+				       grabbed_trains[grab_id].name->str, speed);
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				return OCS_PROCESSED;
 			}
@@ -235,7 +247,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 			syslog(LOG_ERR, "Request: Set calibrated train speed - invalid session id");
 			onion_response_printf(res, "invalid session id");
 			return OCS_PROCESSED;
-		} else if (grab_id == -1 || grabbed_trains[grab_id] == NULL) {
+		} else if (grab_id == -1 || grabbed_trains[grab_id].name == NULL) {
 			syslog(LOG_ERR, "Request: Set calibrated train speed - bad grab id");
 			onion_response_printf(res, "invalid grab id");
 			return OCS_PROCESSED;
@@ -247,7 +259,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id]->str,
+			if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id].name->str,
 		                                         speed, data_track_output)) {
 				syslog(LOG_ERR, "Request: Set calibrated train speed - bad "
 				                "parameter values");
@@ -257,7 +269,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 				bidib_flush();
 				syslog(LOG_NOTICE, "Request: Set calibrated train speed - "
 				                   "train: %s speed: %d",
-				       grabbed_trains[grab_id]->str, speed);
+				       grabbed_trains[grab_id].name->str, speed);
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				return OCS_PROCESSED;
 			}
@@ -282,7 +294,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			syslog(LOG_ERR, "Request: Set train emergency stop - invalid session id");
 			onion_response_printf(res, "invalid session id");
 			return OCS_PROCESSED;
-		} else if (grab_id == -1 || grabbed_trains[grab_id] == NULL) {
+		} else if (grab_id == -1 || grabbed_trains[grab_id].name == NULL) {
 			syslog(LOG_ERR, "Request: Set train emergency stop - bad grab id");
 			onion_response_printf(res, "invalid grab id");
 			return OCS_PROCESSED;
@@ -291,7 +303,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_emergency_stop_train(grabbed_trains[grab_id]->str,
+			if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str,
 		                                   data_track_output)) {
 				syslog(LOG_ERR, "Request: Set train emergency stop - bad "
 				                "parameter values");
@@ -300,7 +312,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			} else {
 				bidib_flush();
 				syslog(LOG_NOTICE, "Request: Set train emergency stop - train: %s",
-				       grabbed_trains[grab_id]->str);
+				       grabbed_trains[grab_id].name->str);
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				return OCS_PROCESSED;
 			}
@@ -328,7 +340,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 			syslog(LOG_ERR, "Request: Set train peripheral - invalid session id");
 			onion_response_printf(res, "invalid session id");
 			return OCS_PROCESSED;
-		} else if (grab_id == -1 || grabbed_trains[grab_id] == NULL) {
+		} else if (grab_id == -1 || grabbed_trains[grab_id].name == NULL) {
 			syslog(LOG_ERR, "Request: Set train peripheral - bad grab id");
 			onion_response_printf(res, "invalid grab id");
 			return OCS_PROCESSED;
@@ -343,7 +355,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_set_train_peripheral(grabbed_trains[grab_id]->str,
+			if (bidib_set_train_peripheral(grabbed_trains[grab_id].name->str,
 			                               data_peripheral, state,
 			                               data_track_output)) {
 				syslog(LOG_ERR, "Request: Set train peripheral - bad "
@@ -354,7 +366,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 				bidib_flush();
 				syslog(LOG_NOTICE, "Request: Set train peripheral - train: %s "
 				                   "peripheral: %s state: 0x%02x",
-				                   grabbed_trains[grab_id]->str,
+				                   grabbed_trains[grab_id].name->str,
 				                   data_peripheral, state);
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				return OCS_PROCESSED;
