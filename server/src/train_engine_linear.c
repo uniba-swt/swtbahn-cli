@@ -5,7 +5,7 @@
  * http://rtsys.informatik.uni-kiel.de/kieler
  */
 
-#include "train_engine.h"
+#include "train_engine_default.h"
 
 void train_engine_linear_reset(t_tick_data* d) {
   d->_GO = 1;
@@ -116,7 +116,7 @@ void train_engine_linear_logic(t_tick_data* d) {
 }
 
 void train_engine_linear_tick(t_tick_data* d) {
-  logic(d);
+  train_engine_linear_logic(d);
 
   d->_pg46 = d->_g46;
   d->_pg38 = d->_g38;

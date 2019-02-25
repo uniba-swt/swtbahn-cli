@@ -245,7 +245,8 @@ def driver():
 
 @click.command(help="Grab a train")
 @click.argument('train')
-def grab(train):
+@click.argument('engine')
+def grab(train, engine):
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
@@ -253,7 +254,7 @@ def grab(train):
         if (session_id == 0 and grab_id == -1):
             try:
                 response = requests.post(server + "/driver/grab-train",
-                                         data = {'train': train})
+                                         data = {'train': train, 'engine': engine})
                 if (response.status_code == requests.codes.ok):
                     ids = response.text.split(",")
                     update_session_and_grab_id(int(ids[0]), int(ids[1]))
