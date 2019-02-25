@@ -51,7 +51,7 @@ onion_connection_status handler_get_trains(void *_, onion_request *req,
 		char response[trains->len + 1];
 		strcpy(response, trains->str);
 		g_string_free(trains, true);
-		onion_response_printf(res, response);
+		onion_response_printf(res, "%s", response);
 		syslog(LOG_NOTICE, "Request: Get available trains");
 		return OCS_PROCESSED;
 	} else {
@@ -84,7 +84,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 				char response[ret_string->len + 1];
 				strcpy(response, ret_string->str);
 				g_string_free(ret_string, true);
-				onion_response_printf(res, response);
+				onion_response_printf(res, "%s", response);
 				syslog(LOG_NOTICE, "Request: Get train state");
 				return OCS_PROCESSED;
 			} else {
@@ -123,7 +123,7 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 				char response[train_peripherals->len + 1];
 				strcpy(response, train_peripherals->str);
 				g_string_free(train_peripherals, true);
-				onion_response_printf(res, response);
+				onion_response_printf(res, "%s", response);
 				syslog(LOG_NOTICE, "Request: Get train peripherals");
 				return OCS_PROCESSED;
 			} else {
@@ -188,7 +188,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 		char response[track_outputs->len + 1];
 		strcpy(response, track_outputs->str);
 		g_string_free(track_outputs, true);
-		onion_response_printf(res, response);
+		onion_response_printf(res, "%s", response);
 		syslog(LOG_NOTICE, "Request: Get track outputs");
 		return OCS_PROCESSED;
 	} else {
@@ -229,7 +229,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 		char response[points->len + 1];
 		strcpy(response, points->str);
 		g_string_free(points, true);
-		onion_response_printf(res, response);
+		onion_response_printf(res, "%s", response);
 		syslog(LOG_NOTICE, "Request: Get points");
 		return OCS_PROCESSED;
 	} else {
@@ -258,7 +258,7 @@ onion_connection_status handler_get_signals(void *_, onion_request *req,
 		char response[signals->len + 1];
 		strcpy(response, signals->str);
 		g_string_free(signals, true);
-		onion_response_printf(res, response);
+		onion_response_printf(res, "%s", response);
 		syslog(LOG_NOTICE, "Request: Get signals");
 		return OCS_PROCESSED;
 	} else {
@@ -288,7 +288,7 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 				char response[aspects->len + 1];
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
-				onion_response_printf(res, response);
+				onion_response_printf(res, "%s", response);
 				syslog(LOG_NOTICE, "Request: Get point aspects");
 				return OCS_PROCESSED;
 			} else {
@@ -323,7 +323,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 				char response[aspects->len + 1];
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
-				onion_response_printf(res, response);
+				onion_response_printf(res, "%s", response);
 				syslog(LOG_NOTICE, "Request: Get signal aspects");
 				return OCS_PROCESSED;
 			} else {
@@ -357,10 +357,10 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 					id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
 					if (id_query.known) {
 						g_string_append_printf(segments, "%s%s",
-						                       i != 0 ? ", " : "", id_query.id);
+						                       j != 0 ? ", " : "", id_query.id);
 					} else {
 						g_string_append_printf(segments, "%s%s",
-						                       i != 0 ? ", " : "", "unkown");
+						                       j != 0 ? ", " : "", "unkown");
 					}
 					bidib_free_id_query(id_query);
 				}
@@ -371,7 +371,7 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 		char response[segments->len + 1];
 		strcpy(response, segments->str);
 		g_string_free(segments, true);
-		onion_response_printf(res, response);
+		onion_response_printf(res, "%s", response);
 		syslog(LOG_NOTICE, "Request: Get segments");
 		return OCS_PROCESSED;
 	} else {
