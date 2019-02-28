@@ -28,6 +28,15 @@
 #ifndef SWTSERVER_HANDLER_CONTROLLER_H
 #define SWTSERVER_HANDLER_CONTROLLER_H
 
+/**
+ * Finds and grants a requested train route.
+ * A requested route is defined by a pair of source and destination signals. 
+ * 
+ * @param name of the source signal
+ * @param name of the destination signal
+ * @return ID of the route if it has been granted, otherwise -1
+ */ 
+int grant_route(const char *source_name, const char *destination_name);
 
 onion_connection_status handler_set_point(void *_, onion_request *req,
                                           onion_response *res);

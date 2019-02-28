@@ -34,6 +34,20 @@
 #include "server.h"
 
 
+int grant_route(const char *source_name, const char *destination_name) {
+	// Map source and destination names to a numerical IDs
+	
+	// Map source and destination IDs to a route ID in the interlocking table
+	
+	// Check whether the route can be granted (KIELER/SCCharts)
+	
+	// Submit the granted route for execution
+	
+	// Return the ID of the granted route
+	
+	return -1;
+}
+
 onion_connection_status handler_set_point(void *_, onion_request *req,
                                           onion_response *res) {
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {

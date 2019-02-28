@@ -35,6 +35,7 @@
 #include <stdio.h>
 
 #include "server.h"
+#include "handler_controller.h"
 #include "param_verification.h"
 
 #include "train_engine_default.h"
@@ -239,21 +240,63 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		int client_session_id = params_check_session_id(data_session_id);
 		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
 		if (client_session_id != session_id) {
-			syslog(LOG_NOTICE, "Request: Free train - invalid session id");
+			syslog(LOG_NOTICE, "Request: Release train - invalid session id");
 			onion_response_printf(res, "invalid session id");
 			return OCS_PROCESSED;
 		} else if (grab_id == -1 || !free_train(grab_id)) {
-			syslog(LOG_ERR, "Request: Free train - invalid grab id");
+			syslog(LOG_ERR, "Request: Release train - invalid grab id");
 			onion_response_printf(res, "invalid grab id");
 			return OCS_PROCESSED;
 		} else {
-			syslog(LOG_NOTICE, "Request: Free train");
+			syslog(LOG_NOTICE, "Request: Release train");
 			return OCS_PROCESSED;
 		}
 	} else {
 		syslog(LOG_ERR, "Request: Free train - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
+}
+
+onion_connection_status handler_request_route(void *_, onion_request *req,
+                                              onion_response *res) {
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_session_id = onion_request_get_post(req, "session-id");
+		const char *data_grab_id = onion_request_get_post(req, "grab-id");
+		const char *data_source_name = onion_request_get_post(req, "source");
+		const char *data_destination_name = onion_request_get_post(req, "destination");
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		if (client_session_id != session_id) {
+			syslog(LOG_NOTICE, "Request: Request train route - invalid session id");
+			onion_response_printf(res, "invalid session id");
+			return OCS_PROCESSED;
+		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			syslog(LOG_ERR, "Request: Request train route - bad grab id");
+			onion_response_printf(res, "invalid grab id");
+			return OCS_PROCESSED;
+		} else if (data_source_name == NULL || data_destination_name == NULL) {
+			syslog(LOG_ERR, "Request: Request train route - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			// Call interlocking function to find and grant a route
+			const int route_id = grant_route(data_source_name, data_destination_name);
+			if (route_id != -1) {
+				syslog(LOG_NOTICE, "Request: Request train route - "
+				                   "train: %s route %d",
+					   grabbed_trains[grab_id].name->str, route_id);
+				onion_response_printf(res, "%d", route_id);
+				return OCS_PROCESSED;
+			} else {
+				syslog(LOG_NOTICE, "Request: Request train route - "
+				                   "train: %s route not granted",
+					   grabbed_trains[grab_id].name->str);
+				return OCS_NOT_IMPLEMENTED;
+			}
+		}
+	} else {
+		syslog(LOG_ERR, "Request: Request train route - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}                                       
 }
 
 onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,

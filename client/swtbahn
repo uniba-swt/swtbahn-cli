@@ -300,6 +300,32 @@ def release():
             click.echo(e, err=True)
 
 
+@click.command(help="Request a route for your train from source to destination block")
+@click.argument('source')
+@click.argument('destination')
+def request_route(source, destination):
+    global session_id, grab_id, server
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        try:
+            response = requests.post(server + "/driver/request-route",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'source': source, 'destination': destination})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Route " + response.text + 
+                        " from " + source + " to " + destination + " has been granted\n")
+            else:
+                click.echo("Route from " + source + " to " + destination + " " +
+						"has not been granted,\n" + 
+						"or system not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 @click.command(help="Set the dcc speed step of your train")
 @click.option('--backwards', '-b', help="The rear end of the train moves forward.",
         is_flag=True)
@@ -601,6 +627,7 @@ controller.add_command(set_signal)
 
 driver.add_command(grab)
 driver.add_command(release)
+driver.add_command(request_route)
 driver.add_command(set_dcc_speed)
 driver.add_command(set_calibrated_speed)
 driver.add_command(emergency_stop)
