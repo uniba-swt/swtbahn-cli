@@ -1,0 +1,227 @@
+# Interlocking table
+interlocking-table:
+  - id: 0
+    source: signal3a
+    destination: signal6
+    path:
+      - id: seg2
+      - id: seg3
+        end: seg4
+    points:
+      - id: point1
+        position: normal
+    signals:
+      - id: signal5
+    conflicts:
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 1
+    source: signal3a
+    destination: signal7
+    path:
+      - id: seg2
+      - id: seg3
+      - id: seg4
+      - id: seg5
+      - id: seg6
+        end: seg7
+    points:
+      - id: point1
+        position: normal
+    signals:
+    conflicts:
+      - id: 0
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 2
+    source: signal3b
+    destination: signal6
+    path:
+      - id: seg2
+      - id: seg3
+        end: seg4
+    points:
+      - id: point1
+        position: reverse
+    signals:
+      - id: signal5
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 3
+    source: signal3b
+    destination: signal7
+    path:
+      - id: seg2
+      - id: seg3
+      - id: seg4
+      - id: seg5
+      - id: seg6
+        end: seg7
+    points:
+      - id: point1
+        position: reverse
+    signals:
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 4
+    source: signal5
+    destination: signal4
+    path:
+      - id: seg6
+      - id: seg5
+      - id: seg4
+      - id: seg3
+        end: seg2
+    points:
+    signals:
+      - id: signal3
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 5
+    source: signal5
+    destination: signal1
+    path:
+      - id: seg6
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+        end: seg1
+    points:
+      - id: point1
+        position: reverse
+    signals:
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 6
+    source: signal5
+    destination: signal2
+    path:
+      - id: seg6
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+        end: seg8
+    points:
+      - id: point1
+        position: normal
+    signals:
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 7
+      - id: 8
+      - id: 9
+  - id: 7
+    source: signal6
+    destination: signal7
+    path:
+      - id: seg3
+      - id: seg4
+      - id: seg5
+      - id: seg6
+        end: seg7
+    points:
+    signals:
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 8
+      - id: 9
+  - id: 8
+    source: signal4
+    destination: signal1
+    path:
+      - id: seg3
+      - id: seg2
+        end: seg1
+    points:
+      - id: point1
+        position: reverse
+    signals:
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 9
+  - id: 9
+    source: signal4
+    destination: signal2
+    path:
+      - id: seg3
+      - id: seg2
+        end: seg8
+    points:
+      - id: point1
+        position: normal
+    signals:
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
