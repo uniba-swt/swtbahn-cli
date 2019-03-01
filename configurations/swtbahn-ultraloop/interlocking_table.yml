@@ -4,11 +4,11 @@ interlocking-table:
     source: signal3a
     destination: signal6
     path:
-      - id: seg2
-      - id: seg3
-        end: seg4
+      - id: seg31
+      - id: seg30
+        end: seg29
     points:
-      - id: point1
+      - id: point2
         position: normal
     signals:
       - id: signal5
@@ -26,14 +26,14 @@ interlocking-table:
     source: signal3a
     destination: signal7
     path:
-      - id: seg2
-      - id: seg3
-      - id: seg4
-      - id: seg5
-      - id: seg6
-        end: seg7
+      - id: seg31
+      - id: seg30
+      - id: seg29
+      - id: seg17
+      - id: seg18
+        end: seg19
     points:
-      - id: point1
+      - id: point2
         position: normal
     signals:
     conflicts:
@@ -50,11 +50,11 @@ interlocking-table:
     source: signal3b
     destination: signal6
     path:
-      - id: seg2
-      - id: seg3
-        end: seg4
+      - id: seg31
+      - id: seg30
+        end: seg29
     points:
-      - id: point1
+      - id: point2
         position: reverse
     signals:
       - id: signal5
@@ -72,14 +72,14 @@ interlocking-table:
     source: signal3b
     destination: signal7
     path:
-      - id: seg2
-      - id: seg3
-      - id: seg4
-      - id: seg5
-      - id: seg6
-        end: seg7
+      - id: seg31
+      - id: seg30
+      - id: seg29
+      - id: seg17
+      - id: seg18
+        end: seg19
     points:
-      - id: point1
+      - id: point2
         position: reverse
     signals:
     conflicts:
@@ -96,14 +96,14 @@ interlocking-table:
     source: signal5
     destination: signal4
     path:
-      - id: seg6
-      - id: seg5
-      - id: seg4
-      - id: seg3
-        end: seg2
+      - id: seg18
+      - id: seg17
+      - id: seg29
+      - id: seg30
+        end: seg31
     points:
     signals:
-      - id: signal3
+      - id: signal3a
     conflicts:
       - id: 0
       - id: 1
@@ -118,14 +118,14 @@ interlocking-table:
     source: signal5
     destination: signal1
     path:
-      - id: seg6
-      - id: seg5
-      - id: seg4
-      - id: seg3
-      - id: seg2
-        end: seg1
+      - id: seg18
+      - id: seg17
+      - id: seg29
+      - id: seg30
+      - id: seg31
+        end: seg32
     points:
-      - id: point1
+      - id: point2
         position: reverse
     signals:
     conflicts:
@@ -142,14 +142,14 @@ interlocking-table:
     source: signal5
     destination: signal2
     path:
-      - id: seg6
-      - id: seg5
-      - id: seg4
-      - id: seg3
-      - id: seg2
-        end: seg8
+      - id: seg18
+      - id: seg17
+      - id: seg29
+      - id: seg30
+      - id: seg31
+        end: seg28
     points:
-      - id: point1
+      - id: point2
         position: normal
     signals:
     conflicts:
@@ -166,11 +166,11 @@ interlocking-table:
     source: signal6
     destination: signal7
     path:
-      - id: seg3
-      - id: seg4
-      - id: seg5
-      - id: seg6
-        end: seg7
+      - id: seg30
+      - id: seg29
+      - id: seg17
+      - id: seg18
+        end: seg19
     points:
     signals:
     conflicts:
@@ -187,11 +187,11 @@ interlocking-table:
     source: signal4
     destination: signal1
     path:
-      - id: seg3
-      - id: seg2
-        end: seg1
+      - id: seg30
+      - id: seg31
+        end: seg32
     points:
-      - id: point1
+      - id: point2
         position: reverse
     signals:
     conflicts:
@@ -208,11 +208,11 @@ interlocking-table:
     source: signal4
     destination: signal2
     path:
-      - id: seg3
-      - id: seg2
-        end: seg8
+      - id: seg30
+      - id: seg31
+        end: seg28
     points:
-      - id: point1
+      - id: point2
         position: normal
     signals:
     conflicts:
