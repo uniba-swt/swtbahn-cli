@@ -138,10 +138,56 @@ boards:
 #  - id: lightcontrol
     signals-board:
       - id: signal1
-        number: 0x0f
+        number: 0x08
         aspects:
-          - id: yellow
-            value: 0x02
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal2
+        number: 0x09
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal3
+        number: 0x0a
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal4
+        number: 0x0b
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal5
+        number: 0x0c
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal6
+        number: 0x0d
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+      - id: signal7
+        number: 0x0e
+        aspects:
           - id: green
             value: 0x01
           - id: red
