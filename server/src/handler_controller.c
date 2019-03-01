@@ -30,22 +30,40 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <syslog.h>
+#include <stdio.h>
 
 #include "server.h"
+#include "interlocking.h"
 
+pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int grant_route(const char *source_name, const char *destination_name) {
-	// Map source and destination names to a numerical IDs
+	pthread_mutex_lock(&interlocker_mutex);
+
+	// Get a route from the interlocking table
+	int route_id = interlocking_table_get_route_id(source_name, destination_name);
+	if (route_id == -1) {
+		pthread_mutex_unlock(&interlocker_mutex);
+		return -1;
+	}
 	
-	// Map source and destination IDs to a route ID in the interlocking table
+	printf("Route ID: %d\n", route_id);
+
+	
 	
 	// Check whether the route can be granted (KIELER/SCCharts)
 	
+	interlocking_table_ultraloop[route_id].is_blocked = true;
+	
+	pthread_mutex_unlock(&interlocker_mutex);
+
 	// Submit the granted route for execution
 	
-	// Return the ID of the granted route
 	
-	return -1;
+	
+	
+	// Return the ID of the granted route
+	return route_id;
 }
 
 onion_connection_status handler_set_point(void *_, onion_request *req,

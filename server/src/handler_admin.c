@@ -34,6 +34,7 @@
 
 #include "server.h"
 #include "handler_driver.h"
+#include "interlocking.h"
 
 
 pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -50,9 +51,10 @@ void build_message_hex_string(unsigned char *message, char *dest) {
 }
 
 static void *start_bidib(void *_) {
-	int err = bidib_start_serial(serial_device, config_directory, 0);
+	int err_serial = bidib_start_serial(serial_device, config_directory, 0);
+	int err_interlocking = interlocking_table_initialise();
 	pthread_mutex_lock(&start_stop_mutex);
-	if (err) {
+	if (err_serial || err_interlocking) {
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
 	} else {
@@ -102,6 +104,7 @@ static void *stop_bidib(void *_) {
 	usleep (1000000); // wait for running functions
 	bidib_stop();
 	free_all_grabbed_trains();
+	free_interlocking_hashtable();
 	pthread_mutex_lock(&start_stop_mutex);
 	stopping = false;
 	pthread_mutex_unlock(&start_stop_mutex);
