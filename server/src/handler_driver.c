@@ -117,6 +117,7 @@ void *grabbed_train_engine(void *args) {
 	
 	// Ensure that the train really stops
 	bidib_set_train_speed(train_data->name->str, 0, train_data->track_output);
+	bidib_flush();
 	g_string_free(train_data->name, TRUE);
 	return NULL;
 }
@@ -124,15 +125,15 @@ void *grabbed_train_engine(void *args) {
 static int set_train_engine(const int grab_id, const char *train, const char *engine) {
 	if (engine != NULL) {
 	 	if (!strcmp("default", engine)) {
-			grabbed_trains[grab_id].engine_reset_function = &train_engine_default_reset;
-			grabbed_trains[grab_id].engine_logic_function = &train_engine_default_logic;
-			grabbed_trains[grab_id].engine_tick_function = &train_engine_default_tick;
+			grabbed_trains[grab_id].engine_reset_function = train_engine_default_reset;
+			grabbed_trains[grab_id].engine_logic_function = train_engine_default_logic;
+			grabbed_trains[grab_id].engine_tick_function = train_engine_default_tick;
 			syslog(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
 			return 0;
 		} else if (!strcmp("linear", engine)) {
-			grabbed_trains[grab_id].engine_reset_function = &train_engine_linear_reset;
-			grabbed_trains[grab_id].engine_logic_function = &train_engine_linear_logic;
-			grabbed_trains[grab_id].engine_tick_function = &train_engine_linear_tick;
+			grabbed_trains[grab_id].engine_reset_function = train_engine_linear_reset;
+			grabbed_trains[grab_id].engine_logic_function = train_engine_linear_logic;
+			grabbed_trains[grab_id].engine_tick_function = train_engine_linear_tick;
 			syslog(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
 			return 0;
 		}
@@ -165,6 +166,7 @@ static int grab_train(const char *train, const char *engine) {
 	int grab_id = next_grab_id;
 	increment_next_grab_id();
 	grabbed_trains[grab_id].name = g_string_new(train);
+	strcpy(grabbed_trains[grab_id].track_output, "master");
 	if (set_train_engine(grab_id, train, engine)) {
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog(LOG_ERR, "Train engine %s could not be used", engine);
