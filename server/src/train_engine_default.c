@@ -24,7 +24,7 @@ void train_engine_default_logic(t_tick_data* d) {
   d->_g3 = d->_pg3;
   if (d->_g3) {
     d->target_speed = d->requested_speed;
-    d->target_forwards = d->target_forwards;
+    d->target_forwards = d->requested_forwards;
   }
   d->_g3 = d->_GO || d->_g3;
   d->_g7 = d->_pg7;
