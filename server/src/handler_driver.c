@@ -36,6 +36,7 @@
 
 #include "server.h"
 #include "handler_controller.h"
+#include "interlocking.h"
 #include "param_verification.h"
 
 #include "train_engine_default.h"
@@ -92,14 +93,15 @@ void *grabbed_train_engine(void *args) {
 		
 	// Reset the train engine
 	(*train_data->engine_reset_function)(&train_data->engine_data);
+	// Initial tick resets the input and output values
+	(*train_data->engine_tick_function)(&train_data->engine_data);
 
 	do  {
 		// Update the target speed and direction
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (train_data->engine_data.target_speed != train_data->engine_data.requested_speed 
-		    || train_data->engine_data.target_forwards != train_data->engine_data.requested_forwards) {
-			pthread_mutex_lock(&grabbed_trains_mutex);
+		        || train_data->engine_data.target_forwards != train_data->engine_data.requested_forwards) {
 			(*train_data->engine_tick_function)(&train_data->engine_data);
-			pthread_mutex_unlock(&grabbed_trains_mutex);
 			
 			if (bidib_set_train_speed(train_data->name->str, 
 									  train_data->engine_data.target_forwards 
@@ -114,9 +116,9 @@ void *grabbed_train_engine(void *args) {
 					   train_data->engine_data.target_forwards 
 				       ? train_data->engine_data.target_speed 
 				       : -train_data->engine_data.target_speed);
-				pthread_mutex_unlock(&grabbed_trains_mutex);
 			}
 		}
+		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
 		usleep(TRAIN_ENGINE_TIME_STEP);
 	} while (train_data->is_valid);
@@ -126,6 +128,62 @@ void *grabbed_train_engine(void *args) {
 	bidib_flush();
 	g_string_free(train_data->name, TRUE);
 	return NULL;
+}
+
+static bool train_position_is_at(const char *train_id, const char *segment) {
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+
+	for (size_t i = 0; i < train_position_query.length; i++) {
+		if (!strcmp(segment, train_position_query.segments[i])) {
+			bidib_free_train_position_query(train_position_query);
+			return true;
+		}
+	}
+	
+	bidib_free_train_position_query(train_position_query);
+	return false;
+}
+
+static bool drive_route(const int grab_id, const int route_id) {
+	const char *train_id = grabbed_trains[grab_id].name->str;
+	if (interlocking_table_ultraloop[route_id].train_id == NULL) {
+		pthread_mutex_unlock(&interlocker_mutex);
+		syslog(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
+		return false;
+	}
+
+	pthread_mutex_lock(&interlocker_mutex);
+	if (strcmp(train_id, interlocking_table_ultraloop[route_id].train_id->str)) {
+		pthread_mutex_unlock(&interlocker_mutex);
+		syslog(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
+		return false;
+	}
+	pthread_mutex_unlock(&interlocker_mutex);
+	
+	// Check the required driving direction
+	
+	// Driving starts
+	pthread_mutex_lock(&grabbed_trains_mutex);
+//	if (direction == CLOCKWISE) {
+		grabbed_trains[grab_id].engine_data.requested_forwards = 1;
+//	} else {
+//		grabbed_trains[grab_id].engine_data.requested_forwards = 0;
+//	}
+	grabbed_trains[grab_id].engine_data.requested_speed = 20;
+	pthread_mutex_unlock(&grabbed_trains_mutex);
+		
+	// Wait until the destination has been reached
+	const int path_count = interlocking_table_ultraloop[route_id].path_count;
+	const char *destination = interlocking_table_ultraloop[route_id].path[path_count - 1].id;
+	while (!train_position_is_at(train_id, destination)) {
+		usleep(TRAIN_ENGINE_TIME_STEP);
+	}
+	
+	// Driving stops
+	pthread_mutex_lock(&grabbed_trains_mutex);
+	grabbed_trains[grab_id].engine_data.requested_speed = 0;
+	pthread_mutex_unlock(&grabbed_trains_mutex);
+	return true;
 }
 
 static int set_train_engine(const int grab_id, const char *train, const char *engine) {
@@ -287,7 +345,9 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			// Call interlocking function to find and grant a route
-			const int route_id = grant_route(grabbed_trains[grab_id].name->str, data_source_name, data_destination_name);
+			const int route_id = grant_route(grabbed_trains[grab_id].name->str, 
+			                                 data_source_name, 
+			                                 data_destination_name);
 			if (route_id != -1) {
 				syslog(LOG_NOTICE, "Request: Request train route - "
 				                   "train: %s route %d",
@@ -295,7 +355,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 				onion_response_printf(res, "%d", route_id);
 				return OCS_PROCESSED;
 			} else {
-				syslog(LOG_NOTICE, "Request: Request train route - "
+				syslog(LOG_ERR, "Request: Request train route - "
 				                   "train: %s route not granted",
 					   grabbed_trains[grab_id].name->str);
 				return OCS_NOT_IMPLEMENTED;
@@ -305,6 +365,39 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 		syslog(LOG_ERR, "Request: Request train route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}                                       
+}
+
+onion_connection_status handler_drive_route(void *_, onion_request *req,
+                                              onion_response *res) {
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_session_id = onion_request_get_post(req, "session-id");
+		const char *data_grab_id = onion_request_get_post(req, "grab-id");
+		const char *data_route_id = onion_request_get_post(req, "route-id");
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		const int route_id = params_check_route_id(data_route_id);
+		if (client_session_id != session_id) {
+			syslog(LOG_NOTICE, "Request: Drive route - invalid session id");
+			onion_response_printf(res, "invalid session id");
+			return OCS_PROCESSED;
+		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			syslog(LOG_ERR, "Request: Drive route - bad grab id");
+			onion_response_printf(res, "invalid grab id");
+			return OCS_PROCESSED;
+		} else if (route_id == -1) {
+			syslog(LOG_ERR, "Request: Drive route - invalid parameter");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			if (drive_route(grab_id, route_id)) {
+				return OCS_PROCESSED;
+			} else {
+				return OCS_NOT_IMPLEMENTED;
+			}
+		}
+	} else {
+		syslog(LOG_ERR, "Request: Drive route - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}  
 }
 
 onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,

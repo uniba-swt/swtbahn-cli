@@ -179,9 +179,7 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 		syslog(LOG_ERR, "Grant route: Route %d is blocked or has conflicts", route_id);
 		return -1;
 	}
-	
-	printf("Route ID: %d\n", route_id);
-	
+		
 	// Check if route has been cleared
 	if (!route_is_clear(route_id, train_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
@@ -206,7 +204,7 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                           onion_response *res) {
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		const char *data_route_id = onion_request_get_post(req, "route");
+		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const int route_id = params_check_route_id(data_route_id);
 		if (route_id == -1) {
 			syslog(LOG_ERR, "Request: Release route - invalid parameters");

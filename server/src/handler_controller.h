@@ -28,6 +28,8 @@
 #ifndef SWTSERVER_HANDLER_CONTROLLER_H
 #define SWTSERVER_HANDLER_CONTROLLER_H
 
+extern pthread_mutex_t interlocker_mutex;
+
 /**
  * Finds and grants a requested train route.
  * A requested route is defined by a pair of source and destination signals. 
