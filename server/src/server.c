@@ -104,6 +104,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
 	
 	// --- track controller functions ---
+	onion_url_add(urls, "controller/release-route", handler_release_route);
 	onion_url_add(urls, "controller/set-point", handler_set_point);
 	onion_url_add(urls, "controller/set-signal", handler_set_signal);
 	

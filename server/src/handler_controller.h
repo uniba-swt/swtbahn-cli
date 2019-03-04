@@ -36,7 +36,10 @@
  * @param name of the destination signal
  * @return ID of the route if it has been granted, otherwise -1
  */ 
-int grant_route(const char *source_name, const char *destination_name);
+int grant_route(const char *train_id, const char *source_id, const char *destination_id);
+
+onion_connection_status handler_release_route(void *_, onion_request *req,
+                                          onion_response *res);
 
 onion_connection_status handler_set_point(void *_, onion_request *req,
                                           onion_response *res);
