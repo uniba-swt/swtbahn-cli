@@ -44,7 +44,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		                    },
 		.path_count       = 3,
 		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
+		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
 		                    },
 		.points_count     = 1,
 		.signals          = {
@@ -69,7 +69,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 							},
 		.path_count       = 6,
 		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
+		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
 		                    },
 		.points_count     = 1,
 		.signals          = {
@@ -91,7 +91,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		                    },
 		.path_count       = 3,
 		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
+		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
 		                    },
 		.points_count     = 1,
 		.signals          = {
@@ -116,7 +116,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		                    },
 		.path_count       = 6,
 		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
+		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
 		                    },
 		.points_count     = 1,
 		.signals          = {
@@ -330,7 +330,7 @@ static int interlocking_table_resolve_indices(void) {
 		                       interlocking_table_ultraloop[route_id].destination.id, 
 		                       interlocking_table_ultraloop[route_id].destination.bidib_state_index);
 		
-		int path_count = interlocking_table_ultraloop[route_id].path_count;
+		size_t path_count = interlocking_table_ultraloop[route_id].path_count;
 		g_string_append_printf(log, "Path: ");
 		for (size_t segment_index = 0; segment_index < path_count; segment_index++) {
 			id = interlocking_table_ultraloop[route_id].path[segment_index].id;
@@ -347,7 +347,7 @@ static int interlocking_table_resolve_indices(void) {
 		}
 		g_string_append_printf(log, "\n");
 		
-		int points_count = interlocking_table_ultraloop[route_id].points_count;
+		size_t points_count = interlocking_table_ultraloop[route_id].points_count;
 		g_string_append_printf(log, "Points: ");
 		for (size_t point_index = 0; point_index < points_count; point_index++) {
 			id = interlocking_table_ultraloop[route_id].points[point_index].id;
@@ -364,7 +364,7 @@ static int interlocking_table_resolve_indices(void) {
 		}
 		g_string_append_printf(log, "\n");
 		
-		int signals_count = interlocking_table_ultraloop[route_id].signals_count;
+		size_t signals_count = interlocking_table_ultraloop[route_id].signals_count;
 		g_string_append_printf(log, "Signals: ");
 		for (size_t signal_index = 0; signal_index < signals_count; signal_index++) {
 			id = interlocking_table_ultraloop[route_id].signals[signal_index].id;
@@ -381,7 +381,7 @@ static int interlocking_table_resolve_indices(void) {
 		}
 		g_string_append_printf(log, "\n");
 		
-		int conflicts_count = interlocking_table_ultraloop[route_id].conflicts_count;
+		size_t conflicts_count = interlocking_table_ultraloop[route_id].conflicts_count;
 		g_string_append_printf(log, "Conflicts: ");
 		for (size_t conflict_index = 0; conflict_index < conflicts_count; conflict_index++) {
 			g_string_append_printf(log, "%zu, ", 
@@ -403,17 +403,14 @@ int interlocking_table_initialise(void) {
 }
 
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id) {
-	GString *route_string = g_string_new (source_id);
+	GString *route_string = g_string_new(source_id);
 	g_string_append(route_string, destination_id);
 	
 	void *route_id_ptr = g_hash_table_lookup(route_string_to_id_hashtable, route_string->str);
 	if (route_id_ptr == NULL) {
 		return -1;
 	}
-	int route_id = *(int *)route_id_ptr;
-	if (interlocking_table_ultraloop[route_id].is_blocked) {
-		return -1;
-	}
 
+	const int route_id = *(int *)route_id_ptr;
 	return route_id;
 }
