@@ -195,6 +195,24 @@ def controller():
     pass
 
 
+@click.command(help="Release a route")
+@click.argument('route', type=click.IntRange(0, 9))
+def release_route(route):
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        try:
+            response = requests.post(server + "/controller/release-route",
+                    data = {'route': route})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Route " + str(route) + " released\n")
+            else:
+                click.echo("System not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 @click.command(help="Switch a point")
 @click.argument('point')
 @click.argument('state')
@@ -623,6 +641,7 @@ admin.add_command(startup)
 admin.add_command(shutdown)
 admin.add_command(set_track_output)
 
+controller.add_command(release_route)
 controller.add_command(set_point)
 controller.add_command(set_signal)
 
