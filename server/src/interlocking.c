@@ -53,7 +53,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 1,
 		.conflicts        = {1, 2, 3, 4, 5, 6, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 1, 
@@ -78,7 +78,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 2, 3, 4, 5, 6, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 2, 
@@ -100,7 +100,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 1,
 		.conflicts        = {0, 1, 3, 4, 5, 6, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 3, 
@@ -125,7 +125,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 1, 2, 4, 5, 6, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 4, 
@@ -149,7 +149,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 1,
 		.conflicts        = {0, 1, 2, 3, 5, 6, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 5, 
@@ -174,7 +174,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 1, 2, 3, 4, 6, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 6, 
@@ -199,7 +199,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 1, 2, 3, 4, 5, 7, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 7, 
@@ -223,7 +223,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 1, 2, 3, 4, 5, 6, 8, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 8, 
@@ -245,7 +245,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 1, 2, 3, 4, 5, 6, 7, 9},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	},
 	{
 		.id               = 9, 
@@ -267,7 +267,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.signals_count    = 0,
 		.conflicts        = {0, 1, 2, 3, 4, 5, 6, 7, 8},
 		.conflicts_count  = 9,
-		.is_blocked       = false
+		.train_id         = NULL
 	}
 };
 

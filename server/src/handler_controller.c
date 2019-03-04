@@ -40,7 +40,7 @@ pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static bool route_is_blocked_or_conflicted(const int route_id) {
 	// Check blocked status
-	if (interlocking_table_ultraloop[route_id].is_blocked) {
+	if (interlocking_table_ultraloop[route_id].train_id != NULL) {
 		return true;
 	}
 	
@@ -49,7 +49,7 @@ static bool route_is_blocked_or_conflicted(const int route_id) {
 	for (size_t conflict_index = 0; conflict_index < conflicts_count; conflict_index++) {
 		const size_t conflicted_route_id = 
 		    interlocking_table_ultraloop[route_id].conflicts[conflict_index];
-		if (interlocking_table_ultraloop[conflicted_route_id].is_blocked) {
+		if (interlocking_table_ultraloop[conflicted_route_id].train_id != NULL) {
 			return true;
 		}
 	}
@@ -189,7 +189,7 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 		return -1;
 	}
 	
-	interlocking_table_ultraloop[route_id].is_blocked = true;
+	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
 	pthread_mutex_unlock(&interlocker_mutex);
 	
 	// Set the route points and signals
@@ -213,7 +213,8 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&interlocker_mutex);
-			interlocking_table_ultraloop[route_id].is_blocked = false;
+			g_string_free(interlocking_table_ultraloop[route_id].train_id, TRUE);
+			interlocking_table_ultraloop[route_id].train_id = NULL;
 			pthread_mutex_unlock(&interlocker_mutex);
 			
 			// Set entry signal to red (stop aspect)

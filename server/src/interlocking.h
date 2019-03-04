@@ -69,6 +69,7 @@ typedef struct {
  * points within the route and their required position
  * signals within the route
  * conflicting routes
+ * id of train when granted the route
  */
 typedef struct {
 	size_t id;
@@ -82,7 +83,7 @@ typedef struct {
 	size_t signals_count;
 	size_t conflicts[MAX_CONFLICTS];
 	size_t conflicts_count;
-	bool is_blocked;
+	GString *train_id;
 } t_interlocking_route;
 
 extern t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES];
