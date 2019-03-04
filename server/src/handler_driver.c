@@ -95,21 +95,27 @@ void *grabbed_train_engine(void *args) {
 
 	do  {
 		// Update the target speed and direction
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		(*train_data->engine_tick_function)(&train_data->engine_data);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
-		
-		if (bidib_set_train_speed(train_data->name->str, 
-								  train_data->engine_data.target_forwards 
-								  ? train_data->engine_data.target_speed 
-								  : -train_data->engine_data.target_speed, 
-								  train_data->track_output)) {
-			syslog(LOG_ERR, "Request: Set train speed - bad parameter values");
-		} else {
-			bidib_flush();
-			syslog(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
-				   train_data->name->str, train_data->engine_data.requested_speed);
+		if (train_data->engine_data.target_speed != train_data->engine_data.requested_speed 
+		    || train_data->engine_data.target_forwards != train_data->engine_data.requested_forwards) {
+			pthread_mutex_lock(&grabbed_trains_mutex);
+			(*train_data->engine_tick_function)(&train_data->engine_data);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			
+			if (bidib_set_train_speed(train_data->name->str, 
+									  train_data->engine_data.target_forwards 
+									  ? train_data->engine_data.target_speed 
+									  : -train_data->engine_data.target_speed, 
+									  train_data->track_output)) {
+				syslog(LOG_ERR, "Request: Set train speed - bad parameter values");
+			} else {
+				bidib_flush();
+				syslog(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
+					   train_data->name->str, 
+					   train_data->engine_data.target_forwards 
+				       ? train_data->engine_data.target_speed 
+				       : -train_data->engine_data.target_speed);
+				pthread_mutex_unlock(&grabbed_trains_mutex);
+			}
 		}
 		
 		usleep(TRAIN_ENGINE_TIME_STEP);
@@ -281,7 +287,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			// Call interlocking function to find and grant a route
-			const int route_id = grant_route(data_source_name, data_destination_name);
+			const int route_id = grant_route(grabbed_trains[grab_id].name->str, data_source_name, data_destination_name);
 			if (route_id != -1) {
 				syslog(LOG_NOTICE, "Request: Request train route - "
 				                   "train: %s route %d",
