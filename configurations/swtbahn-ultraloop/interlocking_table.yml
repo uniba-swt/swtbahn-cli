@@ -9,7 +9,7 @@ interlocking-table:
         end: seg29
     points:
       - id: point2
-        position: normal
+        position: reverse
     signals:
       - id: signal5
     conflicts:
@@ -34,7 +34,7 @@ interlocking-table:
         end: seg19
     points:
       - id: point2
-        position: normal
+        position: reverse
     signals:
     conflicts:
       - id: 0
@@ -55,7 +55,7 @@ interlocking-table:
         end: seg29
     points:
       - id: point2
-        position: reverse
+        position: normal
     signals:
       - id: signal5
     conflicts:
@@ -80,7 +80,7 @@ interlocking-table:
         end: seg19
     points:
       - id: point2
-        position: reverse
+        position: normal
     signals:
     conflicts:
       - id: 0
