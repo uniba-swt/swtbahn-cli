@@ -38,8 +38,8 @@
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static bool route_is_blocked_or_conflicted(const int route_id) {
-	// Check blocked status
+static bool route_is_unavailable_or_conflicted(const int route_id) {
+	// Check if the route has been granted (unavailable)
 	if (interlocking_table_ultraloop[route_id].train_id != NULL) {
 		return true;
 	}
@@ -174,7 +174,7 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 		syslog(LOG_ERR, "Grant route: No route found from %s to %s", source_id, destination_id);
 		return -1;
 	}
-	if (route_is_blocked_or_conflicted(route_id)) {
+	if (route_is_unavailable_or_conflicted(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog(LOG_ERR, "Grant route: Route %d is blocked or has conflicts", route_id);
 		return -1;
@@ -187,6 +187,7 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 		return -1;
 	}
 	
+	// Grant the route to the requesting train
 	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
 	pthread_mutex_unlock(&interlocker_mutex);
 	
