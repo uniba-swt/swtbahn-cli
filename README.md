@@ -12,7 +12,7 @@ libbidib project.
 
 #### Server
 * A C compiler
-* Libraries: [onion](https://github.com/davidmoreno/onion), libpam, libgnutls,
+* Libraries: [onion](https://github.com/uniba-swt/onion), libpam, libgnutls,
 libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
 
