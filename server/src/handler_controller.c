@@ -165,15 +165,15 @@ static bool set_route_points_signals(const int route_id) {
 int grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 
-	// Get a route from the interlocking table
+	// Get a possible route from the interlocking table
 	int route_id = interlocking_table_get_route_id(source_id, destination_id);
-	
-	// Check if the route is blocked or conflicted
 	if (route_id == -1) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog(LOG_ERR, "Grant route: No route found from %s to %s", source_id, destination_id);
 		return -1;
 	}
+
+	// Check if the route is blocked or conflicted
 	if (route_is_unavailable_or_conflicted(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog(LOG_ERR, "Grant route: Route %d is blocked or has conflicts", route_id);
