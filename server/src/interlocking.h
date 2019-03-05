@@ -35,7 +35,10 @@ typedef enum {
 	MAX_SEGMENTS	= 6,
 	MAX_POINTS		= 1,
 	MAX_SIGNALS		= 1,
-	MAX_CONFLICTS	= 9
+	MAX_CONFLICTS	= 9,
+	
+	CLOCKWISE,
+	ANTICLOCKWISE
 } e_interlocking_table;
 
 typedef enum {
@@ -75,6 +78,7 @@ typedef struct {
 	size_t id;
 	t_interlocking_signal source;
 	t_interlocking_signal destination;
+	size_t direction;
 	t_interlocking_path_segment path[MAX_SEGMENTS];
 	size_t path_count;
 	t_interlocking_point points[MAX_POINTS];

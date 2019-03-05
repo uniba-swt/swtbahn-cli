@@ -201,6 +201,13 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 	return route_id;
 }
 
+void release_route(const int route_id) {
+	pthread_mutex_lock(&interlocker_mutex);
+	g_string_free(interlocking_table_ultraloop[route_id].train_id, TRUE);
+	interlocking_table_ultraloop[route_id].train_id = NULL;
+	pthread_mutex_unlock(&interlocker_mutex);
+}
+
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                           onion_response *res) {
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -210,23 +217,7 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 			syslog(LOG_ERR, "Request: Release route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			pthread_mutex_lock(&interlocker_mutex);
-			g_string_free(interlocking_table_ultraloop[route_id].train_id, TRUE);
-			interlocking_table_ultraloop[route_id].train_id = NULL;
-			pthread_mutex_unlock(&interlocker_mutex);
-			
-			// Set entry signal to red (stop aspect)
-			const char *signal_id = interlocking_table_ultraloop[route_id].source.id;
-			if (bidib_set_signal(signal_id, "red")) {
-				syslog(LOG_ERR, "Request: Release route - Entry signal not set to stop aspect");
-				return OCS_NOT_IMPLEMENTED;
-			} else {
-				syslog(LOG_NOTICE, "Request: Release route: Set signal - signal: %s state: %s",
-					   signal_id, "red");
-				bidib_flush();
-				return OCS_PROCESSED;
-			}
-			
+			release_route(route_id);
 			syslog(LOG_NOTICE, "Request: Release route - route: %d", route_id);
 			return OCS_PROCESSED;
 		}

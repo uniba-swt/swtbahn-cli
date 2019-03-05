@@ -43,7 +43,10 @@
 #include "train_engine_linear.h"
 
 #define MAX_TRAINS 32
-#define TRAIN_ENGINE_TIME_STEP 200000	// In microseconds
+
+#define MICROSECOND 1
+#define TRAIN_ENGINE_TIME_STEP 200000*MICROSECOND	// 0.2 seconds
+#define TRAIN_DRIVE_TIME_STEP 50000*MICROSECOND		// 0.05 seconds
 
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -54,6 +57,7 @@ typedef struct {
 	bool is_valid;
 	GString *name;
 	pthread_t engine_thread;
+	size_t engine_time_step;
 	char track_output[32];
 	
 	t_tick_data engine_data;
@@ -120,7 +124,7 @@ void *grabbed_train_engine(void *args) {
 		}
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		usleep(TRAIN_ENGINE_TIME_STEP);
+		usleep(train_data->engine_time_step);
 	} while (train_data->is_valid);
 	
 	// Ensure that the train really stops
@@ -160,41 +164,52 @@ static bool drive_route(const int grab_id, const int route_id) {
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	// Check the required driving direction
-	
 	// Driving starts
 	pthread_mutex_lock(&grabbed_trains_mutex);
-//	if (direction == CLOCKWISE) {
-		grabbed_trains[grab_id].engine_data.requested_forwards = 1;
-//	} else {
-//		grabbed_trains[grab_id].engine_data.requested_forwards = 0;
-//	}
 	grabbed_trains[grab_id].engine_data.requested_speed = 20;
+	grabbed_trains[grab_id].engine_data.requested_forwards = 
+	    (interlocking_table_ultraloop[route_id].direction == CLOCKWISE);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
+	
+	// Set entry signal to red (stop aspect)
+	const char *signal_id = interlocking_table_ultraloop[route_id].source.id;
+	if (bidib_set_signal(signal_id, "red")) {
+		syslog(LOG_ERR, "Drive route: Entry signal not set to stop aspect");
+		return false;
+	} else {
+		syslog(LOG_NOTICE, "Drive route: Set signal - signal: %s state: %s",
+			   signal_id, "red");
+		bidib_flush();
+	}
 		
 	// Wait until the destination has been reached
 	const int path_count = interlocking_table_ultraloop[route_id].path_count;
 	const char *destination = interlocking_table_ultraloop[route_id].path[path_count - 1].id;
 	while (!train_position_is_at(train_id, destination)) {
-		usleep(TRAIN_ENGINE_TIME_STEP);
+		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	
 	// Driving stops
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	grabbed_trains[grab_id].engine_data.requested_speed = 0;
 	pthread_mutex_unlock(&grabbed_trains_mutex);
+	
+	// Controller releases the route
+	release_route(route_id);
 	return true;
 }
 
 static int set_train_engine(const int grab_id, const char *train, const char *engine) {
 	if (engine != NULL) {
 	 	if (!strcmp("default", engine)) {
+	 		grabbed_trains[grab_id].engine_time_step = 50000*MICROSECOND;	// 0.05 seconds
 			grabbed_trains[grab_id].engine_reset_function = train_engine_default_reset;
 			grabbed_trains[grab_id].engine_logic_function = train_engine_default_logic;
 			grabbed_trains[grab_id].engine_tick_function = train_engine_default_tick;
 			syslog(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
 			return 0;
 		} else if (!strcmp("linear", engine)) {
+	 		grabbed_trains[grab_id].engine_time_step = 200000*MICROSECOND;	// 0.2 seconds
 			grabbed_trains[grab_id].engine_reset_function = train_engine_linear_reset;
 			grabbed_trains[grab_id].engine_logic_function = train_engine_linear_logic;
 			grabbed_trains[grab_id].engine_tick_function = train_engine_linear_tick;

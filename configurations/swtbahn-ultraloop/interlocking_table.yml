@@ -3,6 +3,7 @@ interlocking-table:
   - id: 0
     source: signal3a
     destination: signal6
+    direction: anti-clockwise
     path:
       - id: seg31
       - id: seg30
@@ -25,6 +26,7 @@ interlocking-table:
   - id: 1
     source: signal3a
     destination: signal7
+    direction: anti-clockwise
     path:
       - id: seg31
       - id: seg30
@@ -49,6 +51,7 @@ interlocking-table:
   - id: 2
     source: signal3b
     destination: signal6
+    direction: anti-clockwise
     path:
       - id: seg31
       - id: seg30
@@ -71,6 +74,7 @@ interlocking-table:
   - id: 3
     source: signal3b
     destination: signal7
+    direction: anti-clockwise
     path:
       - id: seg31
       - id: seg30
@@ -95,6 +99,7 @@ interlocking-table:
   - id: 4
     source: signal5
     destination: signal4
+    direction: clockwise
     path:
       - id: seg18
       - id: seg17
@@ -117,6 +122,7 @@ interlocking-table:
   - id: 5
     source: signal5
     destination: signal1
+    direction: clockwise
     path:
       - id: seg18
       - id: seg17
@@ -141,6 +147,7 @@ interlocking-table:
   - id: 6
     source: signal5
     destination: signal2
+    direction: clockwise
     path:
       - id: seg18
       - id: seg17
@@ -165,6 +172,7 @@ interlocking-table:
   - id: 7
     source: signal6
     destination: signal7
+    direction: anti-clockwise
     path:
       - id: seg30
       - id: seg29
@@ -186,6 +194,7 @@ interlocking-table:
   - id: 8
     source: signal4
     destination: signal1
+    direction: clockwise
     path:
       - id: seg30
       - id: seg31
@@ -207,6 +216,7 @@ interlocking-table:
   - id: 9
     source: signal4
     destination: signal2
+    direction: clockwise
     path:
       - id: seg30
       - id: seg31

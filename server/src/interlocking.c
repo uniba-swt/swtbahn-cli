@@ -37,6 +37,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 0,
 		.source           = {.id = "signal3a", .bidib_state_index = -1},
 		.destination      = {.id = "signal6", .bidib_state_index = -1},
+		.direction        = ANTICLOCKWISE,
 		.path             = {
 		                        {.id = "seg31", .bidib_state_index = -1},
 		                        {.id = "seg30", .bidib_state_index = -1},
@@ -59,6 +60,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 1, 
 		.source           = {.id = "signal3a", .bidib_state_index = -1},
 		.destination      = {.id = "signal7", .bidib_state_index = -1},
+		.direction        = ANTICLOCKWISE,
 		.path             = {
 						        {.id = "seg31", .bidib_state_index = -1},
 		                        {.id = "seg30", .bidib_state_index = -1},
@@ -84,6 +86,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 2, 
 		.source           = {.id = "signal3b", .bidib_state_index = -1},
 		.destination      = {.id = "signal6", .bidib_state_index = -1},
+		.direction        = ANTICLOCKWISE,
 		.path             = {
 		                        {.id = "seg31", .bidib_state_index = -1},
 		                        {.id = "seg30", .bidib_state_index = -1},
@@ -106,6 +109,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 3, 
 		.source           = {.id = "signal3b", .bidib_state_index = -1},
 		.destination      = {.id = "signal7", .bidib_state_index = -1},
+		.direction        = ANTICLOCKWISE,
 		.path             = {
 		                        {.id = "seg31", .bidib_state_index = -1},
 		                        {.id = "seg30", .bidib_state_index = -1},
@@ -131,6 +135,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 4, 
 		.source           = {.id = "signal5", .bidib_state_index = -1},
 		.destination      = {.id = "signal4", .bidib_state_index = -1},
+		.direction        = CLOCKWISE,
 		.path             = {
 		                        {.id = "seg18", .bidib_state_index = -1},
 		                        {.id = "seg17", .bidib_state_index = -1},
@@ -155,6 +160,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 5, 
 		.source           = {.id = "signal5", .bidib_state_index = -1},
 		.destination      = {.id = "signal1", .bidib_state_index = -1},
+		.direction        = CLOCKWISE,
 		.path             = {
 		                        {.id = "seg18", .bidib_state_index = -1},
 		                        {.id = "seg17", .bidib_state_index = -1},
@@ -180,6 +186,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 6, 
 		.source           = {.id = "signal5", .bidib_state_index = -1},
 		.destination      = {.id = "signal2", .bidib_state_index = -1},
+		.direction        = CLOCKWISE,
 		.path             = {
 		                        {.id = "seg18", .bidib_state_index = -1},
 		                        {.id = "seg17", .bidib_state_index = -1},
@@ -205,6 +212,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 7, 
 		.source           = {.id = "signal6", .bidib_state_index = -1},
 		.destination      = {.id = "signal7", .bidib_state_index = -1},
+		.direction        = ANTICLOCKWISE,
 		.path             = {
 		                        {.id = "seg30", .bidib_state_index = -1},
 		                        {.id = "seg29", .bidib_state_index = -1},
@@ -229,6 +237,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 8, 
 		.source           = {.id = "signal4", .bidib_state_index = -1},
 		.destination      = {.id = "signal1", .bidib_state_index = -1},
+		.direction        = CLOCKWISE,
 		.path             = {
 		                        {.id = "seg30", .bidib_state_index = -1},
 		                        {.id = "seg31", .bidib_state_index = -1},
@@ -251,6 +260,7 @@ t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 		.id               = 9, 
 		.source           = {.id = "signal4", .bidib_state_index = -1},
 		.destination      = {.id = "signal2", .bidib_state_index = -1},
+		.direction        = CLOCKWISE,
 		.path             = {
 		                        {.id = "seg30", .bidib_state_index = -1},
 		                        {.id = "seg31", .bidib_state_index = -1},
