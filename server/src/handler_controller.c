@@ -162,6 +162,10 @@ static bool set_route_points_signals(const int route_id) {
 	return true;
 }
 
+static void block_route(const int route_id, const char *train_id) {
+	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
+}
+
 int grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 
@@ -173,7 +177,8 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 		return -1;
 	}
 
-	// Check if the route is blocked or conflicted
+	// Check if the route has already been granted, 
+	// or is in conflict with another granted route
 	if (route_is_unavailable_or_conflicted(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog(LOG_ERR, "Grant route: Route %d is blocked or has conflicts", route_id);
@@ -187,8 +192,8 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 		return -1;
 	}
 	
-	// Grant the route to the requesting train
-	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
+	// Block the route for the requesting train
+	block_route(route_id, train_id);
 	pthread_mutex_unlock(&interlocker_mutex);
 	
 	// Set the route points and signals
