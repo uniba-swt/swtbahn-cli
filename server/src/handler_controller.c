@@ -212,29 +212,39 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 int grant_route_with_algorithm(const char *train_id, const char *source_id, const char *destination_id) {
 	t_interlocking_algorithm_tick_data interlocking_data;
 	interlocking_algorithm_reset(&interlocking_data);
+
+	// Set the inputs
+	interlocking_data.request_available = true;
+	interlocking_data.train_id = train_id;
+	interlocking_data.source_id = source_id;
+	interlocking_data.destination_id = destination_id;
 	
-	char train_id_copy[32];
-	char source_id_copy[32];
-	char destination_id_copy[32];
-	strcpy(train_id_copy, train_id);
-	strcpy(source_id_copy, source_id);
-	strcpy(destination_id_copy, destination_id);
-	
-	interlocking_data.train_id = train_id_copy;
-	interlocking_data.source_id = source_id_copy;
-	interlocking_data.destination_id = destination_id_copy;
-	
+	// Execute the algorithm
 	pthread_mutex_lock(&interlocker_mutex);
 	interlocking_algorithm_tick(&interlocking_data);
 	pthread_mutex_unlock(&interlocker_mutex);
 
-	if (interlocking_data.route_id == -1) {
-		syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted");
-		return -1;
-	}
+	interlocking_data.request_available = false;
+
+	switch (interlocking_data.route_id) {
+		case (-1):
+			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (1. Wait)");
+			return -1;
+		case (-2):
+			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (2. Find)");
+			return -1;
+		case (-3):
+			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Grantable)");
+			return -1;
+		case (-4):
+			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Clearance)");
+			return -1;
+		default:
+			break;
+	} 
 	
 	// Return the ID of the granted route
-	syslog(LOG_NOTICE, "Grant route: Route %d has been granted", interlocking_data.route_id);
+	syslog(LOG_NOTICE, "Grant route with algorithm: Route %d has been granted", interlocking_data.route_id);
 	return interlocking_data.route_id;
 }
 
