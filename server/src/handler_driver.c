@@ -60,10 +60,10 @@ typedef struct {
 	size_t engine_time_step;
 	char track_output[32];
 	
-	t_tick_data engine_data;
-	void (*engine_reset_function)(t_tick_data *engine_data);
-	void (*engine_logic_function)(t_tick_data *engine_data);
-	void (*engine_tick_function)(t_tick_data *engine_data);	
+	t_train_engine_tick_data engine_data;
+	void (*engine_reset_function)(t_train_engine_tick_data *engine_data);
+	void (*engine_logic_function)(t_train_engine_tick_data *engine_data);
+	void (*engine_tick_function)(t_train_engine_tick_data *engine_data);	
 } t_train_data;
 
 static t_train_data grabbed_trains[MAX_TRAINS] = {{.is_valid = false}};
@@ -360,9 +360,9 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			// Call interlocking function to find and grant a route
-			const int route_id = grant_route(grabbed_trains[grab_id].name->str, 
-			                                 data_source_name, 
-			                                 data_destination_name);
+			const int route_id = grant_route_with_algorithm(grabbed_trains[grab_id].name->str, 
+			                                                data_source_name, 
+			                                                data_destination_name);
 			if (route_id != -1) {
 				syslog(LOG_NOTICE, "Request: Request train route - "
 				                   "train: %s route %d",

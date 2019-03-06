@@ -30,6 +30,11 @@
 
 extern pthread_mutex_t interlocker_mutex;
 
+bool route_is_unavailable_or_conflicted(const int route_id);
+bool route_is_clear(const int route_id, const char *train_id);
+bool set_route_points_signals(const int route_id);
+void block_route(const int route_id, const char *train_id);
+
 /**
  * Finds and grants a requested train route.
  * A requested route is defined by a pair of source and destination signals. 
@@ -40,6 +45,9 @@ extern pthread_mutex_t interlocker_mutex;
  */ 
 int grant_route(const char *train_id, const char *source_id, 
                 const char *destination_id);
+
+int grant_route_with_algorithm(const char *train_id, const char *source_id, 
+                               const char *destination_id);
 
 void release_route(const int route_id);
 

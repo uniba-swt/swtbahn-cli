@@ -36,9 +36,11 @@
 #include "param_verification.h"
 #include "interlocking.h"
 
+#include "interlocking_algorithm.h"
+
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static bool route_is_unavailable_or_conflicted(const int route_id) {
+bool route_is_unavailable_or_conflicted(const int route_id) {
 	// Check if the route has been granted (unavailable)
 	if (interlocking_table_ultraloop[route_id].train_id != NULL) {
 		return true;
@@ -57,7 +59,7 @@ static bool route_is_unavailable_or_conflicted(const int route_id) {
 	return false;
 }
 
-static bool route_is_clear(const int route_id, const char *train_id) {
+bool route_is_clear(const int route_id, const char *train_id) {
 	if (route_id == -1) {
 		syslog(LOG_ERR, "Route is clear: Route %d is invalid", route_id);
 		return false;
@@ -128,7 +130,7 @@ static bool route_is_clear(const int route_id, const char *train_id) {
 	return true;
 }
 
-static bool set_route_points_signals(const int route_id) {
+bool set_route_points_signals(const int route_id) {
 	// Set points
 	size_t points_count = interlocking_table_ultraloop[route_id].points_count;
 	for (size_t point_index = 0; point_index < points_count; point_index++) {
@@ -162,7 +164,7 @@ static bool set_route_points_signals(const int route_id) {
 	return true;
 }
 
-static void block_route(const int route_id, const char *train_id) {
+void block_route(const int route_id, const char *train_id) {
 	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
 }
 
@@ -203,8 +205,37 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 	}
 	
 	// Return the ID of the granted route
-	syslog(LOG_NOTICE, "Grant route: Release %d has been granted", route_id);
+	syslog(LOG_NOTICE, "Grant route: Route %d has been granted", route_id);
 	return route_id;
+}
+
+int grant_route_with_algorithm(const char *train_id, const char *source_id, const char *destination_id) {
+	t_interlocking_algorithm_tick_data interlocking_data;
+	interlocking_algorithm_reset(&interlocking_data);
+	
+	char train_id_copy[32];
+	char source_id_copy[32];
+	char destination_id_copy[32];
+	strcpy(train_id_copy, train_id);
+	strcpy(source_id_copy, source_id);
+	strcpy(destination_id_copy, destination_id);
+	
+	interlocking_data.train_id = train_id_copy;
+	interlocking_data.source_id = source_id_copy;
+	interlocking_data.destination_id = destination_id_copy;
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	interlocking_algorithm_tick(&interlocking_data);
+	pthread_mutex_unlock(&interlocker_mutex);
+
+	if (interlocking_data.route_id == -1) {
+		syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted");
+		return -1;
+	}
+	
+	// Return the ID of the granted route
+	syslog(LOG_NOTICE, "Grant route: Route %d has been granted", interlocking_data.route_id);
+	return interlocking_data.route_id;
 }
 
 void release_route(const int route_id) {

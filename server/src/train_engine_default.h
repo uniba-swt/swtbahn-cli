@@ -72,10 +72,10 @@ typedef struct {
   char _g7;
   char _pg3;
   char _pg7;
-} t_tick_data;
+} t_train_engine_tick_data;
 
-void train_engine_default_reset(t_tick_data* d);
-void train_engine_default_logic(t_tick_data* d);
-void train_engine_default_tick(t_tick_data* d);
+void train_engine_default_reset(t_train_engine_tick_data* d);
+void train_engine_default_logic(t_train_engine_tick_data* d);
+void train_engine_default_tick(t_train_engine_tick_data* d);
 
 #endif // TRAIN_ENGINE_DEFAULT_H
