@@ -281,6 +281,7 @@ void free_all_grabbed_trains(void) {
 
 onion_connection_status handler_grab_train(void *_, onion_request *req,
                                            onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		const char *data_engine = onion_request_get_post(req, "engine");		
@@ -315,6 +316,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 
 onion_connection_status handler_release_train(void *_, onion_request *req,
                                               onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
@@ -340,6 +342,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 
 onion_connection_status handler_request_route(void *_, onion_request *req,
                                               onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
@@ -384,6 +387,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 
 onion_connection_status handler_drive_route(void *_, onion_request *req,
                                               onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
@@ -417,6 +421,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 
 onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
                                                     onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
@@ -461,6 +466,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 onion_connection_status handler_set_calibrated_train_speed(void *_,
                                                            onion_request *req,
                                                            onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
@@ -510,6 +516,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 onion_connection_status handler_set_train_emergency_stop(void *_,
                                                          onion_request *req,
                                                          onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
@@ -553,6 +560,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 onion_connection_status handler_set_train_peripheral(void *_,
                                                      onion_request *req,
                                                      onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");

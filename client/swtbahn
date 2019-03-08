@@ -291,10 +291,10 @@ def grab(train, engine):
 def process_id_feedback(feedback, success_message):
     if (feedback == "invalid session id"):
         update_session_and_grab_id(0, -1)
-        click.echo("Session id was not valid anymore\n", err=True)
+        click.echo("Session id has become invalid\n", err=True)
     elif (feedback == "invalid grab id"):
         update_session_and_grab_id(0, -1)
-        click.echo("Grab id was not valid\n", err=True)
+        click.echo("Grab id was invalid\n", err=True)
     else:
         click.echo(success_message)
 

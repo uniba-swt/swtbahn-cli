@@ -53,8 +53,18 @@ char serial_device[INPUT_MAX_LEN];
 char config_directory[INPUT_MAX_LEN];
 
 
+void build_response_header(onion_response *res) {
+	onion_response_set_header(res, "Access-Control-Allow-Origin", 
+	                               "*");
+	onion_response_set_header(res, "Access-Control-Allow-Headers", 
+	                               "Authorization, Origin, X-Requested-With, Content-Type, Accept");
+	onion_response_set_header(res, "Access-Control-Allow-Methods", 
+	                               "POST, GET, PUT, DELETE, OPTIONS");
+}
+
 static onion_connection_status handler_root(void *_, onion_request *req,
                                             onion_response *res) {
+	build_response_header(res);
 	onion_response_printf(res, "SWTbahn server");
 	return OCS_PROCESSED;
 }

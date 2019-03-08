@@ -39,6 +39,7 @@
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *trains = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_trains();
@@ -63,6 +64,7 @@ onion_connection_status handler_get_trains(void *_, onion_request *req,
 
 onion_connection_status handler_get_train_state(void *_, onion_request *req,
                                                 onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
@@ -102,6 +104,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 
 onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
                                                       onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
@@ -142,6 +145,7 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 
 onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
                                                   onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *track_outputs = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_track_outputs();
@@ -200,6 +204,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 
 onion_connection_status handler_get_points(void *_, onion_request *req,
                                            onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *points = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_connected_points();
@@ -241,6 +246,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 
 onion_connection_status handler_get_signals(void *_, onion_request *req,
                                             onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *signals = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_connected_signals();
@@ -271,6 +277,7 @@ onion_connection_status handler_get_signals(void *_, onion_request *req,
 
 onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
                                                   onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
 		if (data_point == NULL) {
@@ -306,6 +313,7 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 
 onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
                                                    onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_signal = onion_request_get_post(req, "signal");
 		if (data_signal == NULL) {
@@ -341,6 +349,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 
 onion_connection_status handler_get_segments(void *_, onion_request *req,
                                              onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *segments = g_string_new("");
 		t_bidib_id_list_query seg_query = bidib_get_connected_segments();

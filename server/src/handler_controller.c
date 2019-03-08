@@ -257,6 +257,7 @@ void release_route(const int route_id) {
 
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                           onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const int route_id = params_check_route_id(data_route_id);
@@ -276,6 +277,7 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 
 onion_connection_status handler_set_point(void *_, onion_request *req,
                                           onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
 		const char *data_state = onion_request_get_post(req, "state");
@@ -302,6 +304,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 
 onion_connection_status handler_set_signal(void *_, onion_request *req,
                                            onion_response *res) {
+	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_signal = onion_request_get_post(req, "signal");
 		const char *data_state = onion_request_get_post(req, "state");
