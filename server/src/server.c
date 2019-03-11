@@ -26,13 +26,16 @@
  */
 
 #include <onion/onion.h>
+#include <onion/shortcuts.h>
 #include <onion/log.h>
+#include <onion/low.h>
 #include <signal.h>
 #include <bidib.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <syslog.h>
 #include <glib.h>
 #include <time.h>
@@ -67,6 +70,33 @@ static onion_connection_status handler_root(void *_, onion_request *req,
 	build_response_header(res);
 	onion_response_printf(res, "SWTbahn server");
 	return OCS_PROCESSED;
+}
+
+static onion_connection_status handler_assets(void *_, onion_request *req,
+                                              onion_response *res) {
+	build_response_header(res);
+	const char local_path[] = "../src/assets/";
+	char *global_path = realpath(local_path, NULL);
+	if (!global_path) {
+		ONION_ERROR("Cannot calculate the global path of the given directory (%s).",
+		            local_path);
+		return OCS_NOT_IMPLEMENTED;
+	}
+	struct stat st;
+	if (stat(global_path, &st) != 0) {
+		ONION_ERROR("Cannot access to the exported directory/file (%s).", global_path);
+		onion_low_free(global_path);
+		return OCS_NOT_IMPLEMENTED;
+	}
+	
+	const char *filename = onion_request_get_path(req);
+	GString *full_filename = g_string_new(global_path);
+	g_string_append(full_filename, filename);
+
+	onion_connection_status status = 
+	    onion_shortcut_response_file(full_filename->str, req, res);
+	g_string_free(full_filename, TRUE);
+	return status;
 }
 
 static int eval_args(int argc, char **argv) {
@@ -107,6 +137,9 @@ int main(int argc, char **argv) {
 	onion_set_port(o, argv[4]);
 	onion_url *urls = onion_root_url(o);
 	onion_url_add(urls, "", handler_root);
+	
+	// --- assets ---
+	onion_url_add(urls, "^assets", handler_assets);
 
 	// --- admin functions ---
 	onion_url_add(urls, "admin/startup", handler_startup);
@@ -138,8 +171,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/track-outputs", handler_get_track_outputs);
 	onion_url_add(urls, "monitor/points", handler_get_points);
 	onion_url_add(urls, "monitor/signals", handler_get_signals);
-	onion_url_add(urls, "monitor/point-aspects", handler_get_point_aspects); // TODO
-	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects); // TODO
+	onion_url_add(urls, "monitor/point-aspects", handler_get_point_aspects);
+	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects);
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
 
 	onion_listen(o);
