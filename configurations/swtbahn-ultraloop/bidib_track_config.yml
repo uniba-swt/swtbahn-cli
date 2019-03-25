@@ -86,14 +86,12 @@ boards:
           - id: reverse
             value: 0x00
         initial: normal
-      - id: point3
+      - id: decoupler
         number: 0x02
         aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
+          - id: trigger
             value: 0x00
-        initial: normal
+        initial: trigger
       - id: point4
         number: 0x03
         aspects:
@@ -110,15 +108,7 @@ boards:
           - id: reverse
             value: 0x00
         initial: normal
-      - id: point6
-        number: 0x05
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point7
+      - id: servo_digital
         number: 0x06
         aspects:
           - id: normal
@@ -126,7 +116,7 @@ boards:
           - id: reverse
             value: 0x00
         initial: normal
-      - id: point8
+      - id: servo_analog
         number: 0x07
         aspects:
           - id: normal
