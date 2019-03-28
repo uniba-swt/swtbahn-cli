@@ -5,7 +5,7 @@
  * http://rtsys.informatik.uni-kiel.de/kieler
  */
 
-#include "train_engine_default.h"
+#include "train_engine_linear.h"
 
 void train_engine_linear_reset(t_train_engine_tick_data* d) {
   d->_GO = 1;

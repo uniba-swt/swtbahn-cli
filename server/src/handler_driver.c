@@ -39,6 +39,7 @@
 #include "interlocking.h"
 #include "param_verification.h"
 
+#include "train_engine_tick_data.h"
 #include "train_engine_default.h"
 #include "train_engine_linear.h"
 
