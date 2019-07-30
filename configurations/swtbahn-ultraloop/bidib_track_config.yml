@@ -108,7 +108,7 @@ boards:
           - id: reverse
             value: 0x00
         initial: normal
-      - id: servo_digital
+      - id: servo_analog_linear
         number: 0x06
         aspects:
           - id: normal
@@ -116,7 +116,7 @@ boards:
           - id: reverse
             value: 0x00
         initial: normal
-      - id: servo_analog
+      - id: servo_analog_rotary
         number: 0x07
         aspects:
           - id: normal
