@@ -52,7 +52,7 @@ void build_message_hex_string(unsigned char *message, char *dest) {
 
 static void *start_bidib(void *_) {
 	int err_serial = bidib_start_serial(serial_device, config_directory, 0);
-	int err_interlocking = interlocking_table_initialise();
+	int err_interlocking = 0; // interlocking_table_initialise();
 	pthread_mutex_lock(&start_stop_mutex);
 	if (err_serial || err_interlocking) {
 		starting = false;

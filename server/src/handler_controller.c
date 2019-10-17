@@ -30,6 +30,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <syslog.h>
+#include <string.h>
 #include <stdio.h>
 
 #include "server.h"
