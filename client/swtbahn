@@ -195,6 +195,24 @@ def controller():
     pass
 
 
+@click.command(help="Release a route")
+@click.argument('route-id', type=click.IntRange(0, 9))
+def release_route(route_id):
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        try:
+            response = requests.post(server + "/controller/release-route",
+                    data = {'route-id': route_id})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Route " + str(route_id) + " released\n")
+            else:
+                click.echo("System not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 @click.command(help="Switch a point")
 @click.argument('point')
 @click.argument('state')
@@ -245,7 +263,9 @@ def driver():
 
 @click.command(help="Grab a train")
 @click.argument('train')
-def grab(train):
+@click.option('--engine', '-e', help="The train engine behaviour to use.",
+        default="default")
+def grab(train, engine):
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
@@ -253,7 +273,7 @@ def grab(train):
         if (session_id == 0 and grab_id == -1):
             try:
                 response = requests.post(server + "/driver/grab-train",
-                                         data = {'train': train})
+                                         data = {'train': train, 'engine': engine})
                 if (response.status_code == requests.codes.ok):
                     ids = response.text.split(",")
                     update_session_and_grab_id(int(ids[0]), int(ids[1]))
@@ -271,10 +291,10 @@ def grab(train):
 def process_id_feedback(feedback, success_message):
     if (feedback == "invalid session id"):
         update_session_and_grab_id(0, -1)
-        click.echo("Session id was not valid anymore\n", err=True)
+        click.echo("Session id has become invalid\n", err=True)
     elif (feedback == "invalid grab id"):
         update_session_and_grab_id(0, -1)
-        click.echo("Grab id was not valid\n", err=True)
+        click.echo("Grab id was invalid\n", err=True)
     else:
         click.echo(success_message)
 
@@ -295,6 +315,56 @@ def release():
                 update_session_and_grab_id(0, -1)
             else:
                 click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Request a route for your train from source to destination block")
+@click.argument('source')
+@click.argument('destination')
+def request_route(source, destination):
+    global session_id, grab_id, server
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        try:
+            response = requests.post(server + "/driver/request-route",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'source': source, 'destination': destination})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Route " + response.text + 
+                        " from " + source + " to " + destination + " has been granted\n")
+            else:
+                click.echo("Route from " + source + " to " + destination + " " +
+						"has not been granted,\n" + 
+						"or system not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Automatically drive along a granted route")
+@click.argument('route-id')
+def drive_route(route_id):
+    global session_id, grab_id, server
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        try:
+            response = requests.post(server + "/driver/drive-route",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'route-id': route_id})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Driving along route " + route_id + 
+                        " completed\n")
+            else:
+                click.echo("Could not drive along route " + route_id + ",\n" + 
+						"or system not running or invalid track output!\n",
+                        err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -595,11 +665,14 @@ admin.add_command(startup)
 admin.add_command(shutdown)
 admin.add_command(set_track_output)
 
+controller.add_command(release_route)
 controller.add_command(set_point)
 controller.add_command(set_signal)
 
 driver.add_command(grab)
 driver.add_command(release)
+driver.add_command(request_route)
+driver.add_command(drive_route)
 driver.add_command(set_dcc_speed)
 driver.add_command(set_calibrated_speed)
 driver.add_command(emergency_stop)

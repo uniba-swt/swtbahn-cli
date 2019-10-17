@@ -81,3 +81,12 @@ int params_check_state(const char *data_state) {
 	return state;
 }
 
+int params_check_route_id(const char *data_route_id) {
+	int route_id;
+	char *end_route_id;
+	if (data_route_id == NULL || (route_id = strtol(data_route_id, &end_route_id, 10)) < 0 ||
+	    route_id > 9 || *end_route_id != '\0') {
+		return -1;
+	}
+	return route_id;
+}

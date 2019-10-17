@@ -43,7 +43,7 @@ port specifies on which port the server listens)
   For example: `./swtbahn-server /dev/ttyUSB0 ../../configurations/swtbahn-lite/ 141.13.106.27 2048`  
 5. Quit the server with Ctrl-C if you're done
 
-#### Client
+#### Client (Command Line)
 0. The client is located under `<project-root>/client/swtbahn`
 1. Use the `--help` flag to get information about parameters, options, ...
 2. Use the config command to setup the client: `swtbahn config <hostname> <port>
@@ -69,6 +69,17 @@ not started by `swtbahn admin startup`, all the other commands won't work.
     `./swtbahn driver set_dcc_speed -b 5`  
 4. If you're done, you should shut the system down gracefully by invoking
 `swtbahn admin shutdown`
+
+#### Client (Web Interface)
+0. Use a web browser to navigate to `<IP>:<port>/assets/client.html`
+1. Set the main track output (default is `master`).
+2. Click the `Startup` button.
+3. To be a train driver, select a train and click the `Grab` button. 
+   Enter a speed between `0` (stop) and `127` (max speed), and click the `Drive` button.
+4. To control a point, type the name of a point (see the YAML configuration file), 
+   select a position, and click the `Set` button.
+5. To control a signal, type the name of a signal (see the YAML configuration file), 
+   select an aspect, and click the `Set` button.
 
 #### Logging into the Raspberry Pi remotely
 Use `ssh` to the log in remotely. Suppose the Raspberry Pi is located at `141.13.106.30`.

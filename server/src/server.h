@@ -28,6 +28,7 @@
 #ifndef SWTSERVER_SERVER_H
 #define SWTSERVER_SERVER_H
 
+#include <onion/onion.h>
 
 extern volatile time_t session_id;
 extern volatile bool starting;
@@ -36,6 +37,7 @@ extern volatile bool running;
 extern char serial_device[128];
 extern char config_directory[128];
 
+void build_response_header(onion_response *res);
 
 #endif
 
