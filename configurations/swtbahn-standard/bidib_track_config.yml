@@ -224,6 +224,14 @@ boards:
           - id: on
             value: 0x00
         initial: on
+      - id: platformlights
+        number: 0x0A
+        aspects:
+          - id: on
+            value: 0x01
+          - id: off
+            value: 0x00
+        initial: on
 
   - id: lightcontrol2
     signals-board:
