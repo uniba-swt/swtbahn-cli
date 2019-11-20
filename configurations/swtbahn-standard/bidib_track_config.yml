@@ -227,9 +227,9 @@ boards:
       - id: platformlights
         number: 0x0A
         aspects:
-          - id: on
-            value: 0x01
           - id: off
+            value: 0x01
+          - id: on
             value: 0x00
         initial: on
 
@@ -382,11 +382,15 @@ boards:
         address: 0x27
       - id: seg29
         address: 0x28
-      - id: seg30
+      - id: seg30a
+        address: 0x1C      
+      - id: seg30b
         address: 0x1D
       - id: seg31
         address: 0x1E
-      - id: seg32
+      - id: seg32a
+        address: 0x1B
+      - id: seg32b
         address: 0x1F
       - id: seg33
         address: 0x14
@@ -403,6 +407,6 @@ boards:
       - id: seg39
         address: 0x1A
       - id: seg40
-        address: 0x1B
+        address: 0x29
       - id: seg41
-        address: 0x1C
+        address: 0x2A
