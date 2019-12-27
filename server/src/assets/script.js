@@ -225,7 +225,7 @@ $(document).ready(function() {
 
         $('#setPointButton').click(function() {
             $('#setPointResponse').text('Waiting');
-            var pointId = $('#pointId').val();
+            var pointId = $('#pointId option:selected').text();
             var pointPosition = $('#pointPosition option:selected').text();
             $.ajax({
                 type: 'POST',
@@ -245,7 +245,7 @@ $(document).ready(function() {
 
         $('#setSignalButton').click(function() {
             $('#setSignalResponse').text('Waiting');
-            var signalId = $('#signalId').val();
+            var signalId = $('#signalId option:selected').text();
             var signalAspect = $('#signalAspect option:selected').text();
             $.ajax({
                 type: 'POST',
