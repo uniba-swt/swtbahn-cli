@@ -1,409 +1,119 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<link rel="icon" type = "image/png" id = favIcon href="/assets/favicon.jpg"/>
-		
-		<style>
-			body {
-				font-family: UB Scala Sans, sans-serif;
-			}
-		
-			#swtLogo {
-				background-image: url("/assets/swt_logo.pdf");
-				background-repeat: no-repeat;
-				background-size: auto 80px;
-				text-align: right;
-				font-size: 55pt;
-				font-weight: bold;
-				color: #054479;
-				height: 90px;
-				width: 100%;
-			}
-		</style>
-	
-		<script src="jquery-3.3.1.js"></script>
-		
-		<script>
-			var url = "";
-			var trackOutput = "master";
-			
-			var sessionId = 0;
-			var grabId = -1;
-			
-			var trainId = "";
-			var trainEngine = "";
-			
-			var routeId = -1;
-			
-			$(document).ready(function(){			
-				$("#configButton").click(function(){
-					$("#configResponse").text("Waiting");
-					trackOutput = $("#trackOutput").val();
-					$("#configResponse").text("OK");
-				});
-				
-				$("#pingButton").click(function(){
-					$("#pingResponse").text("Waiting");
+<html lang="en">
 
-					$.ajax({
-						type: 'POST',
-						url: url,
-						crossDomain: true,
-						data: null,
-						dataType: 'text',
-						success: function(responseData, textStatus, jqXHR) {
-							$("#pingResponse").text("OK");
-						},
-						error: function (responseData, textStatus, errorThrown) {
-							$("#pingResponse").text("Error");
-						}
-					});
-				});
-				
-				$("#startupButton").click(function(){
-					$("#startupResponse").text("Waiting");
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+    <link rel="stylesheet" href="style.css">
+    <script src="jquery-3.3.1.js">
+    </script>
+    <script src="script.js">
+    </script>
 
-					$.ajax({
-						type: 'POST',
-						url: url + "/admin/startup",
-						crossDomain: true,
-						data: null,
-						dataType: 'text',
-						success: function(responseData, textStatus, jqXHR) {
-							$("#startupResponse").text("OK");
-						},
-						error: function (responseData, textStatus, errorThrown) {
-							$("#startupResponse").text("System already running!");
-						}
-					});
-				});
-				
-				$("#shutdownButton").click(function(){
-					$("#shutdownResponse").text("Waiting");
+    <title>SWTbahn Client</title>
+</head>
 
-					$.ajax({
-						type: 'POST',
-						url: url + "/admin/shutdown",
-						crossDomain: true,
-						data: null,
-						dataType: 'text',
-						success: function(responseData, textStatus, jqXHR) {
-							$("#shutdownResponse").text("OK");
-						},
-						error: function (responseData, textStatus, errorThrown) {
-							$("#shutdownResponse").text("System not running!");
-						}
-					});
-				});
-				
-				$("#grabTrainButton").click(function(){
-					$("#grabTrainResponse").text("Waiting");
-					
-					trainId = $("#grabTrainId option:selected").text();
-					trainEngine = $("#grabEngine option:selected").text();
-					
-					if (sessionId == 0 && grabId == -1) {
-						$.ajax({
-							type: 'POST',
-							url: url + "/driver/grab-train",
-							crossDomain: true,
-							data: {'train': trainId, 'engine': trainEngine},
-							dataType: 'text',
-							success: function(responseData, textStatus, jqXHR) {
-								responseDataSplit = responseData.split(",");
-								sessionId = responseDataSplit[0];
-								grabId = responseDataSplit[1];
-								$("#sessionGrabId").text("Session ID: " + sessionId + ", Grab ID: " + grabId);
-								$("#grabTrainResponse").text("Grabbed");
-							},
-							error: function (responseData, textStatus, errorThrown) {
-								$("#grabTrainResponse").text("System not running or train not available!");
-							}
-						});
-					} else {
-						$("#grabTrainResponse").text("You can only grab one train!");
-					}
-				});
-				
-				$("#releaseTrainButton").click(function(){
-					$("#grabTrainResponse").text("Waiting");
-					
-					if (sessionId != 0 && grabId != -1) {
-						$.ajax({
-							type: 'POST',
-							url: url + "/driver/release-train",
-							crossDomain: true,
-							data: {'session-id': sessionId, 'grab-id': grabId},
-							dataType: 'text',
-							success: function(responseData, textStatus, jqXHR) {
-								sessionId = 0;
-								grabId = -1;
-								$("#sessionGrabId").text("Session ID: " + sessionId + ", Grab ID: " + grabId);
-								$("#grabTrainResponse").text("Released grabbed train");
-							},
-							error: function (responseData, textStatus, errorThrown) {
-								$("#grabTrainResponse").text("System not running!");
-							}
-						});
-					} else {
-						$("#grabTrainResponse").text("No grabbed train!");
-					}
-				});
-				
-				$("#driveTrainButton").click(function(){
-					$("#driveTrainResponse").text("Waiting");
-					
-					speed = $("#dccSpeed").val();
-					direction = $("#direction").is(":checked");
-					speed = direction ? speed : -speed;
-					
-					if (sessionId != 0 && grabId != -1) {
-						$.ajax({
-							type: 'POST',
-							url: url + "/driver/set-dcc-train-speed",
-							crossDomain: true,
-							data: {'session-id': sessionId, 'grab-id': grabId, 'speed': speed, 'track-output': trackOutput},
-							dataType: 'text',
-							success: function(responseData, textStatus, jqXHR) {
-								$("#driveTrainResponse").text("DCC train speed set to " + speed);
-							},
-							error: function (responseData, textStatus, errorThrown) {
-								$("#driveTrainResponse").text("System not running or invalid track output!");
-							}
-						});
-					} else {
-						$("#driveTrainResponse").text("You must have a grabbed train!");
-					}
-				});
-				
-				$("#stopTrainButton").click(function(){
-					$("#dccSpeed").val(0);
-					$("#driveTrainButton").click();
-				});
-				
-				$("#requestRouteButton").click(function(){
-					$("#routeResponse").text("Waiting");
-					
-					source = $("#source").val();
-					destination = $("#destination").val();
-					
-					if (sessionId != 0 && grabId != -1) {
-						$.ajax({
-							type: 'POST',
-							url: url + "/driver/request-route",
-							crossDomain: true,
-							data: {'session-id': sessionId, 'grab-id': grabId, 'source': source, 'destination': destination},
-							dataType: 'text',
-							success: function(responseData, textStatus, jqXHR) {
-								routeId = responseData;
-								$("#routeResponse").text("Route " + responseData + " granted");
-							},
-							error: function (responseData, textStatus, errorThrown) {
-								$("#routeResponse").text("Route not granted!");
-							}
-						});
-					} else {
-						$("#routeResponse").text("You must have a grabbed train!");
-					}
-				});
-				
-				
-				$("#driveRouteButton").click(function(){
-					$("#routeResponse").text("Waiting");
-				
-					if (sessionId != 0 && grabId != -1) {
-						$.ajax({
-							type: 'POST',
-							url: url + "/driver/drive-route",
-							crossDomain: true,
-							data: {'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId},
-							dataType: 'text',
-							success: function(responseData, textStatus, jqXHR) {
-								$("#routeResponse").text("Route " + responseData + " driving completed");
-							},
-							error: function (responseData, textStatus, errorThrown) {
-								$("#routeResponse").text("Route could not be driven!");
-							}
-						});
-					} else {
-						$("#routeResponse").text("You must have a grabbed train!");
-					}
-				});
-				
-				
-				$("#releaseRouteButton").click(function(){
-					$("#releaseRouteResponse").text("Waiting");
+<body>
 
-					var routeId = $("#routeId").val();
+    <div id="swtLogo">SWTbahn Client</div>
+    <hr />
 
-					$.ajax({
-						type: 'POST',
-						url: url + "/controller/release-route",
-						crossDomain: true,
-						data: {"route-id": routeId},
-						dataType: 'text',
-						success: function(responseData, textStatus, jqXHR) {
-							$("#releaseRouteResponse").text("Route " + routeId + " released");
-						},
-						error: function (responseData, textStatus, errorThrown) {
-							$("#releaseRouteResponse").text("System not running or invalid track output!");
-						}
-					});
-				});
-				
-				$("#setPointButton").click(function(){
-					$("#setPointResponse").text("Waiting");
+    <h1>Configuration</h1>
 
-					var pointId = $("#pointId").val();
-					var pointPosition = $("#pointPosition option:selected").text();
+    <label>Track Output:</label>
+    <input type="text" id=trackOutput value="master" />
+    <button id=configButton>Configure</button>
+    <span id=configResponse></span>
+    <br />
+    <br />
 
-					$.ajax({
-						type: 'POST',
-						url: url + "/controller/set-point",
-						crossDomain: true,
-						data: {"point": pointId, "state": pointPosition},
-						dataType: 'text',
-						success: function(responseData, textStatus, jqXHR) {
-							$("#setPointResponse").text("Point " + pointId + " set to " + pointPosition);
-						},
-						error: function (responseData, textStatus, errorThrown) {
-							$("#setPointResponse").text("System not running or invalid position!");
-						}
-					});
-				});
-				
-				$("#setSignalButton").click(function(){
-					$("#setSignalResponse").text("Waiting");
+    <button id=pingButton>Ping SWTbahn Server</button>
+    <span id=pingResponse></span>
+    <br />
 
-					var signalId = $("#signalId").val();
-					var signalAspect = $("#signalAspect option:selected").text();
+    <button id=startupButton>Startup</button>
+    <span id=startupResponse></span>
+    <br />
 
-					$.ajax({
-						type: 'POST',
-						url: url + "/controller/set-signal",
-						crossDomain: true,
-						data: {"signal": signalId, "state": signalAspect},
-						dataType: 'text',
-						success: function(responseData, textStatus, jqXHR) {
-							$("#setSignalResponse").text("Signal " + signalId + " set to " + signalAspect);
-						},
-						error: function (responseData, textStatus, errorThrown) {
-							$("#setSignalResponse").text("System not running or invalid aspect!");
-						}
-					});
-				});
-				
-			});	
-		</script>
-	</head>
-	<body>
-		<div id="swtLogo">SWTbahn Client</div>
-		<hr/>
-	
-		<h1>Configuration</h1>
-		
-		<label>Track Output:</label>
-		<input type = "text" id = trackOutput value = "master"/>
-		<button id = configButton>Configure</button>
-		<span id = configResponse></span>
-	
-		<br/>
-		<br/>
+    <button id=shutdownButton>Shutdown</button>
+    <span id=shutdownResponse></span>
+    <br />
+    <br />
 
-		<button id = pingButton>Ping SWTbahn Server</button>
-		<span id = pingResponse></span>
-	
-		<br/>
-	
-		<button id = startupButton>Startup</button>
-		<span id = startupResponse></span>
+    <span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
+    <br />
+    <br />
 
-		<br/>
-	
-		<button id = shutdownButton>Shutdown</button>
-		<span id = shutdownResponse></span>
-	
-		<br/>
-		<br/>
 
-		<span id = sessionGrabId>Session ID: 0, Grab ID: -1</span>
+    <h1>Train Driver</h1>
 
-		<br/>
-		<br/>
-		
-		<h1>Train Driver</h1>
-	
-		<label>Train:</label>
-		<select id = grabTrainId>
-			<option>cargo_db</option>
-			<option>cargo_bayern</option>
-			<option>cargo_green</option>
-			<option>regional_odeg</option>
-			<option>regional_brengdirect</option>
-		</select>
-		<label>Engine:</label>
-		<select id = grabEngine>
-			<option>default</option>
-			<option>linear</option>
-		</select>
-		<button id = grabTrainButton>Grab</button>
-		<button id = releaseTrainButton>Release</button>
-		<span id = grabTrainResponse></span>
-	
-		<br/>
-	
-		<label>DCC Speed:</label>
-		<input type = "text" id = dccSpeed value = "10"/>
-		<label>Forward Direction:</label>
-		<input type = "checkbox" id = direction checked/>
-		<button id = driveTrainButton>Drive</button>
-		<button id = stopTrainButton>Stop</button>
-		<span id = driveTrainResponse></span>
+    <label>Train:</label>
+    <select id=grabTrainId>
+        <option>cargo_db</option>
+        <option>cargo_bayern</option>
+        <option>cargo_green</option>
+        <option>regional_odeg</option>
+        <option>regional_brengdirect</option>
+    </select>
+    <label>Engine:</label>
+    <select id=grabEngine>
+        <option>default</option>
+        <option>linear</option>
+    </select>
+    <button id=grabTrainButton>Grab</button>
+    <button id=releaseTrainButton>Release</button>
+    <span id=grabTrainResponse></span>
+    <br />
 
-		<br/>
-	
-		<label>Route:</label>
-		<input type = "text" id = source value = "signal"/>
-		<label>to</label>
-		<input type = "text" id = destination value = "signal"/>
-		<button id = requestRouteButton>Request</button>
-		<button id = driveRouteButton>Drive</button>
-		<span id = routeResponse></span>
+    <label>DCC Speed:</label>
+    <input type="text" id=dccSpeed value="10" />
+    <label>Forward Direction:</label>
+    <input type="checkbox" id=direction checked />
+    <button id=driveTrainButton>Drive</button>
+    <button id=stopTrainButton>Stop</button>
+    <span id=driveTrainResponse></span>
+    <br />
 
-		<br/>
-		<br/>
-		
-		<h1>Controller</h1>
-	
-		<label>Release Route:</label>
-		<input type = "text" id = routeId value = ""/>
-		<button id = releaseRouteButton>Release</button>
-		<span id = releaseRouteResponse></span>
-	
-		<br/>
-	
-		<label>Point:</label>
-		<input type = "text" id = pointId value = "point"/>
-		<label>Position:</label>
-		<select id = pointPosition>
-			<option>normal</option>
-			<option>reverse</option>
-		</select>
-		<button id = setPointButton>Set</button>
-		<span id = setPointResponse></span>
+    <label>Route:</label>
+    <input type="text" id=source value="signal" />
+    <label>to</label>
+    <input type="text" id=destination value="signal" />
+    <button id=requestRouteButton>Request</button>
+    <button id=driveRouteButton>Drive</button>
+    <span id=routeResponse></span>
+    <br />
+    <br />
 
-		<br/>
-	
-		<label>Signal:</label>
-		<input type = "text" id = signalId value = "signal"/>
-		<label>Aspect:</label>
-		<select id = signalAspect>
-			<option>green</option>
-			<option>yellow</option>
-			<option>red</option>
-		</select>
-		<button id = setSignalButton>Set</button>
-		<span id = setSignalResponse></span>
-	</body>
+
+    <h1>Controller</h1>
+
+    <label>Release Route:</label>
+    <input type="text" id=routeId value="" />
+    <button id=releaseRouteButton>Release</button>
+    <span id=releaseRouteResponse></span>
+    <br />
+
+    <label>Point:</label>
+    <input type="text" id=pointId value="point" />
+    <label>Position:</label>
+    <select id=pointPosition>
+        <option>normal</option>
+        <option>reverse</option>
+    </select>
+    <button id=setPointButton>Set</button>
+    <span id=setPointResponse></span>
+    <br />
+
+    <label>Signal:</label>
+    <input type="text" id=signalId value="signal" />
+    <label>Aspect:</label>
+    <select id=signalAspect>
+        <option>green</option>
+        <option>yellow</option>
+        <option>red</option>
+    </select>
+    <button id=setSignalButton>Set</button>
+    <span id=setSignalResponse></span>
+
+</body>
+
 </html>
-

@@ -1,0 +1,15 @@
+body {
+    font-family: UB Scala Sans, sans-serif;
+}
+
+#swtLogo {
+    background-image: url("swt_logo.png");
+    background-repeat: no-repeat;
+    background-size: auto 80px;
+    text-align: right;
+    font-size: 55pt;
+    font-weight: bold;
+    color: #054479;
+    height: 90px;
+    width: 100%;
+}
