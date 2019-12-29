@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="jquery-3.3.1.js"></script>
+    <script src="popper-1.14.6.js"></script>
+
+    <script src="script.js"></script>
+
+    <title>SWTbahn Client</title>
+</head>
+
+<body>
+
+    <div id="swtLogo">SWTbahn Client</div>
+    <hr />
+
+    <h1>Configuration</h1>
+
+    <label>Track Output:</label>
+    <input type="text" id=trackOutput value="master" />
+    <button id=configButton>Configure</button>
+    <span id=configResponse></span>
+    <br />
+    <br />
+
+    <button id=pingButton>Ping SWTbahn Server</button>
+    <span id=pingResponse></span>
+    <br />
+
+    <button id=startupButton>Startup</button>
+    <span id=startupResponse></span>
+    <br />
+
+    <button id=shutdownButton>Shutdown</button>
+    <span id=shutdownResponse></span>
+    <br />
+    <br />
+
+    <span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
+    <br />
+    <br />
+
+
+    <h1>Train Driver</h1>
+
+    <label>Train:</label>
+    <select id=grabTrainId>
+        <option>cargo_db</option>
+        <option>cargo_bayern</option>
+        <option>cargo_green</option>
+        <option>regional_odeg</option>
+        <option>regional_brengdirect</option>
+    </select>
+    <label>Engine:</label>
+    <select id=grabEngine>
+        <option>default</option>
+        <option>linear</option>
+    </select>
+    <button id=grabTrainButton>Grab</button>
+    <button id=releaseTrainButton>Release</button>
+    <span id=grabTrainResponse></span>
+    <br />
+
+    <label>DCC Speed:</label>
+    <input type="text" id=dccSpeed value="10" />
+    <label>Forward Direction:</label>
+    <input type="checkbox" id=direction checked />
+    <button id=driveTrainButton>Drive</button>
+    <button id=stopTrainButton>Stop</button>
+    <span id=driveTrainResponse></span>
+    <br />
+
+    <label>Route:</label>
+    <input type="text" id=source value="signal" />
+    <label>to</label>
+    <input type="text" id=destination value="signal" />
+    <button id=requestRouteButton>Request</button>
+    <button id=driveRouteButton>Drive</button>
+    <span id=routeResponse></span>
+    <br />
+    <br />
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="jquery-3.3.1.js"></script>
+    <script src="popper-1.14.6.js"></script>
+
+    <script src="script.js"></script>
+
+    <title>SWTbahn Client</title>
+</head>
+
+<body>
+
+    <div id="swtLogo">SWTbahn Client</div>
+    <hr />
+
+    <h1>Configuration</h1>
+
+    <label>Track Output:</label>
+    <input type="text" id=trackOutput value="master" />
+    <button id=configButton>Configure</button>
+    <span id=configResponse></span>
+    <br />
+    <br />
+
+    <button id=pingButton>Ping SWTbahn Server</button>
+    <span id=pingResponse></span>
+    <br />
+
+    <button id=startupButton>Startup</button>
+    <span id=startupResponse></span>
+    <br />
+
+    <button id=shutdownButton>Shutdown</button>
+    <span id=shutdownResponse></span>
+    <br />
+    <br />
+
+    <span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
+    <br />
+    <br />
+
+
+
+
+    <h1>Controller</h1>
+
+    <label>Release Route:</label>
+    <input type="text" id=routeId value="" />
+    <button id=releaseRouteButton>Release</button>
+    <span id=releaseRouteResponse></span>
+    <br />
+
+    <label>Point:</label>
+    <select id=pointId>
+        <option>point1</option>
+        <option>point2</option>
+        <option>point3</option>
+        <option>point4</option>
+        <option>point5</option>
+        <!-- TODO: add missing points here -->
+    </select>
+    <label>Position:</label>
+    <select id=pointPosition>
+        <option>normal</option>
+        <option>reverse</option>
+    </select>
+    <button id=setPointButton>Set</button>
+    <span id=setPointResponse></span>
+    <br />
+
+    <label>Signal:</label>
+    <select id=signalId>
+        <option>signal1</option>
+        <option>signal2</option>
+        <option>signal3</option>
+        <option>signal4</option>
+        <option>signal5</option>
+        <!-- TODO: add missing signals here -->
+    </select>
+    <label>Aspect:</label>
+    <select id=signalAspect>
+        <option>green</option>
+        <option>yellow</option>
+        <option>red</option>
+    </select>
+    <button id=setSignalButton>Set</button>
+    <span id=setSignalResponse></span>
+
+</body>
+
+</html>
