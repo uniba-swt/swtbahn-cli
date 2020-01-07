@@ -7,11 +7,7 @@ var trainEngine = '';
 var routeId = -1;
 $(document).ready(function() {
 
-        $('#configButton').click(function() {
-            $('#configResponse').text('Waiting');
-            trackOutput = $('#trackOutput').val();
-            $('#configResponse').text('OK');
-        });
+        trackOutput = 'master';
 
         $('#pingButton').click(function() {
             $('#pingResponse').text('Waiting');
@@ -22,16 +18,20 @@ $(document).ready(function() {
                 data: null,
                 dataType: 'text',
                 success: function(responseData, textStatus, jqXHR) {
+                    $('#pingResponse').parent().removeClass('alert-danger');
+                    $('#pingResponse').parent().addClass('alert-success');
                     $('#pingResponse').text('OK');
                 },
                 error: function(responseData, textStatus, errorThrown) {
+                    $('#pingResponse').parent().removeClass('alert-success');
+                    $('#pingResponse').parent().addClass('alert-danger');
                     $('#pingResponse').text('Error');
                 }
             });
         });
 
         $('#startupButton').click(function() {
-            $('#startupResponse').text('Waiting');
+            $('#startupShutdownResponse').text('Waiting');
             $.ajax({
                 type: 'POST',
                 url: url + '/admin/startup',
@@ -39,16 +39,20 @@ $(document).ready(function() {
                 data: null,
                 dataType: 'text',
                 success: function(responseData, textStatus, jqXHR) {
-                    $('#startupResponse').text('OK');
+                    $('#startupShutdownResponse').parent().removeClass('alert-danger');
+                    $('#startupShutdownResponse').parent().addClass('alert-success');
+                    $('#startupShutdownResponse').text('OK');
                 },
                 error: function(responseData, textStatus, errorThrown) {
-                    $('#startupResponse').text('System already running!');
+                    $('#startupShutdownResponse').parent().removeClass('alert-success');
+                    $('#startupShutdownResponse').parent().addClass('alert-danger');
+                    $('#startupShutdownResponse').text('System already running!');
                 }
             });
         });
 
         $('#shutdownButton').click(function() {
-            $('#shutdownResponse').text('Waiting');
+            $('#startupShutdownResponse').text('Waiting');
             $.ajax({
                 type: 'POST',
                 url: url + '/admin/shutdown',
@@ -56,10 +60,14 @@ $(document).ready(function() {
                 data: null,
                 dataType: 'text',
                 success: function(responseData, textStatus, jqXHR) {
-                    $('#shutdownResponse').text('OK');
+                    $('#startupShutdownResponse').parent().removeClass('alert-danger');
+                    $('#startupShutdownResponse').parent().addClass('alert-success');
+                    $('#startupShutdownResponse').text('OK');
                 },
                 error: function(responseData, textStatus, errorThrown) {
-                    $('#shutdownResponse').text('System not running!');
+                    $('#startupShutdownResponse').parent().removeClass('alert-success');
+                    $('#startupShutdownResponse').parent().addClass('alert-danger');
+                    $('#startupShutdownResponse').text('System not running!');
                 }
             });
         });
@@ -223,10 +231,35 @@ $(document).ready(function() {
             });
         });
 
-        $('#setPointButton').click(function() {
+        points = [
+            'point1',
+            'point2',
+            'point3',
+            'point4',
+            'point5',
+        ]
+
+        $('#pointMinus').click(function() {
+            point = $('#pointId').val();
+            position = points.indexOf(point);
+            if (position > 0) {
+                $('#pointId:text').val(points[position - 1]);
+            }
+        });
+
+        $('#pointPlus').click(function() {
+            point = $('#pointId').val();
+            position = points.indexOf(point);
+            if (position < points.length - 1) {
+                $('#pointId:text').val(points[position + 1]);
+            }
+        });
+
+        $('.pointBtn').click(function() {
             $('#setPointResponse').text('Waiting');
-            var pointId = $('#pointId option:selected').text();
-            var pointPosition = $('#pointPosition option:selected').text();
+            var pointId = $('#pointId').val();
+            var pointPosition = $(this).text();
+
             $.ajax({
                 type: 'POST',
                 url: url + '/controller/set-point',
@@ -236,17 +269,45 @@ $(document).ready(function() {
                 success: function(responseData, textStatus, jqXHR) {
                     $('#setPointResponse')
                         .text('Point ' + pointId + ' set to ' + pointPosition);
+                    $('#setPointResponse').parent().removeClass('alert-danger');
+                    $('#setPointResponse').parent().addClass('alert-success');
                 },
                 error: function(responseData, textStatus, errorThrown) {
                     $('#setPointResponse').text('System not running or invalid position!');
+                    $('#setPointResponse').parent().removeClass('alert-success');
+                    $('#setPointResponse').parent().addClass('alert-danger');
                 }
             });
         });
 
-        $('#setSignalButton').click(function() {
+        signals = [
+            'signal1',
+            'signal2',
+            'signal3',
+            'signal4',
+            'signal5',
+        ]
+
+        $('#signalMinus').click(function() {
+            signal = $('#signalId').val();
+            position = signals.indexOf(signal);
+            if (position > 0) {
+                $('#signalId:text').val(signals[position - 1]);
+            }
+        });
+
+        $('#signalPlus').click(function() {
+            signal = $('#signalId').val();
+            position = signals.indexOf(signal);
+            if (position < signals.length - 1) {
+                $('#signalId:text').val(signals[position + 1]);
+            }
+        });
+
+        $('.signalBtn').click(function() {
             $('#setSignalResponse').text('Waiting');
-            var signalId = $('#signalId option:selected').text();
-            var signalAspect = $('#signalAspect option:selected').text();
+            var signalId = $('#signalId').val();
+            var signalAspect = $(this).text();
             $.ajax({
                 type: 'POST',
                 url: url + '/controller/set-signal',
@@ -256,9 +317,13 @@ $(document).ready(function() {
                 success: function(responseData, textStatus, jqXHR) {
                     $('#setSignalResponse')
                         .text('Signal ' + signalId + ' set to ' + signalAspect);
+                    $('#setSignalResponse').parent().removeClass('alert-danger');
+                    $('#setSignalResponse').parent().addClass('alert-success');
                 },
                 error: function(responseData, textStatus, errorThrown) {
                     $('#setSignalResponse').text('System not running or invalid aspect!');
+                    $('#setSignalResponse').parent().removeClass('alert-success');
+                    $('#setSignalResponse').parent().addClass('alert-danger');
                 }
             });
         });

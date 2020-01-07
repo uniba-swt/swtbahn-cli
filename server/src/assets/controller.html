@@ -12,6 +12,7 @@
     <script src="script.js"></script>
 
     <title>SWTbahn Client</title>
+    <meta charset="utf-8" />
 </head>
 
 <body>
@@ -28,19 +29,6 @@
                     Some quick example text ...
                 </p>
 
-
-                <div class="form-group">
-                    <input readonly class="btn-block" type="text" id=trackOutput value="master" />
-                    </br>
-                    <button id=configButton type="button" class="btn btn-outline-primary btn-block">Configure</button>
-                    <br />
-                    <div class="alert alert-info" role="alert">
-                        <span id=configResponse></span>
-                    </div>
-                </div>
-
-                <br />
-
                 <div class="form-group">
                     <button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn
                         Server</button>
@@ -49,32 +37,25 @@
                         <span id=pingResponse></span>
                     </div>
                 </div>
+
                 <br />
 
                 <div class="form-group">
-                    <button id=startupButton type="button" class="btn btn-outline-primary btn-block">Startup</button>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=startupButton type="button" class="btn btn-outline-primary" style="width: 49%;">Startup</button>
+                        <button id=shutdownButton type="button" class="btn btn-outline-primary" style="width: 49%;">Shutdown</button>
+                    </div>
                     <br />
                     <div class="alert alert-info" role="alert">
-                        <span id=startupResponse></span>
+                        <span id=startupShutdownResponse></span>
                     </div>
                 </div>
-                <br />
 
-                <div class="form-group">
-                    <button id=shutdownButton type="button" class="btn btn-outline-primary btn-block">Shutdown</button>
-                    <br />
-                    <div class="alert alert-info" role="alert">
-                        <span id=shutdownResponse></span>
-                    </div>
-                </div>
                 <br />
 
                 <div class="alert alert-dark" role="alert">
                     <span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
                 </div>
-                <br />
-                <br />
-
 
             </div>
         </div>
@@ -87,43 +68,29 @@
                     Some quick example text ...
                 </p>
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="pointId">Point</label>
-                    </div>
-                    <select class="custom-select" id="pointId">
-                        <option>point1</option>
-                        <option>point2</option>
-                        <option>point3</option>
-                        <option>point4</option>
-                        <option>point5</option>
-                        <!-- TODO: add missing points here -->
-                    </select>
-                </div>
+                <div class="form-group">
 
-                </br>
-
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="pointPosition">Position</label>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=pointMinus type="button" class="btn btn-outline-primary">-</button>
+                        <input id=pointId readonly value="point1">
+                        <button id=pointPlus type="button" class="btn btn-outline-primary">+</button>
                     </div>
 
-                    <select class="custom-select" id="pointPosition">
-                        <option>normal</option>
-                        <option>reverse</option>
-                    </select>
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=setPointButtonNormal type="button" class=" pointBtn btn btn-outline-primary" style="width: 49%;">Normal</button>
+                        <button id=setPointButtonReverse type="button" class=" pointBtn btn btn-outline-primary" style="width: 49%;">Reverse</button>
+                    </div>
+                    </br>
+                    <div class="alert alert-info" role="alert">
+                        <span id=setPointResponse></span>
+                    </div>
                 </div>
 
                 </br>
 
-                <button id=setPointButton type="button" class="btn btn-outline-primary btn-block">Set</button>
-
-                </br>
-
-                <div class="alert alert-info" role="alert">
-                    <span id=setPointResponse></span>
-                </div>
-
+                <!-- <button id=setPointButton type="button" class="btn btn-outline-primary btn-block">Set</button> -->
 
             </div>
         </div>
@@ -137,44 +104,29 @@
                     Some quick example text ...
                 </p>
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="signalId">Signal</label>
-                    </div>
-                    <select class="custom-select" id="signalId">
-                        <option>signal1</option>
-                        <option>signal2</option>
-                        <option>signal3</option>
-                        <option>signal4</option>
-                        <option>signal5</option>
-                        <!-- TODO: add missing signals here -->
-                    </select>
-                </div>
+                <div class="form-group">
 
-                </br>
-
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="signalAspect">Position</label>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=signalMinus type="button" class="btn btn-outline-primary">-</button>
+                        <input id=signalId readonly value="signal1">
+                        <button id=signalPlus type="button" class="btn btn-outline-primary">+</button>
                     </div>
 
-                    <select class="custom-select" id="signalAspec">
-                        <option>green</option>
-                        <option>yellow</option>
-                        <option>red</option>
-                    </select>
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=setSignalButtonRed type="button" class=" signalBtn btn btn-outline-danger" style="width: 32%;">Red</button>
+                        <button id=setSignalButtonYellow type="button" class=" signalBtn btn btn-outline-warning" style="width: 32%;">Yellow</button>
+                        <button id=setSignalButtonGreen type="button" class=" signalBtn btn btn-outline-success" style="width: 32%; ">Green</button>
+                    </div>
+
+                    </br>
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=setSignalResponse></span>
+                    </div>
+
                 </div>
-
-                </br>
-
-                <button id="setSignalButton" type="button" class="btn btn-outline-primary btn-block">Set</button>
-
-                </br>
-
-                <div class="alert alert-info" role="alert">
-                    <span id=setSignalResponse></span>
-                </div>
-
 
             </div>
         </div>
