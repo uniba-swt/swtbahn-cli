@@ -288,6 +288,13 @@ $(document).ready(function() {
             'point3',
             'point4',
             'point5',
+            'point6',
+            'point7',
+            'point8',
+            'point9',
+            'point10',
+            'point11',
+            'point12',
         ]
 
         $('#pointMinus').click(function() {
@@ -337,6 +344,21 @@ $(document).ready(function() {
             'signal3',
             'signal4',
             'signal5',
+            'signal6',
+            'signal7',
+            'signal8',
+            'signal9',
+            'signal10',
+            'signal11',
+            'signal12',
+            'signal13',
+            'signal14',
+            'signal15',
+            'signal16',
+            'signal17',
+            'signal18',
+            'signal19',
+            'platformlights'
         ]
 
         $('#signalMinus').click(function() {
