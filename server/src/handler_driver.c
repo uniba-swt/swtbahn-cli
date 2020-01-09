@@ -32,7 +32,6 @@
 #include <glib.h>
 #include <string.h>
 #include <syslog.h>
-#include <stdio.h>
 
 #include "server.h"
 #include "handler_controller.h"
@@ -324,13 +323,22 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		int client_session_id = params_check_session_id(data_session_id);
 		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
 		if (client_session_id != session_id) {
-			syslog(LOG_NOTICE, "Request: Release train - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			syslog(LOG_ERR, "Request: Release train - invalid session id");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (!grabbed_trains[grab_id].is_valid) {
+			syslog(LOG_ERR, "Request: Release train - invalid grab id");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		
+		t_bidib_train_state_query train_state = 
+			bidib_get_train_state(grabbed_trains[grab_id].name->str);
+
+		if (train_state.data.set_speed_step != 0) {
+			syslog(LOG_ERR, "Request: Release train - train still moving");
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !free_train(grab_id)) {
 			syslog(LOG_ERR, "Request: Release train - invalid grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog(LOG_NOTICE, "Request: Release train");
 			return OCS_PROCESSED;
@@ -352,13 +360,11 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 		const int client_session_id = params_check_session_id(data_session_id);
 		const int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
 		if (client_session_id != session_id) {
-			syslog(LOG_NOTICE, "Request: Request train route - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			syslog(LOG_ERR, "Request: Request train route - invalid session id");
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog(LOG_ERR, "Request: Request train route - bad grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (data_source_name == NULL || data_destination_name == NULL) {
 			syslog(LOG_ERR, "Request: Request train route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
@@ -397,13 +403,11 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 		const int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
 		const int route_id = params_check_route_id(data_route_id);
 		if (client_session_id != session_id) {
-			syslog(LOG_NOTICE, "Request: Drive route - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			syslog(LOG_ERR, "Request: Drive route - invalid session id");
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog(LOG_ERR, "Request: Drive route - bad grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (route_id == -1) {
 			syslog(LOG_ERR, "Request: Drive route - invalid parameter");
 			return OCS_NOT_IMPLEMENTED;
@@ -432,13 +436,11 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
 		int speed = params_check_speed(data_speed);
 		if (client_session_id != session_id) {
-			syslog(LOG_NOTICE, "Request: Set train speed - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			syslog(LOG_ERR, "Request: Set train speed - invalid session id");
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog(LOG_ERR, "Request: Set train speed - bad grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (speed == 999) {
 			syslog(LOG_ERR, "Request: Set train speed - bad speed");
 			return OCS_NOT_IMPLEMENTED;
@@ -478,12 +480,10 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		int speed  = params_check_calibrated_speed(data_speed);
 		if (client_session_id != session_id) {
 			syslog(LOG_ERR, "Request: Set calibrated train speed - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog(LOG_ERR, "Request: Set calibrated train speed - bad grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (speed == 999) {
 			syslog(LOG_ERR, "Request: Set calibrated train speed - bad speed");
 			return OCS_NOT_IMPLEMENTED;
@@ -526,12 +526,10 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
 		if (client_session_id != session_id) {
 			syslog(LOG_ERR, "Request: Set train emergency stop - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog(LOG_ERR, "Request: Set train emergency stop - bad grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog(LOG_ERR, "Request: Set train emergency stop - bad track output");
 			return OCS_NOT_IMPLEMENTED;
@@ -573,12 +571,10 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		int state = params_check_state(data_state);
 		if (client_session_id != session_id) {
 			syslog(LOG_ERR, "Request: Set train peripheral - invalid session id");
-			onion_response_printf(res, "invalid session id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog(LOG_ERR, "Request: Set train peripheral - bad grab id");
-			onion_response_printf(res, "invalid grab id");
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		} else if (state == -1) {
 			syslog(LOG_ERR, "Request: Set train peripheral - bad state");
 			return OCS_NOT_IMPLEMENTED;

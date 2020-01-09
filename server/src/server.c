@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	openlog("swtbahn-cli", 0, LOG_LOCAL0);
+	openlog("bidib", 0, LOG_LOCAL0);
 	syslog(LOG_NOTICE, "SWTbahn server started");
 
 	onion *o = onion_new(O_THREADED);

@@ -142,7 +142,7 @@
 								$("#grabTrainResponse").text("Released grabbed train");
 							},
 							error: function (responseData, textStatus, errorThrown) {
-								$("#grabTrainResponse").text("System not running!");
+								$("#grabTrainResponse").text("System not running or train still moving!");
 							}
 						});
 					} else {
