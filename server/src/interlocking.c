@@ -27,7 +27,7 @@
  
 #include <bidib.h>
 #include <glib.h>
-#include <stdio.h>
+#include <string.h>
 
 #include "interlocking.h"
 #include "server.h"
