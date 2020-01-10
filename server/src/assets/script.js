@@ -206,10 +206,10 @@ $(document).ready(function() {
         });
 
         $('#stopTrainButton').click(function() {
-            speed = $('#dccSpeed').val();
+            lastSpeed = $('#dccSpeed').val();
             $('#dccSpeed').val(0);
             $('#driveTrainButton').click();
-            $('#dccSpeed').val(speed);
+            $('#dccSpeed').val(lastSpeed);
         });
 
         // $('#requestRouteButton').click(function() {
