@@ -36,7 +36,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <syslog.h>
 #include <glib.h>
 #include <time.h>
 
@@ -124,13 +123,22 @@ static int eval_args(int argc, char **argv) {
 	}
 }
 
+void syslog_server(int priority, const char *format, ...) {
+	char string[1024];
+	va_list arg;
+	va_start(arg, format);
+	vsnprintf(string, 1024, format, arg);
+	
+	syslog(priority, "server: %s", string);
+}
+
 int main(int argc, char **argv) {
 	if (eval_args(argc, argv)) {
 		return 1;
 	}
 
-	openlog("bidib", 0, LOG_LOCAL0);
-	syslog(LOG_NOTICE, "SWTbahn server started");
+	openlog("swtbahn", 0, LOG_LOCAL0);
+	syslog_server(LOG_NOTICE, "SWTbahn server started");
 
 	onion *o = onion_new(O_THREADED);
 	onion_set_hostname(o, argv[3]);
@@ -177,7 +185,7 @@ int main(int argc, char **argv) {
 
 	onion_listen(o);
 	onion_free(o);
-	syslog(LOG_NOTICE, "%s", "SWTbahn server stopped");
+	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 
 	return 0;

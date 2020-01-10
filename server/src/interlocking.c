@@ -26,11 +26,11 @@
  */
  
 #include <bidib.h>
-#include <syslog.h>
 #include <glib.h>
 #include <stdio.h>
 
 #include "interlocking.h"
+#include "server.h"
 
 t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
 	{
@@ -325,13 +325,13 @@ static int interlocking_table_resolve_indices(void) {
 		char *id = interlocking_table_ultraloop[route_id].source.id;
 		interlocking_table_ultraloop[route_id].source.bidib_state_index = bidib_get_signal_state_index(id);
 		if (interlocking_table_ultraloop[route_id].source.bidib_state_index == -1) {
-			syslog(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 			return 1;
 		}
 		id = interlocking_table_ultraloop[route_id].destination.id;
 		interlocking_table_ultraloop[route_id].destination.bidib_state_index = bidib_get_signal_state_index(id);
 		if (interlocking_table_ultraloop[route_id].destination.bidib_state_index == -1) {
-			syslog(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 			return 1;
 		}
 		
@@ -349,7 +349,7 @@ static int interlocking_table_resolve_indices(void) {
 			interlocking_table_ultraloop[route_id].path[segment_index].bidib_state_index = bidib_get_segment_state_index(id);
 		
 			if (interlocking_table_ultraloop[route_id].path[segment_index].bidib_state_index == -1) {
-				syslog(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+				syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 				return -1;
 			}
 		
@@ -366,7 +366,7 @@ static int interlocking_table_resolve_indices(void) {
 			interlocking_table_ultraloop[route_id].points[point_index].bidib_state_index = bidib_get_point_state_index(id);
 			
 			if (interlocking_table_ultraloop[route_id].points[point_index].bidib_state_index == -1) {
-				syslog(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+				syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 				return -1;
 			}
 			
@@ -383,7 +383,7 @@ static int interlocking_table_resolve_indices(void) {
 			interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index = bidib_get_signal_state_index(id);
 			
 			if (interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index == -1) {
-				syslog(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+				syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 				return -1;
 			}
 			
@@ -400,7 +400,7 @@ static int interlocking_table_resolve_indices(void) {
 			                       interlocking_table_ultraloop[route_id].conflicts[conflict_index]);
 		}
 		
-		syslog(LOG_NOTICE, "%s", log->str);
+		syslog_server(LOG_NOTICE, "%s", log->str);
 		g_string_free(log, true);
 	}
 	
