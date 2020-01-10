@@ -126,7 +126,7 @@ $(document).ready(function() {
                     error: function(responseData, textStatus, errorThrown) {
                         $('#grabTrainResponse').parent().addClass('alert-danger');
                         $('#grabTrainResponse').parent().removeClass('alert-success');
-                        $('#grabTrainResponse').text('System not running!');
+                        $('#grabTrainResponse').text('System not running or train still moving!');
                     }
                 });
             } else {
