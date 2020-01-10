@@ -10,4 +10,5 @@ boards:
       - number: 0x6E
         value: 0x00
   - id: onecontrol
-    unique-id: 0x05000D7500E8ED
+    unique-id: 0x05000D7500EAED
+
