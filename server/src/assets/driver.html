@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <script src="popper-1.14.6.js"></script>
+
+    <script src="jquery-3.3.1.js"></script>
+
+    <link rel="stylesheet" href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css">
+    <script src="bootstrap4-toggle-3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
+    <title>SWTbahn Client</title>
+    <meta charset="utf-8" />
+</head>
+
+
+<body>
+
+    <div id="swtLogo">SWTbahn Client</div>
+    <hr />
+
+    <div class="card-deck">
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title">System</h3>
+
+                <div class="form-group">
+                    <button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
+                    <br />
+                    <div class="alert alert-info" role="alert">
+                        <span id=pingResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=startupButton type="button" class="btn btn-outline-primary" style="width: 49%;">Startup</button>
+                        <button id=shutdownButton type="button" class="btn btn-outline-primary" style="width: 49%;">Shutdown</button>
+                    </div>
+                    <br />
+                    <div class="alert alert-info" role="alert">
+                        <span id=startupShutdownResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="alert alert-dark" role="alert">
+                    <span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title">Train Driver</h3>
+                <p class="card-text">
+                    Grab an available train to drive it around the track.
+                </p>
+
+                <div class="form-group">
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="grabTrainId">Train</label>
+                        </div>
+                        <select class="custom-select" id="grabTrainId">
+                            <option>cargo_db</option>
+                            <option>cargo_bayern</option>
+                            <option>cargo_green</option>
+                            <option>regional_odeg</option>
+                            <option>regional_brengdirect</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="grabEngine">Engine</label>
+                        </div>
+                        <select class="custom-select" id="grabEngine">
+                            <option>default</option>
+                            <option>linear</option>
+                        </select>
+                    </div>
+
+                    <br />
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=grabTrainButton type="button" class="btn btn-outline-primary" style="width: 49%;">Grab</button>
+                        <button id=releaseTrainButton type="button" class="btn btn-outline-primary" style="width: 49%;">Release</button>
+                    </div>
+
+                    <br />
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=grabTrainResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=speedMinus type="button" class="btn btn-outline-primary">–</button>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">DCC Speed</label>
+                            <input id=dccSpeed readonly value="0">
+                        </div>
+                        <button id=speedPlus type="button" class="btn btn-outline-primary">+</button>
+                    </div>
+
+                    <div style="display: flex; justify-content: left;">
+                        <span style="width: 20.5%;"></span>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">Direction</label>
+                        </div>
+                        <input id=direction type="checkbox" checked data-toggle="toggle" data-on="Forward" data-off="Backward">
+                    </div>
+
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=driveTrainButton type="button" class="btn btn-outline-primary" style="width: 49%;">Drive</button>
+                        <button id=stopTrainButton type="button" class="btn btn-outline-primary" style="width: 49%;">Stop</button>
+                    </div>
+
+                    </br>
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=driveTrainResponse></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

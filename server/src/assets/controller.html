@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="jquery-3.3.1.js"></script>
+    <script src="popper-1.14.6.js"></script>
+
+    <script src="script.js"></script>
+
+    <title>SWTbahn Client</title>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+
+    <div id="swtLogo">SWTbahn Client</div>
+    <hr />
+
+    <div class="card-deck">
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title"> System</h3>
+
+                <div class="form-group">
+                    <button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
+                    <br />
+                    <div class="alert alert-info" role="alert">
+                        <span id=pingResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=startupButton type="button" class="btn btn-outline-primary" style="width: 49%;">Startup</button>
+                        <button id=shutdownButton type="button" class="btn btn-outline-primary" style="width: 49%;">Shutdown</button>
+                    </div>
+                    <br />
+                    <div class="alert alert-info" role="alert">
+                        <span id=startupShutdownResponse></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title">Point Controller</h3>
+
+                <div class="form-group">
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=pointMinus type="button" class="btn btn-outline-primary">–</button>
+                        <input id=pointId readonly value="point1">
+                        <button id=pointPlus type="button" class="btn btn-outline-primary">+</button>
+                    </div>
+
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=setPointButtonNormal type="button" class=" pointBtn btn btn-outline-primary" style="width: 49%;">normal</button>
+                        <button id=setPointButtonReverse type="button" class=" pointBtn btn btn-outline-primary" style="width: 49%;">reverse</button>
+                    </div>
+                    </br>
+                    <div class="alert alert-info" role="alert">
+                        <span id=setPointResponse></span>
+                    </div>
+                </div>
+
+                </br>
+
+            </div>
+        </div>
+
+        </br>
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title">Signal Controller</h3>
+
+                <div class="form-group">
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=signalMinus type="button" class="btn btn-outline-primary">–</button>
+                        <input id=signalId readonly value="signal1">
+                        <button id=signalPlus type="button" class="btn btn-outline-primary">+</button>
+                    </div>
+
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=setSignalButtonRed type="button" class=" signalBtn btn btn-outline-danger" style="width: 32%;">red</button>
+                        <button id=setSignalButtonYellow type="button" class=" signalBtn btn btn-outline-warning" style="width: 32%;">yellow</button>
+                        <button id=setSignalButtonGreen type="button" class=" signalBtn btn btn-outline-success" style="width: 32%; ">green</button>
+                    </div>
+
+                    </br>
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=setSignalResponse></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
