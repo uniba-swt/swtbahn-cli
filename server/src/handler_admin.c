@@ -29,7 +29,6 @@
 #include <bidib.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <syslog.h>
 #include <stdio.h>
 
 #include "server.h"
@@ -52,7 +51,7 @@ void build_message_hex_string(unsigned char *message, char *dest) {
 
 static void *start_bidib(void *_) {
 	int err_serial = bidib_start_serial(serial_device, config_directory, 0);
-	int err_interlocking = 0; // interlocking_table_initialise();
+	int err_interlocking = interlocking_table_initialise(config_directory);
 	pthread_mutex_lock(&start_stop_mutex);
 	if (err_serial || err_interlocking) {
 		starting = false;
@@ -66,13 +65,13 @@ static void *start_bidib(void *_) {
 			while ((message = bidib_read_message()) != NULL) {
 				char hex_string[message[0] * 5];
 				build_message_hex_string(message, hex_string);
-				syslog(LOG_NOTICE, "SWTbahn message queue: %s", hex_string);
+				syslog_server(LOG_NOTICE, "SWTbahn message queue: %s", hex_string);
 				free(message);
 			}
 			while ((message = bidib_read_error_message()) != NULL) {
 				char hex_string[message[0] * 5];
 				build_message_hex_string(message, hex_string);
-				syslog(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
+				syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
 				free(message);
 			}
 			usleep(500000);
@@ -89,12 +88,12 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 	if (!running && !starting && !stopping && ((onion_request_get_flags(req) &
 	                                           OR_METHODS) == OR_POST)) {
 		session_id = time(NULL);
-		syslog(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
+		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
 		starting = true;
 		pthread_create(&start_stop_thread, NULL, start_bidib, NULL);
 		retval = OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Start - BiDiB system is already running");
+		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
 		retval = OCS_NOT_IMPLEMENTED;
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
@@ -119,13 +118,14 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && !starting && !stopping && ((onion_request_get_flags(req) &
 	                                          OR_METHODS) == OR_POST)) {
-		syslog(LOG_NOTICE, "Request: Stop");
+		syslog_server(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;
+		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
 		retval = OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Stop - BiDiB system is not running");
+		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running");
 		retval = OCS_NOT_IMPLEMENTED;
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
@@ -141,16 +141,16 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_state == NULL || (state = strtol(data_state, &end, 10)) < 0 ||
 		    *end != '\0') {
-			syslog(LOG_ERR, "Request: Set track output - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog(LOG_NOTICE, "Request: Set track output - state: 0x%02x", state);
+			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x", state);
 			bidib_set_track_output_state_all(state);
 			bidib_flush();
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Set track output - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Set track output - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

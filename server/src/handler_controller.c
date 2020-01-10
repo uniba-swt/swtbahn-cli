@@ -29,7 +29,6 @@
 #include <bidib.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <syslog.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -62,7 +61,7 @@ bool route_is_unavailable_or_conflicted(const int route_id) {
 
 bool route_is_clear(const int route_id, const char *train_id) {
 	if (route_id == -1) {
-		syslog(LOG_ERR, "Route is clear: Route %d is invalid", route_id);
+		syslog_server(LOG_ERR, "Route is clear: Route %d is invalid", route_id);
 		return false;
 	}
 	
@@ -73,8 +72,8 @@ bool route_is_clear(const int route_id, const char *train_id) {
 	const size_t source_signal_state_index = 
 	    interlocking_table_ultraloop[route_id].source.bidib_state_index;
 	if (strcmp(track_state.signals_board[source_signal_state_index].data.state_id, "red")) {
-		syslog(LOG_ERR, "Route is clear: Route %d - source signal is not in the stop aspect", 
-		       route_id);
+		syslog_server(LOG_ERR, "Route is clear: Route %d - source signal is not in the stop aspect", 
+		              route_id);
 		bidib_free_track_state(track_state);
 		return false;
 	}
@@ -87,8 +86,8 @@ bool route_is_clear(const int route_id, const char *train_id) {
 		const size_t signal_state_index = 
 		    interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index;
 		if (strcmp(track_state.signals_board[signal_state_index].data.state_id, "red")) {
-			syslog(LOG_ERR, "Route is clear: Route %d - signal %s is not in the stop aspect", 
-			       route_id, signal_id);
+			syslog_server(LOG_ERR, "Route is clear: Route %d - signal %s is not in the stop aspect", 
+			              route_id, signal_id);
 			bidib_free_track_state(track_state);
 			return false;
 		}
@@ -110,15 +109,15 @@ bool route_is_clear(const int route_id, const char *train_id) {
 				train_id_query = 
 				    bidib_get_train_id(track_state.segments[segment_state_index].data.dcc_addresses[0]);
 				if (strcmp(train_id, train_id_query.id)) {
-					syslog(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared", 
-					       route_id, segment_id);
+					syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared", 
+					              route_id, segment_id);
 					bidib_free_id_query(train_id_query);
 					bidib_free_track_state(track_state);
 					return false;
 				}
 			} else {
-				syslog(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared", 
-				       route_id, segment_id);
+				syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared", 
+				              route_id, segment_id);
 				bidib_free_id_query(train_id_query);
 				bidib_free_track_state(track_state);
 				return false;
@@ -141,12 +140,12 @@ bool set_route_points_signals(const int route_id) {
 		    interlocking_table_ultraloop[route_id].points[point_index].position;
 		
 		if (bidib_switch_point(point_id, (point_position == NORMAL) ? "normal" : "reverse")) {
-			syslog(LOG_ERR, "Execute route: Set point - invalid parameters");
+			syslog_server(LOG_ERR, "Execute route: Set point - invalid parameters");
 			return false;
 		} else {
-			syslog(LOG_NOTICE, "Execute route: Set point - point: %s state: %s",
-				   point_id, 
-				   (point_position == NORMAL) ? "normal" : "reverse");
+			syslog_server(LOG_NOTICE, "Execute route: Set point - point: %s state: %s",
+				          point_id, 
+				          point_position == NORMAL ? "normal" : "reverse");
 			bidib_flush();
 		}
 	}
@@ -154,11 +153,11 @@ bool set_route_points_signals(const int route_id) {
 	// Set entry signal to green (proceed aspect)
 	const char *signal_id = interlocking_table_ultraloop[route_id].source.id;
 	if (bidib_set_signal(signal_id, "green")) {
-		syslog(LOG_ERR, "Execute route: Set signal - invalid parameters");
+		syslog_server(LOG_ERR, "Execute route: Set signal - invalid parameters");
 		return false;
 	} else {
-		syslog(LOG_NOTICE, "Execute route: Set signal - signal: %s state: %s",
-			   signal_id, "green");
+		syslog_server(LOG_NOTICE, "Execute route: Set signal - signal: %s state: %s",
+			          signal_id, "green");
 		bidib_flush();
 	}
 
@@ -176,7 +175,7 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 	int route_id = interlocking_table_get_route_id(source_id, destination_id);
 	if (route_id == -1) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog(LOG_ERR, "Grant route: No route found from %s to %s", source_id, destination_id);
+		syslog_server(LOG_ERR, "Grant route: No route found from %s to %s", source_id, destination_id);
 		return -1;
 	}
 
@@ -184,14 +183,14 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 	// or is in conflict with another granted route
 	if (route_is_unavailable_or_conflicted(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog(LOG_ERR, "Grant route: Route %d is blocked or has conflicts", route_id);
+		syslog_server(LOG_ERR, "Grant route: Route %d is blocked or has conflicts", route_id);
 		return -1;
 	}
 		
 	// Check if route has been cleared
 	if (!route_is_clear(route_id, train_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog(LOG_ERR, "Grant route: Route %d has not been cleared", route_id);
+		syslog_server(LOG_ERR, "Grant route: Route %d has not been cleared", route_id);
 		return -1;
 	}
 	
@@ -201,12 +200,12 @@ int grant_route(const char *train_id, const char *source_id, const char *destina
 	
 	// Set the route points and signals
 	if (!set_route_points_signals(route_id)) {
-		syslog(LOG_ERR, "Grant route: Route %d could not be set", route_id);
+		syslog_server(LOG_ERR, "Grant route: Route %d could not be set", route_id);
 		return -1;
 	}
 	
 	// Return the ID of the granted route
-	syslog(LOG_NOTICE, "Grant route: Route %d has been granted", route_id);
+	syslog_server(LOG_NOTICE, "Grant route: Route %d has been granted", route_id);
 	return route_id;
 }
 
@@ -229,23 +228,23 @@ int grant_route_with_algorithm(const char *train_id, const char *source_id, cons
 
 	switch (interlocking_data.route_id) {
 		case (-1):
-			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (1. Wait)");
+			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (1. Wait)");
 			return -1;
 		case (-2):
-			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (2. Find)");
+			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (2. Find)");
 			return -1;
 		case (-3):
-			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Grantable)");
+			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Grantable)");
 			return -1;
 		case (-4):
-			syslog(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Clearance)");
+			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Clearance)");
 			return -1;
 		default:
 			break;
 	} 
 	
 	// Return the ID of the granted route
-	syslog(LOG_NOTICE, "Grant route with algorithm: Route %d has been granted", interlocking_data.route_id);
+	syslog_server(LOG_NOTICE, "Grant route with algorithm: Route %d has been granted", interlocking_data.route_id);
 	return interlocking_data.route_id;
 }
 
@@ -263,15 +262,15 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const int route_id = params_check_route_id(data_route_id);
 		if (route_id == -1) {
-			syslog(LOG_ERR, "Request: Release route - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			release_route(route_id);
-			syslog(LOG_NOTICE, "Request: Release route - route: %d", route_id);
+			syslog_server(LOG_NOTICE, "Request: Release route - route: %d", route_id);
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Release route - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Release route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -283,22 +282,22 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 		const char *data_point = onion_request_get_post(req, "point");
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_point == NULL || data_state == NULL) {
-			syslog(LOG_ERR, "Request: Set point - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			if (bidib_switch_point(data_point, data_state)) {
-				syslog(LOG_ERR, "Request: Set point - invalid parameters");
+				syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
 				bidib_flush();
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog(LOG_NOTICE, "Request: Set point - point: %s state: %s",
+				syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s",
 				       data_point, data_state);
 				bidib_flush();
 				return OCS_PROCESSED;
 			}
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Set point - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Set point - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -310,21 +309,21 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 		const char *data_signal = onion_request_get_post(req, "signal");
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_signal == NULL || data_state == NULL) {
-			syslog(LOG_ERR, "Request: Set signal - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			if (bidib_set_signal(data_signal, data_state)) {
-				syslog(LOG_ERR, "Request: Set signal - invalid parameters");
+				syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog(LOG_NOTICE, "Request: Set signal - signal: %s state: %s",
-				       data_signal, data_state);
+				syslog_server(LOG_NOTICE, "Request: Set signal - signal: %s state: %s",
+				              data_signal, data_state);
 				bidib_flush();
 				return OCS_PROCESSED;
 			}
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Set signal - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Set signal - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

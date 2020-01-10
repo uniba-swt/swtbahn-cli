@@ -28,6 +28,8 @@
 #ifndef SWTSERVER_SERVER_H
 #define SWTSERVER_SERVER_H
 
+#include <syslog.h>
+
 #include <onion/onion.h>
 
 extern volatile time_t session_id;
@@ -38,6 +40,8 @@ extern char serial_device[128];
 extern char config_directory[128];
 
 void build_response_header(onion_response *res);
+
+void syslog_server(int priority, const char *format, ...);
 
 #endif
 

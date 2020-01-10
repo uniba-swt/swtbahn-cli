@@ -36,7 +36,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <syslog.h>
 #include <glib.h>
 #include <time.h>
 
@@ -103,14 +102,14 @@ static int eval_args(int argc, char **argv) {
 	if (argc == 5) {
 		if (strnlen(argv[1], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1 ||
 		    strnlen(argv[2], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1) {
-			printf("Serial device and config directory must not exceed %d signs\n",
+			printf("Serial device and config directory must not exceed %d characters\n",
 			       INPUT_MAX_LEN);
 			return 1;
 		} else if (strnlen(argv[3], 16) == 16) {
-			printf("IP address must not exceed 15 signs\n");
+			printf("IP address must not exceed 15 characters\n");
 			return 1;
 		} else if (strnlen(argv[4], 6) == 6) {
-			printf("Port must not exceed 5 signs\n");
+			printf("Port must not exceed 5 characters\n");
 			return 1;
 		} else {
 			strcpy(serial_device, argv[1]);
@@ -124,13 +123,22 @@ static int eval_args(int argc, char **argv) {
 	}
 }
 
+void syslog_server(int priority, const char *format, ...) {
+	char string[1024];
+	va_list arg;
+	va_start(arg, format);
+	vsnprintf(string, 1024, format, arg);
+	
+	syslog(priority, "server: %s", string);
+}
+
 int main(int argc, char **argv) {
 	if (eval_args(argc, argv)) {
 		return 1;
 	}
 
-	openlog("bidib", 0, LOG_LOCAL0);
-	syslog(LOG_NOTICE, "SWTbahn server started");
+	openlog("swtbahn", 0, LOG_LOCAL0);
+	syslog_server(LOG_NOTICE, "SWTbahn server started");
 
 	onion *o = onion_new(O_THREADED);
 	onion_set_hostname(o, argv[3]);
@@ -177,8 +185,7 @@ int main(int argc, char **argv) {
 
 	onion_listen(o);
 	onion_free(o);
-	free_all_grabbed_trains();
-	syslog(LOG_NOTICE, "%s", "SWTbahn server stopped");
+	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 
 	return 0;

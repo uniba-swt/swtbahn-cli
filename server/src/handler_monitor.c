@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <glib.h>
 #include <string.h>
-#include <syslog.h>
 
 #include "server.h"
 #include "handler_driver.h"
@@ -53,11 +52,11 @@ onion_connection_status handler_get_trains(void *_, onion_request *req,
 		strcpy(response, trains->str);
 		g_string_free(trains, true);
 		onion_response_printf(res, "%s", response);
-		syslog(LOG_NOTICE, "Request: Get available trains");
+		syslog_server(LOG_NOTICE, "Request: Get available trains");
 		return OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Get available trains - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get available trains - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -68,35 +67,35 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
-			syslog(LOG_ERR, "Request: Get train train state - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get train train state - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			t_bidib_train_state_query train_state =
 				bidib_get_train_state(data_train);
 			if (train_state.known) {
 				GString *ret_string = g_string_new("");
-				g_string_append_printf(ret_string, "on track: %s - direction: %s"
+				g_string_append_printf(ret_string, "on track: %s - orientation: %s"
 				                       " - speed step: %d",
 				                       train_state.data.on_track ? "yes" : "no",
-				                       train_state.data.direction ==
-				                       BIDIB_TRAIN_DIRECTION_FORWARD ?
-				                       "forward" : "backward",
+				                       (train_state.data.orientation ==
+				                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
+				                       "left" : "right",
 				                       train_state.data.set_speed_step);
 				bidib_free_train_state_query(train_state);
 				char response[ret_string->len + 1];
 				strcpy(response, ret_string->str);
 				g_string_free(ret_string, true);
 				onion_response_printf(res, "%s", response);
-				syslog(LOG_NOTICE, "Request: Get train state");
+				syslog_server(LOG_NOTICE, "Request: Get train state");
 				return OCS_PROCESSED;
 			} else {
-				syslog(LOG_ERR, "Request: Get train train state - invalid train");
+				syslog_server(LOG_ERR, "Request: Get train train state - invalid train");
 				return OCS_NOT_IMPLEMENTED;
 			}
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Get train state - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get train state - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 
@@ -108,7 +107,7 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
-			syslog(LOG_ERR, "Request: Get train peripherals - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get train peripherals - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			t_bidib_id_list_query query =
@@ -127,18 +126,18 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 				strcpy(response, train_peripherals->str);
 				g_string_free(train_peripherals, true);
 				onion_response_printf(res, "%s", response);
-				syslog(LOG_NOTICE, "Request: Get train peripherals");
+				syslog_server(LOG_NOTICE, "Request: Get train peripherals");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
-				syslog(LOG_ERR, "Request: Get train train peripherals - invalid "
-				       "train");
+				syslog_server(LOG_ERR, "Request: Get train train peripherals - invalid "
+				              "train");
 				return OCS_NOT_IMPLEMENTED;
 			}
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Get train peripherals - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get train peripherals - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -193,11 +192,11 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 		strcpy(response, track_outputs->str);
 		g_string_free(track_outputs, true);
 		onion_response_printf(res, "%s", response);
-		syslog(LOG_NOTICE, "Request: Get track outputs");
+		syslog_server(LOG_NOTICE, "Request: Get track outputs");
 		return OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Get track outputs - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get track outputs - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -235,11 +234,11 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 		strcpy(response, points->str);
 		g_string_free(points, true);
 		onion_response_printf(res, "%s", response);
-		syslog(LOG_NOTICE, "Request: Get points");
+		syslog_server(LOG_NOTICE, "Request: Get points");
 		return OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Get points - system not running or wrong "
-			   "request type");
+		syslog_server(LOG_ERR, "Request: Get points - system not running or wrong "
+			          "request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -265,11 +264,11 @@ onion_connection_status handler_get_signals(void *_, onion_request *req,
 		strcpy(response, signals->str);
 		g_string_free(signals, true);
 		onion_response_printf(res, "%s", response);
-		syslog(LOG_NOTICE, "Request: Get signals");
+		syslog_server(LOG_NOTICE, "Request: Get signals");
 		return OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Get signals - system not running or wrong "
-			   "request type");
+		syslog_server(LOG_ERR, "Request: Get signals - system not running or wrong "
+			          "request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -281,7 +280,7 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
 		if (data_point == NULL) {
-			syslog(LOG_ERR, "Request: Get point aspects - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get point aspects - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			t_bidib_id_list_query query = bidib_get_point_aspects(data_point);
@@ -296,17 +295,17 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
 				onion_response_printf(res, "%s", response);
-				syslog(LOG_NOTICE, "Request: Get point aspects");
+				syslog_server(LOG_NOTICE, "Request: Get point aspects");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
-				syslog(LOG_ERR, "Request: Get point aspects - invalid point");
+				syslog_server(LOG_ERR, "Request: Get point aspects - invalid point");
 				return OCS_NOT_IMPLEMENTED;
 			}
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Get point aspects - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get point aspects - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -317,7 +316,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_signal = onion_request_get_post(req, "signal");
 		if (data_signal == NULL) {
-			syslog(LOG_ERR, "Request: Get signal aspects - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get signal aspects - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			t_bidib_id_list_query query = bidib_get_signal_aspects(data_signal);
@@ -332,17 +331,17 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
 				onion_response_printf(res, "%s", response);
-				syslog(LOG_NOTICE, "Request: Get signal aspects");
+				syslog_server(LOG_NOTICE, "Request: Get signal aspects");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
-				syslog(LOG_ERR, "Request: Get signal aspects - invalid signal");
+				syslog_server(LOG_ERR, "Request: Get signal aspects - invalid signal");
 				return OCS_NOT_IMPLEMENTED;
 			}
 		}
 	} else {
-		syslog(LOG_ERR, "Request: Get signal aspects - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get signal aspects - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -381,11 +380,11 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 		strcpy(response, segments->str);
 		g_string_free(segments, true);
 		onion_response_printf(res, "%s", response);
-		syslog(LOG_NOTICE, "Request: Get segments");
+		syslog_server(LOG_NOTICE, "Request: Get segments");
 		return OCS_PROCESSED;
 	} else {
-		syslog(LOG_ERR, "Request: Get segments - system not running or "
-		       "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get segments - system not running or "
+		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
