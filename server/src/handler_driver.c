@@ -272,11 +272,9 @@ static bool free_train(int grab_id) {
 }
 
 void free_all_grabbed_trains(void) {
-	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < MAX_TRAINS; i++) {
 		free_train(i);
 	}
-	pthread_mutex_unlock(&grabbed_trains_mutex);
 }
 
 onion_connection_status handler_grab_train(void *_, onion_request *req,

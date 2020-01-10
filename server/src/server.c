@@ -103,14 +103,14 @@ static int eval_args(int argc, char **argv) {
 	if (argc == 5) {
 		if (strnlen(argv[1], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1 ||
 		    strnlen(argv[2], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1) {
-			printf("Serial device and config directory must not exceed %d signs\n",
+			printf("Serial device and config directory must not exceed %d characters\n",
 			       INPUT_MAX_LEN);
 			return 1;
 		} else if (strnlen(argv[3], 16) == 16) {
-			printf("IP address must not exceed 15 signs\n");
+			printf("IP address must not exceed 15 characters\n");
 			return 1;
 		} else if (strnlen(argv[4], 6) == 6) {
-			printf("Port must not exceed 5 signs\n");
+			printf("Port must not exceed 5 characters\n");
 			return 1;
 		} else {
 			strcpy(serial_device, argv[1]);
@@ -177,7 +177,6 @@ int main(int argc, char **argv) {
 
 	onion_listen(o);
 	onion_free(o);
-	free_all_grabbed_trains();
 	syslog(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 

@@ -294,7 +294,7 @@ t_route_string_to_id route_string_to_id_table[TOTAL_ROUTES] = {
 	{.string = "signal4signal2",  .id = 9}
 };
 
-GHashTable* route_string_to_id_hashtable;
+GHashTable* route_string_to_id_hashtable = NULL;
 
 int create_interlocking_hashtable(void) {
 	route_string_to_id_hashtable = g_hash_table_new(g_str_hash, g_str_equal);
@@ -308,7 +308,9 @@ int create_interlocking_hashtable(void) {
 }
 
 void free_interlocking_hashtable(void) {
-	g_hash_table_destroy(route_string_to_id_hashtable);
+	if (route_string_to_id_hashtable != NULL) {
+		g_hash_table_destroy(route_string_to_id_hashtable);
+	}
 }
 
 
@@ -405,7 +407,11 @@ static int interlocking_table_resolve_indices(void) {
 	return 0;
 }
 
-int interlocking_table_initialise(void) {
+int interlocking_table_initialise(const char *config_dir) {
+	if (strstr(config_dir, "swtbahn-ultraloop") == NULL) {
+		return 0;
+	}
+	
 	int err_indices = interlocking_table_resolve_indices();
 	int err_hashtable = create_interlocking_hashtable();
 	

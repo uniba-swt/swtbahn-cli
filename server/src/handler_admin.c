@@ -52,7 +52,7 @@ void build_message_hex_string(unsigned char *message, char *dest) {
 
 static void *start_bidib(void *_) {
 	int err_serial = bidib_start_serial(serial_device, config_directory, 0);
-	int err_interlocking = 0; // interlocking_table_initialise();
+	int err_interlocking = interlocking_table_initialise(config_directory);
 	pthread_mutex_lock(&start_stop_mutex);
 	if (err_serial || err_interlocking) {
 		starting = false;
@@ -122,6 +122,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		syslog(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;
+		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
 		retval = OCS_PROCESSED;
 	} else {

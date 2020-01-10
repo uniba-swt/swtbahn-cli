@@ -107,7 +107,7 @@ extern GHashTable* route_string_to_id_hashtable;
  *
  * @return 0 if successful, otherwise 1
  */
-int interlocking_table_initialise(void);
+int interlocking_table_initialise(const char *config_dir);
 
 /**
  * Frees the hashtable that maps route strings to IDs.
