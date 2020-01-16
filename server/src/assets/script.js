@@ -1,4 +1,3 @@
-var url = '';
 var trackOutput = 'master';
 var sessionId = 0;
 var grabId = -1;
@@ -13,7 +12,7 @@ $(document).ready(function() {
             $('#pingResponse').text('Waiting');
             $.ajax({
                 type: 'POST',
-                url: url,
+                url: '/',
                 crossDomain: true,
                 data: null,
                 dataType: 'text',
@@ -34,7 +33,7 @@ $(document).ready(function() {
             $('#startupShutdownResponse').text('Waiting');
             $.ajax({
                 type: 'POST',
-                url: url + '/admin/startup',
+                url: '/admin/startup',
                 crossDomain: true,
                 data: null,
                 dataType: 'text',
@@ -55,7 +54,7 @@ $(document).ready(function() {
             $('#startupShutdownResponse').text('Waiting');
             $.ajax({
                 type: 'POST',
-                url: url + '/admin/shutdown',
+                url: '/admin/shutdown',
                 crossDomain: true,
                 data: null,
                 dataType: 'text',
@@ -79,7 +78,7 @@ $(document).ready(function() {
             if (sessionId == 0 && grabId == -1) {
                 $.ajax({
                     type: 'POST',
-                    url: url + '/driver/grab-train',
+                    url: '/driver/grab-train',
                     crossDomain: true,
                     data: { 'train': trainId, 'engine': trainEngine },
                     dataType: 'text',
@@ -110,7 +109,7 @@ $(document).ready(function() {
             if (sessionId != 0 && grabId != -1) {
                 $.ajax({
                     type: 'POST',
-                    url: url + '/driver/release-train',
+                    url: '/driver/release-train',
                     crossDomain: true,
                     data: { 'session-id': sessionId, 'grab-id': grabId },
                     dataType: 'text',
@@ -177,7 +176,7 @@ $(document).ready(function() {
             if (sessionId != 0 && grabId != -1) {
                 $.ajax({
                     type: 'POST',
-                    url: url + '/driver/set-dcc-train-speed',
+                    url: '/driver/set-dcc-train-speed',
                     crossDomain: true,
                     data: {
                         'session-id': sessionId,
@@ -219,7 +218,7 @@ $(document).ready(function() {
         //     if (sessionId != 0 && grabId != -1) {
         //         $.ajax({
         //             type: 'POST',
-        //             url: url + '/driver/request-route',
+        //             url: '/driver/request-route',
         //             crossDomain: true,
         //             data: {
         //                 'session-id': sessionId,
@@ -246,7 +245,7 @@ $(document).ready(function() {
         //     if (sessionId != 0 && grabId != -1) {
         //         $.ajax({
         //             type: 'POST',
-        //             url: url + '/driver/drive-route',
+        //             url: '/driver/drive-route',
         //             crossDomain: true,
         //             data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
         //             dataType: 'text',
@@ -268,7 +267,7 @@ $(document).ready(function() {
         //     var routeId = $('#routeId').val();
         //     $.ajax({
         //         type: 'POST',
-        //         url: url + '/controller/release-route',
+        //         url: '/controller/release-route',
         //         crossDomain: true,
         //         data: { 'route-id': routeId },
         //         dataType: 'text',
@@ -320,7 +319,7 @@ $(document).ready(function() {
 
             $.ajax({
                 type: 'POST',
-                url: url + '/controller/set-point',
+                url: '/controller/set-point',
                 crossDomain: true,
                 data: { 'point': pointId, 'state': pointPosition },
                 dataType: 'text',
@@ -383,7 +382,7 @@ $(document).ready(function() {
             var signalAspect = $(this).text();
             $.ajax({
                 type: 'POST',
-                url: url + '/controller/set-signal',
+                url: '/controller/set-signal',
                 crossDomain: true,
                 data: { 'signal': signalId, 'state': signalAspect },
                 dataType: 'text',

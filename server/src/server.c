@@ -74,6 +74,8 @@ static onion_connection_status handler_root(void *_, onion_request *req,
 static onion_connection_status handler_assets(void *_, onion_request *req,
                                               onion_response *res) {
 	build_response_header(res);
+	onion_response_set_header(res, "Cache-Control", "max-age=43200");
+	
 	const char local_path[] = "../src/assets/";
 	char *global_path = realpath(local_path, NULL);
 	if (!global_path) {
