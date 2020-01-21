@@ -201,16 +201,16 @@ static int set_train_engine(const int grab_id, const char *train, const char *en
 	if (engine != NULL) {
 	 	if (!strcmp("default", engine)) {
 	 		grabbed_trains[grab_id].engine_time_step = 50000*MICROSECOND;	// 0.05 seconds
-			grabbed_trains[grab_id].engine_reset_function = train_engine_default_reset;
-			grabbed_trains[grab_id].engine_logic_function = train_engine_default_logic;
-			grabbed_trains[grab_id].engine_tick_function = train_engine_default_tick;
+			grabbed_trains[grab_id].engine_reset_function = train_engine_defaultreset;
+			grabbed_trains[grab_id].engine_logic_function = train_engine_defaultlogic;
+			grabbed_trains[grab_id].engine_tick_function = train_engine_defaulttick;
 			syslog_server(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
 			return 0;
 		} else if (!strcmp("linear", engine)) {
 	 		grabbed_trains[grab_id].engine_time_step = 200000*MICROSECOND;	// 0.2 seconds
-			grabbed_trains[grab_id].engine_reset_function = train_engine_linear_reset;
-			grabbed_trains[grab_id].engine_logic_function = train_engine_linear_logic;
-			grabbed_trains[grab_id].engine_tick_function = train_engine_linear_tick;
+			grabbed_trains[grab_id].engine_reset_function = train_engine_linearreset;
+			grabbed_trains[grab_id].engine_logic_function = train_engine_linearlogic;
+			grabbed_trains[grab_id].engine_tick_function = train_engine_lineartick;
 			syslog_server(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
 			return 0;
 		}

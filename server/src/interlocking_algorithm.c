@@ -5,7 +5,17 @@
  * http://rtsys.informatik.uni-kiel.de/kieler
  */
 
+#include <stdbool.h>
+
 #include "interlocking_algorithm.h"
+#include "interlocking.h"
+
+bool route_is_unavailable_or_conflicted(const int route_id);
+bool route_is_clear(const int route_id, const char *train_id);
+bool set_route_points_signals(const int route_id);
+bool block_route(const int route_id, const char *train_id);
+int grant_route(const char *train_id, const char *source_id, const char *destination_id);
+
 
 void interlocking_algorithm_reset(t_interlocking_algorithm_tick_data* d) {
   d->_GO = 1;
@@ -33,12 +43,12 @@ void interlocking_algorithm_logic(t_interlocking_algorithm_tick_data* d) {
   d->_cg24 = d->request_available;
   d->_g25 = d->_g24 && !d->_cg24;
   d->_cg25 = !d->request_available;
-  d->_g10 = d->_GO || d->_g10 || d->_g25 && d->_cg25;
+  d->_g10 = d->_GO || d->_g10 || (d->_g25 && d->_cg25);
   if (d->_g10) {
     d->route_id = -1;
   }
   d->_cg1 = d->request_available;
-  d->_g24 = d->_g10 && d->_cg1 || d->_g24 && d->_cg24;
+  d->_g24 = (d->_g10 && d->_cg1) || (d->_g24 && d->_cg24);
   if (d->_g24) {
     d->route_id = interlocking_table_get_route_id(d->source_id, d->destination_id);
   }
@@ -86,7 +96,7 @@ void interlocking_algorithm_logic(t_interlocking_algorithm_tick_data* d) {
   d->_g16 = d->_g7 && !d->_cg11;
   d->_g20 = d->_g5 && !d->_cg15;
   d->_g12 = d->_g3 && !d->_cg19;
-  d->_g11 = d->_g10 && !d->_cg1 || d->_g25 && !d->_cg25;
+  d->_g11 = (d->_g10 && !d->_cg1) || (d->_g25 && !d->_cg25);
 }
 
 void interlocking_algorithm_tick(t_interlocking_algorithm_tick_data* d) {

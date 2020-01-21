@@ -164,8 +164,9 @@ bool set_route_points_signals(const int route_id) {
 	return true;
 }
 
-void block_route(const int route_id, const char *train_id) {
+bool block_route(const int route_id, const char *train_id) {
 	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
+	return true;
 }
 
 int grant_route(const char *train_id, const char *source_id, const char *destination_id) {
