@@ -171,11 +171,10 @@ int interlocking_table_initialise(const char *config_dir) {
 	// load from YAML file
     interlocking_table = parse_interlocking_table(config_dir);
 	
-//	int err_indices = interlocking_table_resolve_indices();
+	int err_indices = interlocking_table_resolve_indices();
 	int err_hashtable = create_interlocking_hashtable();
 	
-//	return (err_indices || err_hashtable);
-    return err_hashtable;
+	return (err_indices || err_hashtable);
 }
 
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id) {
