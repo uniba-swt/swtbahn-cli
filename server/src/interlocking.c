@@ -31,373 +31,133 @@
 
 #include "interlocking.h"
 #include "server.h"
+#include "interlocking_parser.h"
 
-t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES] = {
-	{
-		.id               = 0,
-		.source           = {.id = "signal3a", .bidib_state_index = -1},
-		.destination      = {.id = "signal6", .bidib_state_index = -1},
-		.direction        = ANTICLOCKWISE,
-		.path             = {
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1}
-		                    },
-		.path_count       = 3,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = "signal5", .bidib_state_index = -1}
-		                    },
-		.signals_count    = 1,
-		.conflicts        = {1, 2, 3, 4, 5, 6, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 1, 
-		.source           = {.id = "signal3a", .bidib_state_index = -1},
-		.destination      = {.id = "signal7", .bidib_state_index = -1},
-		.direction        = ANTICLOCKWISE,
-		.path             = {
-						        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1},
-		                        {.id = "seg17", .bidib_state_index = -1},
-		                        {.id = "seg18", .bidib_state_index = -1},
-		                        {.id = "seg19", .bidib_state_index = -1}
-							},
-		.path_count       = 6,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = NULL, .bidib_state_index = -1}
-		                    },
-		.signals_count    = 0,
-		.conflicts        = {0, 2, 3, 4, 5, 6, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 2, 
-		.source           = {.id = "signal3b", .bidib_state_index = -1},
-		.destination      = {.id = "signal6", .bidib_state_index = -1},
-		.direction        = ANTICLOCKWISE,
-		.path             = {
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1}
-		                    },
-		.path_count       = 3,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = "signal5", .bidib_state_index = -1}
-		                    },
-		.signals_count    = 1,
-		.conflicts        = {0, 1, 3, 4, 5, 6, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 3, 
-		.source           = {.id = "signal3b", .bidib_state_index = -1},
-		.destination      = {.id = "signal7", .bidib_state_index = -1},
-		.direction        = ANTICLOCKWISE,
-		.path             = {
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1},
-		                        {.id = "seg17", .bidib_state_index = -1},
-		                        {.id = "seg18", .bidib_state_index = -1},
-		                        {.id = "seg19", .bidib_state_index = -1}
-		                    },
-		.path_count       = 6,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = NULL, .bidib_state_index = -1}
-							},
-		.signals_count    = 0,
-		.conflicts        = {0, 1, 2, 4, 5, 6, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 4, 
-		.source           = {.id = "signal5", .bidib_state_index = -1},
-		.destination      = {.id = "signal4", .bidib_state_index = -1},
-		.direction        = CLOCKWISE,
-		.path             = {
-		                        {.id = "seg18", .bidib_state_index = -1},
-		                        {.id = "seg17", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg31", .bidib_state_index = -1}
-		                    },
-		.path_count       = 5,
-		.points           = {
-		                        {.id = NULL, .bidib_state_index = -1, .position = -1}
-		                    },
-		.points_count     = 0,
-		.signals          = {
-		                        {.id = "signal3a", .bidib_state_index = -1}
-		                    },
-		.signals_count    = 1,
-		.conflicts        = {0, 1, 2, 3, 5, 6, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 5, 
-		.source           = {.id = "signal5", .bidib_state_index = -1},
-		.destination      = {.id = "signal1", .bidib_state_index = -1},
-		.direction        = CLOCKWISE,
-		.path             = {
-		                        {.id = "seg18", .bidib_state_index = -1},
-		                        {.id = "seg17", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg32", .bidib_state_index = -1}
-		                    },
-		.path_count       = 6,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = NULL, .bidib_state_index = -1}
-		                    },
-		.signals_count    = 0,
-		.conflicts        = {0, 1, 2, 3, 4, 6, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 6, 
-		.source           = {.id = "signal5", .bidib_state_index = -1},
-		.destination      = {.id = "signal2", .bidib_state_index = -1},
-		.direction        = CLOCKWISE,
-		.path             = {
-		                        {.id = "seg18", .bidib_state_index = -1},
-		                        {.id = "seg17", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1},
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg28", .bidib_state_index = -1}
-		                    },
-		.path_count       = 6,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
-							},
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = NULL, .bidib_state_index = -1}
-		                    },
-		.signals_count    = 0,
-		.conflicts        = {0, 1, 2, 3, 4, 5, 7, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 7, 
-		.source           = {.id = "signal6", .bidib_state_index = -1},
-		.destination      = {.id = "signal7", .bidib_state_index = -1},
-		.direction        = ANTICLOCKWISE,
-		.path             = {
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg29", .bidib_state_index = -1},
-		                        {.id = "seg17", .bidib_state_index = -1},
-		                        {.id = "seg18", .bidib_state_index = -1},
-		                        {.id = "seg19", .bidib_state_index = -1}
-		                    },
-		.path_count       = 5,
-		.points           = {
-		                        {.id = NULL, .bidib_state_index = -1, .position = -1}
-		                    },
-		.points_count     = 0,
-		.signals          = {
-							    {.id = NULL, .bidib_state_index = -1}
-		                    },
-		.signals_count    = 0,
-		.conflicts        = {0, 1, 2, 3, 4, 5, 6, 8, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 8, 
-		.source           = {.id = "signal4", .bidib_state_index = -1},
-		.destination      = {.id = "signal1", .bidib_state_index = -1},
-		.direction        = CLOCKWISE,
-		.path             = {
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg32", .bidib_state_index = -1}
-		                    },
-		.path_count       = 3,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = REVERSE}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = NULL, .bidib_state_index = -1}
-		                    },
-		.signals_count    = 0,
-		.conflicts        = {0, 1, 2, 3, 4, 5, 6, 7, 9},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	},
-	{
-		.id               = 9, 
-		.source           = {.id = "signal4", .bidib_state_index = -1},
-		.destination      = {.id = "signal2", .bidib_state_index = -1},
-		.direction        = CLOCKWISE,
-		.path             = {
-		                        {.id = "seg30", .bidib_state_index = -1},
-		                        {.id = "seg31", .bidib_state_index = -1},
-		                        {.id = "seg28", .bidib_state_index = -1}
-							},
-		.path_count       = 3,
-		.points           = {
-		                        {.id = "point2", .bidib_state_index = -1, .position = NORMAL}
-		                    },
-		.points_count     = 1,
-		.signals          = {
-		                        {.id = NULL, .bidib_state_index = -1}
-							},
-		.signals_count    = 0,
-		.conflicts        = {0, 1, 2, 3, 4, 5, 6, 7, 8},
-		.conflicts_count  = 9,
-		.train_id         = NULL
-	}
-};
-
-t_route_string_to_id route_string_to_id_table[TOTAL_ROUTES] = {
-	{.string = "signal3asignal6", .id = 0},
-	{.string = "signal3asignal7", .id = 1},
-	{.string = "signal3bsignal6", .id = 2},
-	{.string = "signal3bsignal7", .id = 3},
-	{.string = "signal5signal4",  .id = 4},
-	{.string = "signal5signal1",  .id = 5},
-	{.string = "signal5signal2",  .id = 6},
-	{.string = "signal6signal7",  .id = 7},
-	{.string = "signal4signal1",  .id = 8},
-	{.string = "signal4signal2",  .id = 9}
-};
-
-GHashTable* route_string_to_id_hashtable = NULL;
+GArray *interlocking_table = NULL;
+GHashTable* route_string_to_ids_hashtable = NULL;
 
 int create_interlocking_hashtable(void) {
-	route_string_to_id_hashtable = g_hash_table_new(g_str_hash, g_str_equal);
-	for (size_t i = 0; i < TOTAL_ROUTES; i++) {
-		g_hash_table_insert(route_string_to_id_hashtable, 
-		                    route_string_to_id_table[i].string, 
-		                    &route_string_to_id_table[i].id);
+    route_string_to_ids_hashtable = g_hash_table_new(g_str_hash, g_str_equal);
+    for (int route_index = 0; route_index < interlocking_table->len; ++route_index) {
+        t_interlocking_route *route = get_route(route_index);
+
+        // build key, example: signal3asignal6
+        char *route_string = concat_str(route->source.id, route->destination.id);
+
+        if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
+            void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);
+            GArray *route_ids = (GArray *) route_ids_ptr;
+            g_array_append_val(route_ids, route->id);
+            g_hash_table_replace(route_string_to_ids_hashtable, route_string, route_ids);
+        } else {
+            GArray *route_ids = g_array_sized_new(FALSE, FALSE, sizeof(size_t), 8);
+            g_array_append_val(route_ids, route->id);
+            g_hash_table_insert(route_string_to_ids_hashtable, route_string, route_ids);
+        }
 	}
 	
 	return 0;
 }
 
 void free_interlocking_hashtable(void) {
-	if (route_string_to_id_hashtable != NULL) {
-		g_hash_table_destroy(route_string_to_id_hashtable);
+	if (route_string_to_ids_hashtable != NULL) {
+		g_hash_table_destroy(route_string_to_ids_hashtable);
 	}
 }
 
 
 static int interlocking_table_resolve_indices(void) {
-	for (size_t route_id = 0; route_id < TOTAL_ROUTES; route_id++) {
-		// Resolve the libbidib state array indices for track segments, 
+    for (int route_id = 0; route_id < interlocking_table->len; ++route_id) {
+        t_interlocking_route *route = get_route(route_id);
+		// Resolve the libbidib state array indices for track segments,
 		// points, and signals.
 	
 		GString *log = g_string_new("Interlocking initialisation: ");
-		g_string_append_printf(log, "Route id: %zu\n", interlocking_table_ultraloop[route_id].id);
+		g_string_append_printf(log, "Route id: %zu\n", route->id);
 		
-		char *id = interlocking_table_ultraloop[route_id].source.id;
-		interlocking_table_ultraloop[route_id].source.bidib_state_index = bidib_get_signal_state_index(id);
-		if (interlocking_table_ultraloop[route_id].source.bidib_state_index == -1) {
+		char *id = route->source.id;
+		route->source.bidib_state_index = bidib_get_signal_state_index(id);
+		if (route->source.bidib_state_index == -1) {
 			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 			return 1;
 		}
-		id = interlocking_table_ultraloop[route_id].destination.id;
-		interlocking_table_ultraloop[route_id].destination.bidib_state_index = bidib_get_signal_state_index(id);
-		if (interlocking_table_ultraloop[route_id].destination.bidib_state_index == -1) {
+		id = route->destination.id;
+		route->destination.bidib_state_index = bidib_get_signal_state_index(id);
+		if (route->destination.bidib_state_index == -1) {
 			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
 			return 1;
 		}
 		
 		g_string_append_printf(log, "source: %s (%d)\n", 
-							   interlocking_table_ultraloop[route_id].source.id, 
-		                       interlocking_table_ultraloop[route_id].source.bidib_state_index);
+							   route->source.id,
+		                       route->source.bidib_state_index);
 		g_string_append_printf(log, "destination: %s (%d)\n", 
-		                       interlocking_table_ultraloop[route_id].destination.id, 
-		                       interlocking_table_ultraloop[route_id].destination.bidib_state_index);
+		                       route->destination.id,
+		                       route->destination.bidib_state_index);
 		
-		size_t path_count = interlocking_table_ultraloop[route_id].path_count;
 		g_string_append_printf(log, "Path: ");
-		for (size_t segment_index = 0; segment_index < path_count; segment_index++) {
-			id = interlocking_table_ultraloop[route_id].path[segment_index].id;
-			interlocking_table_ultraloop[route_id].path[segment_index].bidib_state_index = bidib_get_segment_state_index(id);
-		
-			if (interlocking_table_ultraloop[route_id].path[segment_index].bidib_state_index == -1) {
-				syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
-				return -1;
-			}
-		
-			g_string_append_printf(log, "%s (%d), ", 
-								   interlocking_table_ultraloop[route_id].path[segment_index].id,
- 			                       interlocking_table_ultraloop[route_id].path[segment_index].bidib_state_index);
+		if (route->path != NULL) {
+            for (int segment_index = 0; segment_index < route->path->len; ++segment_index) {
+                t_interlocking_path_segment segment = g_array_index(route->path, t_interlocking_path_segment, segment_index);
+                id = segment.id;
+                segment.bidib_state_index = bidib_get_segment_state_index(id);
+
+                if (segment.bidib_state_index == -1) {
+                    syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+                    return -1;
+                }
+
+                g_string_append_printf(log, "%s (%d), ",
+                                       segment.id,
+                                       segment.bidib_state_index);
+            }
 		}
 		g_string_append_printf(log, "\n");
 		
-		size_t points_count = interlocking_table_ultraloop[route_id].points_count;
 		g_string_append_printf(log, "Points: ");
-		for (size_t point_index = 0; point_index < points_count; point_index++) {
-			id = interlocking_table_ultraloop[route_id].points[point_index].id;
-			interlocking_table_ultraloop[route_id].points[point_index].bidib_state_index = bidib_get_point_state_index(id);
-			
-			if (interlocking_table_ultraloop[route_id].points[point_index].bidib_state_index == -1) {
-				syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
-				return -1;
-			}
-			
-			g_string_append_printf(log, "%s (%d), ", 
-			                       interlocking_table_ultraloop[route_id].points[point_index].id,
-								   interlocking_table_ultraloop[route_id].points[point_index].bidib_state_index);
+		if (route->points != NULL) {
+            for (int point_index = 0; point_index < route->points->len; ++point_index) {
+                t_interlocking_point point = g_array_index(route->points, t_interlocking_point, point_index);
+                id = point.id;
+                point.bidib_state_index = bidib_get_point_state_index(id);
+
+                if (point.bidib_state_index == -1) {
+                    syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+                    return -1;
+                }
+
+                g_string_append_printf(log, "%s (%d), ",
+                                       point.id,
+                                       point.bidib_state_index);
+            }
 		}
 		g_string_append_printf(log, "\n");
 		
-		size_t signals_count = interlocking_table_ultraloop[route_id].signals_count;
 		g_string_append_printf(log, "Signals: ");
-		for (size_t signal_index = 0; signal_index < signals_count; signal_index++) {
-			id = interlocking_table_ultraloop[route_id].signals[signal_index].id;
-			interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index = bidib_get_signal_state_index(id);
-			
-			if (interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index == -1) {
-				syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
-				return -1;
-			}
-			
-			g_string_append_printf(log, "%s (%d), ", 
-			                       interlocking_table_ultraloop[route_id].signals[signal_index].id,
- 			                       interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index);
+		if (route->signals != NULL) {
+            for (int signal_index = 0; signal_index < route->signals->len; ++signal_index) {
+                t_interlocking_signal signal = g_array_index(route->signals, t_interlocking_signal, signal_index);
+                id = signal.id;
+                signal.bidib_state_index = bidib_get_signal_state_index(id);
+
+                if (signal.bidib_state_index == -1) {
+                    syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+                    return -1;
+                }
+
+                g_string_append_printf(log, "%s (%d), ",
+                                       signal.id,
+                                       signal.bidib_state_index);
+            }
 		}
 		g_string_append_printf(log, "\n");
 		
-		size_t conflicts_count = interlocking_table_ultraloop[route_id].conflicts_count;
 		g_string_append_printf(log, "Conflicts: ");
-		for (size_t conflict_index = 0; conflict_index < conflicts_count; conflict_index++) {
-			g_string_append_printf(log, "%zu, ", 
-			                       interlocking_table_ultraloop[route_id].conflicts[conflict_index]);
+		if (route->conflicts != NULL) {
+            for (int conflict_index = 0; conflict_index < route->conflicts->len; ++conflict_index) {
+                size_t conflict = g_array_index(route->conflicts, size_t, conflict_index);
+                g_string_append_printf(log, "%zu, ", conflict);
+            }
 		}
 		
 		syslog_server(LOG_NOTICE, "%s", log->str);
@@ -408,25 +168,35 @@ static int interlocking_table_resolve_indices(void) {
 }
 
 int interlocking_table_initialise(const char *config_dir) {
-	if (strstr(config_dir, "swtbahn-ultraloop") == NULL) {
-		return 0;
-	}
+	// load from YAML file
+    interlocking_table = parse_interlocking_table(config_dir);
 	
-	int err_indices = interlocking_table_resolve_indices();
+//	int err_indices = interlocking_table_resolve_indices();
 	int err_hashtable = create_interlocking_hashtable();
 	
-	return (err_indices || err_hashtable);
+//	return (err_indices || err_hashtable);
+    return err_hashtable;
 }
 
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id) {
-	GString *route_string = g_string_new(source_id);
-	g_string_append(route_string, destination_id);
-	
-	void *route_id_ptr = g_hash_table_lookup(route_string_to_id_hashtable, route_string->str);
-	if (route_id_ptr == NULL) {
-		return -1;
-	}
+    char *route_string = concat_str(source_id, destination_id);
 
-	const int route_id = *(int *)route_id_ptr;
-	return route_id;
+	if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
+        void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);
+        GArray *route_ids = (GArray *) route_ids_ptr;
+
+        // return first item
+        if (route_ids != NULL && route_ids->len > 0) {
+            return g_array_index(route_ids, size_t, 0);
+        }
+    }
+
+    return -1;
+}
+
+t_interlocking_route* get_route(int route_id) {
+    if (route_id < 0 || route_id >= interlocking_table->len)
+        return NULL;
+
+    return &g_array_index(interlocking_table, t_interlocking_route, route_id);
 }

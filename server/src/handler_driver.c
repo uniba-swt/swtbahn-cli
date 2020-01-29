@@ -148,14 +148,15 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 
 static bool drive_route(const int grab_id, const int route_id) {
 	const char *train_id = grabbed_trains[grab_id].name->str;
-	if (interlocking_table_ultraloop[route_id].train_id == NULL) {
+	t_interlocking_route *route = get_route(route_id);
+	if (route->train_id == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
 		return false;
 	}
 
 	pthread_mutex_lock(&interlocker_mutex);
-	if (strcmp(train_id, interlocking_table_ultraloop[route_id].train_id->str)) {
+	if (strcmp(train_id, route->train_id->str)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
 		return false;
@@ -166,11 +167,11 @@ static bool drive_route(const int grab_id, const int route_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	grabbed_trains[grab_id].engine_data.requested_speed = 20;
 	grabbed_trains[grab_id].engine_data.requested_forwards = 
-	    (interlocking_table_ultraloop[route_id].direction == CLOCKWISE);
+	    (route->direction == CLOCKWISE);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set entry signal to red (stop aspect)
-	const char *signal_id = interlocking_table_ultraloop[route_id].source.id;
+	const char *signal_id = route->source.id;
 	if (bidib_set_signal(signal_id, "red")) {
 		syslog_server(LOG_ERR, "Drive route: Entry signal not set to stop aspect");
 		return false;
@@ -181,8 +182,8 @@ static bool drive_route(const int grab_id, const int route_id) {
 	}
 		
 	// Wait until the destination has been reached
-	const int path_count = interlocking_table_ultraloop[route_id].path_count;
-	const char *destination = interlocking_table_ultraloop[route_id].path[path_count - 1].id;
+	const int path_count = route->path->len;
+	const char *destination = g_array_index(route->path, t_interlocking_path_segment, path_count - 1).id;
 	while (!train_position_is_at(train_id, destination)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}

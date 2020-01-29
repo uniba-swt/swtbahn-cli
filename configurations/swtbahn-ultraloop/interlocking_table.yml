@@ -7,7 +7,7 @@ interlocking-table:
     path:
       - id: seg31
       - id: seg30
-        end: seg29
+      - id: seg29
     points:
       - id: point2
         position: reverse
@@ -33,7 +33,7 @@ interlocking-table:
       - id: seg29
       - id: seg17
       - id: seg18
-        end: seg19
+      - id: seg19
     points:
       - id: point2
         position: reverse
@@ -55,7 +55,7 @@ interlocking-table:
     path:
       - id: seg31
       - id: seg30
-        end: seg29
+      - id: seg29
     points:
       - id: point2
         position: normal
@@ -81,7 +81,7 @@ interlocking-table:
       - id: seg29
       - id: seg17
       - id: seg18
-        end: seg19
+      - id: seg19
     points:
       - id: point2
         position: normal
@@ -105,7 +105,7 @@ interlocking-table:
       - id: seg17
       - id: seg29
       - id: seg30
-        end: seg31
+      - id: seg31
     points:
     signals:
       - id: signal3a
@@ -129,7 +129,7 @@ interlocking-table:
       - id: seg29
       - id: seg30
       - id: seg31
-        end: seg32
+      - id: seg32
     points:
       - id: point2
         position: reverse
@@ -154,7 +154,7 @@ interlocking-table:
       - id: seg29
       - id: seg30
       - id: seg31
-        end: seg28
+      - id: seg28
     points:
       - id: point2
         position: normal
@@ -178,7 +178,7 @@ interlocking-table:
       - id: seg29
       - id: seg17
       - id: seg18
-        end: seg19
+      - id: seg19
     points:
     signals:
     conflicts:
@@ -198,7 +198,7 @@ interlocking-table:
     path:
       - id: seg30
       - id: seg31
-        end: seg32
+      - id: seg32
     points:
       - id: point2
         position: reverse
@@ -220,7 +220,7 @@ interlocking-table:
     path:
       - id: seg30
       - id: seg31
-        end: seg28
+      - id: seg28
     points:
       - id: point2
         position: normal

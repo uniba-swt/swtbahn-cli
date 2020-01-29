@@ -41,21 +41,23 @@
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 bool route_is_unavailable_or_conflicted(const int route_id) {
-	// Check if the route has been granted (unavailable)
-	if (interlocking_table_ultraloop[route_id].train_id != NULL) {
+    t_interlocking_route *route = get_route(route_id);
+
+    // Check if the route has been granted (unavailable)
+	if (route->train_id != NULL) {
 		return true;
 	}
 	
 	// Check conflicts
-	size_t conflicts_count = interlocking_table_ultraloop[route_id].conflicts_count;
-	for (size_t conflict_index = 0; conflict_index < conflicts_count; conflict_index++) {
-		const size_t conflicted_route_id = 
-		    interlocking_table_ultraloop[route_id].conflicts[conflict_index];
-		if (interlocking_table_ultraloop[conflicted_route_id].train_id != NULL) {
-			return true;
-		}
+	if (route->conflicts != NULL) {
+        for (int i = 0; i < route->conflicts->len; ++i) {
+            const size_t conflicted_route_id = g_array_index(route->conflicts, size_t, i);
+            if (get_route(conflicted_route_id) != NULL) {
+                return true;
+            }
+        }
 	}
-	
+
 	return false;
 }
 
@@ -67,10 +69,10 @@ bool route_is_clear(const int route_id, const char *train_id) {
 	
 	// Read the track state
 	t_bidib_track_state track_state = bidib_get_state();
-	
+
+	t_interlocking_route *route = get_route(route_id);
 	// Signal at the route source has to be red (stop aspect)
-	const size_t source_signal_state_index = 
-	    interlocking_table_ultraloop[route_id].source.bidib_state_index;
+	const size_t source_signal_state_index = route->source.bidib_state_index;
 	if (strcmp(track_state.signals_board[source_signal_state_index].data.state_id, "red")) {
 		syslog_server(LOG_ERR, "Route is clear: Route %d - source signal is not in the stop aspect", 
 		              route_id);
@@ -79,51 +81,51 @@ bool route_is_clear(const int route_id, const char *train_id) {
 	}
 	
 	// Signals of tracks that intersect the route have to be red (stop aspect)
-	size_t signals_count = interlocking_table_ultraloop[route_id].signals_count;
-	for (size_t signal_index = 0; signal_index < signals_count; signal_index++) {
-		const char *signal_id = 
-		    interlocking_table_ultraloop[route_id].signals[signal_index].id;
-		const size_t signal_state_index = 
-		    interlocking_table_ultraloop[route_id].signals[signal_index].bidib_state_index;
-		if (strcmp(track_state.signals_board[signal_state_index].data.state_id, "red")) {
-			syslog_server(LOG_ERR, "Route is clear: Route %d - signal %s is not in the stop aspect", 
-			              route_id, signal_id);
-			bidib_free_track_state(track_state);
-			return false;
-		}
-	}
+    if (route->signals != NULL) {
+        for (int signal_index = 0; signal_index < route->signals->len; ++signal_index) {
+            t_interlocking_signal signal = g_array_index(route->signals, t_interlocking_signal, signal_index);
+            const char *signal_id = signal.id;
+            const size_t signal_state_index = signal.bidib_state_index;
+            if (strcmp(track_state.signals_board[signal_state_index].data.state_id, "red")) {
+                syslog_server(LOG_ERR, "Route is clear: Route %d - signal %s is not in the stop aspect",
+                              route_id, signal_id);
+                bidib_free_track_state(track_state);
+                return false;
+            }
+        }
+    }
 
 	// All track segments on the route have to be clear
 	t_bidib_id_query train_id_query;
-	size_t path_count = interlocking_table_ultraloop[route_id].path_count;
-	for (size_t segment_index = 0; segment_index < path_count; segment_index++) {
-		const char *segment_id = 
-		    interlocking_table_ultraloop[route_id].path[segment_index].id;
-		const size_t segment_state_index = 
-		    interlocking_table_ultraloop[route_id].path[segment_index].bidib_state_index;
-		
-		if (track_state.segments[segment_state_index].data.occupied) {
-			// Only the first track segment can be occupied, and only by the requesting train
-			if (segment_index == 0 && 
-				    track_state.segments[segment_state_index].data.dcc_address_cnt == 1) {
-				train_id_query = 
-				    bidib_get_train_id(track_state.segments[segment_state_index].data.dcc_addresses[0]);
-				if (strcmp(train_id, train_id_query.id)) {
-					syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared", 
-					              route_id, segment_id);
-					bidib_free_id_query(train_id_query);
-					bidib_free_track_state(track_state);
-					return false;
-				}
-			} else {
-				syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared", 
-				              route_id, segment_id);
-				bidib_free_id_query(train_id_query);
-				bidib_free_track_state(track_state);
-				return false;
-			}
-		}
-	}
+    if (route->path != NULL) {
+        for (int segment_index = 0; segment_index < route->path->len; ++segment_index) {
+            t_interlocking_path_segment segment = g_array_index(route->path, t_interlocking_path_segment, segment_index);
+            const char *segment_id = segment.id;
+            const size_t segment_state_index = segment.bidib_state_index;
+
+            if (track_state.segments[segment_state_index].data.occupied) {
+                // Only the first track segment can be occupied, and only by the requesting train
+                if (segment_index == 0 &&
+                    track_state.segments[segment_state_index].data.dcc_address_cnt == 1) {
+                    train_id_query =
+                            bidib_get_train_id(track_state.segments[segment_state_index].data.dcc_addresses[0]);
+                    if (strcmp(train_id, train_id_query.id)) {
+                        syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared",
+                                      route_id, segment_id);
+                        bidib_free_id_query(train_id_query);
+                        bidib_free_track_state(track_state);
+                        return false;
+                    }
+                } else {
+                    syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared",
+                                  route_id, segment_id);
+                    bidib_free_id_query(train_id_query);
+                    bidib_free_track_state(track_state);
+                    return false;
+                }
+            }
+        }
+    }
 	
 	bidib_free_id_query(train_id_query);
 	bidib_free_track_state(track_state);
@@ -131,27 +133,29 @@ bool route_is_clear(const int route_id, const char *train_id) {
 }
 
 bool set_route_points_signals(const int route_id) {
-	// Set points
-	size_t points_count = interlocking_table_ultraloop[route_id].points_count;
-	for (size_t point_index = 0; point_index < points_count; point_index++) {
-		const char *point_id = 
-		    interlocking_table_ultraloop[route_id].points[point_index].id;
-		const e_interlocking_point_position point_position = 
-		    interlocking_table_ultraloop[route_id].points[point_index].position;
-		
-		if (bidib_switch_point(point_id, (point_position == NORMAL) ? "normal" : "reverse")) {
-			syslog_server(LOG_ERR, "Execute route: Set point - invalid parameters");
-			return false;
-		} else {
-			syslog_server(LOG_NOTICE, "Execute route: Set point - point: %s state: %s",
-				          point_id, 
-				          point_position == NORMAL ? "normal" : "reverse");
-			bidib_flush();
-		}
-	}
+	t_interlocking_route *route = get_route(route_id);
+
+    // Set points
+    if (route->points != NULL) {
+        for (int point_index = 0; point_index < route->points->len; ++point_index) {
+            t_interlocking_point point = g_array_index(route->points, t_interlocking_point, point_index);
+            const char *point_id = point.id;
+            const e_interlocking_point_position point_position = point.position;
+
+            if (bidib_switch_point(point_id, (point_position == NORMAL) ? "normal" : "reverse")) {
+                syslog_server(LOG_ERR, "Execute route: Set point - invalid parameters");
+                return false;
+            } else {
+                syslog_server(LOG_NOTICE, "Execute route: Set point - point: %s state: %s",
+                              point_id,
+                              point_position == NORMAL ? "normal" : "reverse");
+                bidib_flush();
+            }
+        }
+    }
 	
 	// Set entry signal to green (proceed aspect)
-	const char *signal_id = interlocking_table_ultraloop[route_id].source.id;
+	const char *signal_id = route->source.id;
 	if (bidib_set_signal(signal_id, "green")) {
 		syslog_server(LOG_ERR, "Execute route: Set signal - invalid parameters");
 		return false;
@@ -165,7 +169,8 @@ bool set_route_points_signals(const int route_id) {
 }
 
 bool block_route(const int route_id, const char *train_id) {
-	interlocking_table_ultraloop[route_id].train_id = g_string_new(train_id);
+	t_interlocking_route *route = get_route(route_id);
+    route->train_id = g_string_new(train_id);
 	return true;
 }
 
@@ -251,8 +256,9 @@ int grant_route_with_algorithm(const char *train_id, const char *source_id, cons
 
 void release_route(const int route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
-	g_string_free(interlocking_table_ultraloop[route_id].train_id, TRUE);
-	interlocking_table_ultraloop[route_id].train_id = NULL;
+    t_interlocking_route *route = get_route(route_id);
+    g_string_free(route->train_id, TRUE);
+	route->train_id = NULL;
 	pthread_mutex_unlock(&interlocker_mutex);
 }
 

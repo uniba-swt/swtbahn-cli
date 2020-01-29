@@ -31,12 +31,6 @@
 #include <glib.h>
 
 typedef enum {
-	TOTAL_ROUTES	= 10,
-	MAX_SEGMENTS	= 6,
-	MAX_POINTS		= 1,
-	MAX_SIGNALS		= 1,
-	MAX_CONFLICTS	= 9,
-	
 	CLOCKWISE,
 	ANTICLOCKWISE
 } e_interlocking_table;
@@ -75,29 +69,34 @@ typedef struct {
  * id of train when granted the route
  */
 typedef struct {
-	size_t id;
-	t_interlocking_signal source;
-	t_interlocking_signal destination;
-	size_t direction;
-	t_interlocking_path_segment path[MAX_SEGMENTS];
-	size_t path_count;
-	t_interlocking_point points[MAX_POINTS];
-	size_t points_count;
-	t_interlocking_signal signals[MAX_SIGNALS];
-	size_t signals_count;
-	size_t conflicts[MAX_CONFLICTS];
-	size_t conflicts_count;
-	GString *train_id;
+    size_t id;
+    t_interlocking_signal source;
+    t_interlocking_signal destination;
+    size_t direction;
+    GArray *path;
+    // t_interlocking_path_segment path[MAX_SEGMENTS];
+    // size_t path_count;
+    GArray *points;
+    // t_interlocking_point points[MAX_POINTS];
+    // size_t points_count;
+    GArray *signals;
+    // t_interlocking_signal signals[MAX_SIGNALS];
+    // size_t signals_count;
+    GArray *conflicts;
+    // size_t conflicts[MAX_CONFLICTS];
+    // size_t conflicts_count;
+    GString *train_id;
 } t_interlocking_route;
 
-extern t_interlocking_route interlocking_table_ultraloop[TOTAL_ROUTES];
+//extern t_interlocking_route interlocking_table[TOTAL_ROUTES];
+extern GArray *interlocking_table;
 
 typedef struct {
 	char *string;
 	int id;
 } t_route_string_to_id;
 
-extern GHashTable* route_string_to_id_hashtable;
+extern GHashTable* route_string_to_ids_hashtable;
 
 
 /**
@@ -121,6 +120,14 @@ void free_interlocking_hashtable(void);
  * @return the route ID if it exists, otherwise -1
  */
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id);
+
+/**
+ * Return the route (pointer to a struct) for a given route_id
+ *
+ * @param route_id route
+ * @return the route pointer if it exists, otherwise NULL
+ */
+t_interlocking_route* get_route(int route_id);
 
 #endif
 
