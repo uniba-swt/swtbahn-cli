@@ -194,8 +194,9 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
 }
 
 t_interlocking_route* get_route(int route_id) {
-    if (route_id < 0 || route_id >= interlocking_table->len)
+    int index = route_id - 1;
+    if (index < 0 || index >= interlocking_table->len)
         return NULL;
 
-    return &g_array_index(interlocking_table, t_interlocking_route, route_id);
+    return &g_array_index(interlocking_table, t_interlocking_route, index);
 }

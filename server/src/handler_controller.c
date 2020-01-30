@@ -52,7 +52,7 @@ bool route_is_unavailable_or_conflicted(const int route_id) {
 	if (route->conflicts != NULL) {
         for (int i = 0; i < route->conflicts->len; ++i) {
             const size_t conflicted_route_id = g_array_index(route->conflicts, size_t, i);
-            if (get_route(conflicted_route_id) != NULL) {
+            if (get_route(conflicted_route_id)->train_id != NULL) {
                 return true;
             }
         }
