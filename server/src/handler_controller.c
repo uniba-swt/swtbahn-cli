@@ -106,24 +106,10 @@ bool route_is_clear(const int route_id, const char *train_id) {
         const size_t segment_state_index = segment.bidib_state_index;
 
         if (track_state.segments[segment_state_index].data.occupied) {
-            // Only the first track segment can be occupied, and only by the requesting train
-            if (segment_index == 0 &&
-                track_state.segments[segment_state_index].data.dcc_address_cnt == 1) {
-                t_bidib_id_query train_id_query =
-                        bidib_get_train_id(track_state.segments[segment_state_index].data.dcc_addresses[0]);
-                if (strcmp(train_id, train_id_query.id)) {
-                    syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared. Occupied by train: %s, expected: %s",
-                                  route_id, segment_id, train_id_query.id, train_id);
-                    bidib_free_id_query(train_id_query);
-                    bidib_free_track_state(track_state);
-                    return false;
-                }
-            } else {
-                syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared",
-                              route_id, segment_id);
-                bidib_free_track_state(track_state);
-                return false;
-            }
+            syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared",
+                          route_id, segment_id);
+            bidib_free_track_state(track_state);
+            return false;
         }
     }
 
