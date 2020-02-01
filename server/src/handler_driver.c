@@ -33,39 +33,22 @@
 #include <string.h>
 
 #include "server.h"
+#include "dyn_containers_interface.h"
 #include "handler_controller.h"
 #include "interlocking.h"
 #include "param_verification.h"
 
-#include "train_engine_tick_data.h"
-#include "train_engine_default.h"
-#include "train_engine_linear.h"
-
-#define MAX_TRAINS 32
 
 #define MICROSECOND 1
-#define TRAIN_ENGINE_TIME_STEP 200000*MICROSECOND	// 0.2 seconds
-#define TRAIN_DRIVE_TIME_STEP 50000*MICROSECOND		// 0.05 seconds
+#define TRAIN_DRIVE_TIME_STEP 	50000 * MICROSECOND		// 0.05 seconds
 
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned int next_grab_id = 0;
 
-
-typedef struct {
-	bool is_valid;
-	GString *name;
-	pthread_t engine_thread;
-	size_t engine_time_step;
-	char track_output[32];
-	
-	t_train_engine_tick_data engine_data;
-	void (*engine_reset_function)(t_train_engine_tick_data *engine_data);
-	void (*engine_logic_function)(t_train_engine_tick_data *engine_data);
-	void (*engine_tick_function)(t_train_engine_tick_data *engine_data);	
-} t_train_data;
-
-static t_train_data grabbed_trains[MAX_TRAINS] = {{.is_valid = false}};
+t_train_data grabbed_trains[MAX_TRAINS] = {
+	{ .is_valid = false, .dyn_containers_engine_instance = -1 }
+};
 
 
 static void increment_next_grab_id(void) {
@@ -89,47 +72,6 @@ bool train_grabbed(const char *train) {
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	return grabbed;
-}
-
-void *grabbed_train_engine(void *args) {
-	t_train_data *train_data = (t_train_data *)args;
-		
-	// Reset the train engine
-	(*train_data->engine_reset_function)(&train_data->engine_data);
-	// Initial tick resets the input and output values
-	(*train_data->engine_tick_function)(&train_data->engine_data);
-
-	do  {
-		// Update the target speed and direction
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		if (train_data->engine_data.target_speed != train_data->engine_data.requested_speed 
-		        || train_data->engine_data.target_forwards != train_data->engine_data.requested_forwards) {
-			(*train_data->engine_tick_function)(&train_data->engine_data);
-			
-			if (bidib_set_train_speed(train_data->name->str, 
-									  train_data->engine_data.target_forwards 
-									  ? train_data->engine_data.target_speed 
-									  : -train_data->engine_data.target_speed, 
-									  train_data->track_output)) {
-				syslog_server(LOG_ERR, "Request: Set train speed - bad parameter values");
-			} else {
-				bidib_flush();
-				syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
-					   train_data->name->str, 
-					   train_data->engine_data.target_forwards 
-				       ? train_data->engine_data.target_speed 
-				       : -train_data->engine_data.target_speed);
-			}
-		}
-		pthread_mutex_unlock(&grabbed_trains_mutex);
-		
-		usleep(train_data->engine_time_step);
-	} while (train_data->is_valid);
-	
-	// Ensure that the train really stops
-	bidib_set_train_speed(train_data->name->str, 0, train_data->track_output);
-	bidib_flush();
-	return NULL;
 }
 
 static bool train_position_is_at(const char *train_id, const char *segment) {
@@ -164,9 +106,11 @@ static bool drive_route(const int grab_id, const int route_id) {
 	
 	// Driving starts
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	grabbed_trains[grab_id].engine_data.requested_speed = 20;
-	grabbed_trains[grab_id].engine_data.requested_forwards = 
-	    (interlocking_table_ultraloop[route_id].direction == CLOCKWISE);
+	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+	const int requested_speed = 20;
+	const char requested_forwards = (interlocking_table_ultraloop[route_id].direction == CLOCKWISE);
+	dyn_containers_set_train_engine_instance_inputs(engine_instance,
+	                                       requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set entry signal to red (stop aspect)
@@ -189,35 +133,12 @@ static bool drive_route(const int grab_id, const int route_id) {
 	
 	// Driving stops
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	grabbed_trains[grab_id].engine_data.requested_speed = 0;
+	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Controller releases the route
 	release_route(route_id);
 	return true;
-}
-
-static int set_train_engine(const int grab_id, const char *train, const char *engine) {
-	if (engine != NULL) {
-	 	if (!strcmp("default", engine)) {
-	 		grabbed_trains[grab_id].engine_time_step = 50000*MICROSECOND;	// 0.05 seconds
-			grabbed_trains[grab_id].engine_reset_function = train_engine_defaultreset;
-			grabbed_trains[grab_id].engine_logic_function = train_engine_defaultlogic;
-			grabbed_trains[grab_id].engine_tick_function = train_engine_defaulttick;
-			syslog_server(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
-			return 0;
-		} else if (!strcmp("linear", engine)) {
-	 		grabbed_trains[grab_id].engine_time_step = 200000*MICROSECOND;	// 0.2 seconds
-			grabbed_trains[grab_id].engine_reset_function = train_engine_linearreset;
-			grabbed_trains[grab_id].engine_logic_function = train_engine_linearlogic;
-			grabbed_trains[grab_id].engine_tick_function = train_engine_lineartick;
-			syslog_server(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
-			return 0;
-		}
-	}
-	
-	syslog_server(LOG_ERR, "Train %s has no engine", train);
-	return 1;
 }
 
 static int grab_train(const char *train, const char *engine) {
@@ -244,16 +165,14 @@ static int grab_train(const char *train, const char *engine) {
 	increment_next_grab_id();
 	grabbed_trains[grab_id].name = g_string_new(train);
 	strcpy(grabbed_trains[grab_id].track_output, "master");
-	if (set_train_engine(grab_id, train, engine)) {
+	if (dyn_containers_set_train_engine(&grabbed_trains[grab_id], train, engine)) {
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_ERR, "Train engine %s could not be used", engine);
 		return -1;
 	}
 	grabbed_trains[grab_id].is_valid = true;
-	pthread_create(&grabbed_trains[grab_id].engine_thread, NULL, 
-	               grabbed_train_engine, &grabbed_trains[grab_id]);
-	syslog_server(LOG_NOTICE, "Train %s grabbed", train);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
+	syslog_server(LOG_NOTICE, "Train %s grabbed", train);
 	return grab_id;
 }
 
@@ -262,7 +181,7 @@ static bool free_train(int grab_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	if (grabbed_trains[grab_id].is_valid) {
 		grabbed_trains[grab_id].is_valid = false;
-		pthread_join(grabbed_trains[grab_id].engine_thread, NULL);
+		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
 		syslog_server(LOG_NOTICE, "Train %s released", grabbed_trains[grab_id].name->str);
 		g_string_free(grabbed_trains[grab_id].name, TRUE);
 		success = true;
@@ -448,12 +367,13 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
 			strcpy(grabbed_trains[grab_id].track_output, data_track_output);
+			int dyn_containers_engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 			if (speed < 0) {
-				grabbed_trains[grab_id].engine_data.requested_forwards = 0;
-				grabbed_trains[grab_id].engine_data.requested_speed = -speed;
+				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
+				                                                -speed, false);
 			} else {
-				grabbed_trains[grab_id].engine_data.requested_forwards = 1;
-				grabbed_trains[grab_id].engine_data.requested_speed = speed;
+				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
+				                                                speed, true);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;

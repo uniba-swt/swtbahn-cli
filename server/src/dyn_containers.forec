@@ -1,0 +1,476 @@
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <time.h>
+
+#include "dynlib.h"
+#include "tick_data.h"
+
+#include "dyn_containers.h"
+
+typedef void t_dyn_containers_interface;
+#define t_dyn_containers_interface__global_0_0 t_dyn_containers_interface
+
+int NULL;
+#define NULL__global_0_0 NULL
+
+typedef int bool;
+#define bool__global_0_0 bool
+
+int PATH_MAX;
+#define PATH_MAX__global_0_0 PATH_MAX
+
+int NAME_MAX;
+#define NAME_MAX__global_0_0 NAME_MAX
+
+typedef void dynlib_status;
+#define dynlib_status__global_0_0 dynlib_status
+
+typedef void dynlib_data;
+#define dynlib_data__global_0_0 dynlib_data
+
+int DYNLIB_COMPILE_SUCCESS;
+#define DYNLIB_COMPILE_SUCCESS__global_0_0 DYNLIB_COMPILE_SUCCESS
+
+int DYNLIB_LOAD_SUCCESS;
+#define DYNLIB_LOAD_SUCCESS__global_0_0 DYNLIB_LOAD_SUCCESS
+
+int DYNLIB_COMPILE_OBJ_ERR;
+#define DYNLIB_COMPILE_OBJ_ERR__global_0_0 DYNLIB_COMPILE_OBJ_ERR
+
+int DYNLIB_COMPILE_SHARED_ERR;
+#define DYNLIB_COMPILE_SHARED_ERR__global_0_0 DYNLIB_COMPILE_SHARED_ERR
+
+int DYNLIB_LOAD_ERR;
+#define DYNLIB_LOAD_ERR__global_0_0 DYNLIB_LOAD_ERR
+
+int DYNLIB_LOAD_RESET_ERR;
+#define DYNLIB_LOAD_RESET_ERR__global_0_0 DYNLIB_LOAD_RESET_ERR
+
+int DYNLIB_LOAD_TICK_ERR;
+#define DYNLIB_LOAD_TICK_ERR__global_0_0 DYNLIB_LOAD_TICK_ERR
+
+typedef void TickData;
+#define TickData__global_0_0 TickData
+
+// Function prototypes
+void unloadEngines(void);
+void unloadInterlockers(void);
+void printout(const char *threadName, const dynlib_status status, const dynlib_data *library);
+
+// Thread prototypes
+thread letInterface(void);
+thread loadEngines(void);
+thread loadInterlockers(void);
+
+thread engineInstance0(void);
+thread engineInstance1(void);
+thread engineInstance2(void);
+thread engineInstance3(void);
+thread engineInstance4(void);
+
+thread interlockerInstance0(void);
+thread interlockerInstance1(void);
+thread interlockerInstance2(void);
+thread interlockerInstance3(void);
+
+
+// Data needed by the dynamic libraries
+shared static const unsigned int TRAIN_ENGINE_COUNT_MAX = 4;
+static const unsigned int INTERLOCKER_COUNT_MAX  = 4;
+shared dynlib_data trainEngines[TRAIN_ENGINE_COUNT_MAX];
+dynlib_data interlockers[INTERLOCKER_COUNT_MAX];
+
+// Train engines that are available a compile time
+static const unsigned int TRAIN_ENGINE_DEFINED_COUNT = 2;
+const char *trainEngine0Name = "default";
+const char *trainEngine1Name = "linear";
+const char *trainEngine0Filepath = "/Users/eugeneyip/Documents/SWTbahn/Software/swtbahn-framework/kieler/train-engine-default/build/libtrain_engine_default";
+const char *trainEngine1Filepath = "/Users/eugeneyip/Documents/SWTbahn/Software/swtbahn-framework/kieler/train-engine-linear/build/libtrain_engine_linear";
+
+// Data needed by instances of train engines and interlocking algorithms
+static const unsigned int TRAIN_ENGINE_INSTANCE_COUNT_MAX = 5;
+static const unsigned int INTERLOCKER_INSTANCE_COUNT_MAX  = 4;
+TickData trainEngineInstanceData[TRAIN_ENGINE_INSTANCE_COUNT_MAX];
+TickData interlockerInstanceData[INTERLOCKER_INSTANCE_COUNT_MAX];
+
+
+// Interface with the environment
+typedef struct {
+	bool stopping;						// Whether to stop program execution
+	int let_period_us;					// Period of the Logical Execution Time (LET) in microseconds
+} t_forec_intern_input;
+shared t_forec_intern_input forec_intern_input;
+
+// Train engine information
+typedef struct {
+	bool load;							// Load the train engine specified by filepath
+	bool unload;						// Unload the train engine
+	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
+} t_forec_intern_input_train_engine;
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0;
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_1;
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_2;
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_3;
+
+typedef struct {
+	bool in_use;						// Whether the container is still in use
+} t_forec_intern_output_train_engine;
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0;
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_1;
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_2;
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3;
+
+// Train engine instance information
+typedef struct {
+	bool grab;							// Desire to use this instance
+	bool release;						// Desire to stop using this instance
+	int  train_engine_type;				// Desired train engine to use
+	int  requested_speed;				// Input defined by the train engine
+	char requested_forwards;			// Input defined by the train engine
+} t_forec_intern_input_train_engine_instance;
+shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_0;
+shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_1;
+shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_2;
+shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_3;
+shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_4;
+
+typedef struct {	
+	bool in_use;						// Whether this instance is still in use
+	int  target_speed;					// Output defined by the train engine
+	char target_forwards;				// Output defined by the train engine
+} t_forec_intern_output_train_engine_instance;
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_0;
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_1;
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_2;
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_3;
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_4;
+
+// TODO: Interlocker information
+typedef struct {
+	bool load;							// Load the train engine specified by filepath
+} t_forec_intern_input_interlocker;
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_0;
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_1;
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_2;
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3;
+
+// TODO: Interlocker instance information
+typedef struct {
+	bool in_use;						// Whether the container is still in use
+} t_forec_intern_output_interlocker;
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0;
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_1;
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_2;
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3;
+
+// TODO: Interlocker information
+typedef struct {
+	bool grab;							// Desire to use this instance
+} t_forec_intern_input_interlocker_instance;
+shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_0;
+shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_1;
+shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_2;
+shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_3;
+
+// TODO: Interlocker instance information
+typedef struct {
+	bool in_use;						// Whether this instance is still in use
+} t_forec_intern_output_interlocker_instance;
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0;
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1;
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2;
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3;
+
+
+// TODO: Create shared memory
+
+
+void main(int argc, char **argv) {
+	printf("Starting dynamic library containers \n");
+	
+	abort {
+		par(letInterface, loadEngines, loadInterlockers, 
+		    engineInstance0, engineInstance1, engineInstance2, engineInstance3, engineInstance4,
+		    interlockerInstance0, interlockerInstance1, interlockerInstance2, interlockerInstance3);
+	} when immediate(forec_intern_input.stopping);
+	
+	unloadEngines();
+	printf("Unloaded train engines and instances \n");
+	
+	unloadInterlockers();
+	printf("Unloaded interlockers and instances \n");
+	
+	printf("Closed dynamic library containers \n");
+
+	return 0;
+}
+
+// Thread to manage the LET interface: Timing, inputs, and outputs
+thread letInterface(void) {
+	char *threadName;
+	threadName = "letInterface";
+	
+	// TODO: Create shared memory
+	t_dyn_containers_interface dyn_containers_interface;
+	
+	struct timespec deadline;
+	int CLOCK_MONOTONIC = 1;
+	clock_gettime(CLOCK_MONOTONIC, &deadline);
+	
+	
+	forec_intern_input.stopping = false;
+	forec_intern_input_train_engine_instance_0.grab = true;
+	forec_intern_input_train_engine_instance_0.train_engine_type = 1;
+	forec_intern_input_train_engine_instance_0.requested_speed = 20;
+	forec_intern_input_train_engine_instance_0.requested_forwards = true;
+	pause;
+	pause;
+	pause;
+	pause;
+	pause;
+	pause;
+	forec_intern_input_train_engine_instance_0.requested_forwards = false;
+	pause;
+	pause;
+	pause;
+	pause;
+	forec_intern_input_train_engine_instance_0.grab = false;
+	forec_intern_input_train_engine_instance_0.release = true;
+	pause;
+	forec_intern_input_train_engine_instance_0.grab = true;
+	forec_intern_input_train_engine_instance_0.release = false;
+	forec_intern_input_train_engine_instance_0.train_engine_type = 0;
+	forec_intern_input_train_engine_instance_0.requested_speed = 40;
+	forec_intern_input_train_engine_instance_0.requested_forwards = true;
+	pause;
+	pause;
+	forec_intern_input_train_engine_instance_0.grab = false;
+	forec_intern_input_train_engine_instance_0.release = true;
+
+	while (true) {
+		//----- Start of tick
+		deadline.tv_sec += 1;
+		deadline.tv_nsec += 0; // 50ms = 50000000us
+		// Read inputs into ForeC shared variables
+		// TODO: Copy into forec_intern_input
+		//forec_intern_input.stopping = dyn_containers_interface.stopping;
+
+		//	forec_intern_input_train_engine_0.load = ;
+		//	forec_intern_input_train_engine_0.unload = ;
+		//	strcpy(forec_intern_input_train_engine_0.filepath, );
+
+		//	forec_intern_input_train_engine_instance_0.grab = ;
+		//	forec_intern_input_train_engine_instance_0.release = ;
+		//	forec_intern_input_train_engine_instance_0.train_engine_type = ;
+		//	forec_intern_input_train_engine_instance_0.requested_speed = ;
+		//	forec_intern_input_train_engine_instance_0.requested_forwards = ;
+
+		for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		
+		}
+		for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		
+		}
+		
+		
+		// Wait to the end of the LET period
+		nanosleep(&deadline, NULL);
+		
+		
+		//----- End of tick
+		// Write ForeC shared variables to outputs
+		// TODO: Copy from forec_intern_output
+
+		//	= forec_intern_output_train_engine_0.in_use;
+
+		//	= forec_intern_output_train_engine_instance_0.in_use;
+		//	= forec_intern_output_train_engine_instance_0.target_speed;
+		//	= forec_intern_output_train_engine_instance_0.target_forwards;
+
+		for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		
+		}
+		for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		
+		}
+		
+		pause;
+	}
+}
+
+thread loadEngines(void) {
+	const char *threadName;
+	threadName = "loadEngines";
+
+	// Load train engines that are already available
+	dynlib_status load_status;
+	
+	load_status = dynlib_load(&trainEngines[0], trainEngine0Filepath);
+	printout(threadName, load_status, &trainEngines[0]);
+	if (load_status == DYNLIB_LOAD_SUCCESS) {
+		forec_intern_output_train_engine_0.in_use = true;
+	}
+
+	load_status = dynlib_load(&trainEngines[1], trainEngine1Filepath);
+	printout(threadName, load_status, &trainEngines[1]);
+	if (load_status == DYNLIB_LOAD_SUCCESS) {
+		forec_intern_output_train_engine_1.in_use = true;
+	}
+	
+	while (true) {
+		// Container 0
+		unsigned int container = 0;
+		if (forec_intern_input_train_engine_0.load && !forec_intern_output_train_engine_0.in_use) {
+			// Load the new dynamic library
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.filepath);
+			printout(threadName, load_status, &trainEngines[container]);
+			if (load_status == DYNLIB_LOAD_SUCCESS) {
+				forec_intern_output_train_engine_0.in_use = true;
+			}
+		} else if (forec_intern_input_train_engine_0.unload) {
+			// Close the previous dynamic library
+			dynlib_close(&trainEngines[container]);
+			forec_intern_output_train_engine_0.in_use = false;
+		}
+		
+		// TODO: Container 1, 2, and 3
+		container = 1;
+		container = 2;
+		container = 3;
+		
+		pause;
+	}
+}
+
+thread loadInterlockers(void) {
+	// TODO: Same as loadEngines
+}
+
+
+thread engineInstance0(void) {
+	unsigned int instance = 0;
+	
+	const char *threadName;
+	threadName = "engineInstance0";
+	
+	int trainEngineType = -1;
+	
+	while (true) {
+		// Wait for a user to grab a train
+		while (!forec_intern_input_train_engine_instance_0.grab) {
+			pause;
+		}
+		
+		trainEngineType = forec_intern_input_train_engine_instance_0.train_engine_type;
+		forec_intern_output_train_engine_instance_0.in_use = true;
+		
+		// Reset the data of the train engine instance
+		dynlib_reset(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
+		dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
+		printf("%s: Reset container \n  %d %d -> %d %d\n", threadName,
+													 trainEngineInstanceData[instance].requested_speed,
+													 trainEngineInstanceData[instance].requested_forwards,
+													 trainEngineInstanceData[instance].target_speed,
+													 trainEngineInstanceData[instance].target_forwards);
+
+		// Execute the chosen train engine
+		while (!forec_intern_input_train_engine_instance_0.release) {
+			// Copy inputs
+			trainEngineInstanceData[instance].requested_speed = forec_intern_input_train_engine_instance_0.requested_speed;
+			trainEngineInstanceData[instance].requested_forwards = forec_intern_input_train_engine_instance_0.requested_forwards;
+			
+			// Execute one tick
+			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
+			printf("%s: %s.tick() \n  %d %d -> %d %d\n", threadName, trainEngines[trainEngineType].filepath,
+			                                             trainEngineInstanceData[instance].requested_speed,
+			                                             trainEngineInstanceData[instance].requested_forwards,
+			                                             trainEngineInstanceData[instance].target_speed,
+			                                             trainEngineInstanceData[instance].target_forwards);
+			
+			// Copy outputs
+			forec_intern_output_train_engine_instance_0.target_speed = trainEngineInstanceData[instance].target_speed;
+			forec_intern_output_train_engine_instance_0.target_forwards = trainEngineInstanceData[instance].target_forwards;
+			
+			pause;
+		}
+
+		trainEngineType = -1;
+		forec_intern_output_train_engine_instance_0.in_use = false;
+		printf("%s: Released container\n", threadName);
+
+		pause;
+	}
+}
+
+thread engineInstance1(void) { }
+thread engineInstance2(void) { }
+thread engineInstance3(void) { }
+thread engineInstance4(void) { }
+
+
+thread interlockerInstance0(void) { }
+thread interlockerInstance1(void) { }
+thread interlockerInstance2(void) { }
+thread interlockerInstance3(void) { }
+
+
+void unloadEngines(void) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		dynlib_close(&trainEngines[i]);
+	}
+	forec_intern_output_train_engine_0.in_use = false;
+	forec_intern_output_train_engine_1.in_use = false;
+	forec_intern_output_train_engine_2.in_use = false;
+	forec_intern_output_train_engine_3.in_use = false;
+
+	forec_intern_output_train_engine_instance_0.in_use = false;
+	forec_intern_output_train_engine_instance_1.in_use = false;
+	forec_intern_output_train_engine_instance_2.in_use = false;
+	forec_intern_output_train_engine_instance_3.in_use = false;
+	forec_intern_output_train_engine_instance_4.in_use = false;
+}
+
+void unloadInterlockers(void) {
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		dynlib_close(&interlockers[i]);
+	}
+	forec_intern_output_interlocker_0.in_use = false;
+	forec_intern_output_interlocker_1.in_use = false;
+	forec_intern_output_interlocker_2.in_use = false;
+	forec_intern_output_interlocker_3.in_use = false;
+	
+	forec_intern_output_interlocker_instance_0.in_use = false;
+	forec_intern_output_interlocker_instance_1.in_use = false;
+	forec_intern_output_interlocker_instance_2.in_use = false;
+	forec_intern_output_interlocker_instance_3.in_use = false;
+}
+
+void printout(const char *threadName, const dynlib_status status, const dynlib_data *library) {
+	switch (status) {
+		case (DYNLIB_COMPILE_SUCCESS):
+			printf("%s: Compiled dynamic library \n  '%s'\n", threadName, library->filepath);
+			break;
+		case (DYNLIB_LOAD_SUCCESS):
+			printf("%s: Loaded dynamic library \n  '%s'\n", threadName, library->filepath);
+			break;
+		case (DYNLIB_COMPILE_OBJ_ERR):
+			printf("%s: Could not compile library into object file \n  '%s'\n", threadName, library->filepath);
+			break;
+		case (DYNLIB_COMPILE_SHARED_ERR):
+			printf("%s: Could not compile library into shared library \n  '%s'\n", threadName, library->filepath);
+			break;
+		case (DYNLIB_LOAD_ERR):
+			printf("%s: Could not load the dynamic library \n  '%s'\n", threadName, library->filepath);
+			break;
+		case (DYNLIB_LOAD_RESET_ERR):
+			printf("%s: Could not find the address of reset(...) in \n  '%s'\n", threadName, library->filepath);
+			break;
+		case (DYNLIB_LOAD_TICK_ERR):
+			printf("%s: Could not find the address of tick(...) in \n  '%s'\n", threadName, library->filepath);
+			break;
+		default:
+			printf("%s: Unknown error %d in \n  '%s'\n", threadName, status, library->filepath);
+			break;
+	}
+}

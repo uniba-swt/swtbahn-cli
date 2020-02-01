@@ -34,10 +34,11 @@
 #include "server.h"
 #include "handler_driver.h"
 #include "interlocking.h"
+#include "dyn_containers_interface.h"
 
 
-pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_t start_stop_thread;
+static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t start_stop_thread;
 
 
 void build_message_hex_string(unsigned char *message, char *dest) {
@@ -91,6 +92,7 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
 		starting = true;
 		pthread_create(&start_stop_thread, NULL, start_bidib, NULL);
+		dyn_containers_start();
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
@@ -121,6 +123,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;
+		dyn_containers_stop();
 		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
 		retval = OCS_PROCESSED;
