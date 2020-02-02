@@ -32,6 +32,7 @@
 
 #include "dynlib.h"
 #include "tick_data.h"
+#include "server.h"
 
 #include "dyn_containers_interface.h"
 
@@ -54,6 +55,11 @@ int NULL;
 
 typedef int bool;
 #define bool__global_0_0 bool
+
+shared int LOG_NOTICE = 5;
+
+int LOG_ERR;
+#define LOG_ERR__global_0_0 LOG_ERR
 
 int PATH_MAX;
 #define PATH_MAX__global_0_0 PATH_MAX
@@ -242,7 +248,7 @@ thread interlockerInstance3(void);
 
 
 void main(int argc, char **argv) {
-	printf("Starting dynamic library containers \n");
+	syslog_server(LOG_NOTICE, "Starting dynamic library containers");
 	
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
 	                         &dyn_containers_interface);
@@ -254,13 +260,13 @@ void main(int argc, char **argv) {
 	} when immediate(forec_intern_input.stopping);
 	
 	unloadEngines();
-	printf("Unloaded train engines and instances \n");
+	syslog_server(LOG_NOTICE, "Unloaded train engines and instances");
 	
 	unloadInterlockers();
-	printf("Unloaded interlockers and instances \n");
+	syslog_server(LOG_NOTICE, "Unloaded interlockers and instances");
 	
 	dyn_containers_shm_detach(&dyn_containers_interface);
-	printf("Closed dynamic library containers \n");
+	syslog_server(LOG_NOTICE, "Closed dynamic library containers");
 
 	return 0;
 }
@@ -397,11 +403,11 @@ thread engineInstance0(void) {
 		// Reset the data of the train engine instance
 		dynlib_reset(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
 		dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-		printf("%s: Reset container \n  %d %d -> %d %d\n", threadName,
-													 trainEngineInstanceData[instance].requested_speed,
-													 trainEngineInstanceData[instance].requested_forwards,
-													 trainEngineInstanceData[instance].target_speed,
-													 trainEngineInstanceData[instance].target_forwards);
+		syslog_server(LOG_NOTICE, "%s: Reset container  %d %d -> %d %d", threadName,
+		        trainEngineInstanceData[instance].requested_speed,
+		        trainEngineInstanceData[instance].requested_forwards,
+		        trainEngineInstanceData[instance].target_speed,
+		        trainEngineInstanceData[instance].target_forwards);
 
 		// Execute the chosen train engine
 		while (!forec_intern_input_train_engine_instance_0.release) {
@@ -411,11 +417,11 @@ thread engineInstance0(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			printf("%s: %s.tick() \n  %d %d -> %d %d\n", threadName, trainEngines[trainEngineType].filepath,
-			                                             trainEngineInstanceData[instance].requested_speed,
-			                                             trainEngineInstanceData[instance].requested_forwards,
-			                                             trainEngineInstanceData[instance].target_speed,
-			                                             trainEngineInstanceData[instance].target_forwards);
+			syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, trainEngines[trainEngineType].name,
+			        trainEngineInstanceData[instance].requested_speed,
+			        trainEngineInstanceData[instance].requested_forwards,
+			        trainEngineInstanceData[instance].target_speed,
+			        trainEngineInstanceData[instance].target_forwards);
 			
 			// Copy outputs
 			forec_intern_output_train_engine_instance_0.target_speed = trainEngineInstanceData[instance].target_speed;
@@ -426,7 +432,7 @@ thread engineInstance0(void) {
 
 		trainEngineType = -1;
 		forec_intern_output_train_engine_instance_0.in_use = false;
-		printf("%s: Released container\n", threadName);
+		syslog_server(LOG_NOTICE, "%s: Released container", threadName);
 
 		pause;
 	}
@@ -507,28 +513,28 @@ void unloadInterlockers(void) {
 void printout(const char *threadName, const dynlib_status status, const dynlib_data *library) {
 	switch (status) {
 		case (DYNLIB_COMPILE_SUCCESS):
-			printf("%s: Compiled dynamic library \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_NOTICE, "%s: Compiled dynamic library '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_LOAD_SUCCESS):
-			printf("%s: Loaded dynamic library \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_NOTICE, "%s: Loaded dynamic library '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_COMPILE_OBJ_ERR):
-			printf("%s: Could not compile library into object file \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_ERR, "%s: Could not compile library into object file '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_COMPILE_SHARED_ERR):
-			printf("%s: Could not compile library into shared library \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_ERR, "%s: Could not compile library into shared library '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_LOAD_ERR):
-			printf("%s: Could not load the dynamic library \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_ERR, "%s: Could not load the dynamic library '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_LOAD_RESET_ERR):
-			printf("%s: Could not find the address of reset(...) in \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_ERR, "%s: Could not find the address of reset(...) in '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_LOAD_TICK_ERR):
-			printf("%s: Could not find the address of tick(...) in \n  '%s'\n", threadName, library->filepath);
+			syslog_server(LOG_ERR, "%s: Could not find the address of tick(...) in '%s'", threadName, library->filepath);
 			break;
 		default:
-			printf("%s: Unknown error %d in \n  '%s'\n", threadName, status, library->filepath);
+			syslog_server(LOG_ERR, "%s: Unknown error %d in '%s'", threadName, status, library->filepath);
 			break;
 	}
 }

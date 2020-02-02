@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "dynlib.h"
+#include "server.h"
 
 const char dynlib_symbol_reset[] = "reset";
 const char dynlib_symbol_tick[] = "tick";
@@ -53,7 +54,7 @@ dynlib_status dynlib_load(dynlib_data *library, const char name[], const char fi
 		library->lib_handle = dlopen(library->filepath, RTLD_LAZY);
 		
 		if (library->lib_handle == NULL) {
-			fprintf(stderr, "Could not load dynamic library %s.\n%s\n", library->filepath, dlerror());
+			syslog_server(LOG_ERR, "Could not load dynamic library %s.\n%s", library->filepath, dlerror());
 			return DYNLIB_LOAD_ERR;
 		}
 	}
@@ -72,14 +73,14 @@ dynlib_status dynlib_load(dynlib_data *library, const char name[], const char fi
 	*(void **) (&library->reset_func) = dlsym(library->lib_handle, dynlib_symbol_reset);
 	char *error;
 	if ((error = dlerror()) != NULL) {
-		fprintf(stderr, "Could not find address of symbol %s.\n%s\n", dynlib_symbol_reset, error);
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
 	
 	dlerror();
 	*(void **) (&library->tick_func) = dlsym(library->lib_handle, dynlib_symbol_tick);
 	if ((error = dlerror()) != NULL) {
-		fprintf(stderr, "Could not find address of symbol %s.\n%s\n", dynlib_symbol_tick, error);
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
 	}
 	
