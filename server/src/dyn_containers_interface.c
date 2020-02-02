@@ -36,7 +36,7 @@
 #include "handler_driver.h"
 
 
-extern void *forec_dyn_containers(void *shm_config);
+extern void *forec_dyn_containers(void *_);
 
 pthread_mutex_t dyn_containers_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t dyn_containers_thread;
@@ -47,8 +47,8 @@ static t_dyn_containers_interface *dyn_containers_interface;
 static const int let_period_us = 50000 * MICROSECOND;	// 0.05 seconds
 
 static t_dyn_shm_config shm_config;
-static const key_t shm_key = 1234; 
 static const int shm_permissions = (IPC_CREAT | 0666);
+static const key_t shm_key = 1234; 
 
 
 void dyn_containers_reset_interface(
@@ -144,16 +144,13 @@ static void *dyn_containers_actuate(void *_) {
 }
 
 void dyn_containers_start(void) {
-	pthread_mutex_lock(&dyn_containers_mutex);
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
 	                         &dyn_containers_interface);
 	dyn_containers_reset_interface(dyn_containers_interface);
-	pthread_mutex_unlock(&dyn_containers_mutex);
 
 	pthread_create(&dyn_containers_thread, NULL, 
-	               forec_dyn_containers, (void *)&shm_config);
+	               forec_dyn_containers, NULL);
 	               
-	// TODO: Create a thread that will execute the ForeC outputs
 	pthread_create(&dyn_containers_actuate_thread, NULL, 
 	               dyn_containers_actuate, NULL);
 }

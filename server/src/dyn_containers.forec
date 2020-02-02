@@ -1,3 +1,30 @@
+/*
+*
+* Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+* <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+* 
+* This file is part of the SWTbahn command line interface (swtbahn-cli), which is
+* a client-server application to interactively control a BiDiB model railway.
+*
+* swtbahn-cli is licensed under the GNU GENERAL PUBLIC LICENSE (Version 3), see
+* the LICENSE file at the project's top-level directory for details or consult
+* <http://www.gnu.org/licenses/>.
+*
+* swtbahn-cli is free software: you can redistribute it and/or modify it under the
+* terms of the GNU General Public License as published by the Free Software
+* Foundation, either version 3 of the License, or any later version.
+*
+* swtbahn-cli is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+* PURPOSE. See the GNU General Public License for more details.
+*
+* The following people contributed to the conception and realization of the
+* present swtbahn-cli (in alphabetic order by surname):
+*
+* - Eugene Yip <https://github.com/eyip002>
+*
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -6,10 +33,21 @@
 #include "dynlib.h"
 #include "tick_data.h"
 
-#include "dyn_containers.h"
+#include "dyn_containers_interface.h"
 
 typedef void t_dyn_containers_interface;
 #define t_dyn_containers_interface__global_0_0 t_dyn_containers_interface
+
+typedef void t_dyn_shm_config;
+#define t_dyn_shm_config__global_0_0 t_dyn_shm_config
+
+#define dyn_containers_mutex__global_0_0 dyn_containers_mutex
+
+typedef void pthread_mutex_t;
+#define pthread_mutex_t__global_0_0 pthread_mutex_t
+
+typedef void key_t;
+#define key_t__global_0_0 key_t
 
 int NULL;
 #define NULL__global_0_0 NULL
@@ -53,27 +91,6 @@ int DYNLIB_LOAD_TICK_ERR;
 typedef void TickData;
 #define TickData__global_0_0 TickData
 
-// Function prototypes
-void unloadEngines(void);
-void unloadInterlockers(void);
-void printout(const char *threadName, const dynlib_status status, const dynlib_data *library);
-
-// Thread prototypes
-thread letInterface(void);
-thread loadEngines(void);
-thread loadInterlockers(void);
-
-thread engineInstance0(void);
-thread engineInstance1(void);
-thread engineInstance2(void);
-thread engineInstance3(void);
-thread engineInstance4(void);
-
-thread interlockerInstance0(void);
-thread interlockerInstance1(void);
-thread interlockerInstance2(void);
-thread interlockerInstance3(void);
-
 
 // Data needed by the dynamic libraries
 shared static const unsigned int TRAIN_ENGINE_COUNT_MAX = 4;
@@ -83,10 +100,14 @@ dynlib_data interlockers[INTERLOCKER_COUNT_MAX];
 
 // Train engines that are available a compile time
 static const unsigned int TRAIN_ENGINE_DEFINED_COUNT = 2;
-const char *trainEngine0Name = "default";
-const char *trainEngine1Name = "linear";
-const char *trainEngine0Filepath = "/Users/eugeneyip/Documents/SWTbahn/Software/swtbahn-framework/kieler/train-engine-default/build/libtrain_engine_default";
-const char *trainEngine1Filepath = "/Users/eugeneyip/Documents/SWTbahn/Software/swtbahn-framework/kieler/train-engine-linear/build/libtrain_engine_linear";
+const char *trainEngineNames[TRAIN_ENGINE_DEFINED_COUNT] = {
+	"default", 
+	"linear"
+};
+const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
+	"../src/engines/libtrain_engine_default",
+	"../src/engines/libtrain_engine_linear"
+};
 
 // Data needed by instances of train engines and interlocking algorithms
 static const unsigned int TRAIN_ENGINE_INSTANCE_COUNT_MAX = 5;
@@ -106,6 +127,7 @@ shared t_forec_intern_input forec_intern_input;
 typedef struct {
 	bool load;							// Load the train engine specified by filepath
 	bool unload;						// Unload the train engine
+	char name[NAME_MAX];				// Name of the train engine
 	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 } t_forec_intern_input_train_engine;
 shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0;
@@ -184,10 +206,46 @@ shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocke
 
 
 // TODO: Create shared memory
+shared t_dyn_containers_interface *dyn_containers_interface;
+
+static t_dyn_shm_config shm_config;
+static const int shm_permissions = 0666;
+static const key_t shm_key = 1234; 
+
+extern pthread_mutex_t dyn_containers_mutex;
+
+// Function prototypes
+void copyEngineInputs(t_forec_intern_input_train_engine *internal, struct t_train_engine_io *external);
+void copyEngineOutputs(struct t_train_engine_io *external, t_forec_intern_output_train_engine *internal);
+void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *internal, struct t_train_engine_instance_io *external);
+void copyEngineInstanceOutputs(struct t_train_engine_instance_io *external, t_forec_intern_output_train_engine_instance *internal);
+
+void unloadEngines(void);
+void unloadInterlockers(void);
+void printout(const char *threadName, const dynlib_status status, const dynlib_data *library);
+
+// Thread prototypes
+thread letInterface(void);
+thread loadEngines(void);
+thread loadInterlockers(void);
+
+thread engineInstance0(void);
+thread engineInstance1(void);
+thread engineInstance2(void);
+thread engineInstance3(void);
+thread engineInstance4(void);
+
+thread interlockerInstance0(void);
+thread interlockerInstance1(void);
+thread interlockerInstance2(void);
+thread interlockerInstance3(void);
 
 
 void main(int argc, char **argv) {
 	printf("Starting dynamic library containers \n");
+	
+	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
+	                         &dyn_containers_interface);
 	
 	abort {
 		par(letInterface, loadEngines, loadInterlockers, 
@@ -201,6 +259,7 @@ void main(int argc, char **argv) {
 	unloadInterlockers();
 	printf("Unloaded interlockers and instances \n");
 	
+	dyn_containers_shm_detach(&dyn_containers_interface);
 	printf("Closed dynamic library containers \n");
 
 	return 0;
@@ -211,68 +270,37 @@ thread letInterface(void) {
 	char *threadName;
 	threadName = "letInterface";
 	
-	// TODO: Create shared memory
-	t_dyn_containers_interface dyn_containers_interface;
-	
+	pthread_mutex_lock(&dyn_containers_mutex);
+	forec_intern_input.let_period_us = dyn_containers_interface->let_period_us;
+	pthread_mutex_unlock(&dyn_containers_mutex);
+
 	struct timespec deadline;
 	int CLOCK_MONOTONIC = 1;
 	clock_gettime(CLOCK_MONOTONIC, &deadline);
 	
-	
-	forec_intern_input.stopping = false;
-	forec_intern_input_train_engine_instance_0.grab = true;
-	forec_intern_input_train_engine_instance_0.train_engine_type = 1;
-	forec_intern_input_train_engine_instance_0.requested_speed = 20;
-	forec_intern_input_train_engine_instance_0.requested_forwards = true;
-	pause;
-	pause;
-	pause;
-	pause;
-	pause;
-	pause;
-	forec_intern_input_train_engine_instance_0.requested_forwards = false;
-	pause;
-	pause;
-	pause;
-	pause;
-	forec_intern_input_train_engine_instance_0.grab = false;
-	forec_intern_input_train_engine_instance_0.release = true;
-	pause;
-	forec_intern_input_train_engine_instance_0.grab = true;
-	forec_intern_input_train_engine_instance_0.release = false;
-	forec_intern_input_train_engine_instance_0.train_engine_type = 0;
-	forec_intern_input_train_engine_instance_0.requested_speed = 40;
-	forec_intern_input_train_engine_instance_0.requested_forwards = true;
-	pause;
-	pause;
-	forec_intern_input_train_engine_instance_0.grab = false;
-	forec_intern_input_train_engine_instance_0.release = true;
-
 	while (true) {
 		//----- Start of tick
 		deadline.tv_sec += 1;
 		deadline.tv_nsec += 0; // 50ms = 50000000us
+		
 		// Read inputs into ForeC shared variables
-		// TODO: Copy into forec_intern_input
-		//forec_intern_input.stopping = dyn_containers_interface.stopping;
-
-		//	forec_intern_input_train_engine_0.load = ;
-		//	forec_intern_input_train_engine_0.unload = ;
-		//	strcpy(forec_intern_input_train_engine_0.filepath, );
-
-		//	forec_intern_input_train_engine_instance_0.grab = ;
-		//	forec_intern_input_train_engine_instance_0.release = ;
-		//	forec_intern_input_train_engine_instance_0.train_engine_type = ;
-		//	forec_intern_input_train_engine_instance_0.requested_speed = ;
-		//	forec_intern_input_train_engine_instance_0.requested_forwards = ;
-
-		for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		pthread_mutex_lock(&dyn_containers_mutex);
+		forec_intern_input.stopping = dyn_containers_interface->stopping;
 		
-		}
-		for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		copyEngineInputs(&forec_intern_input_train_engine_0, &dyn_containers_interface->train_engines_io[0]);
+		copyEngineInputs(&forec_intern_input_train_engine_1, &dyn_containers_interface->train_engines_io[1]);
+		copyEngineInputs(&forec_intern_input_train_engine_2, &dyn_containers_interface->train_engines_io[2]);
+		copyEngineInputs(&forec_intern_input_train_engine_3, &dyn_containers_interface->train_engines_io[3]);
 		
-		}
-		
+		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_0, &dyn_containers_interface->train_engine_instances_io[0]);
+		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_1, &dyn_containers_interface->train_engine_instances_io[1]);
+		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_2, &dyn_containers_interface->train_engine_instances_io[2]);
+		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_3, &dyn_containers_interface->train_engine_instances_io[3]);
+		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_4, &dyn_containers_interface->train_engine_instances_io[4]);
+
+		// TODO: Interlockers
+		pthread_mutex_unlock(&dyn_containers_mutex);
+
 		
 		// Wait to the end of the LET period
 		nanosleep(&deadline, NULL);
@@ -280,21 +308,22 @@ thread letInterface(void) {
 		
 		//----- End of tick
 		// Write ForeC shared variables to outputs
-		// TODO: Copy from forec_intern_output
-
-		//	= forec_intern_output_train_engine_0.in_use;
-
-		//	= forec_intern_output_train_engine_instance_0.in_use;
-		//	= forec_intern_output_train_engine_instance_0.target_speed;
-		//	= forec_intern_output_train_engine_instance_0.target_forwards;
-
-		for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		pthread_mutex_lock(&dyn_containers_mutex);
 		
-		}
-		for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
-		
-		}
-		
+		copyEngineOutputs(&dyn_containers_interface->train_engines_io[0], &forec_intern_output_train_engine_0);
+		copyEngineOutputs(&dyn_containers_interface->train_engines_io[1], &forec_intern_output_train_engine_1);
+		copyEngineOutputs(&dyn_containers_interface->train_engines_io[2], &forec_intern_output_train_engine_2);
+		copyEngineOutputs(&dyn_containers_interface->train_engines_io[3], &forec_intern_output_train_engine_3);
+
+		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[0], &forec_intern_output_train_engine_instance_0);
+		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[1], &forec_intern_output_train_engine_instance_1);
+		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[2], &forec_intern_output_train_engine_instance_2);
+		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[3], &forec_intern_output_train_engine_instance_3);
+		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[4], &forec_intern_output_train_engine_instance_4);
+
+		// TODO: Interlockers
+		pthread_mutex_unlock(&dyn_containers_mutex);
+
 		pause;
 	}
 }
@@ -306,13 +335,13 @@ thread loadEngines(void) {
 	// Load train engines that are already available
 	dynlib_status load_status;
 	
-	load_status = dynlib_load(&trainEngines[0], trainEngine0Filepath);
+	load_status = dynlib_load(&trainEngines[0], trainEngineNames[0], trainEngineFilepaths[0]);
 	printout(threadName, load_status, &trainEngines[0]);
 	if (load_status == DYNLIB_LOAD_SUCCESS) {
 		forec_intern_output_train_engine_0.in_use = true;
 	}
 
-	load_status = dynlib_load(&trainEngines[1], trainEngine1Filepath);
+	load_status = dynlib_load(&trainEngines[1], trainEngineNames[1], trainEngineFilepaths[1]);
 	printout(threadName, load_status, &trainEngines[1]);
 	if (load_status == DYNLIB_LOAD_SUCCESS) {
 		forec_intern_output_train_engine_1.in_use = true;
@@ -323,7 +352,7 @@ thread loadEngines(void) {
 		unsigned int container = 0;
 		if (forec_intern_input_train_engine_0.load && !forec_intern_output_train_engine_0.in_use) {
 			// Load the new dynamic library
-			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.filepath);
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.name, forec_intern_input_train_engine_0.filepath);
 			printout(threadName, load_status, &trainEngines[container]);
 			if (load_status == DYNLIB_LOAD_SUCCESS) {
 				forec_intern_output_train_engine_0.in_use = true;
@@ -414,6 +443,35 @@ thread interlockerInstance1(void) { }
 thread interlockerInstance2(void) { }
 thread interlockerInstance3(void) { }
 
+
+void copyEngineInputs(t_forec_intern_input_train_engine *internal, 
+                      struct t_train_engine_io *external) {
+	internal->load = external->input_load;
+	internal->unload = external->input_unload;
+	strncpy(internal->name, external->input_name, NAME_MAX);
+	strncpy(internal->filepath, external->input_filepath, PATH_MAX + NAME_MAX);
+}
+
+void copyEngineOutputs(struct t_train_engine_io *external, 
+                       t_forec_intern_output_train_engine *internal) {
+	external->output_in_use = internal->in_use;
+}
+
+void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *internal, 
+                              struct t_train_engine_instance_io *external) {
+	internal->grab = external->input_grab;
+	internal->release = external->input_release;
+	internal->train_engine_type = external->input_train_engine_type;
+	internal->requested_speed = external->input_requested_speed;
+	internal->requested_forwards = external->input_requested_forwards;
+}
+
+void copyEngineInstanceOutputs(struct t_train_engine_instance_io *external, 
+                               t_forec_intern_output_train_engine_instance *internal) {
+	external->output_in_use = internal->in_use;
+	external->output_target_speed = internal->target_speed;
+	external->output_target_forwards = internal->target_forwards;
+}
 
 void unloadEngines(void) {
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
