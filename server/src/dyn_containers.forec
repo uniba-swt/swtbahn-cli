@@ -124,7 +124,7 @@ TickData interlockerInstanceData[INTERLOCKER_INSTANCE_COUNT_MAX];
 
 // Interface with the environment
 typedef struct {
-	bool stopping;						// Whether to stop program execution
+	bool terminate;						// Whether to terminate program execution
 	int let_period_us;					// Period of the Logical Execution Time (LET) in microseconds
 } t_forec_intern_input;
 shared t_forec_intern_input forec_intern_input;
@@ -257,7 +257,7 @@ void main(int argc, char **argv) {
 		par(letInterface, loadEngines, loadInterlockers, 
 		    engineInstance0, engineInstance1, engineInstance2, engineInstance3, engineInstance4,
 		    interlockerInstance0, interlockerInstance1, interlockerInstance2, interlockerInstance3);
-	} when immediate(forec_intern_input.stopping);
+	} when immediate(forec_intern_input.terminate);
 	
 	unloadEngines();
 	syslog_server(LOG_NOTICE, "Unloaded train engines and instances");
@@ -266,9 +266,6 @@ void main(int argc, char **argv) {
 	syslog_server(LOG_NOTICE, "Unloaded interlockers and instances");
 	
 	dyn_containers_shm_detach(&dyn_containers_interface);
-	syslog_server(LOG_NOTICE, "Closed dynamic library containers");
-
-	return 0;
 }
 
 // Thread to manage the LET interface: Timing, inputs, and outputs
@@ -291,7 +288,7 @@ thread letInterface(void) {
 		
 		// Read inputs into ForeC shared variables
 		pthread_mutex_lock(&dyn_containers_mutex);
-		forec_intern_input.stopping = dyn_containers_interface->stopping;
+		forec_intern_input.terminate = dyn_containers_interface->terminate;
 		
 		copyEngineInputs(&forec_intern_input_train_engine_0, &dyn_containers_interface->train_engines_io[0]);
 		copyEngineInputs(&forec_intern_input_train_engine_1, &dyn_containers_interface->train_engines_io[1]);
@@ -310,7 +307,7 @@ thread letInterface(void) {
 		
 		// Wait to the end of the LET period
 		nanosleep(&deadline, NULL);
-		
+
 		
 		//----- End of tick
 		// Write ForeC shared variables to outputs
@@ -331,6 +328,7 @@ thread letInterface(void) {
 		pthread_mutex_unlock(&dyn_containers_mutex);
 
 		pause;
+		syslog_server(LOG_NOTICE, "Tick");
 	}
 }
 

@@ -32,6 +32,7 @@
 #include <bidib.h>
 
 #include "dyn_containers_interface.h"
+#include "handler_admin.h"
 #include "server.h"
 #include "handler_driver.h"
 
@@ -53,7 +54,8 @@ static const key_t shm_key = 1234;
 
 void dyn_containers_reset_interface(
         t_dyn_containers_interface * const dyn_containers_interface) {
-	dyn_containers_interface->stopping = stopping;
+	dyn_containers_interface->terminate = false;
+
 	dyn_containers_interface->let_period_us = let_period_us;
 	
 	for (size_t i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
@@ -102,6 +104,7 @@ static void *dyn_containers_actuate(void *_) {
 	do {
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		pthread_mutex_lock(&dyn_containers_mutex);
+
 		for (size_t i = 0; i < MAX_TRAINS; i++) {
 			if (grabbed_trains[i].is_valid && grabbed_trains[i].name != NULL) {
 				const int dyn_containers_engine_instance = 
@@ -138,6 +141,8 @@ static void *dyn_containers_actuate(void *_) {
 		usleep(let_period_us);
 	} while (running);
 	
+	dyn_containers_interface->terminate = true;
+	
 	// TODO: Ensure that all trains really stop
 	
 	return NULL;
@@ -147,23 +152,19 @@ void dyn_containers_start(void) {
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
 	                         &dyn_containers_interface);
 	dyn_containers_reset_interface(dyn_containers_interface);
-
 	pthread_create(&dyn_containers_thread, NULL, 
 	               forec_dyn_containers, NULL);
-	               
 	pthread_create(&dyn_containers_actuate_thread, NULL, 
 	               dyn_containers_actuate, NULL);
 }
 
 void dyn_containers_stop(void) {
-	pthread_mutex_lock(&dyn_containers_mutex);
-	dyn_containers_interface->stopping = stopping;
-	pthread_mutex_unlock(&dyn_containers_mutex);
-	
+	pthread_join(dyn_containers_actuate_thread, NULL);
 	pthread_join(dyn_containers_thread, NULL);
 	
 	dyn_containers_shm_detach(&dyn_containers_interface);
 	dyn_containers_shm_delete(&shm_config);
+	syslog_server(LOG_NOTICE, "Closed dynamic library containers");
 }
 
 // General function to obtain a shared memory segment based on a given key

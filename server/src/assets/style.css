@@ -6,11 +6,12 @@ body {
 #swtLogo {
     background-image: url("swtbahn-logo.png");
     background-repeat: no-repeat;
-    background-size: auto 80px;
+    background-size: auto 100px;
     text-align: right;
-    font-size: 55pt;
+    line-height: 165px;
+    font-size: 45pt;
     font-weight: bold;
     color: #054479;
-    height: 90px;
+    height: 100px;
     width: 100%;
 }

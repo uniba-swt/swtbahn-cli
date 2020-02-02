@@ -57,10 +57,12 @@ static void *start_bidib(void *_) {
 	if (err_serial || err_interlocking) {
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
+		dyn_containers_stop();	// FIXME: delete
 	} else {
 		running = true;
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
+//FIXME:		dyn_containers_start();
 		while (running) {
 			unsigned char *message;
 			while ((message = bidib_read_message()) != NULL) {
@@ -75,7 +77,7 @@ static void *start_bidib(void *_) {
 				syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
 				free(message);
 			}
-			usleep(500000);
+			usleep(500000);	// 0.5 seconds
 		}
 	}
 	return NULL;
@@ -92,7 +94,7 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
 		starting = true;
 		pthread_create(&start_stop_thread, NULL, start_bidib, NULL);
-		dyn_containers_start();
+		dyn_containers_start();	// FIXME: delete
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");

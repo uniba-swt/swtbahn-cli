@@ -42,7 +42,7 @@
 
 // Input interface with the environment
 typedef struct {
-	bool stopping;									// Whether to stop program execution
+	bool terminate;									// Whether to terminate program execution
 	int let_period_us;								// Period of the Logical Execution Time (LET) in microseconds
 	
 	// Train engine information
