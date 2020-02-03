@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2017 University of Bamberg, Software Technologies Research Group
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
  * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
  * 
  * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef SWTSERVER_INTERLOCKING_H
-#define SWTSERVER_INTERLOCKING_H
+#ifndef INTERLOCKING_H
+#define INTERLOCKING_H
 
 #include <glib.h>
 
@@ -69,23 +69,15 @@ typedef struct {
  * id of train when granted the route
  */
 typedef struct {
-    size_t id;
-    t_interlocking_signal source;
-    t_interlocking_signal destination;
-    size_t direction;
-    GArray *path;
-    // t_interlocking_path_segment path[MAX_SEGMENTS];
-    // size_t path_count;
-    GArray *points;
-    // t_interlocking_point points[MAX_POINTS];
-    // size_t points_count;
-    GArray *signals;
-    // t_interlocking_signal signals[MAX_SIGNALS];
-    // size_t signals_count;
-    GArray *conflicts;
-    // size_t conflicts[MAX_CONFLICTS];
-    // size_t conflicts_count;
-    GString *train_id;
+	size_t id;
+	t_interlocking_signal source;
+	t_interlocking_signal destination;
+	size_t direction;
+	GArray *path;	// g_array_index(route->path, t_interlocking_path_segment, segment_index)
+	GArray *points;	// g_array_index(route->points, t_interlocking_point, point_index)
+	GArray *signals;	// g_array_index(route->signals, t_interlocking_signal, signal_index)
+	GArray *conflicts;	// g_array_index(route->conflicts, size_t, conflict_index)
+	GString *train_id;
 } t_interlocking_route;
 
 //extern t_interlocking_route interlocking_table[TOTAL_ROUTES];
@@ -129,5 +121,5 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
  */
 t_interlocking_route* get_route(int route_id);
 
-#endif
+#endif // INTERLOCKING_H
 
