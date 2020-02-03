@@ -45,7 +45,7 @@ static pthread_t dyn_containers_actuate_thread;
 
 static t_dyn_containers_interface *dyn_containers_interface;
 #define MICROSECOND 1
-static const int let_period_us = 50000 * MICROSECOND;	// 0.05 seconds
+static const int let_period_us = 500000 * MICROSECOND;//50000 * MICROSECOND;	// 0.05 seconds
 
 static t_dyn_shm_config shm_config;
 static const int shm_permissions = (IPC_CREAT | 0666);
@@ -112,9 +112,10 @@ static void *dyn_containers_actuate(void *_) {
 				        
 				struct t_train_engine_instance_io * const engine_instance = 
 				    &dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
-				if (engine_instance->output_in_use) {					
-//					if (engine_instance->output_target_speed != engine_instance->input_requested_speed 
-//							|| engine_instance->output_target_forwards != engine_instance->input_requested_forwards) {
+				if (engine_instance->output_in_use) {
+					// FIXME: Better to not set the train speed if the previous speed == current speed
+					if (engine_instance->output_target_speed != engine_instance->input_requested_speed 
+							|| engine_instance->output_target_forwards != engine_instance->input_requested_forwards) {
 						if (bidib_set_train_speed(grabbed_trains[i].name->str, 
 												  engine_instance->output_target_forwards
 												  ? engine_instance->output_target_speed 
@@ -129,7 +130,7 @@ static void *dyn_containers_actuate(void *_) {
 								   ? engine_instance->output_target_speed 
 								   : -engine_instance->output_target_speed);
 						}
-//					}
+					}
 				}
 			}
 		}
@@ -145,7 +146,7 @@ static void *dyn_containers_actuate(void *_) {
 	
 	// TODO: Ensure that all trains really stop
 	
-	return NULL;
+	pthread_exit(NULL);
 }
 
 void dyn_containers_start(void) {
@@ -230,7 +231,7 @@ int dyn_containers_set_train_engine(t_train_data * const grabbed_train,
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		struct t_train_engine_io * const train_engine_io = 
 		    &dyn_containers_interface->train_engines_io[i];
-		if (!strcmp(train_engine_io->input_name, engine)) {
+		if (!strcmp(train_engine_io->output_name, engine)) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			train_engine_type = i;
 			break;

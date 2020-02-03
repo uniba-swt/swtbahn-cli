@@ -29,6 +29,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <libgen.h>
 
 #include "dynlib.h"
 #include "tick_data.h"
@@ -106,10 +107,6 @@ dynlib_data interlockers[INTERLOCKER_COUNT_MAX];
 
 // Train engines that are available a compile time
 static const unsigned int TRAIN_ENGINE_DEFINED_COUNT = 2;
-const char *trainEngineNames[TRAIN_ENGINE_DEFINED_COUNT] = {
-	"default", 
-	"linear"
-};
 const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
 	"../src/engines/libtrain_engine_default",
 	"../src/engines/libtrain_engine_linear"
@@ -127,13 +124,12 @@ typedef struct {
 	bool terminate;						// Whether to terminate program execution
 	int let_period_us;					// Period of the Logical Execution Time (LET) in microseconds
 } t_forec_intern_input;
-shared t_forec_intern_input forec_intern_input;
+shared t_forec_intern_input forec_intern_input = {.let_period_us = 0};
 
 // Train engine information
 typedef struct {
 	bool load;							// Load the train engine specified by filepath
 	bool unload;						// Unload the train engine
-	char name[NAME_MAX];				// Name of the train engine
 	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 } t_forec_intern_input_train_engine;
 shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0;
@@ -143,11 +139,12 @@ shared t_forec_intern_input_train_engine forec_intern_input_train_engine_3;
 
 typedef struct {
 	bool in_use;						// Whether the container is still in use
+	char *name;							// Name of the train engine when loaded
 } t_forec_intern_output_train_engine;
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0;
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_1;
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_2;
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3;
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0 = {.name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_1 = {.name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_2 = {.name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3 = {.name = ""};
 
 // Train engine instance information
 typedef struct {
@@ -221,6 +218,8 @@ static const key_t shm_key = 1234;
 extern pthread_mutex_t dyn_containers_mutex;
 
 // Function prototypes
+void copyFilename(char destination[], const char source[], const int name_len, const int path_len);
+
 void copyEngineInputs(t_forec_intern_input_train_engine *internal, struct t_train_engine_io *external);
 void copyEngineOutputs(struct t_train_engine_io *external, t_forec_intern_output_train_engine *internal);
 void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *internal, struct t_train_engine_instance_io *external);
@@ -257,7 +256,7 @@ void main(int argc, char **argv) {
 		par(letInterface, loadEngines, loadInterlockers, 
 		    engineInstance0, engineInstance1, engineInstance2, engineInstance3, engineInstance4,
 		    interlockerInstance0, interlockerInstance1, interlockerInstance2, interlockerInstance3);
-	} when immediate(forec_intern_input.terminate);
+	} when (forec_intern_input.terminate);
 	
 	unloadEngines();
 	syslog_server(LOG_NOTICE, "Unloaded train engines and instances");
@@ -306,7 +305,7 @@ thread letInterface(void) {
 
 		
 		// Wait to the end of the LET period
-		nanosleep(&deadline, NULL);
+		usleep(forec_intern_input.let_period_us);
 
 		
 		//----- End of tick
@@ -338,17 +337,21 @@ thread loadEngines(void) {
 
 	// Load train engines that are already available
 	dynlib_status load_status;
-	
-	load_status = dynlib_load(&trainEngines[0], trainEngineNames[0], trainEngineFilepaths[0]);
+
+	load_status = dynlib_load(&trainEngines[0], trainEngineFilepaths[0]);
 	printout(threadName, load_status, &trainEngines[0]);
 	if (load_status == DYNLIB_LOAD_SUCCESS) {
 		forec_intern_output_train_engine_0.in_use = true;
+		copyFilename(trainEngines[0].name, trainEngineFilepaths[0], NAME_MAX, PATH_MAX + NAME_MAX);
+		forec_intern_output_train_engine_0.name = trainEngines[0].name;
 	}
 
-	load_status = dynlib_load(&trainEngines[1], trainEngineNames[1], trainEngineFilepaths[1]);
+	load_status = dynlib_load(&trainEngines[1], trainEngineFilepaths[1]);
 	printout(threadName, load_status, &trainEngines[1]);
 	if (load_status == DYNLIB_LOAD_SUCCESS) {
 		forec_intern_output_train_engine_1.in_use = true;
+		copyFilename(trainEngines[1].name, trainEngineFilepaths[1], NAME_MAX, PATH_MAX + NAME_MAX);
+		forec_intern_output_train_engine_1.name = trainEngines[1].name;
 	}
 	
 	while (true) {
@@ -356,10 +359,12 @@ thread loadEngines(void) {
 		unsigned int container = 0;
 		if (forec_intern_input_train_engine_0.load && !forec_intern_output_train_engine_0.in_use) {
 			// Load the new dynamic library
-			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.name, forec_intern_input_train_engine_0.filepath);
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.filepath);
 			printout(threadName, load_status, &trainEngines[container]);
 			if (load_status == DYNLIB_LOAD_SUCCESS) {
 				forec_intern_output_train_engine_0.in_use = true;
+				copyFilename(trainEngines[container].name, forec_intern_input_train_engine_0.filepath, NAME_MAX, PATH_MAX + NAME_MAX);
+				forec_intern_output_train_engine_0.name = trainEngines[container].name;
 			}
 		} else if (forec_intern_input_train_engine_0.unload) {
 			// Close the previous dynamic library
@@ -415,7 +420,8 @@ thread engineInstance0(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, trainEngines[trainEngineType].name,
+			syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+			        trainEngines[trainEngineType].name,
 			        trainEngineInstanceData[instance].requested_speed,
 			        trainEngineInstanceData[instance].requested_forwards,
 			        trainEngineInstanceData[instance].target_speed,
@@ -448,17 +454,24 @@ thread interlockerInstance2(void) { }
 thread interlockerInstance3(void) { }
 
 
+void copyFilename(char destination[], const char source[], const int name_len, const int path_len) {
+	char source_copy[path_len];
+	strncpy(source_copy, source, path_len);
+	const char *filename = basename(source_copy);
+	strncpy(destination, filename, name_len);
+}
+
 void copyEngineInputs(t_forec_intern_input_train_engine *internal, 
                       struct t_train_engine_io *external) {
 	internal->load = external->input_load;
 	internal->unload = external->input_unload;
-	strncpy(internal->name, external->input_name, NAME_MAX);
 	strncpy(internal->filepath, external->input_filepath, PATH_MAX + NAME_MAX);
 }
 
 void copyEngineOutputs(struct t_train_engine_io *external, 
                        t_forec_intern_output_train_engine *internal) {
 	external->output_in_use = internal->in_use;
+	strncpy(external->output_name, internal->name, NAME_MAX);
 }
 
 void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *internal, 

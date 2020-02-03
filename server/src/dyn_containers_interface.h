@@ -49,10 +49,10 @@ typedef struct {
 	struct t_train_engine_io {
 		bool input_load;							// Load the train engine specified by filepath
 		bool input_unload;							// Unload the train engine
-		char input_name[NAME_MAX];					// Name of the train engine
 		char input_filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 		
 		bool output_in_use;							// Whether the container is still in use
+		char output_name[NAME_MAX];					// Name of the train engine
 	} train_engines_io[TRAIN_ENGINE_COUNT_MAX];
 	
 	// Train engine instance information

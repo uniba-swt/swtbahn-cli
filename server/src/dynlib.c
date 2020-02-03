@@ -36,7 +36,7 @@ dynlib_status dynlib_compile_c(dynlib_data *library, const char filepath[]) {
 }
 
 // Loads a dynamic library from a given filepath
-dynlib_status dynlib_load(dynlib_data *library, const char name[], const char filepath[]) {
+dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 	// Make sure no library has been loaded
 	dynlib_close(library);
 	
@@ -45,7 +45,6 @@ dynlib_status dynlib_load(dynlib_data *library, const char name[], const char fi
 	dlerror();
 	
 	// Try and load the dynamic library with *.so extension
-	strncpy(library->name, name, NAME_MAX);
 	sprintf(library->filepath, "%s.so", filepath);
 	library->lib_handle = dlopen(library->filepath, RTLD_LAZY);
 	if (library->lib_handle == NULL) {
@@ -91,10 +90,15 @@ bool dynlib_is_loaded(dynlib_data *library) {
 	return (library->lib_handle != NULL);
 }
 
+void dynlib_set_name(dynlib_data *library, const char name[]) {
+	strncpy(library->name, name, NAME_MAX);
+}
+
 void dynlib_close(dynlib_data *library) {
 	if (dynlib_is_loaded(library)) {
 		dlclose(library->lib_handle);
 		library->lib_handle = NULL;
+		library->name[0] = '\0';
 	}
 }
 

@@ -4,10 +4,9 @@ x86
 0:
 main
 letInterface
-loadEngines
-loadInterlockers
 
 1:
+loadEngines
 engineInstance0
 engineInstance2
 engineInstance4
@@ -15,6 +14,7 @@ interlockerInstance1
 interlockerInstance3
 
 2:
+loadInterlockers
 engineInstance1
 engineInstance3
 interlockerInstance0
