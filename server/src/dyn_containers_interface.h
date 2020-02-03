@@ -66,6 +66,9 @@ typedef struct {
 		bool output_in_use;							// Whether this instance is still in use
 		int  output_target_speed;					// Output defined by the train engine
 		char output_target_forwards;				// Output defined by the train engine
+
+		int  output_target_speed_pre;				// Previous output defined by the train engine
+		char output_target_forwards_pre;			// Previous output defined by the train engine
 	} train_engine_instances_io[TRAIN_ENGINE_INSTANCE_COUNT_MAX];
 	
 	// TODO: Interlocker information

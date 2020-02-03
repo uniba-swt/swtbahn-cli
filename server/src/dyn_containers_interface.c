@@ -78,7 +78,10 @@ void dyn_containers_reset_interface(
 			
 			.output_in_use = false,
 			.output_target_speed = 0,
-			.output_target_forwards = 0
+			.output_target_forwards = 0,
+			
+			.output_target_speed_pre = 0,
+			.output_target_forwards_pre = 0
 		};
 	}
 	
@@ -113,9 +116,8 @@ static void *dyn_containers_actuate(void *_) {
 				struct t_train_engine_instance_io * const engine_instance = 
 				    &dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
 				if (engine_instance->output_in_use) {
-					// FIXME: Better to not set the train speed if the previous speed == current speed
-					if (engine_instance->output_target_speed != engine_instance->input_requested_speed 
-							|| engine_instance->output_target_forwards != engine_instance->input_requested_forwards) {
+					if (engine_instance->output_target_speed != engine_instance->output_target_speed_pre
+							|| engine_instance->output_target_forwards != engine_instance->output_target_forwards_pre) {
 						if (bidib_set_train_speed(grabbed_trains[i].name->str, 
 												  engine_instance->output_target_forwards
 												  ? engine_instance->output_target_speed 
@@ -129,6 +131,8 @@ static void *dyn_containers_actuate(void *_) {
 								   engine_instance->output_target_forwards 
 								   ? engine_instance->output_target_speed 
 								   : -engine_instance->output_target_speed);
+							engine_instance->output_target_speed_pre = engine_instance->output_target_speed;
+							engine_instance->output_target_forwards_pre = engine_instance->output_target_forwards;
 						}
 					}
 				}

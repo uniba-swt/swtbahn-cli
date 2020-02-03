@@ -420,16 +420,19 @@ thread engineInstance0(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
-			        trainEngines[trainEngineType].name,
-			        trainEngineInstanceData[instance].requested_speed,
-			        trainEngineInstanceData[instance].requested_forwards,
-			        trainEngineInstanceData[instance].target_speed,
-			        trainEngineInstanceData[instance].target_forwards);
-			
-			// Copy outputs
-			forec_intern_output_train_engine_instance_0.target_speed = trainEngineInstanceData[instance].target_speed;
-			forec_intern_output_train_engine_instance_0.target_forwards = trainEngineInstanceData[instance].target_forwards;
+			if (trainEngineInstanceData[instance].target_speed != forec_intern_output_train_engine_instance_0.target_speed
+			        || trainEngineInstanceData[instance].target_forwards != forec_intern_output_train_engine_instance_0.target_forwards) {
+				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+						trainEngines[trainEngineType].name,
+						trainEngineInstanceData[instance].requested_speed,
+						trainEngineInstanceData[instance].requested_forwards,
+						trainEngineInstanceData[instance].target_speed,
+						trainEngineInstanceData[instance].target_forwards);
+				
+				// Update outputs
+				forec_intern_output_train_engine_instance_0.target_speed = trainEngineInstanceData[instance].target_speed;
+				forec_intern_output_train_engine_instance_0.target_forwards = trainEngineInstanceData[instance].target_forwards;
+			}
 			
 			pause;
 		}
