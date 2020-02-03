@@ -42,18 +42,18 @@ typedef enum {
 
 typedef struct {
 	char *id;
-	int bidib_state_index;		// t_bidib_track_state.segments[bidib_state_index].data
+	int bidib_state_index;	// t_bidib_track_state.segments[bidib_state_index].data
 } t_interlocking_path_segment;
 
 typedef struct {
 	char *id;
-	int bidib_state_index;		// t_bidib_track_state.points_board[bidib_state_index].data
+	int bidib_state_index;	// t_bidib_track_state.points_board[bidib_state_index].data
 	e_interlocking_point_position position;
 } t_interlocking_point;
 
 typedef struct {
 	char *id;
-	int bidib_state_index;		// t_bidib_track_state.signals_board[bidib_state_index].data
+	int bidib_state_index;	// t_bidib_track_state.signals_board[bidib_state_index].data
 } t_interlocking_signal;
 
 /**
@@ -73,8 +73,8 @@ typedef struct {
 	t_interlocking_signal source;
 	t_interlocking_signal destination;
 	size_t direction;
-	GArray *path;	// g_array_index(route->path, t_interlocking_path_segment, segment_index)
-	GArray *points;	// g_array_index(route->points, t_interlocking_point, point_index)
+	GArray *path;		// g_array_index(route->path, t_interlocking_path_segment, segment_index)
+	GArray *points;		// g_array_index(route->points, t_interlocking_point, point_index)
 	GArray *signals;	// g_array_index(route->signals, t_interlocking_signal, signal_index)
 	GArray *conflicts;	// g_array_index(route->conflicts, size_t, conflict_index)
 	GString *train_id;
@@ -88,7 +88,7 @@ typedef struct {
 	int id;
 } t_route_string_to_id;
 
-extern GHashTable* route_string_to_ids_hashtable;
+extern GHashTable *route_string_to_ids_hashtable;
 
 
 /**
@@ -119,7 +119,7 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
  * @param route_id route
  * @return the route pointer if it exists, otherwise NULL
  */
-t_interlocking_route* get_route(int route_id);
+t_interlocking_route *get_route(int route_id);
 
 #endif // INTERLOCKING_H
 
