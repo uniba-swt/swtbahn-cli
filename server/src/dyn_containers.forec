@@ -321,7 +321,6 @@ thread letInterface(void) {
 		pthread_mutex_unlock(&dyn_containers_mutex);
 
 		pause;
-		syslog_server(LOG_NOTICE, "Tick");
 	}
 }
 
