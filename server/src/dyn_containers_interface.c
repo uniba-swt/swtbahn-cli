@@ -45,7 +45,7 @@ static pthread_t dyn_containers_actuate_thread;
 
 static t_dyn_containers_interface *dyn_containers_interface;
 #define MICROSECOND 1
-static const int let_period_us = 500000 * MICROSECOND;//50000 * MICROSECOND;	// 0.05 seconds
+static const int let_period_us = 100000 * MICROSECOND;	// 0.1 seconds
 
 static t_dyn_shm_config shm_config;
 static const int shm_permissions = (IPC_CREAT | 0666);

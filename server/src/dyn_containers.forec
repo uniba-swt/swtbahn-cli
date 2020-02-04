@@ -275,15 +275,9 @@ thread letInterface(void) {
 	pthread_mutex_lock(&dyn_containers_mutex);
 	forec_intern_input.let_period_us = dyn_containers_interface->let_period_us;
 	pthread_mutex_unlock(&dyn_containers_mutex);
-
-	struct timespec deadline;
-	int CLOCK_MONOTONIC = 1;
-	clock_gettime(CLOCK_MONOTONIC, &deadline);
 	
 	while (true) {
 		//----- Start of tick
-		deadline.tv_sec += 1;
-		deadline.tv_nsec += 0; // 50ms = 50000000us
 		
 		// Read inputs into ForeC shared variables
 		pthread_mutex_lock(&dyn_containers_mutex);
