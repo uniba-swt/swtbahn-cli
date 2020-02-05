@@ -139,10 +139,10 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
                                                  onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		unsigned int state;
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
-		if (data_state == NULL || (state = strtol(data_state, &end, 10)) < 0 ||
+		long int state = strtol(data_state, &end, 10);
+		if (data_state == NULL || (state == 0L || state == LONG_MAX || state == LONG_MIN) ||
 		    *end != '\0') {
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;

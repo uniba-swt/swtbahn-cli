@@ -211,75 +211,75 @@ $(document).ready(function() {
             $('#dccSpeed').val(lastSpeed);
         });
 
-        // $('#requestRouteButton').click(function() {
-        //     $('#routeResponse').text('Waiting');
-        //     source = $('#source').val();
-        //     destination = $('#destination').val();
-        //     if (sessionId != 0 && grabId != -1) {
-        //         $.ajax({
-        //             type: 'POST',
-        //             url: '/driver/request-route',
-        //             crossDomain: true,
-        //             data: {
-        //                 'session-id': sessionId,
-        //                 'grab-id': grabId,
-        //                 'source': source,
-        //                 'destination': destination
-        //             },
-        //             dataType: 'text',
-        //             success: function(responseData, textStatus, jqXHR) {
-        //                 routeId = responseData;
-        //                 $('#routeResponse').text('Route ' + responseData + ' granted');
-        //             },
-        //             error: function(responseData, textStatus, errorThrown) {
-        //                 $('#routeResponse').text('Route not granted!');
-        //             }
-        //         });
-        //     } else {
-        //         $('#routeResponse').text('You must have a grabbed train!');
-        //     }
-        // });
+        $('#requestRouteButton').click(function() {
+            $('#routeResponse').text('Waiting');
+            source = $('#source').val();
+            destination = $('#destination').val();
+            if (sessionId != 0 && grabId != -1) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/driver/request-route',
+                    crossDomain: true,
+                    data: {
+                        'session-id': sessionId,
+                        'grab-id': grabId,
+                        'source': source,
+                        'destination': destination
+                    },
+                    dataType: 'text',
+                    success: function(responseData, textStatus, jqXHR) {
+                        routeId = responseData;
+                        $('#routeResponse').text('Route ' + responseData + ' granted');
+                    },
+                    error: function(responseData, textStatus, errorThrown) {
+                        $('#routeResponse').text('Route not granted!');
+                    }
+                });
+            } else {
+                $('#routeResponse').text('You must have a grabbed train!');
+            }
+        });
 
-        // $('#driveRouteButton').click(function() {
-        //     $('#routeResponse').text('Waiting');
-        //     if (sessionId != 0 && grabId != -1) {
-        //         $.ajax({
-        //             type: 'POST',
-        //             url: '/driver/drive-route',
-        //             crossDomain: true,
-        //             data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
-        //             dataType: 'text',
-        //             success: function(responseData, textStatus, jqXHR) {
-        //                 $('#routeResponse')
-        //                     .text('Route ' + responseData + ' driving completed');
-        //             },
-        //             error: function(responseData, textStatus, errorThrown) {
-        //                 $('#routeResponse').text('Route could not be driven!');
-        //             }
-        //         });
-        //     } else {
-        //         $('#routeResponse').text('You must have a grabbed train!');
-        //     }
-        // });
+        $('#driveRouteButton').click(function() {
+            $('#routeResponse').text('Waiting');
+            if (sessionId != 0 && grabId != -1) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/driver/drive-route',
+                    crossDomain: true,
+                    data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
+                    dataType: 'text',
+                    success: function(responseData, textStatus, jqXHR) {
+                        $('#routeResponse')
+                            .text('Route ' + responseData + ' driving completed');
+                    },
+                    error: function(responseData, textStatus, errorThrown) {
+                        $('#routeResponse').text('Route could not be driven!');
+                    }
+                });
+            } else {
+                $('#routeResponse').text('You must have a grabbed train!');
+            }
+        });
 
-        // $('#releaseRouteButton').click(function() {
-        //     $('#releaseRouteResponse').text('Waiting');
-        //     var routeId = $('#routeId').val();
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: '/controller/release-route',
-        //         crossDomain: true,
-        //         data: { 'route-id': routeId },
-        //         dataType: 'text',
-        //         success: function(responseData, textStatus, jqXHR) {
-        //             $('#releaseRouteResponse').text('Route ' + routeId + ' released');
-        //         },
-        //         error: function(responseData, textStatus, errorThrown) {
-        //             $('#releaseRouteResponse')
-        //                 .text('System not running or invalid track output!');
-        //         }
-        //     });
-        // });
+        $('#releaseRouteButton').click(function() {
+            $('#releaseRouteResponse').text('Waiting');
+            var routeId = $('#routeId').val();
+            $.ajax({
+                type: 'POST',
+                url: '/controller/release-route',
+                crossDomain: true,
+                data: { 'route-id': routeId },
+                dataType: 'text',
+                success: function(responseData, textStatus, jqXHR) {
+                    $('#releaseRouteResponse').text('Route ' + routeId + ' released');
+                },
+                error: function(responseData, textStatus, errorThrown) {
+                    $('#releaseRouteResponse')
+                        .text('System not running or invalid track output!');
+                }
+            });
+        });
 
         points = [
             'point1',
@@ -312,10 +312,10 @@ $(document).ready(function() {
             }
         });
 
-        $('.pointBtn').click(function() {
+        $('#setPointButton').click(function() {
             $('#setPointResponse').text('Waiting');
             var pointId = $('#pointId').val();
-            var pointPosition = $(this).text();
+            var pointPosition = $("#pointPosition option:selected").text();
 
             $.ajax({
                 type: 'POST',
@@ -376,10 +376,10 @@ $(document).ready(function() {
             }
         });
 
-        $('.signalBtn').click(function() {
+        $('#setSignalButton').click(function() {
             $('#setSignalResponse').text('Waiting');
             var signalId = $('#signalId').val();
-            var signalAspect = $(this).text();
+            var signalAspect = $("#signalAspect option:selected").text();
             $.ajax({
                 type: 'POST',
                 url: '/controller/set-signal',

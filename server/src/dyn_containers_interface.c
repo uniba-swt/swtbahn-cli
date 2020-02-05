@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <bidib.h>
 
 #include "dyn_containers_interface.h"

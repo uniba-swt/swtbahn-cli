@@ -50,8 +50,8 @@ add_custom_target(
 add_library(${FOREC_MAIN}_static STATIC ${SRCFILES} ${FOREC_MAIN}.c)
 add_dependencies(${FOREC_MAIN}_static forec dot)
 target_include_directories(${FOREC_MAIN}_static PRIVATE src)
-target_link_libraries(${FOREC_MAIN}_static bidib)
+target_link_libraries(${FOREC_MAIN}_static bidib_static)
 
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion_static pam gnutls gcrypt pthread
-	glib-2.0 yaml bidib_static)
+	glib-2.0 yaml bidib_static ${FOREC_MAIN}_static ${CMAKE_DL_LIBS})
