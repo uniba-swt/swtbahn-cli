@@ -28,6 +28,23 @@
 #ifndef SWTSERVER_HANDLER_DRIVER_H
 #define SWTSERVER_HANDLER_DRIVER_H
 
+#include <onion/onion.h>
+#include <glib.h>
+
+
+#define MAX_TRAINS 5
+
+extern pthread_mutex_t grabbed_trains_mutex;
+
+typedef struct {
+	bool is_valid;
+	GString *name;
+	int dyn_containers_engine_instance;
+	char track_output[32];
+} t_train_data;
+
+extern t_train_data grabbed_trains[MAX_TRAINS];
+
 
 bool train_grabbed(const char *train);
 

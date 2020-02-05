@@ -34,10 +34,11 @@
 #include "server.h"
 #include "handler_driver.h"
 #include "interlocking.h"
+#include "dyn_containers_interface.h"
 
 
-pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_t start_stop_thread;
+static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t start_stop_thread;
 
 
 void build_message_hex_string(unsigned char *message, char *dest) {
@@ -60,6 +61,7 @@ static void *start_bidib(void *_) {
 		running = true;
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
+		dyn_containers_start();
 		while (running) {
 			unsigned char *message;
 			while ((message = bidib_read_message()) != NULL) {
@@ -74,10 +76,10 @@ static void *start_bidib(void *_) {
 				syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
 				free(message);
 			}
-			usleep(500000);
+			usleep(500000);	// 0.5 seconds
 		}
 	}
-	return NULL;
+	pthread_exit(NULL);
 }
 
 onion_connection_status handler_startup(void *_, onion_request *req,
@@ -121,6 +123,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;
+		dyn_containers_stop();
 		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
 		retval = OCS_PROCESSED;
@@ -136,10 +139,10 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
                                                  onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		unsigned int state;
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
-		if (data_state == NULL || (state = strtol(data_state, &end, 10)) < 0 ||
+		long int state = strtol(data_state, &end, 10);
+		if (data_state == NULL || (state == 0L || state == LONG_MAX || state == LONG_MIN) ||
 		    *end != '\0') {
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
