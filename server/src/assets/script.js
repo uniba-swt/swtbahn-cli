@@ -213,8 +213,8 @@ $(document).ready(function() {
 
         $('#requestRouteButton').click(function() {
             $('#routeResponse').text('Waiting');
-            source = $('#source').val();
-            destination = $('#destination').val();
+            source = $('#signalIdFrom').val();
+            destination = $('#signalIdTo').val();
             if (sessionId != 0 && grabId != -1) {
                 $.ajax({
                     type: 'POST',
@@ -359,6 +359,38 @@ $(document).ready(function() {
             'signal19',
             'platformlights'
         ]
+
+        $('#signalMinusFrom').click(function() {
+            signal = $('#signalIdFrom').val();
+            position = signals.indexOf(signal);
+            if (position > 0) {
+                $('#signalIdFrom:text').val(signals[position - 1]);
+            }
+        });
+
+        $('#signalMinusTo').click(function() {
+            signal = $('#signalIdTo').val();
+            position = signals.indexOf(signal);
+            if (position > 0) {
+                $('#signalIdTo:text').val(signals[position - 1]);
+            }
+        });
+
+        $('#signalPlusFrom').click(function() {
+            signal = $('#signalIdFrom').val();
+            position = signals.indexOf(signal);
+            if (position < signals.length - 1) {
+                $('#signalIdFrom:text').val(signals[position + 1]);
+            }
+        });
+
+        $('#signalPlusTo').click(function() {
+            signal = $('#signalIdTo').val();
+            position = signals.indexOf(signal);
+            if (position < signals.length - 1) {
+                $('#signalIdTo:text').val(signals[position + 1]);
+            }
+        });
 
         $('#signalMinus').click(function() {
             signal = $('#signalId').val();
