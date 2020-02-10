@@ -106,6 +106,11 @@ int interlocking_table_initialise(const char *config_dir);
 void free_interlocking_hashtable(void);
 
 /**
+ * Free the array that stores interlocking table
+ */
+void free_interlocking_table(void);
+
+/**
  * Returns the route ID for a given source and destination signal. 
  * The route ID is also the required array index for the interlocking table.
  *

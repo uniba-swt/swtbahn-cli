@@ -43,17 +43,12 @@ long convert_long_value(const char *str) {
 	return strtol(str, &ptr, 10);
 }
 
-char *concat_str(const char *str1, const char *str2) {
-	size_t len = strlen(str1) + strlen(str2) + 1;
-	char *str = malloc(sizeof(char) * len);
-	snprintf(str, len, "%s%s", str1, str2);
-	return str;
-}
-
 bool init_parser(const char *config_dir, const char *table_file,
                  FILE **fh, yaml_parser_t *parser) {
 	// generate full path
-	char *full_path = concat_str(config_dir, table_file);
+    size_t len = strlen(config_dir) + strlen(table_file) + 1;
+    char full_path[len];
+    snprintf(full_path, len, "%s%s", config_dir, table_file);
 
 	// init file
 	*fh = fopen(full_path, "r");
@@ -119,6 +114,43 @@ e_sequence_level decrease_sequence_level (e_sequence_level level) {
 	}
 }
 
+void free_route(void *item) {
+    t_interlocking_route *route = (t_interlocking_route *) item;
+    free(route->source.id);
+    free(route->destination.id);
+
+    if (route->path != NULL) {
+        g_array_free(route->path, true);
+    }
+
+    if (route->points != NULL) {
+        g_array_free(route->points, true);
+    }
+
+    if (route->signals != NULL) {
+        g_array_free(route->signals, true);
+    }
+
+    if (route->conflicts != NULL) {
+        g_array_free(route->conflicts, true);
+    }
+}
+
+void free_route_path(void *item) {
+    t_interlocking_path_segment *path = (t_interlocking_path_segment *) item;
+    free(path->id);
+}
+
+void free_route_point(void *item) {
+    t_interlocking_point *point = (t_interlocking_point *)item;
+    free(point->id);
+}
+
+void free_route_signal(void *item) {
+    t_interlocking_signal *signal = (t_interlocking_signal *)item;
+    free(signal->id);
+}
+
 GArray *parse(yaml_parser_t *parser) {
 	e_mapping_level cur_mapping = MAPPING_TABLE;
 	e_sequence_level cur_sequence = SEQUENCE_NONE;
@@ -168,28 +200,32 @@ GArray *parse(yaml_parser_t *parser) {
 				if (cur_mapping == MAPPING_TABLE) {
 					if (is_str_equal(last_scalar, "interlocking-table")) {
 						cur_sequence = SEQUENCE_ROUTES;
-						routes = g_array_sized_new(FALSE, FALSE, sizeof(t_interlocking_route), 64);
-					}
+						routes = g_array_sized_new(FALSE, TRUE, sizeof(t_interlocking_route), 64);
+                        g_array_set_clear_func(routes, free_route);
+                    }
 					break;
 				}
 
 				// array member of route
 				if (cur_mapping == MAPPING_ROUTE) {
 					if (is_str_equal(last_scalar, "path")) {
-						route->path = g_array_sized_new(FALSE, FALSE, sizeof(t_interlocking_path_segment), 8);
-						cur_sequence = SEQUENCE_PATH;
+						route->path = g_array_sized_new(FALSE, TRUE, sizeof(t_interlocking_path_segment), 8);
+                        g_array_set_clear_func(route->path, free_route_path);
+                        cur_sequence = SEQUENCE_PATH;
 						break;
 					}
 
 					if (is_str_equal(last_scalar, "points")) {
-						route->points = g_array_sized_new(FALSE, FALSE, sizeof(t_interlocking_point), 8);
-						cur_sequence = SEQUENCE_POINTS;
+						route->points = g_array_sized_new(FALSE, TRUE, sizeof(t_interlocking_point), 8);
+                        g_array_set_clear_func(route->points, free_route_point);
+                        cur_sequence = SEQUENCE_POINTS;
 						break;
 					}
 
 					if (is_str_equal(last_scalar, "signals")) {
-						route->signals = g_array_sized_new(FALSE, FALSE, sizeof(t_interlocking_signal), 8);
-						cur_sequence = SEQUENCE_SIGNALS;
+						route->signals = g_array_sized_new(FALSE, TRUE, sizeof(t_interlocking_signal), 8);
+                        g_array_set_clear_func(route->signals, free_route_signal);
+                        cur_sequence = SEQUENCE_SIGNALS;
 						break;
 					}
 
