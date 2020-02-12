@@ -27,7 +27,7 @@
 
 #include "interlocking_parser.h"
 #include "interlocking.h"
-#import "server.h"
+#include "server.h"
 
 #include <stdio.h>
 #include <yaml.h>
