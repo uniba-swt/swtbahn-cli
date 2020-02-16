@@ -107,6 +107,7 @@ static void *stop_bidib(void *_) {
 	bidib_stop();
 	free_all_grabbed_trains();
 	free_interlocking_hashtable();
+	free_interlocking_table();
 	pthread_mutex_lock(&start_stop_mutex);
 	stopping = false;
 	pthread_mutex_unlock(&start_stop_mutex);
