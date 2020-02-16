@@ -28,10 +28,10 @@
 #ifndef INTERLOCKING_PARSER_H
 #define INTERLOCKING_PARSER_H
 
-
-#include <stdbool.h>
 #include <glib.h>
 
+
 GArray *parse_interlocking_table(const char *config_dir);
+
 
 #endif // INTERLOCKING_PARSER_H

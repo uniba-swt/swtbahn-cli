@@ -34,22 +34,30 @@
 #include "server.h"
 #include "interlocking_parser.h"
 
+
 GArray *interlocking_table = NULL;
 GHashTable *route_string_to_ids_hashtable = NULL;
 
-void free_interlocking_hashtable_key(void *pointer);
 
-void free_interlocking_hashtable_value(void *pointer);
+void free_interlocking_hashtable_key(void *pointer) {
+	char *key = (char *)pointer;
+	free(key);
+}
+
+void free_interlocking_hashtable_value(void *pointer) {
+	GArray *value = (GArray *)pointer;
+	g_array_free(value, true);
+}
 
 int create_interlocking_hashtable(void) {
-    route_string_to_ids_hashtable = g_hash_table_new_full(g_str_hash, g_str_equal, free_interlocking_hashtable_key, free_interlocking_hashtable_value);
+	route_string_to_ids_hashtable = g_hash_table_new_full(g_str_hash, g_str_equal, free_interlocking_hashtable_key, free_interlocking_hashtable_value);
 	for (int route_index = 0; route_index < interlocking_table->len; ++route_index) {
 		t_interlocking_route *route = get_route(route_index);
 
 		// Build key, example: signal3signal6
-        size_t len = strlen(route->source.id) + strlen(route->destination.id) + 1;
-        char *route_string = malloc(sizeof(char*) * len);
-        snprintf(route_string, len, "%s%s", route->source.id, route->destination.id);
+		size_t len = strlen(route->source.id) + strlen(route->destination.id) + 1;
+		char *route_string = malloc(sizeof(char*) * len);
+		snprintf(route_string, len, "%s%s", route->source.id, route->destination.id);
 
 		if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
 			void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);
@@ -65,28 +73,18 @@ int create_interlocking_hashtable(void) {
 	return 0;
 }
 
-void free_interlocking_hashtable_key(void *pointer) {
-    char *key = (char *)pointer;
-    free(key);
-}
-
-void free_interlocking_hashtable_value(void *pointer) {
-    GArray *value = (GArray *)pointer;
-    g_array_free(value, true);
-}
-
 void free_interlocking_hashtable(void) {
-    if (route_string_to_ids_hashtable != NULL) {
-        g_hash_table_destroy(route_string_to_ids_hashtable);
-        route_string_to_ids_hashtable = NULL;
-    }
+	if (route_string_to_ids_hashtable != NULL) {
+		g_hash_table_destroy(route_string_to_ids_hashtable);
+		route_string_to_ids_hashtable = NULL;
+	}
 }
 
 void free_interlocking_table(void) {
-    if (interlocking_table != NULL) {
-        g_array_free(interlocking_table, true);
-        interlocking_table = NULL;
-    }
+	if (interlocking_table != NULL) {
+		g_array_free(interlocking_table, true);
+		interlocking_table = NULL;
+	}
 }
 
 static int interlocking_table_resolve_indices(void) {
@@ -130,9 +128,9 @@ static int interlocking_table_resolve_indices(void) {
 					return -1;
 				}
 
-				g_string_append_printf(log, "%s (%d) ",
-				                       segment->id,
-						       segment->bidib_state_index);
+				g_string_append_printf(log, "%s (%d) ", 
+				                       segment->id, 
+				                       segment->bidib_state_index);
 			}
 		}
 		
@@ -166,9 +164,9 @@ static int interlocking_table_resolve_indices(void) {
 					return -1;
 				}
 
-				g_string_append_printf(log, "%s (%d) ",
-				                       signal->id,
-						       signal->bidib_state_index);
+				g_string_append_printf(log, "%s (%d) ", 
+				                       signal->id, 
+				                       signal->bidib_state_index);
 			}
 		}
 		
@@ -198,9 +196,9 @@ int interlocking_table_initialise(const char *config_dir) {
 }
 
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id) {
-    size_t len = strlen(source_id) + strlen(destination_id) + 1;
-    char route_string[len];
-    snprintf(route_string, len, "%s%s", source_id, destination_id);
+	size_t len = strlen(source_id) + strlen(destination_id) + 1;
+	char route_string[len];
+	snprintf(route_string, len, "%s%s", source_id, destination_id);
 
 	if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
 		void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);

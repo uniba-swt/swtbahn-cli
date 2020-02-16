@@ -52,32 +52,48 @@ void build_message_hex_string(unsigned char *message, char *dest) {
 
 static void *start_bidib(void *_) {
 	int err_serial = bidib_start_serial(serial_device, config_directory, 0);
+	if (err_serial) {
+		pthread_mutex_lock(&start_stop_mutex);
+		starting = false;
+		pthread_mutex_unlock(&start_stop_mutex);
+		pthread_exit(NULL);
+	}
+	
 	int err_interlocking = interlocking_table_initialise(config_directory);
+	if (err_interlocking) {
+		pthread_mutex_lock(&start_stop_mutex);
+		starting = false;
+		pthread_mutex_unlock(&start_stop_mutex);
+		pthread_exit(NULL);
+	}
+	
+	int err_dyn_containers = dyn_containers_start();
+	if (err_dyn_containers) {
+		pthread_mutex_lock(&start_stop_mutex);
+		starting = false;
+		pthread_mutex_unlock(&start_stop_mutex);
+		pthread_exit(NULL);
+	}
+	
 	pthread_mutex_lock(&start_stop_mutex);
-	if (err_serial || err_interlocking) {
-		starting = false;
-		pthread_mutex_unlock(&start_stop_mutex);
-	} else {
-		running = true;
-		starting = false;
-		pthread_mutex_unlock(&start_stop_mutex);
-		dyn_containers_start();
-		while (running) {
-			unsigned char *message;
-			while ((message = bidib_read_message()) != NULL) {
-				char hex_string[message[0] * 5];
-				build_message_hex_string(message, hex_string);
-				syslog_server(LOG_NOTICE, "SWTbahn message queue: %s", hex_string);
-				free(message);
-			}
-			while ((message = bidib_read_error_message()) != NULL) {
-				char hex_string[message[0] * 5];
-				build_message_hex_string(message, hex_string);
-				syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
-				free(message);
-			}
-			usleep(500000);	// 0.5 seconds
+	running = true;
+	starting = false;
+	pthread_mutex_unlock(&start_stop_mutex);
+	while (running) {
+		unsigned char *message;
+		while ((message = bidib_read_message()) != NULL) {
+			char hex_string[message[0] * 5];
+			build_message_hex_string(message, hex_string);
+			syslog_server(LOG_NOTICE, "SWTbahn message queue: %s", hex_string);
+			free(message);
 		}
+		while ((message = bidib_read_error_message()) != NULL) {
+			char hex_string[message[0] * 5];
+			build_message_hex_string(message, hex_string);
+			syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
+			free(message);
+		}
+		usleep(500000);	// 0.5 seconds
 	}
 	pthread_exit(NULL);
 }

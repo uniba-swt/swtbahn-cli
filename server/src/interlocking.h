@@ -62,6 +62,7 @@ typedef struct {
  * id of the route
  * source signal of the route
  * destination signal of the route
+ * direction of the train movement on the route
  * path of the route, consisting of track segments
  * points within the route and their required position
  * signals within the route
