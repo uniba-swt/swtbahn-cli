@@ -106,7 +106,7 @@ int interlocking_table_initialise(const char *config_dir);
 void free_interlocking_hashtable(void);
 
 /**
- * Free the array that stores interlocking table
+ * Frees the array that stores the interlocking table.
  */
 void free_interlocking_table(void);
 
