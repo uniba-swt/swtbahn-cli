@@ -211,6 +211,8 @@ void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) 
 		              error_number);
 		return;
 	}
+	
+	*shm_payload = NULL;
 }
 
 // Delete the shared memory segment from our data space
@@ -284,6 +286,10 @@ int dyn_containers_set_train_engine(t_train_data * const grabbed_train,
 }
 
 void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_instance) {
+	if (dyn_containers_interface == NULL) {
+		return;
+	}
+	
 	struct t_train_engine_instance_io * const train_engine_instance_io = 
 		&dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
 
