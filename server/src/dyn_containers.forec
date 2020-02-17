@@ -251,7 +251,7 @@ thread interlockerInstance3(void);
 
 
 void main(int argc, char **argv) {
-	syslog_server(LOG_NOTICE, "Starting dynamic library containers");
+	syslog_server(LOG_NOTICE, "ForeC: Starting dynamic library containers");
 	
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
 	                         &dyn_containers_interface);
@@ -263,13 +263,13 @@ void main(int argc, char **argv) {
 	} when (forec_intern_input.terminate);
 	
 	unloadEngines();
-	syslog_server(LOG_NOTICE, "Unloaded train engines and instances");
+	syslog_server(LOG_NOTICE, "ForeC: Unloaded train engines and instances");
 	
 	unloadInterlockers();
-	syslog_server(LOG_NOTICE, "Unloaded interlockers and instances");
+	syslog_server(LOG_NOTICE, "ForeC: Unloaded interlockers and instances");
 	
 	dyn_containers_shm_detach(&dyn_containers_interface);
-	syslog_server(LOG_NOTICE, "Detached shared memory");
+	syslog_server(LOG_NOTICE, "ForeC: Detached shared memory");
 }
 
 // Thread to manage the LET interface: Timing, inputs, and outputs
