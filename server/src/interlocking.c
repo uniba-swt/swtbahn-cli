@@ -70,6 +70,7 @@ int create_interlocking_hashtable(void) {
 		}
 	}
 	
+	syslog_server(LOG_NOTICE, "Interlocking create hash table: successful");
 	return 0;
 }
 
@@ -93,19 +94,19 @@ static int interlocking_table_resolve_indices(void) {
 		// Resolve the libbidib state array indices for track segments,
 		// points, and signals.
 	
-		GString *log = g_string_new("Interlocking initialisation: ");
+		GString *log = g_string_new("Interlocking resolve indicies: ");
 		g_string_append_printf(log, "Route id: %zu ", route->id);
 		
 		char *id = route->source.id;
 		route->source.bidib_state_index = bidib_get_signal_state_index(id);
 		if (route->source.bidib_state_index == -1) {
-			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+			syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 			return 1;
 		}
 		id = route->destination.id;
 		route->destination.bidib_state_index = bidib_get_signal_state_index(id);
 		if (route->destination.bidib_state_index == -1) {
-			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+			syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 			return 1;
 		}
 		
@@ -124,7 +125,7 @@ static int interlocking_table_resolve_indices(void) {
 				segment->bidib_state_index = bidib_get_segment_state_index(id);
 
 				if (segment->bidib_state_index == -1) {
-					syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+					syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 					return -1;
 				}
 
@@ -142,7 +143,7 @@ static int interlocking_table_resolve_indices(void) {
 				point->bidib_state_index = bidib_get_point_state_index(id);
 
 				if (point->bidib_state_index == -1) {
-					syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+					syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 					return -1;
 				}
 
@@ -160,7 +161,7 @@ static int interlocking_table_resolve_indices(void) {
 				signal->bidib_state_index = bidib_get_signal_state_index(id);
 
 				if (signal->bidib_state_index == -1) {
-					syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+					syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 					return -1;
 				}
 
@@ -182,6 +183,7 @@ static int interlocking_table_resolve_indices(void) {
 		g_string_free(log, true);
 	}
 	
+	syslog_server(LOG_NOTICE, "Interlocking resolve indicies: successful");
 	return 0;
 }
 

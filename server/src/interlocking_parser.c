@@ -406,11 +406,11 @@ GArray *parse_interlocking_table(const char *config_dir) {
 
 	if (routes != NULL) {
 		// success
-		syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded");
+		syslog_server(LOG_INFO, "Interlocking parser: Interlocking table parsed");
 		return routes;
 	} else {
 		// error
-		syslog_server(LOG_ERR, "Interlocking parser: Failed to load interlocking table");
+		syslog_server(LOG_ERR, "Interlocking parser: Failed to parse interlocking table");
 		return NULL;
 	}
 }
