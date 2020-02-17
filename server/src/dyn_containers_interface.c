@@ -154,7 +154,7 @@ static void *dyn_containers_actuate(void *_) {
 	pthread_exit(NULL);
 }
 
-void dyn_containers_start(void) {
+int dyn_containers_start(void) {
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
 	                         &dyn_containers_interface);
 	dyn_containers_reset_interface(dyn_containers_interface);
@@ -162,6 +162,7 @@ void dyn_containers_start(void) {
 	               forec_dyn_containers, NULL);
 	pthread_create(&dyn_containers_actuate_thread, NULL, 
 	               dyn_containers_actuate, NULL);
+	return 0;
 }
 
 void dyn_containers_stop(void) {

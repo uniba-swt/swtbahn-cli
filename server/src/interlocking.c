@@ -28,27 +28,41 @@
 #include <bidib.h>
 #include <glib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "interlocking.h"
 #include "server.h"
 #include "interlocking_parser.h"
 
+
 GArray *interlocking_table = NULL;
-GHashTable* route_string_to_ids_hashtable = NULL;
+GHashTable *route_string_to_ids_hashtable = NULL;
+
+
+void free_interlocking_hashtable_key(void *pointer) {
+	char *key = (char *)pointer;
+	free(key);
+}
+
+void free_interlocking_hashtable_value(void *pointer) {
+	GArray *value = (GArray *)pointer;
+	g_array_free(value, true);
+}
 
 int create_interlocking_hashtable(void) {
-	route_string_to_ids_hashtable = g_hash_table_new(g_str_hash, g_str_equal);
+	route_string_to_ids_hashtable = g_hash_table_new_full(g_str_hash, g_str_equal, free_interlocking_hashtable_key, free_interlocking_hashtable_value);
 	for (int route_index = 0; route_index < interlocking_table->len; ++route_index) {
 		t_interlocking_route *route = get_route(route_index);
 
 		// Build key, example: signal3signal6
-		char *route_string = concat_str(route->source.id, route->destination.id);
+		size_t len = strlen(route->source.id) + strlen(route->destination.id) + 1;
+		char *route_string = malloc(sizeof(char*) * len);
+		snprintf(route_string, len, "%s%s", route->source.id, route->destination.id);
 
 		if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
 			void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);
 			GArray *route_ids = (GArray *) route_ids_ptr;
 			g_array_append_val(route_ids, route->id);
-			g_hash_table_replace(route_string_to_ids_hashtable, route_string, route_ids);
 		} else {
 			GArray *route_ids = g_array_sized_new(FALSE, FALSE, sizeof(size_t), 8);
 			g_array_append_val(route_ids, route->id);
@@ -56,15 +70,23 @@ int create_interlocking_hashtable(void) {
 		}
 	}
 	
+	syslog_server(LOG_NOTICE, "Interlocking create hash table: successful");
 	return 0;
 }
 
 void free_interlocking_hashtable(void) {
 	if (route_string_to_ids_hashtable != NULL) {
 		g_hash_table_destroy(route_string_to_ids_hashtable);
+		route_string_to_ids_hashtable = NULL;
 	}
 }
 
+void free_interlocking_table(void) {
+	if (interlocking_table != NULL) {
+		g_array_free(interlocking_table, true);
+		interlocking_table = NULL;
+	}
+}
 
 static int interlocking_table_resolve_indices(void) {
 	for (int route_id = 0; route_id < interlocking_table->len; ++route_id) {
@@ -72,19 +94,19 @@ static int interlocking_table_resolve_indices(void) {
 		// Resolve the libbidib state array indices for track segments,
 		// points, and signals.
 	
-		GString *log = g_string_new("Interlocking initialisation: ");
+		GString *log = g_string_new("Interlocking resolve indicies: ");
 		g_string_append_printf(log, "Route id: %zu ", route->id);
 		
 		char *id = route->source.id;
 		route->source.bidib_state_index = bidib_get_signal_state_index(id);
 		if (route->source.bidib_state_index == -1) {
-			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+			syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 			return 1;
 		}
 		id = route->destination.id;
 		route->destination.bidib_state_index = bidib_get_signal_state_index(id);
 		if (route->destination.bidib_state_index == -1) {
-			syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+			syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 			return 1;
 		}
 		
@@ -103,13 +125,13 @@ static int interlocking_table_resolve_indices(void) {
 				segment->bidib_state_index = bidib_get_segment_state_index(id);
 
 				if (segment->bidib_state_index == -1) {
-					syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+					syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 					return -1;
 				}
 
-				g_string_append_printf(log, "%s (%d) ",
-				                       segment->id,
-						       segment->bidib_state_index);
+				g_string_append_printf(log, "%s (%d) ", 
+				                       segment->id, 
+				                       segment->bidib_state_index);
 			}
 		}
 		
@@ -121,7 +143,7 @@ static int interlocking_table_resolve_indices(void) {
 				point->bidib_state_index = bidib_get_point_state_index(id);
 
 				if (point->bidib_state_index == -1) {
-					syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+					syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 					return -1;
 				}
 
@@ -139,13 +161,13 @@ static int interlocking_table_resolve_indices(void) {
 				signal->bidib_state_index = bidib_get_signal_state_index(id);
 
 				if (signal->bidib_state_index == -1) {
-					syslog_server(LOG_ERR, "Interlocking initialisation: %s not found in BiDiB state", id);
+					syslog_server(LOG_ERR, "Interlocking resolve indicies: %s not found in BiDiB state", id);
 					return -1;
 				}
 
-				g_string_append_printf(log, "%s (%d) ",
-				                       signal->id,
-						       signal->bidib_state_index);
+				g_string_append_printf(log, "%s (%d) ", 
+				                       signal->id, 
+				                       signal->bidib_state_index);
 			}
 		}
 		
@@ -161,6 +183,7 @@ static int interlocking_table_resolve_indices(void) {
 		g_string_free(log, true);
 	}
 	
+	syslog_server(LOG_NOTICE, "Interlocking resolve indicies: successful");
 	return 0;
 }
 
@@ -175,7 +198,9 @@ int interlocking_table_initialise(const char *config_dir) {
 }
 
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id) {
-	char *route_string = concat_str(source_id, destination_id);
+	size_t len = strlen(source_id) + strlen(destination_id) + 1;
+	char route_string[len];
+	snprintf(route_string, len, "%s%s", source_id, destination_id);
 
 	if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
 		void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);

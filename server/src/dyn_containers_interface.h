@@ -96,7 +96,7 @@ typedef struct {
 extern pthread_mutex_t dyn_containers_mutex;
 
 
-void dyn_containers_start(void);
+int dyn_containers_start(void);
 
 void dyn_containers_stop(void);
 
