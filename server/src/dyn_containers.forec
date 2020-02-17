@@ -123,10 +123,10 @@ shared TickData *interlockerInstanceData = interlockerInstanceDataIntern combine
 
 // Interface with the environment
 typedef struct {
-	bool terminate;						// Whether to terminate program execution
+	volatile bool terminate;			// Whether to terminate program execution
 	int let_period_us;					// Period of the Logical Execution Time (LET) in microseconds
 } t_forec_intern_input;
-shared t_forec_intern_input forec_intern_input = {.let_period_us = 0};
+shared t_forec_intern_input forec_intern_input = {.terminate = false, .let_period_us = 0};
 
 // Train engine information
 typedef struct {
@@ -269,6 +269,7 @@ void main(int argc, char **argv) {
 	syslog_server(LOG_NOTICE, "Unloaded interlockers and instances");
 	
 	dyn_containers_shm_detach(&dyn_containers_interface);
+	syslog_server(LOG_NOTICE, "Detached shared memory");
 }
 
 // Thread to manage the LET interface: Timing, inputs, and outputs

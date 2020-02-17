@@ -82,13 +82,13 @@ static void *start_bidib(void *_) {
 	while (running) {
 		unsigned char *message;
 		while ((message = bidib_read_message()) != NULL) {
-			char hex_string[message[0] * 5];
+			char hex_string[(message[0] + 1) * 5];
 			build_message_hex_string(message, hex_string);
 			syslog_server(LOG_NOTICE, "SWTbahn message queue: %s", hex_string);
 			free(message);
 		}
 		while ((message = bidib_read_error_message()) != NULL) {
-			char hex_string[message[0] * 5];
+			char hex_string[(message[0] + 1) * 5];
 			build_message_hex_string(message, hex_string);
 			syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
 			free(message);
