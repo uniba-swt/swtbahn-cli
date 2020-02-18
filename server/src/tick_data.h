@@ -11,8 +11,8 @@
 typedef struct {
   int requested_speed;
   char requested_forwards;
-  int target_speed;
-  char target_forwards;
+  int nominal_speed;
+  char nominal_forwards;
   
   char internal_variables[1024];
 } TickData;
