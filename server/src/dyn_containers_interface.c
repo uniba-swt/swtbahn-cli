@@ -78,11 +78,11 @@ void dyn_containers_reset_interface(
 			.input_requested_forwards = true,
 			
 			.output_in_use = false,
-			.output_target_speed = 0,
-			.output_target_forwards = 0,
+			.output_nominal_speed = 0,
+			.output_nominal_forwards = 0,
 			
-			.output_target_speed_pre = 0,
-			.output_target_forwards_pre = 0
+			.output_nominal_speed_pre = 0,
+			.output_nominal_forwards_pre = 0
 		};
 	}
 	
@@ -117,23 +117,23 @@ static void *dyn_containers_actuate(void *_) {
 				struct t_train_engine_instance_io * const engine_instance = 
 				    &dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
 				if (engine_instance->output_in_use) {
-					if (engine_instance->output_target_speed != engine_instance->output_target_speed_pre
-							|| engine_instance->output_target_forwards != engine_instance->output_target_forwards_pre) {
+					if (engine_instance->output_nominal_speed != engine_instance->output_nominal_speed_pre
+							|| engine_instance->output_nominal_forwards != engine_instance->output_nominal_forwards_pre) {
 						if (bidib_set_train_speed(grabbed_trains[i].name->str, 
-												  engine_instance->output_target_forwards
-												  ? engine_instance->output_target_speed 
-												  : -engine_instance->output_target_speed, 
+												  engine_instance->output_nominal_forwards
+												  ? engine_instance->output_nominal_speed 
+												  : -engine_instance->output_nominal_speed, 
 												  grabbed_trains[i].track_output)) {
 							syslog_server(LOG_ERR, "Request: Set train speed - bad parameter values");
 						} else {
 							bidib_flush();
 							syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
 								   grabbed_trains[i].name->str, 
-								   engine_instance->output_target_forwards 
-								   ? engine_instance->output_target_speed 
-								   : -engine_instance->output_target_speed);
-							engine_instance->output_target_speed_pre = engine_instance->output_target_speed;
-							engine_instance->output_target_forwards_pre = engine_instance->output_target_forwards;
+								   engine_instance->output_nominal_forwards 
+								   ? engine_instance->output_nominal_speed 
+								   : -engine_instance->output_nominal_speed);
+							engine_instance->output_nominal_speed_pre = engine_instance->output_nominal_speed;
+							engine_instance->output_nominal_forwards_pre = engine_instance->output_nominal_forwards;
 						}
 					}
 				}

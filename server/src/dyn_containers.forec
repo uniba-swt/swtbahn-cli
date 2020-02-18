@@ -164,8 +164,8 @@ shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engin
 
 typedef struct {	
 	bool in_use;						// Whether this instance is still in use
-	int  target_speed;					// Output defined by the train engine
-	char target_forwards;				// Output defined by the train engine
+	int  nominal_speed;					// Output defined by the train engine
+	char nominal_forwards;				// Output defined by the train engine
 } t_forec_intern_output_train_engine_instance;
 shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_0;
 shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_1;
@@ -451,8 +451,8 @@ thread engineInstance0(void) {
 		syslog_server(LOG_NOTICE, "%s: Reset container  %d %d -> %d %d", threadName,
 		        trainEngineInstanceData[instance].requested_speed,
 		        trainEngineInstanceData[instance].requested_forwards,
-		        trainEngineInstanceData[instance].target_speed,
-		        trainEngineInstanceData[instance].target_forwards);
+		        trainEngineInstanceData[instance].nominal_speed,
+		        trainEngineInstanceData[instance].nominal_forwards);
 
 		// Execute the chosen train engine
 		while (!forec_intern_input_train_engine_instance_0.release) {
@@ -462,18 +462,18 @@ thread engineInstance0(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			if (trainEngineInstanceData[instance].target_speed != forec_intern_output_train_engine_instance_0.target_speed
-			        || trainEngineInstanceData[instance].target_forwards != forec_intern_output_train_engine_instance_0.target_forwards) {
+			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_0.nominal_speed
+			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_0.nominal_forwards) {
 				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
 						trainEngines[trainEngineType].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
-						trainEngineInstanceData[instance].target_speed,
-						trainEngineInstanceData[instance].target_forwards);
+						trainEngineInstanceData[instance].nominal_speed,
+						trainEngineInstanceData[instance].nominal_forwards);
 				
 				// Update outputs
-				forec_intern_output_train_engine_instance_0.target_speed = trainEngineInstanceData[instance].target_speed;
-				forec_intern_output_train_engine_instance_0.target_forwards = trainEngineInstanceData[instance].target_forwards;
+				forec_intern_output_train_engine_instance_0.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
+				forec_intern_output_train_engine_instance_0.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
 			
 			pause;
@@ -510,8 +510,8 @@ thread engineInstance1(void) {
 		syslog_server(LOG_NOTICE, "%s: Reset container  %d %d -> %d %d", threadName,
 		        trainEngineInstanceData[instance].requested_speed,
 		        trainEngineInstanceData[instance].requested_forwards,
-		        trainEngineInstanceData[instance].target_speed,
-		        trainEngineInstanceData[instance].target_forwards);
+		        trainEngineInstanceData[instance].nominal_speed,
+		        trainEngineInstanceData[instance].nominal_forwards);
 
 		// Execute the chosen train engine
 		while (!forec_intern_input_train_engine_instance_1.release) {
@@ -521,18 +521,18 @@ thread engineInstance1(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			if (trainEngineInstanceData[instance].target_speed != forec_intern_output_train_engine_instance_1.target_speed
-			        || trainEngineInstanceData[instance].target_forwards != forec_intern_output_train_engine_instance_1.target_forwards) {
+			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_1.nominal_speed
+			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_1.nominal_forwards) {
 				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
 						trainEngines[trainEngineType].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
-						trainEngineInstanceData[instance].target_speed,
-						trainEngineInstanceData[instance].target_forwards);
+						trainEngineInstanceData[instance].nominal_speed,
+						trainEngineInstanceData[instance].nominal_forwards);
 				
 				// Update outputs
-				forec_intern_output_train_engine_instance_1.target_speed = trainEngineInstanceData[instance].target_speed;
-				forec_intern_output_train_engine_instance_1.target_forwards = trainEngineInstanceData[instance].target_forwards;
+				forec_intern_output_train_engine_instance_1.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
+				forec_intern_output_train_engine_instance_1.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
 			
 			pause;
@@ -569,8 +569,8 @@ thread engineInstance2(void) {
 		syslog_server(LOG_NOTICE, "%s: Reset container  %d %d -> %d %d", threadName,
 		        trainEngineInstanceData[instance].requested_speed,
 		        trainEngineInstanceData[instance].requested_forwards,
-		        trainEngineInstanceData[instance].target_speed,
-		        trainEngineInstanceData[instance].target_forwards);
+		        trainEngineInstanceData[instance].nominal_speed,
+		        trainEngineInstanceData[instance].nominal_forwards);
 
 		// Execute the chosen train engine
 		while (!forec_intern_input_train_engine_instance_2.release) {
@@ -580,18 +580,18 @@ thread engineInstance2(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			if (trainEngineInstanceData[instance].target_speed != forec_intern_output_train_engine_instance_2.target_speed
-			        || trainEngineInstanceData[instance].target_forwards != forec_intern_output_train_engine_instance_2.target_forwards) {
+			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_2.nominal_speed
+			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_2.nominal_forwards) {
 				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
 						trainEngines[trainEngineType].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
-						trainEngineInstanceData[instance].target_speed,
-						trainEngineInstanceData[instance].target_forwards);
+						trainEngineInstanceData[instance].nominal_speed,
+						trainEngineInstanceData[instance].nominal_forwards);
 				
 				// Update outputs
-				forec_intern_output_train_engine_instance_2.target_speed = trainEngineInstanceData[instance].target_speed;
-				forec_intern_output_train_engine_instance_2.target_forwards = trainEngineInstanceData[instance].target_forwards;
+				forec_intern_output_train_engine_instance_2.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
+				forec_intern_output_train_engine_instance_2.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
 			
 			pause;
@@ -628,8 +628,8 @@ thread engineInstance3(void) {
 		syslog_server(LOG_NOTICE, "%s: Reset container  %d %d -> %d %d", threadName,
 		        trainEngineInstanceData[instance].requested_speed,
 		        trainEngineInstanceData[instance].requested_forwards,
-		        trainEngineInstanceData[instance].target_speed,
-		        trainEngineInstanceData[instance].target_forwards);
+		        trainEngineInstanceData[instance].nominal_speed,
+		        trainEngineInstanceData[instance].nominal_forwards);
 
 		// Execute the chosen train engine
 		while (!forec_intern_input_train_engine_instance_3.release) {
@@ -639,18 +639,18 @@ thread engineInstance3(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			if (trainEngineInstanceData[instance].target_speed != forec_intern_output_train_engine_instance_3.target_speed
-			        || trainEngineInstanceData[instance].target_forwards != forec_intern_output_train_engine_instance_3.target_forwards) {
+			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_3.nominal_speed
+			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_3.nominal_forwards) {
 				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
 						trainEngines[trainEngineType].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
-						trainEngineInstanceData[instance].target_speed,
-						trainEngineInstanceData[instance].target_forwards);
+						trainEngineInstanceData[instance].nominal_speed,
+						trainEngineInstanceData[instance].nominal_forwards);
 				
 				// Update outputs
-				forec_intern_output_train_engine_instance_3.target_speed = trainEngineInstanceData[instance].target_speed;
-				forec_intern_output_train_engine_instance_3.target_forwards = trainEngineInstanceData[instance].target_forwards;
+				forec_intern_output_train_engine_instance_3.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
+				forec_intern_output_train_engine_instance_3.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
 			
 			pause;
@@ -687,8 +687,8 @@ thread engineInstance4(void) {
 		syslog_server(LOG_NOTICE, "%s: Reset container  %d %d -> %d %d", threadName,
 		        trainEngineInstanceData[instance].requested_speed,
 		        trainEngineInstanceData[instance].requested_forwards,
-		        trainEngineInstanceData[instance].target_speed,
-		        trainEngineInstanceData[instance].target_forwards);
+		        trainEngineInstanceData[instance].nominal_speed,
+		        trainEngineInstanceData[instance].nominal_forwards);
 
 		// Execute the chosen train engine
 		while (!forec_intern_input_train_engine_instance_4.release) {
@@ -698,18 +698,18 @@ thread engineInstance4(void) {
 			
 			// Execute one tick
 			dynlib_tick(&trainEngines[trainEngineType], &trainEngineInstanceData[instance]);
-			if (trainEngineInstanceData[instance].target_speed != forec_intern_output_train_engine_instance_4.target_speed
-			        || trainEngineInstanceData[instance].target_forwards != forec_intern_output_train_engine_instance_4.target_forwards) {
+			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_4.nominal_speed
+			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_4.nominal_forwards) {
 				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
 						trainEngines[trainEngineType].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
-						trainEngineInstanceData[instance].target_speed,
-						trainEngineInstanceData[instance].target_forwards);
+						trainEngineInstanceData[instance].nominal_speed,
+						trainEngineInstanceData[instance].nominal_forwards);
 				
 				// Update outputs
-				forec_intern_output_train_engine_instance_4.target_speed = trainEngineInstanceData[instance].target_speed;
-				forec_intern_output_train_engine_instance_4.target_forwards = trainEngineInstanceData[instance].target_forwards;
+				forec_intern_output_train_engine_instance_4.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
+				forec_intern_output_train_engine_instance_4.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
 			
 			pause;
@@ -762,8 +762,8 @@ void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *intern
 void copyEngineInstanceOutputs(struct t_train_engine_instance_io *external, 
                                t_forec_intern_output_train_engine_instance *internal) {
 	external->output_in_use = internal->in_use;
-	external->output_target_speed = internal->target_speed;
-	external->output_target_forwards = internal->target_forwards;
+	external->output_nominal_speed = internal->nominal_speed;
+	external->output_nominal_forwards = internal->nominal_forwards;
 }
 
 void unloadEngines(void) {
