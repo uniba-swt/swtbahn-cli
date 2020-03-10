@@ -90,10 +90,6 @@ bool dynlib_is_loaded(dynlib_data *library) {
 	return (library->lib_handle != NULL);
 }
 
-void dynlib_set_name(dynlib_data *library, const char name[]) {
-	strncpy(library->name, name, NAME_MAX);
-}
-
 void dynlib_close(dynlib_data *library) {
 	if (dynlib_is_loaded(library)) {
 		dlclose(library->lib_handle);

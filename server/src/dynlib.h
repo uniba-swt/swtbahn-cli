@@ -46,7 +46,6 @@ dynlib_status dynlib_compile_c(dynlib_data *library, const char filepath[]);
 
 dynlib_status dynlib_load(dynlib_data *library, const char filepath[]);
 bool dynlib_is_loaded(dynlib_data *library);
-void dynlib_set_name(dynlib_data *library, const char name[]);
 void dynlib_close(dynlib_data *library);
 void dynlib_reset(dynlib_data *library, TickData *tick_data);
 void dynlib_tick(dynlib_data *library, TickData *TickData);
