@@ -9,7 +9,10 @@
 typedef enum {
 	DYNLIB_COMPILE_SUCCESS,
 	DYNLIB_LOAD_SUCCESS,
-		
+
+	// Could not compile SCCharts model into C file
+	DYNLIB_COMPILE_C_ERR,
+	
 	// Could not compile library into shared library
 	DYNLIB_COMPILE_SHARED_ERR,
 	
@@ -25,21 +28,20 @@ typedef enum {
 
 typedef struct {
 	char name[NAME_MAX];
-    
-	// File path of library source code, without the file extension
+
+	// File path of library source code
 	char filepath[PATH_MAX + NAME_MAX];
 
 	// Handle to the dynamic library
 	void *lib_handle;
-    
+
 	// Library interface functions
 	void (*reset_func)(TickData *);
 	void (*tick_func)(TickData *);
 } dynlib_data;
 
 
-dynlib_status dynlib_compile_scchart(dynlib_data *library, const char filepath[]);
-dynlib_status dynlib_compile_c(dynlib_data *library, const char filepath[]);
+dynlib_status dynlib_compile_scchart_to_c(dynlib_data *library, const char filepath[]);
 
 dynlib_status dynlib_load(dynlib_data *library, const char filepath[]);
 bool dynlib_is_loaded(dynlib_data *library);

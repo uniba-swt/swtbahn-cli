@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 #include <string.h>
+#include <libgen.h>
 
 #include "dynlib.h"
 #include "server.h"
@@ -9,26 +10,37 @@
 const char dynlib_symbol_reset[] = "reset";
 const char dynlib_symbol_tick[] = "tick";
 
+const char compiler_output_dir[] = "engines";
+const char sccharts_compiler_command[] = "java -jar \"$KICO_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.netlist";
+const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
-// TODO: Compiles a given SCCharts model into C code
-dynlib_status dynlib_compile_scchart(dynlib_data *library, const char filepath[]) {
-	strncpy(library->filepath, filepath, PATH_MAX + NAME_MAX);
-	
-	return DYNLIB_COMPILE_SUCCESS;
-}
 
-// FIXME: UNTESTED: Compiles a given C code into a dynamic library
-dynlib_status dynlib_compile_c(dynlib_data *library, const char filepath[]) {
+// Compiles a given SCCharts model into a dynamic library
+dynlib_status dynlib_compile_scchart_to_c(dynlib_data *library, const char filepath[]) {
 	strncpy(library->filepath, filepath, PATH_MAX + NAME_MAX);
+
+	// Get the filename
+	char filepath_copy[PATH_MAX + NAME_MAX];
+	strncpy(filepath_copy, filepath, PATH_MAX + NAME_MAX);
+	const char *filename = basename(filepath_copy);
 	
+	// Compile the SCCharts model to a C file
 	char command[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command, "gcc -c -fpic %s.c", library->filepath);
-	if (system(command) == -1) {
-		return DYNLIB_COMPILE_OBJ_ERR;
+	sprintf(command, "%s -o %s %s.sctx", sccharts_compiler_command, compiler_output_dir, filepath);
+
+	int ret = system(command);
+	if (ret == -1 || WEXITSTATUS(ret) != 0) {
+		return DYNLIB_COMPILE_C_ERR;
 	}
+
+	// Compile the C file into a dynamic library
+	sprintf(command, "%s -o %s/lib%s.so %s/%s.c", 
+			c_compiler_command, 
+			compiler_output_dir, filename, 
+			compiler_output_dir, filename);
 	
-	sprintf(command, "gcc -shared -fpic -o %s.so %s.c", library->filepath, library->filepath);
-	if (system(command) == -1) {
+	ret = system(command);
+	if (ret == -1 || WEXITSTATUS(ret) != 0) {
 		return DYNLIB_COMPILE_SHARED_ERR;
 	}
 	
