@@ -80,11 +80,28 @@
     <label>to</label>
     <input type="text" id=signalIdTo value="signal" />
     <button id=requestRouteButton>Request</button>
-    <button id=driveRouteButton>Drive</button>
+    <button id=driveRouteButton>Drive Route</button>
     <span id=routeResponse></span>
     <br />
     <br />
-
+    
+    
+    <h1>Custom Engines</h1>
+    <label>SCCharts File (*.sctx):</label>
+    <input type="file" id=selectEngineFile accept=".sctx" />
+    <button id=uploadEngineButton>Upload</button>
+    <br />
+    
+    <label>Available Engines:</label>
+    <select id=availableEngines>
+        <option>libtrain_engine_default (unremovable)</option>
+        <option>libtrain_engine_linear (unremovable)</option>
+    </select>
+    <button id=refreshEnginesButton>Refresh</button>
+    <button id=removeEngineButton>Remove</button>
+    <br />
+    <br />
+    
 
     <h1>Controller</h1>
 
