@@ -10,14 +10,14 @@ const char dynlib_symbol_reset[] = "reset";
 const char dynlib_symbol_tick[] = "tick";
 
 
-// TODO: Compiles C code from a given SCCharts model
+// TODO: Compiles a given SCCharts model into C code
 dynlib_status dynlib_compile_scchart(dynlib_data *library, const char filepath[]) {
 	strncpy(library->filepath, filepath, PATH_MAX + NAME_MAX);
 	
 	return DYNLIB_COMPILE_SUCCESS;
 }
 
-// FIXME: UNTESTED: Compiles a dynamic library from a given C file
+// FIXME: UNTESTED: Compiles a given C code into a dynamic library
 dynlib_status dynlib_compile_c(dynlib_data *library, const char filepath[]) {
 	strncpy(library->filepath, filepath, PATH_MAX + NAME_MAX);
 	
@@ -48,7 +48,7 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 	sprintf(library->filepath, "%s.so", filepath);
 	library->lib_handle = dlopen(library->filepath, RTLD_LAZY);
 	if (library->lib_handle == NULL) {
-		// Try and load the dynamic library  with *.dylib extension
+		// Try and load the dynamic library with *.dylib extension
 		sprintf(library->filepath, "%s.dylib", filepath);
 		library->lib_handle = dlopen(library->filepath, RTLD_LAZY);
 		

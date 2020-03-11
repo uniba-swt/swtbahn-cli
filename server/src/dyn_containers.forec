@@ -805,11 +805,11 @@ void printout(const char *threadName, const dynlib_status status, const dynlib_d
 		case (DYNLIB_LOAD_SUCCESS):
 			syslog_server(LOG_NOTICE, "%s: Loaded dynamic library '%s'", threadName, library->filepath);
 			break;
-		case (DYNLIB_COMPILE_OBJ_ERR):
-			syslog_server(LOG_ERR, "%s: Could not compile library into object file '%s'", threadName, library->filepath);
+		case (DYNLIB_COMPILE_C_ERR):
+			syslog_server(LOG_ERR, "%s: Could not compile SCCharts model into C file '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_COMPILE_SHARED_ERR):
-			syslog_server(LOG_ERR, "%s: Could not compile library into shared library '%s'", threadName, library->filepath);
+			syslog_server(LOG_ERR, "%s: Could not compile C file into shared library '%s'", threadName, library->filepath);
 			break;
 		case (DYNLIB_LOAD_ERR):
 			syslog_server(LOG_ERR, "%s: Could not load the dynamic library '%s'", threadName, library->filepath);

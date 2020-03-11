@@ -9,10 +9,7 @@
 typedef enum {
 	DYNLIB_COMPILE_SUCCESS,
 	DYNLIB_LOAD_SUCCESS,
-	
-	// Could not compile library into object file
-	DYNLIB_COMPILE_OBJ_ERR,
-	
+		
 	// Could not compile library into shared library
 	DYNLIB_COMPILE_SHARED_ERR,
 	
@@ -27,17 +24,17 @@ typedef enum {
 } dynlib_status;
 
 typedef struct {
-    char name[NAME_MAX];
+	char name[NAME_MAX];
     
 	// File path of library source code, without the file extension
-    char filepath[PATH_MAX + NAME_MAX];
+	char filepath[PATH_MAX + NAME_MAX];
 
 	// Handle to the dynamic library
-    void *lib_handle;
+	void *lib_handle;
     
-    // Library interface functions
-    void (*reset_func)(TickData *);
-    void (*tick_func)(TickData *);
+	// Library interface functions
+	void (*reset_func)(TickData *);
+	void (*tick_func)(TickData *);
 } dynlib_data;
 
 
