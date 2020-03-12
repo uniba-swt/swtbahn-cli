@@ -43,6 +43,7 @@
 #include "handler_admin.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
+#include "handler_upload.h"
 
 #define INPUT_MAX_LEN 256
 
@@ -173,6 +174,12 @@ int main(int argc, char **argv) {
 	              handler_set_train_emergency_stop);
 	onion_url_add(urls, "driver/set-train-peripheral",
 	              handler_set_train_peripheral);
+
+	// --- upload functions ---
+	onion_url_add(urls, "upload/engine", handler_upload_engine);
+	onion_url_add(urls, "upload/refresh-engine", handler_refresh_engine);
+	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
+
 
 	// --- monitor functions ---
 	onion_url_add(urls, "monitor/trains", handler_get_trains);

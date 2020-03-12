@@ -4,10 +4,12 @@ var grabId = -1;
 var trainId = '';
 var trainEngine = '';
 var routeId = -1;
-$(document).ready(function() {
 
+$(document).ready(
+    function() {
         trackOutput = 'master';
 
+        // Configuration
         $('#pingButton').click(function() {
             $('#pingResponse').text('Waiting');
             $.ajax({
@@ -71,6 +73,8 @@ $(document).ready(function() {
             });
         });
 
+
+        // Train Driver
         $('#grabTrainButton').click(function() {
             $('#grabTrainResponse').text('Waiting');
             trainId = $('#grabTrainId option:selected').text();
@@ -262,6 +266,40 @@ $(document).ready(function() {
             }
         });
 
+
+        // Custom Engines
+        $('#uploadEngineButton').click(function() {
+            $('#uploadResponse').text('Waiting');
+            
+            var files = $('#selectEngineFile').prop('files');
+            if (files.length != 1) {
+                $('#uploadResponse').text('Specify an SCCharts file!');
+                return;
+            }
+            var file = files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                type: 'POST',
+                url: '/upload/engine',
+                crossDomain: true,
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                dataType: 'text',
+                success: function(responseData, textStatus, jqXHR) {
+                    $('#uploadResponse')
+                        .text('Engine ' + file.name + ' ready for use');
+                },
+                error: function(responseData, textStatus, errorThrown) {
+                    $('#uploadResponse').text('Engine ' + file.name + ' could not be compiled or loaded!');
+                }
+            });
+        });
+
+
+        // Controller
         $('#releaseRouteButton').click(function() {
             $('#releaseRouteResponse').text('Waiting');
             var routeId = $('#routeId').val();
