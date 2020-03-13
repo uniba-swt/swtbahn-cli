@@ -140,7 +140,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
 		pthread_mutex_lock(&dyn_containers_mutex);
-		if (name != NULL) {
+		if (name != NULL && strstr(name, "unremovable") == NULL) {
 			const int engine_slot = dyn_containers_get_engine_slot(name);
 			if (engine_slot >= 0) {
 				if (dyn_containers_free_engine(engine_slot)) {
@@ -150,7 +150,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 					return OCS_PROCESSED;	
 				} else {
 					pthread_mutex_unlock(&dyn_containers_mutex);
-					syslog_server(LOG_ERR, "Request: Remove engine - engine %s is still in use or is unremovable", 
+					syslog_server(LOG_ERR, "Request: Remove engine - engine %s is still in use", 
 								  name);
 					return OCS_NOT_IMPLEMENTED;
 				}
@@ -162,7 +162,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 			}
 		} else {
 			pthread_mutex_unlock(&dyn_containers_mutex);
-			syslog_server(LOG_ERR, "Request: Remove engine - engine name is invalid", 
+			syslog_server(LOG_ERR, "Request: Remove engine - engine name is invalid or engine is unremovable", 
 						  name);
 			return OCS_NOT_IMPLEMENTED;
 		}

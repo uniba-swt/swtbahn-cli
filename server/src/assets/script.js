@@ -326,10 +326,34 @@ $(document).ready(
                 }
             });
         }
-        
+
         $('#refreshEnginesButton').click(function() {
             $('#refreshRemoveResponse').text('Waiting');
             refreshEnginesList();
+        });
+
+        $('#removeEngineButton').click(function() {
+            $('#refreshRemoveResponse').text('Waiting');
+            var engine-name = $('#availableEngines option:selected').text();
+            if (engine-name.search("unremovable") == -1) {
+                $('#refreshRemoveResponse').text('Engine ' + name + ' is unremovable!');
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/upload/remove-engine',
+                crossDomain: true,
+                data: { 'engine-name': engine-name },
+                dataType: 'text',
+                success: function(responseData, textStatus, jqXHR) {
+                    refreshEnginesList();
+                    $('#refreshRemoveResponse')
+                        .text('Engine ' + name + ' removed');
+                },
+                error: function(responseData, textStatus, errorThrown) {
+                    $('#refreshRemoveResponse').text('Engine ' + name + ' not found or still in use!');
+                }
+            });
         });
 
 

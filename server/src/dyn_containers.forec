@@ -108,8 +108,8 @@ dynlib_data interlockers[INTERLOCKER_COUNT_MAX];
 // Train engines that are available a compile time
 static const unsigned int TRAIN_ENGINE_DEFINED_COUNT = 2;
 const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
-	"../src/engines/libtrain_engine_default",
-	"../src/engines/libtrain_engine_linear"
+	"../src/engines/libtrain_engine_default (unremovable)",
+	"../src/engines/libtrain_engine_linear (unremovable)"
 };
 
 // Data needed by instances of train engines and interlocking algorithms
