@@ -117,8 +117,15 @@ void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config);
 // Can only be called while the dyn_containers_mutex is locked
 const int dyn_containers_find_free_engine_slot(void);
 
+// Finds the slot of a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_find_engine_slot(const char name[]);
+
 // Loads train engine into specified slot
 void dyn_containers_load_engine(const int engine_slot, const char filepath[]);
+
+// Unloads train engine at specified slot
+void dyn_containers_unload_engine(const int engine_slot);
 
 // Gets a comma-separated string of train engines that have been loaded
 GString *dyn_containers_get_train_engines(void);

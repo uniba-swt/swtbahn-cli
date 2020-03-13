@@ -241,6 +241,21 @@ const int dyn_containers_find_free_engine_slot(void) {
 	return -1;
 }
 
+// Finds the slot of a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_find_engine_slot(const char name[]) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		struct t_train_engine_io * const train_engine_io = 
+		    &dyn_containers_interface->train_engines_io[i];
+		if (train_engine_io->output_in_use && 
+		    strcmp(train_engine_io->output_name, name) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
 // Loads train engine into specified slot
 // Can only be called while the dyn_containers_mutex is locked
 void dyn_containers_load_engine(const int engine_slot, const char filepath[]) {
@@ -249,16 +264,34 @@ void dyn_containers_load_engine(const int engine_slot, const char filepath[]) {
 	train_engine_io->input_load = true;
 	train_engine_io->input_unload = false;
 	strcpy(train_engine_io->input_filepath, filepath);
-	
 	syslog_server(LOG_NOTICE, 
 				  "Waiting for train engine %s to be dynamically loaded", 
 				  filepath);
 	while (!train_engine_io->output_in_use) {
-		usleep(100000);	// 0.1 sec
+		usleep(let_period_us);
 	}
+	train_engine_io->input_load = false;
 	syslog_server(LOG_NOTICE, 
 				  "Train engine %s has been dynamically loaded into engine slot %d", 
 				  filepath, engine_slot);
+}
+
+void dyn_containers_unload_engine(const int engine_slot) {
+	struct t_train_engine_io * const train_engine_io = 
+	    &dyn_containers_interface->train_engines_io[engine_slot];
+	train_engine_io->input_load = false;
+	train_engine_io->input_unload = true;
+	syslog_server(LOG_NOTICE, 
+				  "Waiting for train engine %s at slot %d to be unloaded", 
+				  train_engine_io->input_filepath, engine_slot);
+	strcpy(train_engine_io->input_filepath, "");
+	while (train_engine_io->output_in_use) {
+		usleep(let_period_us);
+	}
+	train_engine_io->input_unload = false;
+	syslog_server(LOG_NOTICE, 
+				  "Train engine at slot %d has been unloaded", 
+				  engine_slot);
 }
 
 GString *dyn_containers_get_train_engines(void) {

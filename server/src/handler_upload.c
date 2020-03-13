@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
+#include <dirent.h>
 
 #include "server.h"
 #include "dynlib.h"
@@ -45,8 +46,27 @@ const static char engine_dir[] = "engines";
 extern pthread_mutex_t dyn_containers_mutex;
 
 
+bool engine_file_exists(const char name[]) {
+	DIR *dir_handle = opendir(engine_dir);
+	if (dir_handle == NULL) {
+		closedir(dir_handle);
+		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", engine_dir);
+		return true;
+	}
+	struct dirent *dir_entry = NULL;
+	while ((dir_entry = readdir(dir_handle)) != NULL) {
+		if (strcmp(dir_entry->d_name, name) == 0) {
+			closedir(dir_handle);
+			syslog_server(LOG_ERR, "Upload: Engine %s already exists", name);
+			return true;
+		}
+	}
+	closedir(dir_handle);
+	return false;
+}
 
-void remove_file_extension(char filepath_destination[], const char filepath_source[], const char extension[]) {
+void remove_file_extension(char filepath_destination[], 
+                           const char filepath_source[], const char extension[]) {
     size_t filepath_len = strlen(filepath_source);
     size_t extension_len = strlen(extension);
     
@@ -62,42 +82,39 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		const char *name = onion_request_get_post(req, "file");
 		const char *filename = onion_request_get_file(req, "file");
 		pthread_mutex_lock(&dyn_containers_mutex);
-		if (name != NULL && filename != NULL) {
+		if (name != NULL && filename != NULL && !engine_file_exists(name)) {
 			const int engine_slot = dyn_containers_find_free_engine_slot();
 			if (engine_slot >= 0) {
 				char final_filename[PATH_MAX + NAME_MAX];
 				snprintf(final_filename, sizeof(final_filename), "%s/%s", engine_dir, name);
 				onion_shortcut_rename(filename, final_filename);
-				syslog_server(LOG_NOTICE, "Request: Upload - Copied engine SCCharts file from %s to %s", filename, final_filename);
+				syslog_server(LOG_NOTICE, "Request: Upload - copied engine SCCharts file from %s to %s", 
+				              filename, final_filename);
 
 				char filepath[sizeof(final_filename)];
 				remove_file_extension(filepath, final_filename, ".sctx");
 				dynlib_status status = dynlib_compile_scchart_to_c(filepath);
 				if (status != DYNLIB_COMPILE_C_ERR && status != DYNLIB_COMPILE_SHARED_ERR) {
-					syslog_server(LOG_NOTICE, "Request: Upload - Engine %s compiled", name);
+					syslog_server(LOG_NOTICE, "Request: Upload - engine %s compiled", name);
 					
 					snprintf(final_filename, sizeof(final_filename), "%s/lib%s", engine_dir, name);
 					remove_file_extension(filepath, final_filename, ".sctx");
 					dyn_containers_load_engine(engine_slot, filepath);
 					pthread_mutex_unlock(&dyn_containers_mutex);
-
-					GString *train_engine_names = dyn_containers_get_train_engines();
-					printf("%s\n", train_engine_names->str);
-					g_string_free(train_engine_names, true);
 					return OCS_PROCESSED;
 				} else {
 					pthread_mutex_unlock(&dyn_containers_mutex);
-					syslog_server(LOG_ERR, "Request: Upload - Engine file could not be uploaded");
+					syslog_server(LOG_ERR, "Request: Upload - engine file could not be uploaded");
 					return OCS_NOT_IMPLEMENTED;
 				}
 			} else {
 				pthread_mutex_unlock(&dyn_containers_mutex);
-				syslog_server(LOG_ERR, "Request: Upload - No available engine slot");
+				syslog_server(LOG_ERR, "Request: Upload - no available engine slot");
 				return OCS_NOT_IMPLEMENTED;
 			}
 		} else {
 			pthread_mutex_unlock(&dyn_containers_mutex);
-			syslog_server(LOG_ERR, "Request: Upload - Engine file is invalid");
+			syslog_server(LOG_ERR, "Request: Upload - engine file is invalid");
 			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
@@ -106,16 +123,47 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_refresh_engine(void *_, onion_request *req,
+onion_connection_status handler_refresh_engines(void *_, onion_request *req,
                                                onion_response *res) {
 	build_response_header(res);
-	return OCS_NOT_IMPLEMENTED;
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *train_engines = dyn_containers_get_train_engines();
+		onion_response_printf(res, "%s", train_engines->str);
+		g_string_free(train_engines, true);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Refresh engine - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
 }
 
 onion_connection_status handler_remove_engine(void *_, onion_request *req,
                                               onion_response *res) {
-
 	build_response_header(res);
-	return OCS_NOT_IMPLEMENTED;
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *name = onion_request_get_post(req, "engine-name");
+		pthread_mutex_lock(&dyn_containers_mutex);
+		if (name != NULL) {
+			const int engine_slot = dyn_containers_find_engine_slot(name);
+			if (engine_slot >= 0) {
+				dyn_containers_unload_engine(engine_slot);
+				pthread_mutex_unlock(&dyn_containers_mutex);
+				return OCS_PROCESSED;				
+			} else {
+				pthread_mutex_unlock(&dyn_containers_mutex);
+				syslog_server(LOG_ERR, "Request: Remove engine - engine %s could not be found", 
+				              name);
+				return OCS_NOT_IMPLEMENTED;
+			}
+		} else {
+			pthread_mutex_unlock(&dyn_containers_mutex);
+			syslog_server(LOG_ERR, "Request: Remove engine - engine name is invalid", 
+						  name);
+			return OCS_NOT_IMPLEMENTED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Remove engine - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
 }
 
