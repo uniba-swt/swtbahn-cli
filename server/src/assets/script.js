@@ -270,7 +270,6 @@ $(document).ready(
         // Custom Engines
         $('#uploadEngineButton').click(function() {
             $('#uploadResponse').text('Waiting');
-            
             var files = $('#selectEngineFile').prop('files');
             if (files.length != 1) {
                 $('#uploadResponse').text('Specify an SCCharts file!');
@@ -289,6 +288,7 @@ $(document).ready(
                 cache: false,
                 dataType: 'text',
                 success: function(responseData, textStatus, jqXHR) {
+                    refreshEnginesList();
                     $('#uploadResponse')
                         .text('Engine ' + file.name + ' ready for use');
                 },
@@ -296,6 +296,40 @@ $(document).ready(
                     $('#uploadResponse').text('Engine ' + file.name + ' could not be compiled or loaded!');
                 }
             });
+        });
+        
+        function refreshEnginesList() {
+            $.ajax({
+                type: 'POST',
+                url: '/upload/refresh-engines',
+                crossDomain: true,
+                data: null,
+                dataType: 'text',
+                success: function(responseData, textStatus, jqXHR) {
+                    var engineList = responseData.split(",");
+
+                    var selectGrabEngines = $("#grabEngine");
+                    var selectAvailableEngines = $("#availableEngines");
+
+                    selectGrabEngines.empty();
+                    selectAvailableEngines.empty();
+            
+                    $.each(engineList, function(key, value) {
+                        selectGrabEngines.append(new Option(value));
+                        selectAvailableEngines.append(new Option(value));
+                    });
+                    
+                    $('#refreshRemoveResponse').text('Refreshed list of train engines');
+                },
+                error: function(responseData, textStatus, errorThrown) {
+                    $('#refreshRemoveResponse').text('Unable to refresh list of train engines');
+                }
+            });
+        }
+        
+        $('#refreshEnginesButton').click(function() {
+            $('#refreshRemoveResponse').text('Waiting');
+            refreshEnginesList();
         });
 
 
