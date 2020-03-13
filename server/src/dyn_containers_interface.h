@@ -33,6 +33,7 @@
 #include <limits.h>
 
 #include "handler_driver.h"
+#include "dynlib.h"
 
 #define TRAIN_ENGINE_COUNT_MAX			4
 #define TRAIN_ENGINE_INSTANCE_COUNT_MAX	5
@@ -111,6 +112,16 @@ void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload);
 // Deletes the shared memory segment from our data space
 void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config);
 
+
+// Finds the first available slot for a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_find_free_engine_slot(void);
+
+// Loads train engine into specified slot
+void dyn_containers_load_engine(const int engine_slot, const char filepath[]);
+
+// Gets a comma-separated string of train engines that have been loaded
+GString *dyn_containers_get_train_engines(void);
 
 // Finds the requested train engine, and finds an available train engine instance to use
 int dyn_containers_set_train_engine(t_train_data * const grabbed_train, 

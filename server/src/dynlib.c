@@ -16,9 +16,7 @@ const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
 
 // Compiles a given SCCharts model into a dynamic library
-dynlib_status dynlib_compile_scchart_to_c(dynlib_data *library, const char filepath[]) {
-	strncpy(library->filepath, filepath, PATH_MAX + NAME_MAX);
-
+dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
 	// Get the filename
 	char filepath_copy[PATH_MAX + NAME_MAX];
 	strncpy(filepath_copy, filepath, PATH_MAX + NAME_MAX);

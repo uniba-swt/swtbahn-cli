@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <glib.h>
 #include <bidib.h>
 
 #include "dyn_containers_interface.h"
@@ -202,7 +203,7 @@ void dyn_containers_shm_create(t_dyn_shm_config * const shm_config,
 	}	
 }
 
-// Detach the shared memory segment from our data space
+// Detaches the shared memory segment from our data space
 void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) {
 	if (shmdt(*shm_payload) == -1) {
 		int error_number = errno;
@@ -215,7 +216,7 @@ void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) 
 	*shm_payload = NULL;
 }
 
-// Delete the shared memory segment from our data space
+// Deletes the shared memory segment from our data space
 void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config) {
 	shm_config->shmid = shmctl(shm_config->shmid, IPC_RMID, NULL);
 	if (shm_config->shmid == -1) {
@@ -225,6 +226,57 @@ void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config) {
 		              error_number);
 		return;
 	}
+}
+
+// Finds the first available slot for a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_find_free_engine_slot(void) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		struct t_train_engine_io * const train_engine_io = 
+		    &dyn_containers_interface->train_engines_io[i];
+		if (!train_engine_io->output_in_use) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// Loads train engine into specified slot
+// Can only be called while the dyn_containers_mutex is locked
+void dyn_containers_load_engine(const int engine_slot, const char filepath[]) {
+	struct t_train_engine_io * const train_engine_io = 
+	    &dyn_containers_interface->train_engines_io[engine_slot];
+	train_engine_io->input_load = true;
+	train_engine_io->input_unload = false;
+	strcpy(train_engine_io->input_filepath, filepath);
+	
+	syslog_server(LOG_NOTICE, 
+				  "Waiting for train engine %s to be dynamically loaded", 
+				  filepath);
+	while (!train_engine_io->output_in_use) {
+		usleep(100000);	// 0.1 sec
+	}
+	syslog_server(LOG_NOTICE, 
+				  "Train engine %s has been dynamically loaded into engine slot %d", 
+				  filepath, engine_slot);
+}
+
+GString *dyn_containers_get_train_engines(void) {
+	GString *train_engine_names = g_string_new(NULL);
+	int i = 0;
+	for (i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		struct t_train_engine_io * const train_engine_io = 
+		    &dyn_containers_interface->train_engines_io[i];
+		if (!train_engine_io->output_in_use) {
+			break;
+		}
+		// Copy string
+		if (i != 0) {
+			g_string_append(train_engine_names, ",");
+		}
+		g_string_append(train_engine_names, train_engine_io->output_name);
+	}
+	return train_engine_names;
 }
 
 int dyn_containers_set_train_engine(t_train_data * const grabbed_train, 
