@@ -27,7 +27,6 @@
 
 #include <onion/onion.h>
 #include <onion/shortcuts.h>
-#include <bidib.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -37,8 +36,6 @@
 #include "server.h"
 #include "dynlib.h"
 #include "dyn_containers_interface.h"
-#include "handler_driver.h"
-#include "interlocking.h"
 
 
 const static char engine_dir[] = "engines";
