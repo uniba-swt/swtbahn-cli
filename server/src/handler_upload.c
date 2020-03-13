@@ -80,7 +80,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		const char *filename = onion_request_get_file(req, "file");
 		pthread_mutex_lock(&dyn_containers_mutex);
 		if (name != NULL && filename != NULL && !engine_file_exists(name)) {
-			const int engine_slot = dyn_containers_find_free_engine_slot();
+			const int engine_slot = dyn_containers_get_free_engine_slot();
 			if (engine_slot >= 0) {
 				char final_filename[PATH_MAX + NAME_MAX];
 				snprintf(final_filename, sizeof(final_filename), "%s/%s", engine_dir, name);
@@ -96,7 +96,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 					
 					snprintf(final_filename, sizeof(final_filename), "%s/lib%s", engine_dir, name);
 					remove_file_extension(filepath, final_filename, ".sctx");
-					dyn_containers_load_engine(engine_slot, filepath);
+					dyn_containers_set_engine(engine_slot, filepath);
 					pthread_mutex_unlock(&dyn_containers_mutex);
 					return OCS_PROCESSED;
 				} else {
@@ -141,11 +141,19 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		const char *name = onion_request_get_post(req, "engine-name");
 		pthread_mutex_lock(&dyn_containers_mutex);
 		if (name != NULL) {
-			const int engine_slot = dyn_containers_find_engine_slot(name);
+			const int engine_slot = dyn_containers_get_engine_slot(name);
 			if (engine_slot >= 0) {
-				dyn_containers_unload_engine(engine_slot);
-				pthread_mutex_unlock(&dyn_containers_mutex);
-				return OCS_PROCESSED;				
+				if (dyn_containers_free_engine(engine_slot)) {
+					pthread_mutex_unlock(&dyn_containers_mutex);
+					syslog_server(LOG_NOTICE, "Request: Remove engine - engine %s removed", 
+				                  name);
+					return OCS_PROCESSED;	
+				} else {
+					pthread_mutex_unlock(&dyn_containers_mutex);
+					syslog_server(LOG_ERR, "Request: Remove engine - engine %s is still in use or is unremovable", 
+								  name);
+					return OCS_NOT_IMPLEMENTED;
+				}
 			} else {
 				pthread_mutex_unlock(&dyn_containers_mutex);
 				syslog_server(LOG_ERR, "Request: Remove engine - engine %s could not be found", 

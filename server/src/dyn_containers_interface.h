@@ -65,6 +65,7 @@ typedef struct {
 		char input_requested_forwards;				// Input defined by the train engine
 		
 		bool output_in_use;							// Whether this instance is still in use
+		int  output_train_engine_type;				// Train engine in use
 		int  output_nominal_speed;					// Output defined by the train engine
 		char output_nominal_forwards;				// Output defined by the train engine
 
@@ -115,17 +116,19 @@ void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config);
 
 // Finds the first available slot for a train engine
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_find_free_engine_slot(void);
+const int dyn_containers_get_free_engine_slot(void);
 
 // Finds the slot of a train engine
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_find_engine_slot(const char name[]);
+const int dyn_containers_get_engine_slot(const char name[]);
 
 // Loads train engine into specified slot
-void dyn_containers_load_engine(const int engine_slot, const char filepath[]);
+// Can only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_engine(const int engine_slot, const char filepath[]);
 
 // Unloads train engine at specified slot
-void dyn_containers_unload_engine(const int engine_slot);
+// Can only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_engine(const int engine_slot);
 
 // Gets a comma-separated string of train engines that have been loaded
 GString *dyn_containers_get_train_engines(void);

@@ -230,7 +230,7 @@ void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config) {
 
 // Finds the first available slot for a train engine
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_find_free_engine_slot(void) {
+const int dyn_containers_get_free_engine_slot(void) {
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		struct t_train_engine_io * const train_engine_io = 
 		    &dyn_containers_interface->train_engines_io[i];
@@ -243,7 +243,7 @@ const int dyn_containers_find_free_engine_slot(void) {
 
 // Finds the slot of a train engine
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_find_engine_slot(const char name[]) {
+const int dyn_containers_get_engine_slot(const char name[]) {
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		struct t_train_engine_io * const train_engine_io = 
 		    &dyn_containers_interface->train_engines_io[i];
@@ -258,7 +258,7 @@ const int dyn_containers_find_engine_slot(const char name[]) {
 
 // Loads train engine into specified slot
 // Can only be called while the dyn_containers_mutex is locked
-void dyn_containers_load_engine(const int engine_slot, const char filepath[]) {
+void dyn_containers_set_engine(const int engine_slot, const char filepath[]) {
 	struct t_train_engine_io * const train_engine_io = 
 	    &dyn_containers_interface->train_engines_io[engine_slot];
 	train_engine_io->input_load = true;
@@ -276,7 +276,18 @@ void dyn_containers_load_engine(const int engine_slot, const char filepath[]) {
 				  filepath, engine_slot);
 }
 
-void dyn_containers_unload_engine(const int engine_slot) {
+bool dyn_containers_free_engine(const int engine_slot) {
+	// Check that no instance of the train engine is running
+	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		struct t_train_engine_instance_io * const engine_instance = 
+			&dyn_containers_interface->train_engine_instances_io[i];
+		if (engine_instance->output_in_use && 
+		    engine_instance->output_train_engine_type == engine_slot) {
+			return false;
+		}
+	}
+
+	// Unload the train engine
 	struct t_train_engine_io * const train_engine_io = 
 	    &dyn_containers_interface->train_engines_io[engine_slot];
 	train_engine_io->input_load = false;
@@ -290,8 +301,9 @@ void dyn_containers_unload_engine(const int engine_slot) {
 	}
 	train_engine_io->input_unload = false;
 	syslog_server(LOG_NOTICE, 
-				  "Train engine at slot %d has been unloaded", 
+				  "Unloaded train engine at slot %d", 
 				  engine_slot);
+	return true;
 }
 
 GString *dyn_containers_get_train_engines(void) {
