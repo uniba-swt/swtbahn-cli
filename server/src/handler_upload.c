@@ -43,7 +43,7 @@ const static char engine_dir[] = "engines";
 extern pthread_mutex_t dyn_containers_mutex;
 
 
-bool engine_file_exists(const char name[]) {
+bool engine_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(engine_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
@@ -52,9 +52,9 @@ bool engine_file_exists(const char name[]) {
 	}
 	struct dirent *dir_entry = NULL;
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
-		if (strcmp(dir_entry->d_name, name) == 0) {
+		if (strcmp(dir_entry->d_name, filename) == 0) {
 			closedir(dir_handle);
-			syslog_server(LOG_ERR, "Upload: Engine %s already exists", name);
+			syslog_server(LOG_ERR, "Upload: Engine %s already exists", filename);
 			return true;
 		}
 	}
@@ -76,26 +76,26 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		const char *name = onion_request_get_post(req, "file");
-		const char *filename = onion_request_get_file(req, "file");
+		const char *filename = onion_request_get_post(req, "file");
+		const char *temp_filepath = onion_request_get_file(req, "file");
 		pthread_mutex_lock(&dyn_containers_mutex);
-		if (name != NULL && filename != NULL && !engine_file_exists(name)) {
+		if (filename != NULL && temp_filepath != NULL && !engine_file_exists(filename)) {
 			const int engine_slot = dyn_containers_get_free_engine_slot();
 			if (engine_slot >= 0) {
-				char final_filename[PATH_MAX + NAME_MAX];
-				snprintf(final_filename, sizeof(final_filename), "%s/%s", engine_dir, name);
-				onion_shortcut_rename(filename, final_filename);
+				char final_filepath[PATH_MAX + NAME_MAX];
+				snprintf(final_filepath, sizeof(final_filepath), "%s/%s", engine_dir, filename);
+				onion_shortcut_rename(temp_filepath, final_filepath);
 				syslog_server(LOG_NOTICE, "Request: Upload - copied engine SCCharts file from %s to %s", 
-				              filename, final_filename);
+				              temp_filepath, final_filepath);
 
-				char filepath[sizeof(final_filename)];
-				remove_file_extension(filepath, final_filename, ".sctx");
+				char filepath[sizeof(final_filepath)];
+				remove_file_extension(filepath, final_filepath, ".sctx");
 				dynlib_status status = dynlib_compile_scchart_to_c(filepath);
 				if (status != DYNLIB_COMPILE_C_ERR && status != DYNLIB_COMPILE_SHARED_ERR) {
-					syslog_server(LOG_NOTICE, "Request: Upload - engine %s compiled", name);
+					syslog_server(LOG_NOTICE, "Request: Upload - engine %s compiled", filename);
 					
-					snprintf(final_filename, sizeof(final_filename), "%s/lib%s", engine_dir, name);
-					remove_file_extension(filepath, final_filename, ".sctx");
+					snprintf(final_filepath, sizeof(final_filepath), "%s/lib%s", engine_dir, filename);
+					remove_file_extension(filepath, final_filepath, ".sctx");
 					dyn_containers_set_engine(engine_slot, filepath);
 					pthread_mutex_unlock(&dyn_containers_mutex);
 					return OCS_PROCESSED;
