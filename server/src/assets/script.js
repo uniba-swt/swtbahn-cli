@@ -334,24 +334,24 @@ $(document).ready(
 
         $('#removeEngineButton').click(function() {
             $('#refreshRemoveResponse').text('Waiting');
-            var engine-name = $('#availableEngines option:selected').text();
-            if (engine-name.search("unremovable") == -1) {
-                $('#refreshRemoveResponse').text('Engine ' + name + ' is unremovable!');
+            var engineName = $('#availableEngines option:selected').text();
+            if (engineName.search("unremovable") == -1) {
+                $('#refreshRemoveResponse').text('Engine ' + engineName + ' is unremovable!');
                 return;
             }
             $.ajax({
                 type: 'POST',
                 url: '/upload/remove-engine',
                 crossDomain: true,
-                data: { 'engine-name': engine-name },
+                data: { 'engine-name': engineName },
                 dataType: 'text',
                 success: function(responseData, textStatus, jqXHR) {
                     refreshEnginesList();
                     $('#refreshRemoveResponse')
-                        .text('Engine ' + name + ' removed');
+                        .text('Engine ' + engineName + ' removed');
                 },
                 error: function(responseData, textStatus, errorThrown) {
-                    $('#refreshRemoveResponse').text('Engine ' + name + ' not found or still in use!');
+                    $('#refreshRemoveResponse').text('Engine ' + engineName + ' not found or still in use!');
                 }
             });
         });
