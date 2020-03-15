@@ -62,6 +62,12 @@ bool engine_file_exists(const char filename[]) {
 	return false;
 }
 
+bool engine_is_unremovable(const char name[]) {
+	bool result = strcmp(name, "libtrain_engine_default (unremovable)") == 0
+	              || strcmp(name, "libtrain_engine_linear (unremovable)") == 0;
+	return result;
+}
+
 void remove_file_extension(char filepath_destination[], 
                            const char filepath_source[], const char extension[]) {
     size_t filepath_len = strlen(filepath_source);
@@ -140,7 +146,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
 		pthread_mutex_lock(&dyn_containers_mutex);
-		if (name != NULL && strstr(name, "unremovable") == NULL) {
+		if (name != NULL && !engine_is_unremovable(name)) {
 			const int engine_slot = dyn_containers_get_engine_slot(name);
 			if (engine_slot >= 0) {
 				if (dyn_containers_free_engine(engine_slot)) {
