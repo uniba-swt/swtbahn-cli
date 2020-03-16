@@ -72,11 +72,9 @@ bool remove_engine_files(const char library_name[]) {
 	char filepath[PATH_MAX + NAME_MAX];
 	for (int i = 0; i < 3; i++) {
 		sprintf(filepath, "%s/%s.%s", engine_dir, name, engine_extensions[i]);
-		printf("%s\n", filepath);
 		result = remove(filepath);
 	}
 	sprintf(filepath, "%s/lib%s.so", engine_dir, name);
-	printf("%s\n", filepath);
 	result += remove(filepath);
 	
 	return (result == 0);
