@@ -264,18 +264,22 @@ void dyn_containers_set_engine(const int engine_slot, const char filepath[]) {
 	train_engine_io->input_load = true;
 	train_engine_io->input_unload = false;
 	strcpy(train_engine_io->input_filepath, filepath);
+	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_NOTICE, 
-				  "Waiting for train engine %s to be dynamically loaded", 
-				  filepath);
+				  "Waiting for train engine %s to be dynamically loaded into slot %d", 
+				  filepath, engine_slot);
 	while (!train_engine_io->output_in_use) {
 		usleep(let_period_us);
 	}
+	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_io->input_load = false;
 	syslog_server(LOG_NOTICE, 
 				  "Train engine %s has been dynamically loaded into engine slot %d", 
 				  filepath, engine_slot);
 }
 
+// Unloads train engine at specified slot
+// Can only be called while the dyn_containers_mutex is locked
 bool dyn_containers_free_engine(const int engine_slot) {
 	// Check that no instance of the train engine is in use
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
@@ -292,13 +296,15 @@ bool dyn_containers_free_engine(const int engine_slot) {
 	    &dyn_containers_interface->train_engines_io[engine_slot];
 	train_engine_io->input_load = false;
 	train_engine_io->input_unload = true;
+	strcpy(train_engine_io->input_filepath, "");
+	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_NOTICE, 
 				  "Waiting for train engine %s at slot %d to be unloaded", 
 				  train_engine_io->input_filepath, engine_slot);
-	strcpy(train_engine_io->input_filepath, "");
 	while (train_engine_io->output_in_use) {
 		usleep(let_period_us);
 	}
+	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_io->input_unload = false;
 	syslog_server(LOG_NOTICE, 
 				  "Unloaded train engine at slot %d", 
@@ -357,12 +363,14 @@ int dyn_containers_set_train_engine(t_train_data * const grabbed_train,
 			train_engine_instance_io->input_train_engine_type = train_engine_type;
 			train_engine_instance_io->input_requested_speed = 0;
 			train_engine_instance_io->input_requested_forwards = true;
-			
+			pthread_mutex_unlock(&dyn_containers_mutex);
+
 			do {
 				usleep(let_period_us);
 				instance_in_use = train_engine_instance_io->output_in_use;
 			} while (!instance_in_use);
 			
+			pthread_mutex_lock(&dyn_containers_mutex);
 			train_engine_instance_io->input_grab = false;
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			
@@ -387,13 +395,15 @@ void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_i
 
 	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_instance_io->input_release = true;
-	
+	pthread_mutex_unlock(&dyn_containers_mutex);
+
 	int instance_in_use = true;
 	do {
 		usleep(let_period_us);
 		instance_in_use = train_engine_instance_io->output_in_use;
 	} while (instance_in_use);
 	
+	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_instance_io->input_release = false;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }

@@ -143,10 +143,10 @@ typedef struct {
 	bool in_use;						// Whether the container is still in use
 	char *name;							// Name of the train engine when loaded
 } t_forec_intern_output_train_engine;
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0 = {.name = ""};
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_1 = {.name = ""};
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_2 = {.name = ""};
-shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3 = {.name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0 = {.in_use = false, .name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_1 = {.in_use = false, .name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_2 = {.in_use = false, .name = ""};
+shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3 = {.in_use = false, .name = ""};
 
 // Train engine instance information
 typedef struct {
@@ -168,11 +168,11 @@ typedef struct {
 	int  nominal_speed;					// Output defined by the train engine
 	char nominal_forwards;				// Output defined by the train engine
 } t_forec_intern_output_train_engine_instance;
-shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_0;
-shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_1;
-shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_2;
-shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_3;
-shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_4;
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_0 = {.in_use = false, .train_engine_type = -1};
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_1 = {.in_use = false, .train_engine_type = -1};
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_2 = {.in_use = false, .train_engine_type = -1};
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_3 = {.in_use = false, .train_engine_type = -1};
+shared t_forec_intern_output_train_engine_instance forec_intern_output_train_engine_instance_4 = {.in_use = false, .train_engine_type = -1};
 
 // TODO: Interlocker information
 typedef struct {
@@ -187,10 +187,10 @@ shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3;
 typedef struct {
 	bool in_use;						// Whether the container is still in use
 } t_forec_intern_output_interlocker;
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0;
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_1;
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_2;
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3;
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0 = {.in_use = false};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_1 = {.in_use = false};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_2 = {.in_use = false};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3 = {.in_use = false};
 
 // TODO: Interlocker information
 typedef struct {
@@ -205,10 +205,10 @@ shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_
 typedef struct {
 	bool in_use;						// Whether this instance is still in use
 } t_forec_intern_output_interlocker_instance;
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0;
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1;
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2;
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3;
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2 = {.in_use = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3 = {.in_use = false};
 
 
 // TODO: Create shared memory
