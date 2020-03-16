@@ -335,7 +335,7 @@ $(document).ready(
         $('#removeEngineButton').click(function() {
             $('#refreshRemoveResponse').text('Waiting');
             var engineName = $('#availableEngines option:selected').text();
-            if (engineName.search("unremovable") == -1) {
+            if (engineName.search("unremovable") != -1) {
                 $('#refreshRemoveResponse').text('Engine ' + engineName + ' is unremovable!');
                 return;
             }
