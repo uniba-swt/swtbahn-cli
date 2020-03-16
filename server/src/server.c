@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 
 	// --- upload functions ---
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
-	onion_url_add(urls, "upload/refresh-engine", handler_refresh_engine);
+	onion_url_add(urls, "upload/refresh-engines", handler_refresh_engines);
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
 
 

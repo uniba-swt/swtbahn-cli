@@ -32,7 +32,7 @@
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res);
 
-onion_connection_status handler_refresh_engine(void *_, onion_request *req,
+onion_connection_status handler_refresh_engines(void *_, onion_request *req,
                                                onion_response *res);
 
 onion_connection_status handler_remove_engine(void *_, onion_request *req,

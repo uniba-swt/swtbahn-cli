@@ -11,6 +11,8 @@ include_directories(${GLIB_INCLUDE_DIRS})
 
 file(GLOB SRCFILES "src/*.c")
 
+set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines")
+
 # - - - - - - - - - - - - -
 # ADJUSTMENT SECTION BEGIN
 # - - - - - - - - - - - - -
@@ -54,6 +56,13 @@ add_custom_target(
 	DEPENDS forec
 	BYPRODUCTS ${FOREC_MAIN}.pdf
 )
+
+add_custom_target(
+	engines_dir
+	ALL
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/engines"
+)
+
 
 # - - - - - - - - - - - - -
 # ADJUSTMENT SECTION END

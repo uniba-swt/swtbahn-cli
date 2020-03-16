@@ -33,6 +33,7 @@
 #include <limits.h>
 
 #include "handler_driver.h"
+#include "dynlib.h"
 
 #define TRAIN_ENGINE_COUNT_MAX			4
 #define TRAIN_ENGINE_INSTANCE_COUNT_MAX	5
@@ -64,6 +65,7 @@ typedef struct {
 		char input_requested_forwards;				// Input defined by the train engine
 		
 		bool output_in_use;							// Whether this instance is still in use
+		int  output_train_engine_type;				// Train engine in use
 		int  output_nominal_speed;					// Output defined by the train engine
 		char output_nominal_forwards;				// Output defined by the train engine
 
@@ -111,6 +113,25 @@ void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload);
 // Deletes the shared memory segment from our data space
 void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config);
 
+
+// Finds the first available slot for a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_free_engine_slot(void);
+
+// Finds the slot of a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_engine_slot(const char name[]);
+
+// Loads train engine into specified slot
+// Can only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_engine(const int engine_slot, const char filepath[]);
+
+// Unloads train engine at specified slot
+// Can only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_engine(const int engine_slot);
+
+// Gets a comma-separated string of train engines that have been loaded
+GString *dyn_containers_get_train_engines(void);
 
 // Finds the requested train engine, and finds an available train engine instance to use
 int dyn_containers_set_train_engine(t_train_data * const grabbed_train, 

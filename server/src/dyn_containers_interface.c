@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <glib.h>
 #include <bidib.h>
 
 #include "dyn_containers_interface.h"
@@ -202,7 +203,7 @@ void dyn_containers_shm_create(t_dyn_shm_config * const shm_config,
 	}	
 }
 
-// Detach the shared memory segment from our data space
+// Detaches the shared memory segment from our data space
 void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) {
 	if (shmdt(*shm_payload) == -1) {
 		int error_number = errno;
@@ -215,7 +216,7 @@ void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) 
 	*shm_payload = NULL;
 }
 
-// Delete the shared memory segment from our data space
+// Deletes the shared memory segment from our data space
 void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config) {
 	shm_config->shmid = shmctl(shm_config->shmid, IPC_RMID, NULL);
 	if (shm_config->shmid == -1) {
@@ -225,6 +226,108 @@ void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config) {
 		              error_number);
 		return;
 	}
+}
+
+// Finds the first available slot for a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_free_engine_slot(void) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		struct t_train_engine_io * const train_engine_io = 
+		    &dyn_containers_interface->train_engines_io[i];
+		if (!train_engine_io->output_in_use) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// Finds the slot of a train engine
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_engine_slot(const char name[]) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		struct t_train_engine_io * const train_engine_io = 
+		    &dyn_containers_interface->train_engines_io[i];
+		if (train_engine_io->output_in_use && 
+		    strcmp(train_engine_io->output_name, name) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+// Loads train engine into specified slot
+// Can only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_engine(const int engine_slot, const char filepath[]) {
+	struct t_train_engine_io * const train_engine_io = 
+	    &dyn_containers_interface->train_engines_io[engine_slot];
+	train_engine_io->input_load = true;
+	train_engine_io->input_unload = false;
+	strcpy(train_engine_io->input_filepath, filepath);
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	syslog_server(LOG_NOTICE, 
+				  "Waiting for train engine %s to be dynamically loaded into slot %d", 
+				  filepath, engine_slot);
+	while (!train_engine_io->output_in_use) {
+		usleep(let_period_us);
+	}
+	pthread_mutex_lock(&dyn_containers_mutex);
+	train_engine_io->input_load = false;
+	syslog_server(LOG_NOTICE, 
+				  "Train engine %s has been dynamically loaded into engine slot %d", 
+				  filepath, engine_slot);
+}
+
+// Unloads train engine at specified slot
+// Can only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_engine(const int engine_slot) {
+	// Check that no instance of the train engine is in use
+	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		struct t_train_engine_instance_io * const engine_instance = 
+			&dyn_containers_interface->train_engine_instances_io[i];
+		if (engine_instance->output_in_use && 
+		    engine_instance->output_train_engine_type == engine_slot) {
+			return false;
+		}
+	}
+
+	// Unload the train engine
+	struct t_train_engine_io * const train_engine_io = 
+	    &dyn_containers_interface->train_engines_io[engine_slot];
+	train_engine_io->input_load = false;
+	train_engine_io->input_unload = true;
+	strcpy(train_engine_io->input_filepath, "");
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	syslog_server(LOG_NOTICE, 
+				  "Waiting for train engine %s at slot %d to be unloaded", 
+				  train_engine_io->input_filepath, engine_slot);
+	while (train_engine_io->output_in_use) {
+		usleep(let_period_us);
+	}
+	pthread_mutex_lock(&dyn_containers_mutex);
+	train_engine_io->input_unload = false;
+	syslog_server(LOG_NOTICE, 
+				  "Unloaded train engine at slot %d", 
+				  engine_slot);
+	return true;
+}
+
+GString *dyn_containers_get_train_engines(void) {
+	GString *train_engine_names = g_string_new(NULL);
+	int i = 0;
+	for (i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		struct t_train_engine_io * const train_engine_io = 
+		    &dyn_containers_interface->train_engines_io[i];
+		if (!train_engine_io->output_in_use) {
+			continue;
+		}
+		// Copy string
+		if (i != 0) {
+			g_string_append(train_engine_names, ",");
+		}
+		g_string_append(train_engine_names, train_engine_io->output_name);
+	}
+	return train_engine_names;
 }
 
 int dyn_containers_set_train_engine(t_train_data * const grabbed_train, 
@@ -239,8 +342,7 @@ int dyn_containers_set_train_engine(t_train_data * const grabbed_train,
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		struct t_train_engine_io * const train_engine_io = 
 		    &dyn_containers_interface->train_engines_io[i];
-		if (!strcmp(train_engine_io->output_name, engine)) {
-			pthread_mutex_unlock(&dyn_containers_mutex);
+		if (strcmp(train_engine_io->output_name, engine) == 0) {
 			train_engine_type = i;
 			break;
 		}
@@ -262,12 +364,10 @@ int dyn_containers_set_train_engine(t_train_data * const grabbed_train,
 			train_engine_instance_io->input_requested_speed = 0;
 			train_engine_instance_io->input_requested_forwards = true;
 			pthread_mutex_unlock(&dyn_containers_mutex);
-			
+
 			do {
 				usleep(let_period_us);
-				pthread_mutex_lock(&dyn_containers_mutex);
 				instance_in_use = train_engine_instance_io->output_in_use;
-				pthread_mutex_unlock(&dyn_containers_mutex);
 			} while (!instance_in_use);
 			
 			pthread_mutex_lock(&dyn_containers_mutex);
@@ -275,13 +375,13 @@ int dyn_containers_set_train_engine(t_train_data * const grabbed_train,
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			
 			grabbed_train->dyn_containers_engine_instance = i;
-			syslog_server(LOG_NOTICE, "Train %s has engine \"%s\"", train, engine);
+			syslog_server(LOG_NOTICE, "Train %s has engine %s", train, engine);
 			return 0;
 		}
 	}
 
-	syslog_server(LOG_ERR, "No engine instances available for train %s", train);
 	pthread_mutex_unlock(&dyn_containers_mutex);
+	syslog_server(LOG_ERR, "No engine instances available for train %s", train);
 	return 1;
 }
 
@@ -296,13 +396,11 @@ void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_i
 	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_instance_io->input_release = true;
 	pthread_mutex_unlock(&dyn_containers_mutex);
-	
+
 	int instance_in_use = true;
 	do {
 		usleep(let_period_us);
-		pthread_mutex_lock(&dyn_containers_mutex);
 		instance_in_use = train_engine_instance_io->output_in_use;
-		pthread_mutex_unlock(&dyn_containers_mutex);
 	} while (instance_in_use);
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
