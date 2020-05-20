@@ -1,0 +1,162 @@
+module SWTbahnLite
+  boards
+    master 0xDA000D680052EF
+      features 
+        0x03:0x14
+        0x6E:0x00
+      end
+    lightcontrol 0x05000D6B0083EC
+    onecontrol 0x05000D7500DBED
+  end
+  segments master
+    seg1 0x00 length 10cm
+    seg2 0x01 length 57.5cm
+    seg3 0x02 length 11.95cm
+    seg4 0x03 length 19cm
+    seg5 0x04 length 11.95cm
+    seg6 0x05 length 61.4cm
+    seg7 0x06 length 10cm
+    seg8 0x07 length 13cm
+    seg9 0x08 length 8cm
+    seg10 0x09 length 70.75cm
+    seg11 0x0A length 15.85cm
+    seg12 0x0B length 11.3cm
+    seg13 0x0C length 10.9cm
+    seg14 0x0D length 8cm
+    seg15 0x0E length 56cm
+    seg16 0x0F length 8.15cm
+    seg17 0x10 length 11.3cm
+    seg18 0x11 length 20.2cm
+    seg19 0x12 length 40.8cm
+    seg20 0x13 length 10.2cm
+    seg21 0x14 length 10.9cm
+    seg22 0x15 length 11.3cm
+    seg23 0x16 length 5cm
+    seg24 0x17 length 50cm
+    seg25 0x18 length 8cm
+    seg26 0x19 length 17.3cm
+    seg27 0x1A length 10cm
+    seg28 0x1B length 50cm
+    seg29 0x1C length 10cm
+  end
+  
+  signals lightcontrol
+    entry signal1 0x00
+    entry signal2 0x01
+    entry signal3 0x02
+    entry signal4 0x03
+    entry signal5 0x04
+    entry signal6 0x05
+    entry signal7 0x06
+    entry signal8 0x07
+    entry signal9 0x08
+    entry signal10 0x09
+    entry signal11 0x0A
+    peripheral signal12 0x12
+    entry signal14 0x0B
+    entry signal15 0x0C
+    peripheral lanterns 0x13
+  end
+
+  points onecontrol
+    point1 0x00 segment seg4 normal 0x01 reverse 0x00 initial normal
+    point2 0x01 segment seg8 normal 0x01 reverse 0x00 initial normal
+    point3 0x02 segment seg12 normal 0x01 reverse 0x00 initial normal
+    point4 0x03 segment seg13 normal 0x01 reverse 0x00 initial normal
+    point5 0x04 segment seg17 normal 0x01 reverse 0x00 initial normal
+    point6 0x05 segment seg21 normal 0x01 reverse 0x00 initial normal
+    point7 0x06 segment seg22 normal 0x01 reverse 0x00 initial normal
+  end
+
+  blocks
+    # Regular blocks
+    block1 overlap seg20 main seg19 overlap seg18 
+      trains
+        cargo passenger 
+      end
+    block2 overlap seg7 main seg6 overlap seg5 
+    block3 overlap seg3 main seg2 overlap seg1
+    block4 overlap seg16 main seg15 overlap seg14 
+    block5 overlap seg11 main seg10 overlap seg9
+    
+    # buffer blocks
+    buffer1 main seg29
+    buffer2 main seg25
+    buffer3 main seg26
+  end
+
+  platforms
+    platform1 overlap seg27 main seg28
+    platform2 overlap seg23 main seg24
+  end
+
+  trains
+    cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 7cm type cargo
+      peripherals
+        head_light bit 4 initial 1
+        cabin_light bit 0 initial 1
+      end
+    regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
+      peripherals
+        head_light bit 4 initial 1
+        cabin_light bit 0 initial 1
+      end
+    regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
+      peripherals
+        head_light bit 4 initial 1
+        cabin_light bit 0 initial 1
+      end
+    cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g type cargo
+      peripherals
+        head_light bit 4 initial 1
+        cabin_light bit 0 initial 1
+      end
+    cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+      peripherals
+        head_light bit 4 initial 1
+      end
+  end
+
+  layout
+	
+	  point6.stem -- block1.down
+	  block1.up -- point5.stem
+	  
+	  block2.down -- point2.stem
+	  block2.up -- point1.stem
+
+	  block3.down -- point1.straight
+	  block3.up -- point3.straight
+
+	  block4.down -- point4.stem
+	  block4.up -- point1.side
+
+	  block5.down -- point3.stem
+	  block5.up -- point2.straight
+
+	  platform1.down -- point5.straight
+	  platform2.down -- point7.stem
+	  buffer3.down -- point7.straight 
+
+    # signals
+    signal1 -- block3.up
+		signal2 -- block3.down
+		signal3 -- block2.up
+		signal4 -- block2.down
+		signal5 -- block5.up
+		signal6 -- block5.down
+		signal7 -- block4.down
+		signal8 -- block4.up
+		signal9 -- block1.up
+		signal10 -- block1.down
+		signal11 -- platform2.down
+		signal14 -- platform1.down
+    signal15 -- platform1.up
+
+    # points
+    point5.side -- point2.side
+    point6.straight -- point4.straight
+    point6.side -- point7.side
+    point3.side -- point4.side
+  end
+end
