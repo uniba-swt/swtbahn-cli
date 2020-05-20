@@ -71,9 +71,6 @@ module SWTbahnLite
   blocks
     # Regular blocks
     block1 overlap seg20 main seg19 overlap seg18 
-      trains
-        cargo passenger 
-      end
     block2 overlap seg7 main seg6 overlap seg5 
     block3 overlap seg3 main seg2 overlap seg1
     block4 overlap seg16 main seg15 overlap seg14 
@@ -118,39 +115,38 @@ module SWTbahnLite
   end
 
   layout
-	
-	  point6.stem -- block1.down
-	  block1.up -- point5.stem
-	  
-	  block2.down -- point2.stem
-	  block2.up -- point1.stem
+    point6.stem -- block1.down
+    block1.up -- point5.stem
+    
+    block2.down -- point2.stem
+    block2.up -- point1.stem
 
-	  block3.down -- point1.straight
-	  block3.up -- point3.straight
-
-	  block4.down -- point4.stem
-	  block4.up -- point1.side
-
-	  block5.down -- point3.stem
-	  block5.up -- point2.straight
-
-	  platform1.down -- point5.straight
-	  platform2.down -- point7.stem
-	  buffer3.down -- point7.straight 
+    block3.down -- point1.straight
+    block3.up -- point3.straight
+    
+    block4.down -- point4.stem
+    block4.up -- point1.side
+    
+    block5.down -- point3.stem
+    block5.up -- point2.straight
+    
+    platform1.down -- point5.straight
+    platform2.down -- point7.stem
+    buffer3.down -- point7.straight 
 
     # signals
     signal1 -- block3.up
-		signal2 -- block3.down
-		signal3 -- block2.up
-		signal4 -- block2.down
-		signal5 -- block5.up
-		signal6 -- block5.down
-		signal7 -- block4.down
-		signal8 -- block4.up
-		signal9 -- block1.up
-		signal10 -- block1.down
-		signal11 -- platform2.down
-		signal14 -- platform1.down
+    signal2 -- block3.down
+    signal3 -- block2.up
+    signal4 -- block2.down
+    signal5 -- block5.up
+    signal6 -- block5.down
+    signal7 -- block4.down
+    signal8 -- block4.up
+    signal9 -- block1.up
+    signal10 -- block1.down
+    signal11 -- platform2.down
+    signal14 -- platform1.down
     signal15 -- platform1.up
 
     # points
