@@ -1,0 +1,547 @@
+#signaltypes 
+
+module SWTBAHN
+    boards
+        master 0x00
+        onecontrol1 0x1
+        onecontrol2 0x2
+        onecontrol3 0x3
+        onecontrol4 0x4
+        lightcontrol1 0x5
+    end
+
+    segments master
+        seg1 0x00 length 23.3cm
+        seg2 0x01 length 23.3cm
+        seg3 0x02 length 23.3cm
+        seg4 0x03 length 23.3cm
+        seg5 0x04 length 23.3cm
+        seg6 0x05 length 23.3cm
+        seg7 0x06 length 23.3cm
+        seg8 0x07 length 23.3cm
+        seg9 0x08 length 23.3cm
+        seg10 0x09 length 23.3cm
+        
+        seg11 0x0a length 23.3cm
+        seg12 0x0b length 23.3cm
+        seg13 0x0c length 23.3cm
+        seg14 0x0d length 23.3cm
+        seg15 0x0e length 23.3cm
+        seg16 0x0f length 23.3cm
+        seg17 0x10 length 23.3cm
+        seg18 0x11 length 23.3cm
+        seg19 0x12 length 23.3cm
+        seg20 0x13 length 23.3cm
+        
+        seg21 0x14 length 23.3cm
+        seg22 0x15 length 23.3cm
+        seg23 0x16 length 23.3cm
+        seg24 0x17 length 23.3cm
+        seg25 0x18 length 23.3cm
+        seg26 0x19 length 23.3cm
+        seg27 0x1a length 23.3cm
+        seg28 0x1b length 23.3cm
+        seg29 0x1c length 23.3cm
+        seg30 0x1d length 23.3cm
+
+        seg31 0x1e length 23.3cm
+        seg32 0x1f length 23.3cm
+        seg33 0x20 length 23.3cm
+        seg34 0x21 length 23.3cm
+        seg35 0x22 length 23.3cm
+        seg36 0x23 length 23.3cm
+        seg37 0x24 length 23.3cm
+        seg38 0x25 length 23.3cm
+        seg39 0x26 length 23.3cm
+        seg40 0x27 length 23.3cm
+
+        seg41 0x28 length 23.3cm
+        seg42 0x29 length 23.3cm
+        seg43 0x2a length 23.3cm
+        seg44 0x2b length 23.3cm
+        seg45 0x2c length 23.3cm
+        seg46 0x2d length 23.3cm
+        seg47 0x2e length 23.3cm
+        seg48 0x2f length 23.3cm
+        seg49 0x30 length 23.3cm
+        seg50 0x31 length 23.3cm
+        seg51 0x32 length 23.3cm
+        seg52 0x33 length 23.3cm
+        seg53 0x34 length 23.3cm
+        seg54 0x35 length 23.3cm
+
+        seg55 0x36 length 23.3cm
+        seg56 0x37 length 23.3cm
+        seg57 0x38 length 23.3cm
+        seg58 0x39 length 23.3cm
+        seg59 0x3a length 23.3cm
+        seg60 0x3b length 23.3cm
+        seg61 0x3c length 23.3cm
+        seg62 0x3d length 23.3cm
+        seg63 0x3e length 23.3cm
+        seg64 0x3f length 23.3cm
+        seg65 0x40 length 23.3cm
+        seg66 0x41 length 23.3cm
+        seg67 0x42 length 23.3cm
+        seg68 0x43 length 23.3cm
+                
+        seg69 0x44 length 23.3cm
+        seg70 0x45 length 23.3cm
+        seg71 0x46 length 23.3cm
+        seg72 0x47 length 23.3cm
+        seg73 0x48 length 23.3cm
+        seg74 0x49 length 23.3cm
+        seg75 0x4a length 23.3cm
+        seg76 0x4b length 23.3cm
+        seg77 0x4c length 23.3cm
+        seg78 0x4d length 23.3cm
+        seg79 0x4e length 23.3cm
+        seg80 0x4f length 23.3cm
+        seg81 0x50 length 23.3cm
+        seg82 0x51 length 23.3cm
+
+        seg83 0x53 length 23.3cm
+        seg84 0x54 length 23.3cm
+        seg85 0x55 length 23.3cm
+        seg86 0x56 length 23.3cm
+        seg87 0x57 length 23.3cm
+        seg88 0x58 length 23.3cm
+        seg89 0x59 length 23.3cm
+        seg90 0x5a length 23.3cm
+        seg91 0x5b length 23.3cm
+        seg92 0x5c length 23.3cm
+        seg93 0x5d length 23.3cm
+        seg94 0x5e length 23.3cm
+        seg95 0x5f length 23.3cm
+
+    end
+
+    signals lightcontrol1
+
+    end
+
+    points onecontrol1
+        point1 0x00 segment seg4
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point2 0x01 segment seg5
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point3 0x02 segment seg9
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point4 0x03 segment seg10
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point5 0x04 segment seg14
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point6 0x05 segment seg18
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point7 0x06 segment seg19
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point8 0x07 segment seg24
+            normal 0x01
+            reverse 0x00
+            initial normal            
+    end
+
+    points onecontrol2
+        point9 0x00 segment seg25
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point10 0x01 segment seg29
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point11 0x02 segment seg33
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point12 0x03 segment seg34
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point13 0x04 segment seg35
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point14 0x05 segment seg39
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point15 0x06 segment seg40
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point16 0x07 segment seg41
+            normal 0x01
+            reverse 0x00
+            initial normal            
+    end
+
+    points onecontrol3
+        point17 0x00 segment seg43
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point18 0x01 segment seg44
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point19 0x02 segment seg48
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point20 0x04 segment seg49
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point21 0x05 segment seg51
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point22 0x06 segment seg53
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point23 0x07 segment seg60
+            normal 0x01
+            reverse 0x00
+            initial normal             
+    end
+    
+    points onecontrol4
+        point24 0x00 segment seg66
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point25 0x01 segment seg70
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point26 0x02 segment seg80
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point27 0x04 segment seg84
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point28 0x05 segment seg85
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point29 0x06 segment seg89
+            normal 0x01
+            reverse 0x00
+            initial normal
+    end
+    
+    trains
+        cargo_db 0x0001
+            steps 126
+            calibration 
+                5 15 30 45 60 75 90  100 120
+                end
+            weight 100g
+            length 13cm
+            type cargo
+            peripherals
+                head_light bit 4 initial 1
+            end     
+        passenger_brengdirect 0x0002
+            steps 126
+            calibration 
+                5 15 30 45 60 75 90  100 120
+                end
+            weight 100g
+            length 13cm
+            type passenger
+            peripherals
+                head_light bit 4 initial 1
+                cabin_light bit 6 initial 1
+            end             
+    end 
+
+    blocks 
+        block1
+            overlap seg1
+            main seg2
+            overlap seg3
+            trains
+                cargo
+                passenger
+            end
+        block2
+            overlap seg6
+            main seg7
+            overlap seg8
+            trains
+                cargo
+                passenger
+            end   
+        block3
+            overlap seg11
+            main seg12
+            overlap seg13
+            trains
+                cargo
+                passenger
+            end
+        block4
+            overlap seg15
+            main seg16
+            overlap seg17
+            trains
+                cargo
+                passenger
+            end
+        block5
+            overlap seg21
+            main seg22
+            overlap seg23
+            trains
+                cargo
+                passenger
+            end    
+        block6
+            overlap seg26
+            main seg27
+            overlap seg28
+            trains
+                cargo
+                passenger
+            end    
+        block7
+            overlap seg30
+            main seg31
+            overlap seg32
+            trains
+                cargo
+                passenger
+            end 
+        block8
+            overlap seg36
+            main seg37
+            overlap seg38
+            trains
+                cargo
+                passenger
+            end
+        block9
+            overlap seg45
+            main seg46
+            overlap seg47
+            trains
+                cargo
+                passenger
+            end
+        block10
+            overlap seg54
+            main seg55
+            overlap seg56
+            trains
+                cargo
+                passenger
+            end 
+        block11
+            overlap seg57
+            main seg58
+            overlap seg59
+            trains
+                cargo
+                passenger
+            end
+        block12
+            overlap seg62
+            main seg63
+            overlap seg64
+            trains
+                cargo
+                passenger
+            end
+        block13
+            overlap seg67
+            main seg68
+            overlap seg69
+            trains
+                cargo
+                passenger
+            end
+        block14
+            overlap seg71
+            main seg72
+            overlap seg73
+            trains
+                cargo
+                passenger
+            end
+        block15
+            overlap seg74
+            main seg75
+            overlap seg76
+            trains
+                cargo
+                passenger
+            end
+        block16
+            overlap seg77
+            main seg78
+            overlap seg79
+            trains
+                cargo
+                passenger
+            end
+        block17
+            overlap seg81
+            main seg82
+            overlap seg83
+            trains
+                cargo
+                passenger
+            end   
+        block18
+            overlap seg86
+            main seg87
+            overlap seg88
+            trains
+                cargo
+                passenger
+            end
+        block19
+            overlap seg90
+            main seg91
+            overlap seg92
+            trains
+                cargo
+                passenger
+            end       
+        block20
+            overlap seg93
+            main seg94
+            overlap seg95
+            trains
+                cargo
+                passenger
+            end                                        
+    end
+    platforms
+
+    end
+
+    crossings
+        crossing1 segment seg20
+        crossing2 segment seg52
+    end
+
+    layout
+    #blocks
+
+    block1.down -- point7.straight
+    block1.up -- point1.stem
+    block2.down -- point2.straight
+    block2.up -- point3.straight
+
+    block3.down -- point4.stem
+    block3.up -- point5.stem
+
+    block4.down -- point5.straight
+    block4.up -- point6.straight
+
+    block5.down -- crossing1.down2
+    block5.up -- point8.down2
+
+    block6.down -- point9.up1
+    block6.up -- point10.stem
+
+    block7.down -- point10.straight
+    block7.up -- point11.up2
+
+    block8.down -- point13.straight
+    block8.up -- point14.straight
+
+    block9.down -- point18.stem
+    block10.down -- point22.down2
+    block11.down -- point22.up2
+    
+    block12.up -- point24.side
+    block12.down -- point23.stem
+
+    block13.down -- point13.side
+    block13.up -- point14.side
+    
+    block14.down -- point25.straight
+
+    block15.down -- point25.side 
+
+    block16.down -- point10.side
+
+    block17.down -- point26.side
+    block17.up -- point27.straight
+
+    block18.down -- point28.side
+    block18.up -- point29.side
+
+    block19.down -- point28.straight
+    block19.up -- point29.straight
+
+    block20.down -- point24.straight
+    block20.up -- point8.down1
+
+    #points
+    point1.straight -- point2.stem
+    point3.stem -- point4.straight
+    point4.side -- point12.up1
+    point5.side -- point15.side
+    point6.stem -- point7.stem
+    point6.side -- point17.side
+
+    point8.up1 -- point9.down2
+    point8.up2 -- point1.side
+
+    point9.up2 -- point2.side
+    point9.down1 -- point26.stem
+
+    point11.up1 -- point3.side
+    point11.down2 -- point27.stem
+    point11.down1 -- point12.up2
+
+    point24.stem -- point12.down2
+    point13.stem -- point12.down1
+    point14.stem -- point15.straight
+    point15.stem -- point16.stem
+    point16.straight -- point17.stem
+    point16.side -- point21.side
+    point18.side -- point19.stem
+    point19.straight -- point20.straight
+    point21.stem -- point20.stem
+    point23.straight -- point22.up1
+    point25.stem -- point21.straight
+    point28.stem -- point26.straight
+    point27.side -- point29.stem
+
+
+    #crossings
+    crossing1.down1 -- point7.side
+    crossing1.down2 -- block5.down
+    crossing1.up1 -- point17.straight
+    crossing1.up2 -- point18.straight
+    
+    crossing2.down1 -- point20.side
+    crossing2.down2 -- point19.side
+    crossing2.up1 -- point23.side
+    crossing2.up2 -- point22.down1
+    end
+
+end
