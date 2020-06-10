@@ -93,5 +93,5 @@ int user_has_role(char *username, char *role) {
 void request_authentication(onion_response *res, char *message) {
     onion_response_set_code(res, 401);
     onion_response_set_header(res, "WWW-Authenticate", "Basic realm=\"SWTBahn\"");
-    onion_response_printf(res, message);
+    onion_response_printf(res, "%s", message);
 }
