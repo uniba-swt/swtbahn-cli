@@ -44,6 +44,7 @@
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "handler_upload.h"
+#include "auth.h"
 
 #define INPUT_MAX_LEN 256
 
@@ -153,9 +154,9 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "^assets", handler_assets);
 
 	// --- admin functions ---
-	onion_url_add(urls, "admin/startup", handler_startup);
-	onion_url_add(urls, "admin/shutdown", handler_shutdown);
-	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
+	onion_url_add_handler(urls, "admin/startup", auth_require_role("admin", handler_startup));
+	onion_url_add_handler(urls, "admin/shutdown", auth_require_role("admin", handler_shutdown));
+	onion_url_add_handler(urls, "admin/set-track-output", auth_require_role("admin", handler_set_track_output));
 	
 	// --- track controller functions ---
 	onion_url_add(urls, "controller/release-route", handler_release_route);
