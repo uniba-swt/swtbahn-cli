@@ -81,9 +81,46 @@ onion_connection_status handler_auth(void* data, onion_request* req, onion_respo
     return authData->handler(NULL, req, res);
 }
 
+onion_connection_status handler_userinfo(void *_, onion_request *req, onion_response *res) {
+    const char* authorization = onion_request_get_header(req, "Authorization");
+    if (!authorization || strncmp(authorization, "Basic", 5) != 0) {
+        onion_response_set_code(res, 200);
+        onion_response_set_header(res, "content-type", "application/json");
+        onion_response_printf(res, "{\"loggedIn\": false, \"username\": null}");
+        return OCS_PROCESSED;
+    }
+
+    char* auth = onion_base64_decode(&authorization[6], NULL);
+
+    // split username and password
+    char* username = auth;
+    char* password = NULL;
+    int i = 0;
+    while (auth[i] != '\0' && auth[i] != ':') {
+        i++;
+    }
+    if (auth[i] == ':') {
+        auth[i] = '\0'; // terminate username
+        password = &auth[i+1];
+    }
+
+    // check valid credentials
+    int authenticated = authenticate(username, password);
+    if (!authenticated) {
+        onion_response_set_code(res, 200);
+        onion_response_set_header(res, "content-type", "application/json");
+        onion_response_printf(res, "{\"loggedIn\": false, \"username\": null}");
+        return OCS_PROCESSED;
+    }
+
+    onion_response_set_code(res, 200);
+    onion_response_set_header(res, "content-type", "application/json");
+    onion_response_printf(res, "{\"loggedIn\": true, \"username\": \"%s\"}", username);
+    return OCS_PROCESSED;
+}
 
 int authenticate(char *username, char *password) {
-    return 1; // TODO: implement me
+    return strcmp(username, "admin") == 0 && strcmp(password, "admin") == 0; // TODO: implement me
 }
 
 int user_has_role(char *username, char *role) {
@@ -92,6 +129,7 @@ int user_has_role(char *username, char *role) {
 
 void request_authentication(onion_response *res, char *message) {
     onion_response_set_code(res, 401);
-    onion_response_set_header(res, "WWW-Authenticate", "Basic realm=\"SWTBahn\"");
+    // since login is handled by the JS client, don't actually request the browser to authenticate the user
+    //onion_response_set_header(res, "WWW-Authenticate", "Basic realm=\"SWTBahn\"");
     onion_response_printf(res, "%s", message);
 }

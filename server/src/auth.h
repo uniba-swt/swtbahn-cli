@@ -40,6 +40,8 @@ onion_handler* auth_require_role(char* role, onion_handler_handler handler);
 
 onion_connection_status handler_auth(void* data, onion_request* req, onion_response* res);
 
+onion_connection_status handler_userinfo(void* _, onion_request* req, onion_response* res);
+
 int authenticate(char* username, char* password);
 
 int user_has_role(char* username, char* role);

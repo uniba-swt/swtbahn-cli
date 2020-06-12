@@ -149,6 +149,9 @@ int main(int argc, char **argv) {
 	onion_set_port(o, argv[4]);
 	onion_url *urls = onion_root_url(o);
 	onion_url_add(urls, "", handler_root);
+
+	// --- userinfo ---
+	onion_url_add(urls, "userinfo", handler_userinfo);
 	
 	// --- assets ---
 	onion_url_add(urls, "^assets", handler_assets);

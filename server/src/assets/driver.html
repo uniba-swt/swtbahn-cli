@@ -10,7 +10,9 @@
 
     <script src="popper-1.14.6.js"></script>
     <script src="jquery-3.3.1.js"></script>
+    <script src="bootstrap-4.2.1-dist/js/bootstrap.js"></script>
     <script src="bootstrap4-toggle-3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src="bahn.js"></script>
     <script src="script.js"></script>
 
     <title>SWTbahn Driver Client</title>
@@ -185,6 +187,44 @@
             </div>
         </div>
 
+    </div>
+
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalTitle">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-primary" role="alert">
+                        Please log in to use SWTBahn. You can also use Guest Access, but not all functions will be available in that case.
+                    </div>
+                    <div class="alert alert-danger" role="alert" style="display: none;" id="loginError">
+                        Invalid credentials.
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Guest Access</button>
+                    <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
