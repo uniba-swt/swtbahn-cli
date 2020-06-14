@@ -36,10 +36,40 @@ typedef struct {
     onion_handler_handler handler;
 } auth_data;
 
+/**
+ * Wraps an onion handler with authentication and authorization using the HTTP Basic scheme.
+ *
+ * First authenticates the user against the user database, then checks if the user holds the appropriate role.
+ *
+ * @param role the role to require the user to have.
+ * @param handler the handler to wrap.
+ *
+ * @return the wrapped handler.
+ *
+ * @see handler_auth(void*, onion_request*, onion_response*)
+ */
 onion_handler* auth_require_role(char* role, onion_handler_handler handler);
 
+/**
+ * Handles authentication of requests.
+ *
+ * @param data authentication data.
+ * @param req
+ * @param res
+ * @return
+ *
+ * @see auth_data
+ */
 onion_connection_status handler_auth(void* data, onion_request* req, onion_response* res);
 
+/**
+ * Handler returning information about the currently authenticated user.
+ *
+ * @param _
+ * @param req
+ * @param res
+ * @return
+ */
 onion_connection_status handler_userinfo(void* _, onion_request* req, onion_response* res);
 
 int authenticate(char* username, char* password);

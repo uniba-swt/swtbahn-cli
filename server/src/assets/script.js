@@ -12,6 +12,8 @@ $(document).ready(
         trackOutput = 'master';
 
         // Login
+        let loginModal = $('#loginModal');
+        $('#btb-open-login').click(() => loginModal.modal('show'));
         $('#loginButton').click(function() {
             let username = $('#loginUsername').val();
             let password = $('#loginPassword').val();
@@ -20,7 +22,10 @@ $(document).ready(
                 .then(loggedIn => {
                     if (loggedIn) {
                         console.log("Successfully logged in.")
-                        $('#loginModal').modal('hide');
+                        loginModal.modal('hide');
+                        $('#header-username').text(bahn.username);
+                        $('#user-info').show();
+                        $('#guest-info').hide();
                     } else {
                         console.log("Failed to log in.")
                         $('#loginError').show();
@@ -28,7 +33,7 @@ $(document).ready(
                 })
                 .catch(err => console.log(err));
         });
-        $('#loginModal').modal('show');
+        loginModal.modal('show');
 
         // Configuration
         $('#pingButton').click(function() {
@@ -54,12 +59,24 @@ $(document).ready(
             response.text('Waiting');
 
             bahn.startup()
-                .then(() => {
-                    response.parent().removeClass('alert-danger');
-                    response.parent().addClass('alert-success');
-                    response.text('OK');
+                .then(result => {
+                    if (result === 'unauthorized') {
+                        $('#unauthorizedModal').modal('show');
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('Unauthorized');
+                    } else if (result === 'ok') {
+                        response.parent().removeClass('alert-danger');
+                        response.parent().addClass('alert-success');
+                        response.text('OK');
+                    } else {
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('System already running!');
+                    }
                 })
-                .catch(() => {
+                .catch(err => {
+                    console.log(err);
                     response.parent().removeClass('alert-success');
                     response.parent().addClass('alert-danger');
                     response.text('System already running!');
@@ -71,16 +88,32 @@ $(document).ready(
             response.text('Waiting');
 
             bahn.shutdown()
-                .then(() => {
-                    response.parent().removeClass('alert-danger');
-                    response.parent().addClass('alert-success');
-                    response.text('OK');
+                .then(result => {
+                    if (result === 'unauthorized') {
+                        $('#unauthorizedModal').modal('show');
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('Unauthorized');
+                    } else if (result === 'ok') {
+                        response.parent().removeClass('alert-danger');
+                        response.parent().addClass('alert-success');
+                        response.text('OK');
+                    } else {
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('System not running!');
+                    }
                 })
                 .catch(() => {
                     response.parent().removeClass('alert-success');
                     response.parent().addClass('alert-danger');
                     response.text('System not running!');
                 });
+        });
+        $('#btn-logout').click(function () {
+            bahn.logout();
+            $('#user-info').hide();
+            $('#guest-info').show();
         });
 
 

@@ -31,6 +31,7 @@
 #include <string.h>
 #include <onion/response.h>
 #include <onion/codecs.h>
+#include "auth_db.h"
 
 onion_handler *auth_require_role(char *role, onion_handler_handler handler) {
     auth_data* data = malloc(sizeof(auth_data));
@@ -120,11 +121,11 @@ onion_connection_status handler_userinfo(void *_, onion_request *req, onion_resp
 }
 
 int authenticate(char *username, char *password) {
-    return strcmp(username, "admin") == 0 && strcmp(password, "admin") == 0; // TODO: implement me
+    return db_check_login(username, password);
 }
 
 int user_has_role(char *username, char *role) {
-    return 1; // TODO: implement me
+    return db_user_has_role(username, role);
 }
 
 void request_authentication(onion_response *res, char *message) {

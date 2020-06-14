@@ -44,7 +44,9 @@
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "handler_upload.h"
+#include "handler_users.h"
 #include "auth.h"
+#include "auth_db.h"
 
 #define INPUT_MAX_LEN 256
 
@@ -144,15 +146,27 @@ int main(int argc, char **argv) {
 	openlog("swtbahn", 0, LOG_LOCAL0);
 	syslog_server(LOG_NOTICE, "SWTbahn server started");
 
+	if (!db_init(config_directory)) {
+	    printf("failed to initialize database: %s", sqlite3_errmsg(db_connection));
+	    return 1;
+	}
+
 	onion *o = onion_new(O_THREADED);
 	onion_set_hostname(o, argv[3]);
 	onion_set_port(o, argv[4]);
 	onion_url *urls = onion_root_url(o);
 	onion_url_add(urls, "", handler_root);
 
-	// --- userinfo ---
-	onion_url_add(urls, "userinfo", handler_userinfo);
-	
+	// --- user ---
+	onion_url_add(urls, "user/info", handler_userinfo);
+	onion_url_add(urls, "user/register", handler_user_register);
+	onion_url_add_handler(urls, "user/all", auth_require_role("admin", handler_user_get_all));
+	onion_url_add_handler(urls, "user/activate", auth_require_role("admin", handler_user_activate));
+	onion_url_add_handler(urls, "user/delete", auth_require_role("admin", handler_user_delete));
+	onion_url_add_handler(urls, "user/deactivate", auth_require_role("admin", handler_user_deactivate));
+	onion_url_add_handler(urls, "user/role/add", auth_require_role("admin", handler_user_add_role));
+	onion_url_add_handler(urls, "user/role/remove", auth_require_role("admin", handler_user_remove_role));
+
 	// --- assets ---
 	onion_url_add(urls, "^assets", handler_assets);
 
@@ -198,6 +212,7 @@ int main(int argc, char **argv) {
 
 	onion_listen(o);
 	onion_free(o);
+	db_close();
 	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 

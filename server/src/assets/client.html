@@ -19,6 +19,8 @@
 <body style="margin: 20px">
 
     <div id="swtLogo">Client</div>
+    <div id="user-info" class="header-info">Logged in as <b id="header-username">admin</b>. <button id="btn-logout" class="btn-outline-primary btn-sm">Logout</button></div>
+    <div id="guest-info" class="header-info">You are currently using Guest Access. <button id="btb-open-login" class="btn-outline-primary btn-sm">Login</button></div>
     <hr />
 
     <h1>Configuration</h1>
@@ -203,6 +205,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Guest Access</button>
                     <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unauthorized Modal -->
+    <div class="modal fade" id="unauthorizedModal" tabindex="-1" role="dialog" aria-labelledby="unauthorizedModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unauthorizedModalTitle">Unauthorized</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You are not authorized to perform this action.
+                    If you are using guest access, please log in and try again.
+                    If you are logged in, you do not have the role that may perform this action. Please contact your supervisor to resolve this issue.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
