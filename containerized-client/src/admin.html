@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="popper-1.14.6.js"></script>
+    <script src="jquery-3.3.1.js"></script>
+    <script src="bootstrap-4.2.1-dist/js/bootstrap.js"></script>
+    <script src="bootstrap4-toggle-3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src="bahn.js"></script>
+    <script src="script.js"></script>
+
+    <title>SWTbahn Admin Management Interface</title>
+    <meta charset="utf-8" />
+</head>
+
+
+<body>
+    <div id="swtLogo">Administrator</div>
+    <div id="user-info" class="header-info">Logged in as <b id="header-username">admin</b>. <button id="btn-logout" class="btn-outline-primary btn-sm">Logout</button></div>
+    <div id="guest-info" class="header-info">You are currently using Guest Access. <button id="btb-open-login" class="btn-outline-primary btn-sm">Login</button></div>
+    <hr />
+
+    <div class="alert alert-danger">Do not deactivate the account you are currently logged in, as this will lock you out.</div>
+
+    <div class="card-deck">
+
+        <div class="card" style="width: 100%;">
+            <div class="card-body">
+                <h3 class="card-title">Users</h3>
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Active</th>
+                        <th>Roles</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="user-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalTitle">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-primary" role="alert">
+                        Please log in to use SWTBahn. You can also use Guest Access, but not all functions will be available in that case.
+                    </div>
+                    <div class="alert alert-danger" role="alert" style="display: none;" id="loginError">
+                        Invalid credentials.
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Guest Access</button>
+                    <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unauthorized Modal -->
+    <div class="modal fade" id="unauthorizedModal" tabindex="-1" role="dialog" aria-labelledby="unauthorizedModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unauthorizedModalTitle">Unauthorized</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You are not authorized to perform this action.
+                    If you are using guest access, please log in and try again.
+                    If you are logged in, you do not have the role that may perform this action. Please contact your supervisor to resolve this issue.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <template id="template-row">
+        <tr>
+            <td class="username"></td>
+            <td class="mail"></td>
+            <td class="active"></td>
+            <td><ul class="role"></ul></td>
+            <td>
+                <form class="form-inline">
+                    <div class="btn-group btn-group-sm mb-2 mr-sm-2">
+                        <button class="btn btn-primary btn-sm btn-active" type="button">Deactivate</button>
+                        <button class="btn btn-primary btn-sm btn-delete" type="button">Delete</button>
+                    </div>
+
+                    <div class="input-group mb-2 mr-sm-2">
+                        <select class="custom-select select-role">
+                            <option value="admin">Admin</option>
+                            <option value="driver">Driver</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group btn-group-sm mb-2 mr-sm-2">
+                        <button class="btn btn-success btn-sm btn-role-add" type="button">Add Role</button>
+                        <button class="btn btn-danger btn-sm btn-role-remove" type="button">Remove Role</button>
+                    </div>
+                </form>
+            </td>
+        </tr>
+    </template>
+
+
+    <script>
+        function deactivate(user) {
+            return e => {
+                bahn.deactivateUser(user)
+                    .then(result => {
+                        if (result === 'ok') {
+                            let button = document.querySelector('tr[data-user="' + user + '"] .btn-active');
+                            let newButton = button.cloneNode(true);
+
+                            newButton.textContent = 'Activate';
+                            newButton.addEventListener('click', activate(user));
+
+                            button.parentNode.replaceChild(newButton, button);
+
+                            let active = document.querySelector('tr[data-user="' + user + '"] .active');
+                            active.textContent = 'No';
+                        } else if (result === 'unauthorized') {
+                            $('#unauthorizedModal').modal('show');
+                        } else {
+                            alert(result);
+                        }
+                    });
+            };
+        }
+
+        function activate(user) {
+            return e => {
+                bahn.activateUser(user)
+                    .then(result => {
+                        if (result === 'ok') {
+                            let button = document.querySelector('tr[data-user="' + user + '"] .btn-active');
+                            let newButton = button.cloneNode(true);
+
+                            newButton.textContent = 'Deactivate';
+                            newButton.addEventListener('click', deactivate(user));
+
+                            button.parentNode.replaceChild(newButton, button);
+
+                            let active = document.querySelector('tr[data-user="' + user + '"] .active');
+                            active.textContent = 'Yes';
+                        } else if (result === 'unauthorized') {
+                            $('#unauthorizedModal').modal('show');
+                        } else {
+                            alert(result);
+                        }
+                    });
+            };
+        }
+
+        function addRole(user, roleSelect) {
+            return e => {
+                let role = roleSelect.options[roleSelect.selectedIndex].value;
+
+                bahn.addRole(user, role)
+                    .then(result => {
+                        if (result === 'ok') {
+                            let roles = document.querySelector('tr[data-user="' + user + '"] .role');
+                            roles.innerHTML += "<li data-role='" + role + "'>" + role + "</li>";
+                        } else if (result === 'unauthorized') {
+                            $('#unauthorizedModal').modal('show');
+                        } else {
+                            alert(result);
+                        }
+                    });
+            };
+        }
+
+        function removeRole(user, roleSelect) {
+            return e => {
+                let role = roleSelect.options[roleSelect.selectedIndex].value;
+
+                bahn.removeRole(user, role)
+                    .then(result => {
+                        if (result === 'ok') {
+                            let li = document.querySelector('tr[data-user="' + user + '"] li[data-role="' + role + '"]');
+                            li.parentElement.removeChild(li);
+                        } else if (result === 'unauthorized') {
+                            $('#unauthorizedModal').modal('show');
+                        } else {
+                            alert(result);
+                        }
+                    });
+            };
+        }
+
+        function deleteUser(user) {
+            return e => {
+                bahn.deleteUser(user)
+                    .then(result => {
+                        if (result === 'ok') {
+                            let row = document.querySelector('tr[data-user="' + user + '"]');
+                            row.parentElement.removeChild(row);
+                        } else if (result === 'unauthorized') {
+                            $('#unauthorizedModal').modal('show');
+                        } else {
+                            alert(result);
+                        }
+                    });
+            };
+        }
+
+        function createUserRow(user) {
+            let template = document.querySelector('#template-row').content.cloneNode(true);
+
+            // fill text values
+            template.querySelector('.username').textContent = user.username;
+            template.querySelector('.mail').textContent = user.mail;
+            template.querySelector('.active').textContent = user.active ? 'Yes' : 'No';
+            user.roles.forEach(role => template.querySelector('.role').innerHTML += "<li data-role='" + role + "'>" + role + "</li>");
+            if (!user.active) {
+                template.querySelector('.btn-active').textContent = 'Activate';
+            }
+
+            // update data
+            template.querySelector('tr').dataset.user = user.username;
+
+            // register event handlers
+            let activeButton = template.querySelector('.btn-active');
+            if (user.active) {
+                activeButton.addEventListener('click', deactivate(user.username));
+            } else {
+                activeButton.addEventListener('click', activate(user.username));
+            }
+            template.querySelector('.btn-role-add').addEventListener('click', addRole(user.username, template.querySelector('.select-role')));
+            template.querySelector('.btn-role-remove').addEventListener('click', removeRole(user.username, template.querySelector('.select-role')));
+            template.querySelector('.btn-delete').addEventListener('click', deleteUser(user.username));
+
+            return template;
+        }
+
+        bahn.login_callback(_ => {
+            bahn.getAllUsers()
+                .then(users => {
+                    if (users === 'unauthorized') {
+                        $('#unauthorizedModal').modal('show');
+                        return;
+                    }
+
+                    let table = document.querySelector('#user-table');
+                    table.innerHTML = "";
+                    users.forEach(user => {
+                        console.log(user);
+
+                        let row = createUserRow(user);
+                        table.appendChild(row);
+                    });
+                });
+        });
+
+        bahn.logout_callback(() => document.querySelector('#user-table').innerHTML = "");
+    </script>
+
+</body>
+
+</html>

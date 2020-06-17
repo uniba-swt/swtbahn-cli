@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="popper-1.14.6.js"></script>
+    <script src="jquery-3.3.1.js"></script>
+    <script src="bootstrap-4.2.1-dist/js/bootstrap.js"></script>
+    <script src="bootstrap4-toggle-3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src="bahn.js"></script>
+    <script src="script.js"></script>
+
+    <title>SWTbahn Driver Client</title>
+    <meta charset="utf-8" />
+</head>
+
+
+<body>
+    <div id="swtLogo">Driver</div>
+    <div id="user-info" class="header-info">Logged in as <b id="header-username">admin</b>. <button id="btn-logout" class="btn-outline-primary btn-sm">Logout</button></div>
+    <div id="guest-info" class="header-info">You are currently using Guest Access. <button id="btb-open-login" class="btn-outline-primary btn-sm">Login</button></div>
+    <hr />
+
+    <div class="card-deck">
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title">System</h3>
+
+                <div class="form-group">
+                    <button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn
+                        Server</button>
+                    <br />
+                    <div class="alert alert-info" role="alert">
+                        <span id=pingResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=startupButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Startup</button>
+                        <button id=shutdownButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Shutdown</button>
+                    </div>
+                    <br />
+                    <div class="alert alert-info" role="alert">
+                        <span id=startupShutdownResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="alert alert-dark" role="alert">
+                    <span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h3 class="card-title">Train Driver</h3>
+                <p class="card-text">
+                    Grab an available train to drive it around the track.
+                </p>
+
+                <div class="form-group">
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="grabTrainId">Train</label>
+                        </div>
+                        <select class="custom-select" id="grabTrainId">
+                            <option>cargo_db</option>
+                            <option>cargo_bayern</option>
+                            <option>cargo_green</option>
+                            <option>regional_odeg</option>
+                            <option>regional_brengdirect</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="grabEngine">Engine</label>
+                        </div>
+                        <select class="custom-select" id="grabEngine">
+                            <option>libtrain_engine_default</option>
+                            <option>libtrain_engine_linear</option>
+                        </select>
+                    </div>
+
+                    <br />
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=grabTrainButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Grab</button>
+                        <button id=releaseTrainButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Release</button>
+                    </div>
+
+                    <br />
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=grabTrainResponse></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=speedMinus type="button" class="btn btn-outline-primary">–</button>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">DCC Speed</label>
+                            <input id=dccSpeed readonly value="0">
+                        </div>
+                        <button id=speedPlus type="button" class="btn btn-outline-primary">+</button>
+                    </div>
+
+                    <div style="display: flex; justify-content: left;">
+                        <span style="width: 20.5%;"></span>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">Direction</label>
+                        </div>
+                        <input id=direction type="checkbox" checked data-toggle="toggle" data-on="Forward"
+                            data-off="Backward">
+                    </div>
+
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=driveTrainButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Drive</button>
+                        <button id=stopTrainButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Stop</button>
+                    </div>
+
+                    </br>
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=driveTrainResponse></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=signalMinusFrom type="button" class="btn btn-outline-primary">–</button>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">From</label>
+                            <input id=signalIdFrom readonly value="0">
+                        </div>
+                        <button id=signalPlusFrom type="button" class="btn btn-outline-primary">+</button>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=signalMinusTo type="button" class="btn btn-outline-primary">–</button>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">To</label>
+                            <input id=signalIdTo readonly value="0">
+                        </div>
+                        <button id=signalPlusTo type="button" class="btn btn-outline-primary">+</button>
+                    </div>
+
+                    </br>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id=requestRouteButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Request</button>
+                        <button id=driveRouteButton type="button" class="btn btn-outline-primary"
+                            style="width: 49%;">Drive</button>
+                    </div>
+
+                    </br>
+
+                    <div class="alert alert-info" role="alert">
+                        <span id=routeResponse></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalTitle">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-primary" role="alert">
+                        Please log in to use SWTBahn. You can also use Guest Access, but not all functions will be available in that case.
+                    </div>
+                    <div class="alert alert-danger" role="alert" style="display: none;" id="loginError">
+                        Invalid credentials.
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Guest Access</button>
+                    <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unauthorized Modal -->
+    <div class="modal fade" id="unauthorizedModal" tabindex="-1" role="dialog" aria-labelledby="unauthorizedModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unauthorizedModalTitle">Unauthorized</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You are not authorized to perform this action.
+                    If you are using guest access, please log in and try again.
+                    If you are logged in, you do not have the role that may perform this action. Please contact your supervisor to resolve this issue.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

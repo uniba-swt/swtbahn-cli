@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+
+    <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="popper-1.14.6.js"></script>
+    <script src="jquery-3.3.1.js"></script>
+    <script src="bootstrap-4.2.1-dist/js/bootstrap.js"></script>
+    <script src="bootstrap4-toggle-3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src="bahn.js"></script>
+    <script src="script.js"></script>
+
+    <title>SWTbahn Admin Management Interface</title>
+    <meta charset="utf-8" />
+</head>
+
+
+<body>
+    <div id="swtLogo">Register</div>
+    <hr />
+
+    <form id="form-register">
+        <div class="form-group row">
+            <label for="username" class="col-sm-2 col-form-label">Username</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" placeholder="Username">
+                <div style="display:none;" class="invalid-feedback">This username already exists.</div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="email" class="col-sm-2 col-form-label">Email address</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" placeholder="firstname.lastname@stud.uni-bamberg.de">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="password" class="col-sm-2 col-form-label">Password</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password">
+                <div style="display: none;" class="invalid-feedback">Passwords do not match.</div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="password2" class="col-sm-2 col-form-label">Repeat Password</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password2">
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-register">Register</button>
+    </form>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="registeredModal" tabindex="-1" role="dialog" aria-labelledby="registeredModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registeredModalTitle">Registered</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Your account at SWT Bahn has been created, but is not active, yet.
+                    Please contact your supervisor to activate your account.
+                </div>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-success" href="/assets/client.html">OK</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('#btn-register').addEventListener('click', e => {
+            let username = document.querySelector('#username').value;
+            let email = document.querySelector('#email').value;
+            let password = document.querySelector('#password').value;
+            let password2 = document.querySelector('#password2').value;
+
+            if (password !== password2) {
+                document.querySelector('#password').classList.add('is-invalid');
+                document.querySelector('#password2').classList.add('is-invalid');
+                document.querySelector('#password+.invalid-feedback').style.display="block";
+            }
+
+            bahn.registerUser(username, password, email)
+                .then(result => {
+                    if (result === 'ok') {
+                        $('#registeredModal').modal('show');
+                    } else if (result === 'Username already exists.') {
+                        document.querySelector('#username').classList.add('is-invalid');
+                        document.querySelector('#username+.invalid-feedback').style.display="block";
+                    } else {
+                        alert("unknown error: " + result);
+                    }
+                });
+        });
+    </script>
+</body>
+
+</html>
