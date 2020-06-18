@@ -65,12 +65,15 @@ class BahnAPI {
      *
      * @returns {Promise<string>}
      */
-    async startup() {
-        let response = await this._fetch('/admin/startup', 'POST');
+    async startup(platform) {
+        let body = new FormData();
+        body.append('platform', platform);
+
+        let response = await this._fetch('/admin/startup', 'POST', body);
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return 'failed'; // TODO: wouldn't it make much more sense to let the server return some actual error message and use that to help the user?
@@ -86,7 +89,7 @@ class BahnAPI {
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return 'failed';
@@ -98,7 +101,7 @@ class BahnAPI {
 
         if (response.status === 200) {
             return response.json();
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();
@@ -112,7 +115,7 @@ class BahnAPI {
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();
@@ -126,37 +129,39 @@ class BahnAPI {
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();
         }
     }
 
-    async addRole(user, role) {
+    async addRole(user, role, platform='*') {
         let body = new FormData();
         body.append('user', user);
         body.append('role', role);
+        body.append('platform', platform);
         let response = await this._fetch('/user/role/add', 'POST', body);
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();
         }
     }
 
-    async removeRole(user, role) {
+    async removeRole(user, role, platform='*') {
         let body = new FormData();
         body.append('user', user);
         body.append('role', role);
+        body.append('platform', platform);
         let response = await this._fetch('/user/role/remove', 'POST', body);
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();
@@ -170,7 +175,7 @@ class BahnAPI {
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();
@@ -186,7 +191,19 @@ class BahnAPI {
 
         if (response.status === 200) {
             return 'ok';
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
+            return 'unauthorized';
+        } else {
+            return await response.text();
+        }
+    }
+
+    async getAvailablePlatforms() {
+        let response = await this._fetch("/status/platforms");
+
+        if (response.status === 200) {
+            return await response.json();
+        } else if (response.status === 401 || response.status === 403) {
             return 'unauthorized';
         } else {
             return await response.text();

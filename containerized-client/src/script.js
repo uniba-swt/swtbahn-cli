@@ -35,6 +35,17 @@ $(document).ready(
         });
         loginModal.modal('show');
 
+        bahn.getAvailablePlatforms()
+            .then(platforms => {
+                let selectPlatforms = $('#select-platform');
+                platforms.forEach(platform => {
+                    selectPlatforms.append($('<option>', {
+                        value: platform,
+                        text: platform
+                    }));
+                });
+            });
+
         // Configuration
         $('#pingButton').click(function() {
             let pingResponse = $('#pingResponse');
@@ -58,7 +69,9 @@ $(document).ready(
             let response = $('#startupShutdownResponse');
             response.text('Waiting');
 
-            bahn.startup()
+            let platform = $('#select-platform').val();
+
+            bahn.startup(platform)
                 .then(result => {
                     if (result === 'unauthorized') {
                         $('#unauthorizedModal').modal('show');

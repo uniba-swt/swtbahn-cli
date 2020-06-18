@@ -39,14 +39,15 @@
 #include <glib.h>
 #include <time.h>
 
-#include "handler_monitor.h"
-#include "handler_admin.h"
-#include "handler_driver.h"
-#include "handler_controller.h"
-#include "handler_upload.h"
-#include "handler_users.h"
-#include "auth.h"
-#include "auth_db.h"
+#include "handler/monitor.h"
+#include "handler/admin.h"
+#include "handler/driver.h"
+#include "handler/controller.h"
+#include "handler/upload.h"
+#include "handler/users.h"
+#include "handler/status.h"
+#include "auth/auth.h"
+#include "auth/database.h"
 
 #define INPUT_MAX_LEN 256
 
@@ -73,35 +74,6 @@ static onion_connection_status handler_root(void *_, onion_request *req,
 	build_response_header(res);
 	onion_response_printf(res, "SWTbahn server");
 	return OCS_PROCESSED;
-}
-
-static onion_connection_status handler_assets(void *_, onion_request *req,
-                                              onion_response *res) {
-	build_response_header(res);
-	onion_response_set_header(res, "Cache-Control", "max-age=43200");
-	
-	const char local_path[] = "../src/assets/";
-	char *global_path = realpath(local_path, NULL);
-	if (!global_path) {
-		ONION_ERROR("Cannot calculate the global path of the given directory (%s).",
-		            local_path);
-		return OCS_NOT_IMPLEMENTED;
-	}
-	struct stat st;
-	if (stat(global_path, &st) != 0) {
-		ONION_ERROR("Cannot access to the exported directory/file (%s).", global_path);
-		onion_low_free(global_path);
-		return OCS_NOT_IMPLEMENTED;
-	}
-	
-	const char *filename = onion_request_get_path(req);
-	GString *full_filename = g_string_new(global_path);
-	g_string_append(full_filename, filename);
-
-	onion_connection_status status = 
-	    onion_shortcut_response_file(full_filename->str, req, res);
-	g_string_free(full_filename, TRUE);
-	return status;
 }
 
 static int eval_args(int argc, char **argv) {
@@ -160,20 +132,21 @@ int main(int argc, char **argv) {
 	// --- user ---
 	onion_url_add(urls, "user/info", handler_userinfo);
 	onion_url_add(urls, "user/register", handler_user_register);
-	onion_url_add_handler(urls, "user/all", auth_require_role("admin", handler_user_get_all));
-	onion_url_add_handler(urls, "user/activate", auth_require_role("admin", handler_user_activate));
-	onion_url_add_handler(urls, "user/delete", auth_require_role("admin", handler_user_delete));
-	onion_url_add_handler(urls, "user/deactivate", auth_require_role("admin", handler_user_deactivate));
-	onion_url_add_handler(urls, "user/role/add", auth_require_role("admin", handler_user_add_role));
-	onion_url_add_handler(urls, "user/role/remove", auth_require_role("admin", handler_user_remove_role));
+	onion_url_add_handler(urls, "user/all", auth_require_role("admin", 0, handler_user_get_all));
+	onion_url_add_handler(urls, "user/activate", auth_require_role("admin", 0, handler_user_activate));
+	onion_url_add_handler(urls, "user/delete", auth_require_role("admin", 0, handler_user_delete));
+	onion_url_add_handler(urls, "user/deactivate", auth_require_role("admin", 0, handler_user_deactivate));
+	onion_url_add_handler(urls, "user/role/add", auth_require_role("admin", 0, handler_user_add_role));
+	onion_url_add_handler(urls, "user/role/remove", auth_require_role("admin", 0, handler_user_remove_role));
 
-	// --- assets ---
-	onion_url_add(urls, "^assets", handler_assets);
+	// --- status ---
+	onion_url_add(urls, "status/platforms", handler_platform_get);
+	onion_url_add(urls, "status/platform/current", handler_platform_current);
 
 	// --- admin functions ---
-	onion_url_add_handler(urls, "admin/startup", auth_require_role("admin", handler_startup));
-	onion_url_add_handler(urls, "admin/shutdown", auth_require_role("admin", handler_shutdown));
-	onion_url_add_handler(urls, "admin/set-track-output", auth_require_role("admin", handler_set_track_output));
+	onion_url_add_handler(urls, "admin/startup", auth_require_role("admin", 0, handler_startup));
+	onion_url_add_handler(urls, "admin/shutdown", auth_require_role("admin", 0, handler_shutdown));
+	onion_url_add_handler(urls, "admin/set-track-output", auth_require_role("admin", 1, handler_set_track_output));
 	
 	// --- track controller functions ---
 	onion_url_add(urls, "controller/release-route", handler_release_route);

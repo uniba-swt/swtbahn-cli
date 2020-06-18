@@ -32,7 +32,7 @@
 #include <stdbool.h>
 #include <limits.h>
 
-#include "handler_driver.h"
+#include "handler/driver.h"
 #include "dynlib.h"
 
 #define TRAIN_ENGINE_COUNT_MAX			4

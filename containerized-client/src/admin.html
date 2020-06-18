@@ -131,6 +131,12 @@
                         </select>
                     </div>
 
+                    <div class="input-group mb-2 mr-sm-2">
+                        <select class="custom-select select-platform">
+                            <option value="*">Any</option>
+                        </select>
+                    </div>
+
                     <div class="btn-group btn-group-sm mb-2 mr-sm-2">
                         <button class="btn btn-success btn-sm btn-role-add" type="button">Add Role</button>
                         <button class="btn btn-danger btn-sm btn-role-remove" type="button">Remove Role</button>
@@ -190,15 +196,16 @@
             };
         }
 
-        function addRole(user, roleSelect) {
+        function addRole(user, roleSelect, platformSelect) {
             return e => {
                 let role = roleSelect.options[roleSelect.selectedIndex].value;
+                let platform = platformSelect.options[platformSelect.selectedIndex].value;
 
-                bahn.addRole(user, role)
+                bahn.addRole(user, role, platform)
                     .then(result => {
                         if (result === 'ok') {
                             let roles = document.querySelector('tr[data-user="' + user + '"] .role');
-                            roles.innerHTML += "<li data-role='" + role + "'>" + role + "</li>";
+                            roles.innerHTML += "<li data-role='" + role + "' data-platform='" + platform +"'>" + role + " (" + platform + ")</li>";
                         } else if (result === 'unauthorized') {
                             $('#unauthorizedModal').modal('show');
                         } else {
@@ -208,14 +215,15 @@
             };
         }
 
-        function removeRole(user, roleSelect) {
+        function removeRole(user, roleSelect, platformSelect) {
             return e => {
                 let role = roleSelect.options[roleSelect.selectedIndex].value;
+                let platform = platformSelect.options[platformSelect.selectedIndex].value;
 
-                bahn.removeRole(user, role)
+                bahn.removeRole(user, role, platform)
                     .then(result => {
                         if (result === 'ok') {
-                            let li = document.querySelector('tr[data-user="' + user + '"] li[data-role="' + role + '"]');
+                            let li = document.querySelector('tr[data-user="' + user + '"] li[data-role="' + role + '"][data-platform="' + platform + '"]');
                             li.parentElement.removeChild(li);
                         } else if (result === 'unauthorized') {
                             $('#unauthorizedModal').modal('show');
@@ -249,10 +257,13 @@
             template.querySelector('.username').textContent = user.username;
             template.querySelector('.mail').textContent = user.mail;
             template.querySelector('.active').textContent = user.active ? 'Yes' : 'No';
-            user.roles.forEach(role => template.querySelector('.role').innerHTML += "<li data-role='" + role + "'>" + role + "</li>");
+            user.roles.forEach(role => template.querySelector('.role').innerHTML += "<li data-role='" + role.role + "' data-platform='" + role.platform + "'>" + role.role + " (" + role.platform + ")</li>");
             if (!user.active) {
                 template.querySelector('.btn-active').textContent = 'Activate';
             }
+
+            let platformSelect = template.querySelector('.select-platform');
+            platforms.forEach(platform => platformSelect.innerHTML += '<option value="' + platform + '">' + platform + '</option>');
 
             // update data
             template.querySelector('tr').dataset.user = user.username;
@@ -264,8 +275,8 @@
             } else {
                 activeButton.addEventListener('click', activate(user.username));
             }
-            template.querySelector('.btn-role-add').addEventListener('click', addRole(user.username, template.querySelector('.select-role')));
-            template.querySelector('.btn-role-remove').addEventListener('click', removeRole(user.username, template.querySelector('.select-role')));
+            template.querySelector('.btn-role-add').addEventListener('click', addRole(user.username, template.querySelector('.select-role'), template.querySelector('.select-platform')));
+            template.querySelector('.btn-role-remove').addEventListener('click', removeRole(user.username, template.querySelector('.select-role'), template.querySelector('.select-platform')));
             template.querySelector('.btn-delete').addEventListener('click', deleteUser(user.username));
 
             return template;
@@ -291,6 +302,10 @@
         });
 
         bahn.logout_callback(() => document.querySelector('#user-table').innerHTML = "");
+
+        let platforms;
+        bahn.getAvailablePlatforms()
+            .then(ps => platforms = ps);
     </script>
 
 </body>

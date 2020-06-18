@@ -9,7 +9,7 @@ include(FindPkgConfig)
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-file(GLOB SRCFILES "src/*.c")
+file(GLOB SRCFILES "src/*.c" "src/**/*.c")
 
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines")
 
