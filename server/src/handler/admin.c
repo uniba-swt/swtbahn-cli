@@ -42,6 +42,7 @@
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t start_stop_thread;
 
+char* platform_loaded;
 
 void build_message_hex_string(unsigned char *message, char *dest) {
 	for (size_t i = 0; i <= message[0]; i++) {

@@ -28,7 +28,7 @@
 #ifndef SWTSERVER_HANDLER_ADMIN_H
 #define SWTSERVER_HANDLER_ADMIN_H
 
-char* platform_loaded;
+extern char* platform_loaded;
 
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res);
