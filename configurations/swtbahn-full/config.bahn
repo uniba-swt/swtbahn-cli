@@ -1,6 +1,7 @@
-#signaltypes 
 
-module SWTBAHN
+
+module SWTbahnfull
+
     boards
         master 0x00
         onecontrol1 0x1
@@ -8,119 +9,261 @@ module SWTBAHN
         onecontrol3 0x3
         onecontrol4 0x4
         lightcontrol1 0x5
+        slave 0x6
     end
 
     segments master
-        seg1 0x00 length 23.3cm
-        seg2 0x01 length 23.3cm
-        seg3 0x02 length 23.3cm
+   #long partition
+        seg1 0x00 length 15cm
+        seg2 0x01 length 187.1cm
+        seg3 0x02 length 18.1cm
         seg4 0x03 length 23.3cm
         seg5 0x04 length 23.3cm
-        seg6 0x05 length 23.3cm
-        seg7 0x06 length 23.3cm
-        seg8 0x07 length 23.3cm
-        seg9 0x08 length 23.3cm
-        seg10 0x09 length 23.3cm
+        seg6 0x05 length 15cm
+        seg7 0x06 length 207.8cm
+        seg17 0x07 length 15cm
+        seg18 0x08 length 11.3cm
+        seg19 0x09 length 11.3cm
+        seg20 0x0a length 24.7cm
+        seg21 0x0b length 15.0cm
+        seg22 0x0c length 173,5cm
+        seg23 0x0d length 17.5cm
+        seg24 0x0e length 23.3cm
+        seg25 0x0f length 23.3cm
+        seg26 0x10 length 10cm
+        seg27 0x11 length 55cm
+        seg28 0x12 length 10cm
+        seg29 0x13 length 23.3cm
+        seg30 0x14 length 15cm
+        seg44 0x15 length 11.3cm
+        seg45 0x16 length 15cm
+        seg46 0x17 length 74.7cm
+        seg47 0x18 length 15cm
+        seg48 0x19 length 23.3cm
+        seg49 0x1a length 23.3cm
+        seg50 0x1b length 56cm
+        seg51 0x1c length 23.3cm
+        seg52 0x1d length 23.3cm
+        seg53 0x1e length 23.3cm
+        seg54 0x1f length 15cm
+        seg55 0x20 length 88.6cm
+        seg56 0x21 length 15.5cm
+        seg57 0x22 length 15cm
+        seg58 0x23 length 88.1cm
+        seg59 0x24 length 15cm
+        seg60 0x25 length 23.3cm
+        seg61 0x26 length 10.4cm
+        seg62 0x27 length 10.4cm
+        seg77 0x28 length 10.4cm
+        seg78 0x29 length 59.7cm
+        seg80 0x2a length 23.3cm
+        seg81 0x2b length 15cm
+        seg82 0x2c length 146.5cm
+        seg85 0x2d length 23.3cm
+        seg86 0x27 length 15cm
+        seg87 0x2e length 15cm
+        seg90 0x2f length 19cm
+        seg91 0x30 length 117.6cm
+        seg93 0x31 length 15cm
+        seg94 0x32 length 290.6cm
+
+    end
+
+    segments slave
+     #shortpartition
+        seg8 0x00 length 15cm
+        seg9 0x01 length 23.3cm
+        seg10 0x02 length 23.3cm
+        seg11 0x03 length 20.7cm
+        seg12 0x04 length 127cm
+        seg13 0x05 length 15cm
+        seg14 0x06 length 23.3cm
+        seg15 0x07 length 15cm
+        seg16 0x08 length 90cm
+        seg31 0x09 length 96.5cm
+        seg32 0x0a length 15cm
+        seg33 0x0b length 23.3cm
+        seg34 0x0c length 23.3cm
+        seg35 0x0d length 23.3cm
+        seg36 0x0e length 17.2cm
+        seg37 0x0f length 115.2cm
+        seg38 0x10 length 15cm
+        seg39 0x11 length 13cm
+        seg40 0x12 length 23.3cm
+        seg41 0x13 length 23.3cm
+        seg42 0x14 length 23.3cm
+        seg43 0x15 length 23.3cm
+        seg63 0x16 length 128.5cm
+        seg64 0x17 length 10.5cm
+        seg65 0x18 length 11.2cm
+        seg66 0x19 length 23.3cm
+        seg67 0x1a length 17.2cm
+        seg68 0x1b length 95.2cm  
+        seg69 0x1c length 15cm
+        seg70 0x1d length 23.3cm
+        seg71 0x1e length 15cm
+        seg72 0x1f length 80.5cm
+        seg73 0x20 length 15cm
+        seg74 0x21 length 15cm
+        seg75 0x22 length 80cm
+        seg76 0x23 length 15cm
+        seg79 0x24 length 23.3cm
+        seg83 0x25 length 18.1cm
+        seg84 0x26 length 23.3cm
+        seg88 0x28 length 15cm
+        seg89 0x29 length 23.3cm
+        seg92 0x2a length 15cm
+        seg95 0x2b length 15cm
         
-        seg11 0x0a length 23.3cm
-        seg12 0x0b length 23.3cm
-        seg13 0x0c length 23.3cm
-        seg14 0x0d length 23.3cm
-        seg15 0x0e length 23.3cm
-        seg16 0x0f length 23.3cm
-        seg17 0x10 length 23.3cm
-        seg18 0x11 length 23.3cm
-        seg19 0x12 length 23.3cm
-        seg20 0x13 length 23.3cm
-        
-        seg21 0x14 length 23.3cm
-        seg22 0x15 length 23.3cm
-        seg23 0x16 length 23.3cm
-        seg24 0x17 length 23.3cm
-        seg25 0x18 length 23.3cm
-        seg26 0x19 length 23.3cm
-        seg27 0x1a length 23.3cm
-        seg28 0x1b length 23.3cm
-        seg29 0x1c length 23.3cm
-        seg30 0x1d length 23.3cm
+    end
 
-        seg31 0x1e length 23.3cm
-        seg32 0x1f length 23.3cm
-        seg33 0x20 length 23.3cm
-        seg34 0x21 length 23.3cm
-        seg35 0x22 length 23.3cm
-        seg36 0x23 length 23.3cm
-        seg37 0x24 length 23.3cm
-        seg38 0x25 length 23.3cm
-        seg39 0x26 length 23.3cm
-        seg40 0x27 length 23.3cm
-
-        seg41 0x28 length 23.3cm
-        seg42 0x29 length 23.3cm
-        seg43 0x2a length 23.3cm
-        seg44 0x2b length 23.3cm
-        seg45 0x2c length 23.3cm
-        seg46 0x2d length 23.3cm
-        seg47 0x2e length 23.3cm
-        seg48 0x2f length 23.3cm
-        seg49 0x30 length 23.3cm
-        seg50 0x31 length 23.3cm
-        seg51 0x32 length 23.3cm
-        seg52 0x33 length 23.3cm
-        seg53 0x34 length 23.3cm
-        seg54 0x35 length 23.3cm
-
-        seg55 0x36 length 23.3cm
-        seg56 0x37 length 23.3cm
-        seg57 0x38 length 23.3cm
-        seg58 0x39 length 23.3cm
-        seg59 0x3a length 23.3cm
-        seg60 0x3b length 23.3cm
-        seg61 0x3c length 23.3cm
-        seg62 0x3d length 23.3cm
-        seg63 0x3e length 23.3cm
-        seg64 0x3f length 23.3cm
-        seg65 0x40 length 23.3cm
-        seg66 0x41 length 23.3cm
-        seg67 0x42 length 23.3cm
-        seg68 0x43 length 23.3cm
-                
-        seg69 0x44 length 23.3cm
-        seg70 0x45 length 23.3cm
-        seg71 0x46 length 23.3cm
-        seg72 0x47 length 23.3cm
-        seg73 0x48 length 23.3cm
-        seg74 0x49 length 23.3cm
-        seg75 0x4a length 23.3cm
-        seg76 0x4b length 23.3cm
-        seg77 0x4c length 23.3cm
-        seg78 0x4d length 23.3cm
-        seg79 0x4e length 23.3cm
-        seg80 0x4f length 23.3cm
-        seg81 0x50 length 23.3cm
-        seg82 0x51 length 23.3cm
-
-        seg83 0x53 length 23.3cm
-        seg84 0x54 length 23.3cm
-        seg85 0x55 length 23.3cm
-        seg86 0x56 length 23.3cm
-        seg87 0x57 length 23.3cm
-        seg88 0x58 length 23.3cm
-        seg89 0x59 length 23.3cm
-        seg90 0x5a length 23.3cm
-        seg91 0x5b length 23.3cm
-        seg92 0x5c length 23.3cm
-        seg93 0x5d length 23.3cm
-        seg94 0x5e length 23.3cm
-        seg95 0x5f length 23.3cm
+    signal-type blocksignal
 
     end
 
     signals lightcontrol1
+    #shortpartition
+
+        entry signal8
+        entry signal10
+        entry signal23
+        entry signal25
+        entry signal36
+        entry signal38
+ 
+        block signal11
+
+        distant signal9
+        distant signal12
+        distant signal24
+        distant signal33
+        distant signal34
+        distant signal37
+        
+        //block/distant
+        distant signal7A
+        dsistant signal35A
+        distant signal46A
+        distant signal48A
+        distant signal50A
+        distant signal53A
+
+        block signal7B
+        block signal35B
+        block signal46B
+        block signal48B
+        block signal50B
+        block signal53B
+
+        composite signal7
+            signals 
+                signal7A
+                signal7B
+            end    
+        composite signal35
+            signals 
+                signal35A
+                signal35B
+            end
+        composite signal46
+            signals 
+                signal46A
+                signal46B
+            end
+        composite signal48
+            signals 
+                signal48A
+                signal48B
+            end
+        composite signal50
+            signals 
+                signal50A
+                signal50B
+            end
+        composite signal53
+            signals 
+                signal53A
+                signal53B
+            end    
+
+
+        distant signal22A
+        exit signal22B
+
+        composite signal22
+            signals
+                signal22A
+                signal22B
+            end    
+
+        peripheral signal39
+        peripheral signal40 
+        peripheral signal41
+        peripheral signal42
+        peripheral signal44
+
+
+        platformlights platform1
+        platformlights platform2
+        platformlights platform3
 
     end
 
+    signals lightcontrol2
+    #long partition
+        entry signal14
+        entry signal31
+
+        exit signal19
+
+        peripheral signal20
+
+        peripheral signal21
+        peripheral signal27
+        peripheral signal29
+        peripheral signal31
+        peripheral signal34
+
+        block signal1
+        block signal5
+        block signal45
+        block signal47
+        block signal48
+        block signal51
+
+        distant signal2
+        distant signal3
+        distant signal6
+        distant signal13
+        distant signal16
+        distant signal17
+        distant signal52
+
+        stoplight
+
+        //entry distant
+
+        distant signal4A
+        distant signal18A
+
+        entry signal4B
+        entry signal18B
+        
+        composite signal4
+            signals
+                signal4A
+                signal4B
+            end
+
+        composite signal18
+            signals
+                signal18A
+                signal18B
+            end    
+    end
+
     points onecontrol1
+    #long partition
         point1 0x00 segment seg4
             normal 0x01
             reverse 0x00
@@ -129,68 +272,90 @@ module SWTBAHN
             normal 0x01
             reverse 0x00
             initial normal            
-        point3 0x02 segment seg9
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point4 0x03 segment seg10
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point5 0x04 segment seg14
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point6 0x05 segment seg18
+        point6 0x02 segment seg18
             normal 0x01
             reverse 0x00
             initial normal            
-        point7 0x06 segment seg19
+        point8 0x03 segment seg19
             normal 0x01
             reverse 0x00
             initial normal
-        point8 0x07 segment seg24
+        point8 0x04 segment seg24
             normal 0x01
             reverse 0x00
-            initial normal            
+            initial normal
+        point9 0x05 segment seg25
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point10 0x06 segment seg29
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point28 0x07 segment seg85
+            normal 0x01
+            reverse 0x00
+            initial normal                       
     end
 
     points onecontrol2
-        point9 0x00 segment seg25
+     #shortpartition
+        point4 0x00 segment seg10
             normal 0x01
             reverse 0x00
             initial normal
-        point10 0x01 segment seg29
+        point5 0x01 segment seg14
+            normal 0x01
+            reverse 0x00
+            initial normal     
+        point21 0x02 segment seg51
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point24 0x03 segment seg66
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point27 0x04 segment seg84
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point29 0x05 segment seg89
+            normal 0x01
+            reverse 0x00
+            initial normal    
+    end
+
+    points onecontrol3
+       #shortpartition
+        point11 0x00 segment seg33
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point12 0x01 segment seg34
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point13 0x02 segment seg35
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point14 0x03 segment seg39
             normal 0x01
             reverse 0x00
             initial normal            
-        point11 0x02 segment seg33
+        point15 0x04 segment seg40
             normal 0x01
             reverse 0x00
             initial normal
-        point12 0x03 segment seg34
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point13 0x04 segment seg35
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point14 0x05 segment seg39
-            normal 0x01
-            reverse 0x00
-            initial normal            
-        point15 0x06 segment seg40
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point16 0x07 segment seg41
+        point16 0x05 segment seg41
             normal 0x01
             reverse 0x00
             initial normal            
     end
 
-    points onecontrol3
+    points onecontrol4
+        #long partition
         point17 0x00 segment seg43
             normal 0x01
             reverse 0x00
@@ -203,49 +368,26 @@ module SWTBAHN
             normal 0x01
             reverse 0x00
             initial normal
-        point20 0x04 segment seg49
+        point20 0x03 segment seg49
+            normal 0x01
+            reverse 0x00
+            initial normal       
+        point22 0x04 segment seg53
             normal 0x01
             reverse 0x00
             initial normal
-        point21 0x05 segment seg51
+        point23 0x05 segment seg60
+            normal 0x01
+            reverse 0x00
+            initial normal    
+        point25 0x06 segment seg70
             normal 0x01
             reverse 0x00
             initial normal            
-        point22 0x06 segment seg53
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point23 0x07 segment seg60
+        point26 0x07 segment seg80
             normal 0x01
             reverse 0x00
             initial normal             
-    end
-    
-    points onecontrol4
-        point24 0x00 segment seg66
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point25 0x01 segment seg70
-            normal 0x01
-            reverse 0x00
-            initial normal            
-        point26 0x02 segment seg80
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point27 0x04 segment seg84
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point28 0x05 segment seg85
-            normal 0x01
-            reverse 0x00
-            initial normal            
-        point29 0x06 segment seg89
-            normal 0x01
-            reverse 0x00
-            initial normal
     end
     
     trains
@@ -431,14 +573,17 @@ module SWTBAHN
             overlap seg93
             main seg94
             overlap seg95
-            trains
-                cargo
-                passenger
-            end                                        
+                                     
     end
-    platforms
 
-    end
+platforms
+    platform1 overlap seg72 main seg73
+    platform2 overlap seg75 main seg76
+    platform3 overlap seg46 main seg47
+    platform4 overlap seg55 main seg56
+    platform5 overlap seg58 main seg59
+    platform6 overlap seg78 main seg79
+  end
 
     crossings
         crossing1 segment seg20
@@ -447,7 +592,6 @@ module SWTBAHN
 
     layout
     #blocks
-
     block1.down -- point7.straight
     block1.up -- point1.stem
     block2.down -- point2.straight
