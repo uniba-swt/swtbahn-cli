@@ -33,9 +33,9 @@
 #include <limits.h>
 #include <dirent.h>
 
-#include "server.h"
-#include "dynlib.h"
-#include "dyn_containers_interface.h"
+#include "../server.h"
+#include "../dynlib.h"
+#include "../dyn_containers_interface.h"
 
 
 const static char engine_dir[] = "engines";

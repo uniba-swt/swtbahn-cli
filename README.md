@@ -80,6 +80,12 @@ not started by `swtbahn admin startup`, all the other commands won't work.
    select a position, and click the `Set` button.
 5. To control a signal, type the name of a signal (see the YAML configuration file), 
    select an aspect, and click the `Set` button.
+   
+#### Client (Docker)
+1. Build the docker image using `docker build -t swt/bahn ./containerized-client` from the root directory of the project.
+2. Start the client with `docker run -p 8090:80 --env BACKEND_HOST=<host> --env BACKEND_PORT=8080 swt/bahn`.
+
+You will have to adjust the environment variables `BACKEND_HOST` and `BACKEND_PORT` depending on your setup.
 
 #### Logging into the Raspberry Pi remotely
 Use `ssh` to the log in remotely. Suppose the Raspberry Pi is located at `141.13.106.30`.

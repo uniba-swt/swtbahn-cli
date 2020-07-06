@@ -31,7 +31,7 @@
 #include <stdio.h>
 
 #include "interlocking.h"
-#include "server.h"
+#include "../server.h"
 #include "interlocking_parser.h"
 
 

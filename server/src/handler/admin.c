@@ -31,15 +31,18 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "server.h"
-#include "handler_driver.h"
-#include "interlocking.h"
-#include "dyn_containers_interface.h"
+#include "../server.h"
+#include "driver.h"
+#include "../interlocking/interlocking.h"
+#include "../dyn_containers_interface.h"
+#include "../util_handler.h"
+#include "admin.h"
 
 
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t start_stop_thread;
 
+char* platform_loaded;
 
 void build_message_hex_string(unsigned char *message, char *dest) {
 	for (size_t i = 0; i <= message[0]; i++) {
@@ -51,7 +54,12 @@ void build_message_hex_string(unsigned char *message, char *dest) {
 }
 
 static void *start_bidib(void *_) {
-	int err_serial = bidib_start_serial(serial_device, config_directory, 0);
+    char* directory = malloc(sizeof(char) * (strlen(config_directory) + strlen(platform_loaded) + 1));
+    strcpy(directory, config_directory);
+    directory = strcat(directory, "/");
+    directory = strcat(directory, platform_loaded);
+
+	int err_serial = bidib_start_serial(serial_device, directory, 0);
 	if (err_serial) {
 		pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
@@ -59,13 +67,15 @@ static void *start_bidib(void *_) {
 		pthread_exit(NULL);
 	}
 	
-	int err_interlocking = interlocking_table_initialise(config_directory);
+	int err_interlocking = interlocking_table_initialise(directory);
 	if (err_interlocking) {
 		pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
 		pthread_exit(NULL);
 	}
+
+	free(directory);
 	
 	int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
@@ -100,11 +110,22 @@ static void *start_bidib(void *_) {
 
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res) {
+    if (request_require_post(req, res)) {
+        return OCS_PROCESSED;
+    }
+
+    const char* platform = onion_request_get_post(req, "platform");
+    if (platform_loaded != NULL) {
+        free(platform_loaded);
+    }
+    platform_loaded = malloc(sizeof(char) * strlen(platform));
+    strcpy(platform_loaded, platform);
+
+
 	build_response_header(res);
 	int retval;
 	pthread_mutex_lock(&start_stop_mutex);
-	if (!running && !starting && !stopping && ((onion_request_get_flags(req) &
-	                                           OR_METHODS) == OR_POST)) {
+	if (!running && !starting && !stopping) {
 		session_id = time(NULL);
 		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
 		starting = true;
@@ -132,11 +153,19 @@ static void *stop_bidib(void *_) {
 
 onion_connection_status handler_shutdown(void *_, onion_request *req,
                                          onion_response *res) {
+    if (request_require_post(req, res)) {
+        return OCS_PROCESSED;
+    }
+
+    if (platform_loaded != NULL) {
+        free(platform_loaded);
+        platform_loaded = NULL;
+    }
+
 	build_response_header(res);
 	int retval;
 	pthread_mutex_lock(&start_stop_mutex);
-	if (running && !starting && !stopping && ((onion_request_get_flags(req) &
-	                                          OR_METHODS) == OR_POST)) {
+	if (running && !starting && !stopping) {
 		syslog_server(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;

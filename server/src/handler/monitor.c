@@ -32,8 +32,8 @@
 #include <glib.h>
 #include <string.h>
 
-#include "server.h"
-#include "handler_driver.h"
+#include "../server.h"
+#include "driver.h"
 
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,

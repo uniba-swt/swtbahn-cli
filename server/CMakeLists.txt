@@ -9,7 +9,7 @@ include(FindPkgConfig)
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-file(GLOB SRCFILES "src/*.c")
+file(GLOB SRCFILES "src/*.c" "src/**/*.c")
 
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines")
 
@@ -63,6 +63,14 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/engines"
 )
 
+set(OPENSSL_PATH /usr/local/opt/openssl)
+add_library(openssl_static STATIC IMPORTED)
+set_target_properties(openssl_static PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OPENSSL_PATH}/include)
+set_target_properties(openssl_static PROPERTIES IMPORTED_LOCATION ${OPENSSL_PATH}/lib/libssl.a	)
+
+add_library(openssl SHARED IMPORTED)
+set_target_properties(openssl PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OPENSSL_PATH}/include)
+set_target_properties(openssl PROPERTIES IMPORTED_LOCATION ${OPENSSL_PATH}/lib/libssl.dylib)
 
 # - - - - - - - - - - - - -
 # ADJUSTMENT SECTION END
@@ -80,4 +88,4 @@ target_link_libraries(${FOREC_MAIN}_static bidib_static)
 
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion pam gnutls gcrypt pthread
-	glib-2.0 yaml bidib ${FOREC_MAIN} ${CMAKE_DL_LIBS})
+		glib-2.0 yaml bidib ev sqlite3 crypto openssl  ${FOREC_MAIN} ${CMAKE_DL_LIBS})

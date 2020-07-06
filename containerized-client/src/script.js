@@ -5,72 +5,128 @@ var trainId = '';
 var trainEngine = '';
 var routeId = -1;
 
+let bahn = new BahnAPI("/api");
+
 $(document).ready(
     function() {
         trackOutput = 'master';
 
+        // Login
+        let loginModal = $('#loginModal');
+        $('#btb-open-login').click(() => loginModal.modal('show'));
+        $('#loginButton').click(function() {
+            let username = $('#loginUsername').val();
+            let password = $('#loginPassword').val();
+
+            bahn.login(username, password)
+                .then(loggedIn => {
+                    if (loggedIn) {
+                        console.log("Successfully logged in.")
+                        loginModal.modal('hide');
+                        $('#header-username').text(bahn.username);
+                        $('#user-info').show();
+                        $('#guest-info').hide();
+                    } else {
+                        console.log("Failed to log in.")
+                        $('#loginError').show();
+                    }
+                })
+                .catch(err => console.log(err));
+        });
+        loginModal.modal('show');
+
+        bahn.getAvailablePlatforms()
+            .then(platforms => {
+                let selectPlatforms = $('#select-platform');
+                platforms.forEach(platform => {
+                    selectPlatforms.append($('<option>', {
+                        value: platform,
+                        text: platform
+                    }));
+                });
+            });
+
         // Configuration
         $('#pingButton').click(function() {
-            $('#pingResponse').text('Waiting');
-            $.ajax({
-                type: 'POST',
-                url: '/',
-                crossDomain: true,
-                data: null,
-                dataType: 'text',
-                success: function(responseData, textStatus, jqXHR) {
-                    $('#pingResponse').parent().removeClass('alert-danger');
-                    $('#pingResponse').parent().addClass('alert-success');
-                    $('#pingResponse').text('OK');
-                },
-                error: function(responseData, textStatus, errorThrown) {
-                    $('#pingResponse').parent().removeClass('alert-success');
-                    $('#pingResponse').parent().addClass('alert-danger');
-                    $('#pingResponse').text('Error');
-                }
-            });
+            let pingResponse = $('#pingResponse');
+
+            pingResponse.text('Waiting');
+
+            bahn.ping()
+                .then(() => {
+                    pingResponse.parent().removeClass('alert-danger');
+                    pingResponse.parent().addClass('alert-success');
+                    pingResponse.text('OK');
+                })
+                .catch(() => {
+                    pingResponse.parent().removeClass('alert-success');
+                    pingResponse.parent().addClass('alert-danger');
+                    pingResponse.text('Error');
+                });
         });
 
         $('#startupButton').click(function() {
-            $('#startupShutdownResponse').text('Waiting');
-            $.ajax({
-                type: 'POST',
-                url: '/admin/startup',
-                crossDomain: true,
-                data: null,
-                dataType: 'text',
-                success: function(responseData, textStatus, jqXHR) {
-                    $('#startupShutdownResponse').parent().removeClass('alert-danger');
-                    $('#startupShutdownResponse').parent().addClass('alert-success');
-                    $('#startupShutdownResponse').text('OK');
-                },
-                error: function(responseData, textStatus, errorThrown) {
-                    $('#startupShutdownResponse').parent().removeClass('alert-success');
-                    $('#startupShutdownResponse').parent().addClass('alert-danger');
-                    $('#startupShutdownResponse').text('System already running!');
-                }
-            });
+            let response = $('#startupShutdownResponse');
+            response.text('Waiting');
+
+            let platform = $('#select-platform').val();
+
+            bahn.startup(platform)
+                .then(result => {
+                    if (result === 'unauthorized') {
+                        $('#unauthorizedModal').modal('show');
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('Unauthorized');
+                    } else if (result === 'ok') {
+                        response.parent().removeClass('alert-danger');
+                        response.parent().addClass('alert-success');
+                        response.text('OK');
+                    } else {
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('System already running!');
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    response.parent().removeClass('alert-success');
+                    response.parent().addClass('alert-danger');
+                    response.text('System already running!');
+                });
         });
 
         $('#shutdownButton').click(function() {
-            $('#startupShutdownResponse').text('Waiting');
-            $.ajax({
-                type: 'POST',
-                url: '/admin/shutdown',
-                crossDomain: true,
-                data: null,
-                dataType: 'text',
-                success: function(responseData, textStatus, jqXHR) {
-                    $('#startupShutdownResponse').parent().removeClass('alert-danger');
-                    $('#startupShutdownResponse').parent().addClass('alert-success');
-                    $('#startupShutdownResponse').text('OK');
-                },
-                error: function(responseData, textStatus, errorThrown) {
-                    $('#startupShutdownResponse').parent().removeClass('alert-success');
-                    $('#startupShutdownResponse').parent().addClass('alert-danger');
-                    $('#startupShutdownResponse').text('System not running!');
-                }
-            });
+            let response = $('#startupShutdownResponse');
+            response.text('Waiting');
+
+            bahn.shutdown()
+                .then(result => {
+                    if (result === 'unauthorized') {
+                        $('#unauthorizedModal').modal('show');
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('Unauthorized');
+                    } else if (result === 'ok') {
+                        response.parent().removeClass('alert-danger');
+                        response.parent().addClass('alert-success');
+                        response.text('OK');
+                    } else {
+                        response.parent().removeClass('alert-success');
+                        response.parent().addClass('alert-danger');
+                        response.text('System not running!');
+                    }
+                })
+                .catch(() => {
+                    response.parent().removeClass('alert-success');
+                    response.parent().addClass('alert-danger');
+                    response.text('System not running!');
+                });
+        });
+        $('#btn-logout').click(function () {
+            bahn.logout();
+            $('#user-info').hide();
+            $('#guest-info').show();
         });
 
 

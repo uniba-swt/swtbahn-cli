@@ -27,7 +27,7 @@
 
 #include "interlocking_parser.h"
 #include "interlocking.h"
-#include "server.h"
+#include "../server.h"
 
 #include <stdio.h>
 #include <stdbool.h>

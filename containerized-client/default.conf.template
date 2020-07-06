@@ -1,0 +1,45 @@
+# set up backend service
+upstream backend {
+    server $BACKEND_HOST:$BACKEND_PORT;
+}
+
+server {
+    listen       80;
+    server_name  _;
+
+    # TODO: implement SSL termination, :80 then should just redirect to :443, all other rules should be removed from here
+    #return 301 https://$host$request_uri;
+
+
+    # reverse proxy for API server
+    location /api/ {
+        # forward to upstream backend, tailing / is important to remove the context path
+        proxy_pass  http://backend/;
+
+        # add proxy headers
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Host    $host;
+        proxy_set_header    X-Forwarded-Port    $server_port;
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        proxy_set_header    X-Real-IP           $remote_addr;
+    }
+
+    # serve static assets from default location
+    location / {
+        root   /usr/share/nginx/html;
+        index  client.html;
+    }
+}
+
+# HTTPS handling
+#server {
+#    listen      443 ssl;
+#    server_name _;
+#
+#    ssl_certificate         /etc/letsencrypt/live/swtbahn.de/fullchain.pem;
+#    ssl_certificate_key     /etc/letsencrypt/live/swtbahn.de/privkey.pem;
+#    ...
+#    # see: https://nginx.org/en/docs/http/configuring_https_servers.html
+#
+#    # TODO: move all location blocks here
+#}

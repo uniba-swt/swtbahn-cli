@@ -32,11 +32,11 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "server.h"
-#include "param_verification.h"
-#include "interlocking.h"
+#include "../server.h"
+#include "../param_verification.h"
+#include "../interlocking/interlocking.h"
 
-#include "interlocking_algorithm.h"
+#include "../interlocking/interlocking_algorithm.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 

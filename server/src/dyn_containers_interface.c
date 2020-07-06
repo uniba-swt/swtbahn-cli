@@ -34,9 +34,9 @@
 #include <bidib.h>
 
 #include "dyn_containers_interface.h"
-#include "handler_admin.h"
+#include "handler/admin.h"
 #include "server.h"
-#include "handler_driver.h"
+#include "handler/driver.h"
 
 
 extern void *forec_dyn_containers(void *_);

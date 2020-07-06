@@ -32,11 +32,11 @@
 #include <glib.h>
 #include <string.h>
 
-#include "server.h"
-#include "dyn_containers_interface.h"
-#include "handler_controller.h"
-#include "interlocking.h"
-#include "param_verification.h"
+#include "../server.h"
+#include "../dyn_containers_interface.h"
+#include "controller.h"
+#include "../interlocking/interlocking.h"
+#include "../param_verification.h"
 
 
 #define MICROSECOND 1

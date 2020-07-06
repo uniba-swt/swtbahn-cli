@@ -1,8 +1,8 @@
 /*
  *
- * Copyright (C) 2017 University of Bamberg, Software Technologies Research Group
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
  * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
- * 
+ *
  * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
  * a client-server application to interactively control a BiDiB model railway.
  *
@@ -21,23 +21,19 @@
  * The following people contributed to the conception and realization of the
  * present swtbahn-cli (in alphabetic order by surname):
  *
- * - Nicolas Gross <https://github.com/nicolasgross>
+ * - Florian Beetz <https://github.com/florian-beetz>
  *
  */
 
-#ifndef SWTSERVER_HANDLER_ADMIN_H
-#define SWTSERVER_HANDLER_ADMIN_H
+#include <onion/types.h>
+#include <onion/request.h>
+#include <onion/response.h>
 
-
-onion_connection_status handler_startup(void *_, onion_request *req,
-                                        onion_response *res);
-
-onion_connection_status handler_shutdown(void *_, onion_request *req,
-                                         onion_response *res);
-
-onion_connection_status handler_set_track_output(void *_, onion_request *req,
-                                                 onion_response *res);
-
-
-#endif
-
+int request_require_post(onion_request *req, onion_response *res) {
+    if ((onion_request_get_flags(req) & OR_METHODS) != OR_POST) {
+        onion_response_set_code(res, 405);
+        onion_response_set_header(res, "allow", "POST");
+        return 1;
+    }
+    return 0;
+}
