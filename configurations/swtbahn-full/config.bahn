@@ -13,7 +13,8 @@ module SWTbahnfull
     end
 
     segments master
-   #long partition
+        #Long partition
+        
         seg1 0x00 length 15cm
         seg2 0x01 length 187.1cm
         seg3 0x02 length 18.1cm
@@ -70,7 +71,8 @@ module SWTbahnfull
     end
 
     segments slave
-     #shortpartition
+        # Short partition
+        
         seg8 0x00 length 15cm
         seg9 0x01 length 23.3cm
         seg10 0x02 length 23.3cm
@@ -122,8 +124,8 @@ module SWTbahnfull
     end
 
     signals lightcontrol1
-    #shortpartition
-
+        # Short partition
+        
         entry signal8
         entry signal10
         entry signal23
@@ -140,9 +142,9 @@ module SWTbahnfull
         distant signal34
         distant signal37
         
-        //block/distant
+        # Composite signals
         distant signal7A
-        dsistant signal35A
+        distant signal35A
         distant signal46A
         distant signal48A
         distant signal50A
@@ -197,11 +199,10 @@ module SWTbahnfull
             end    
 
         peripheral signal39
-        peripheral signal40 
+        peripheral signal40
         peripheral signal41
         peripheral signal42
         peripheral signal44
-
 
         platformlights platform1
         platformlights platform2
@@ -210,14 +211,14 @@ module SWTbahnfull
     end
 
     signals lightcontrol2
-    #long partition
+        # Long partition
+        
         entry signal14
         entry signal31
 
         exit signal19
 
         peripheral signal20
-
         peripheral signal21
         peripheral signal27
         peripheral signal29
@@ -241,8 +242,7 @@ module SWTbahnfull
 
         stoplight
 
-        //entry distant
-
+        # Composite signals
         distant signal4A
         distant signal18A
 
@@ -263,7 +263,8 @@ module SWTbahnfull
     end
 
     points onecontrol1
-    #long partition
+        # Long partition
+        
         point1 0x00 segment seg4
             normal 0x01
             reverse 0x00
@@ -276,7 +277,7 @@ module SWTbahnfull
             normal 0x01
             reverse 0x00
             initial normal            
-        point8 0x03 segment seg19
+        point7 0x03 segment seg19
             normal 0x01
             reverse 0x00
             initial normal
@@ -292,27 +293,98 @@ module SWTbahnfull
             normal 0x01
             reverse 0x00
             initial normal
-        point28 0x07 segment seg85
+        point17 0x07 segment seg43
             normal 0x01
             reverse 0x00
-            initial normal                       
+            initial normal                 
     end
 
     points onecontrol2
-     #shortpartition
-        point4 0x00 segment seg10
+        # Long partition
+
+        point18 0x00 segment seg44
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point19 0x01 segment seg48
             normal 0x01
             reverse 0x00
             initial normal
-        point5 0x01 segment seg14
+        point20 0x02 segment seg49
             normal 0x01
             reverse 0x00
-            initial normal     
-        point21 0x02 segment seg51
+            initial normal       
+        point22 0x03 segment seg53
             normal 0x01
             reverse 0x00
             initial normal
-        point24 0x03 segment seg66
+        point23 0x04 segment seg60
+            normal 0x01
+            reverse 0x00
+            initial normal    
+        point26 0x05 segment seg80
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point28 0x06 segment seg85
+            normal 0x01
+            reverse 0x00
+            initial normal
+    end
+    
+    points onecontrol3
+        # Short partition
+
+        point3 0x00 segment seg9
+            normal 0x01
+            reverse 0x00
+            initial normal        
+        point4 0x01 segment seg10
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point5 0x02 segment seg14
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point11 0x03 segment seg33
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point12 0x04 segment seg34
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point13 0x05 segment seg35
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point14 0x06 segment seg39
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point15 0x07 segment seg40
+            normal 0x01
+            reverse 0x00
+            initial normal
+    end
+
+    points onecontrol4
+        # Short partition
+
+        point16 0x00 segment seg41
+            normal 0x01
+            reverse 0x00
+            initial normal            
+        point21 0x01 segment seg51
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point24 0x02 segment seg66
+            normal 0x01
+            reverse 0x00
+            initial normal
+        point25 0x03 segment seg70
             normal 0x01
             reverse 0x00
             initial normal
@@ -323,73 +395,9 @@ module SWTbahnfull
         point29 0x05 segment seg89
             normal 0x01
             reverse 0x00
-            initial normal    
+            initial normal  
     end
 
-    points onecontrol3
-       #shortpartition
-        point11 0x00 segment seg33
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point12 0x01 segment seg34
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point13 0x02 segment seg35
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point14 0x03 segment seg39
-            normal 0x01
-            reverse 0x00
-            initial normal            
-        point15 0x04 segment seg40
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point16 0x05 segment seg41
-            normal 0x01
-            reverse 0x00
-            initial normal            
-    end
-
-    points onecontrol4
-        #long partition
-        point17 0x00 segment seg43
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point18 0x01 segment seg44
-            normal 0x01
-            reverse 0x00
-            initial normal            
-        point19 0x02 segment seg48
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point20 0x03 segment seg49
-            normal 0x01
-            reverse 0x00
-            initial normal       
-        point22 0x04 segment seg53
-            normal 0x01
-            reverse 0x00
-            initial normal
-        point23 0x05 segment seg60
-            normal 0x01
-            reverse 0x00
-            initial normal    
-        point25 0x06 segment seg70
-            normal 0x01
-            reverse 0x00
-            initial normal            
-        point26 0x07 segment seg80
-            normal 0x01
-            reverse 0x00
-            initial normal             
-    end
-    
     trains
         cargo_db 0x0001
             steps 126
@@ -576,14 +584,14 @@ module SWTbahnfull
                                      
     end
 
-platforms
-    platform1 overlap seg72 main seg73
-    platform2 overlap seg75 main seg76
-    platform3 overlap seg46 main seg47
-    platform4 overlap seg55 main seg56
-    platform5 overlap seg58 main seg59
-    platform6 overlap seg78 main seg79
-  end
+    platforms
+        platform1 overlap seg72 main seg73
+        platform2 overlap seg75 main seg76
+        platform3 overlap seg46 main seg47
+        platform4 overlap seg55 main seg56
+        platform5 overlap seg58 main seg59
+        platform6 overlap seg78 main seg79
+    end
 
     crossings
         crossing1 segment seg20
@@ -591,101 +599,101 @@ platforms
     end
 
     layout
-    #blocks
-    block1.down -- point7.straight
-    block1.up -- point1.stem
-    block2.down -- point2.straight
-    block2.up -- point3.straight
+        # Blocks
+        block1.down -- point7.straight
+        block1.up -- point1.stem
+        block2.down -- point2.straight
+        block2.up -- point3.straight
 
-    block3.down -- point4.stem
-    block3.up -- point5.stem
+        block3.down -- point4.stem
+        block3.up -- point5.stem
 
-    block4.down -- point5.straight
-    block4.up -- point6.straight
+        block4.down -- point5.straight
+        block4.up -- point6.straight
 
-    block5.down -- crossing1.down2
-    block5.up -- point8.down2
+        block5.down -- crossing1.down2
+        block5.up -- point8.down2
 
-    block6.down -- point9.up1
-    block6.up -- point10.stem
+        block6.down -- point9.up1
+        block6.up -- point10.stem
 
-    block7.down -- point10.straight
-    block7.up -- point11.up2
+        block7.down -- point10.straight
+        block7.up -- point11.up2
 
-    block8.down -- point13.straight
-    block8.up -- point14.straight
+        block8.down -- point13.straight
+        block8.up -- point14.straight
 
-    block9.down -- point18.stem
-    block10.down -- point22.down2
-    block11.down -- point22.up2
+        block9.down -- point18.stem
+        block10.down -- point22.down2
+        block11.down -- point22.up2
     
-    block12.up -- point24.side
-    block12.down -- point23.stem
+        block12.up -- point24.side
+        block12.down -- point23.stem
 
-    block13.down -- point13.side
-    block13.up -- point14.side
+        block13.down -- point13.side
+        block13.up -- point14.side
     
-    block14.down -- point25.straight
+        block14.down -- point25.straight
 
-    block15.down -- point25.side 
+        block15.down -- point25.side 
 
-    block16.down -- point10.side
+        block16.down -- point10.side
 
-    block17.down -- point26.side
-    block17.up -- point27.straight
+        block17.down -- point26.side
+        block17.up -- point27.straight
 
-    block18.down -- point28.side
-    block18.up -- point29.side
+        block18.down -- point28.side
+        block18.up -- point29.side
 
-    block19.down -- point28.straight
-    block19.up -- point29.straight
+        block19.down -- point28.straight
+        block19.up -- point29.straight
 
-    block20.down -- point24.straight
-    block20.up -- point8.down1
+        block20.down -- point24.straight
+        block20.up -- point8.down1
 
-    #points
-    point1.straight -- point2.stem
-    point3.stem -- point4.straight
-    point4.side -- point12.up1
-    point5.side -- point15.side
-    point6.stem -- point7.stem
-    point6.side -- point17.side
+        # Points
+        point1.straight -- point2.stem
+        point3.stem -- point4.straight
+        point4.side -- point12.up1
+        point5.side -- point15.side
+        point6.stem -- point7.stem
+        point6.side -- point17.side
 
-    point8.up1 -- point9.down2
-    point8.up2 -- point1.side
+        point8.up1 -- point9.down2
+        point8.up2 -- point1.side
 
-    point9.up2 -- point2.side
-    point9.down1 -- point26.stem
+        point9.up2 -- point2.side
+        point9.down1 -- point26.stem
 
-    point11.up1 -- point3.side
-    point11.down2 -- point27.stem
-    point11.down1 -- point12.up2
+        point11.up1 -- point3.side
+        point11.down2 -- point27.stem
+        point11.down1 -- point12.up2
 
-    point24.stem -- point12.down2
-    point13.stem -- point12.down1
-    point14.stem -- point15.straight
-    point15.stem -- point16.stem
-    point16.straight -- point17.stem
-    point16.side -- point21.side
-    point18.side -- point19.stem
-    point19.straight -- point20.straight
-    point21.stem -- point20.stem
-    point23.straight -- point22.up1
-    point25.stem -- point21.straight
-    point28.stem -- point26.straight
-    point27.side -- point29.stem
+        point24.stem -- point12.down2
+        point13.stem -- point12.down1
+        point14.stem -- point15.straight
+        point15.stem -- point16.stem
+        point16.straight -- point17.stem
+        point16.side -- point21.side
+        point18.side -- point19.stem
+        point19.straight -- point20.straight
+        point21.stem -- point20.stem
+        point23.straight -- point22.up1
+        point25.stem -- point21.straight
+        point28.stem -- point26.straight
+        point27.side -- point29.stem
 
 
-    #crossings
-    crossing1.down1 -- point7.side
-    crossing1.down2 -- block5.down
-    crossing1.up1 -- point17.straight
-    crossing1.up2 -- point18.straight
+        # Crossings
+        crossing1.down1 -- point7.side
+        crossing1.down2 -- block5.down
+        crossing1.up1 -- point17.straight
+        crossing1.up2 -- point18.straight
     
-    crossing2.down1 -- point20.side
-    crossing2.down2 -- point19.side
-    crossing2.up1 -- point23.side
-    crossing2.up2 -- point22.down1
+        crossing2.down1 -- point20.side
+        crossing2.down2 -- point19.side
+        crossing2.up1 -- point23.side
+        crossing2.up2 -- point22.down1
     end
 
 end
