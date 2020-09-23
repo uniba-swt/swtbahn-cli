@@ -188,7 +188,6 @@ module SWTbahnfull
                 signal53B
             end    
 
-
         distant signal22A
         exit signal22B
 
@@ -214,22 +213,26 @@ module SWTbahnfull
         # Long partition
         
         entry signal14
-        entry signal31
+        entry signal32
 
         exit signal19
+        exit signal26
+        exit signal28
+        exit signal30
 
         peripheral signal20
         peripheral signal21
         peripheral signal27
         peripheral signal29
         peripheral signal31
-        peripheral signal34
+        peripheral signal43
 
         block signal1
         block signal5
+        block signal15
         block signal45
         block signal47
-        block signal48
+        block signal49
         block signal51
 
         distant signal2
@@ -239,8 +242,6 @@ module SWTbahnfull
         distant signal16
         distant signal17
         distant signal52
-
-        stoplight
 
         # Composite signals
         distant signal4A
