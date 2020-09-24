@@ -3,18 +3,29 @@
 module SWTbahnfull
 
     boards
+        # Long partition
         master 0x00
         onecontrol1 0x1
         onecontrol2 0x2
-        onecontrol3 0x3
-        onecontrol4 0x4
-        lightcontrol1 0x5
-        slave 0x6
+        lightcontrol1 0x3
+        lightcontrol2 0x4
+        lightcontrol3 0x5
+        lightcontrol4 0x6
+        
+        # Short partition
+        slave 0x7
+        onecontrol3 0x8
+        onecontrol4 0x9
+        lightcontrol5 0xa
+        lightcontrol6 0xb
+        lightcontrol7 0xc
+        lightcontrol8 0xd
     end
 
     segments master
         #Long partition
         
+        # 16T
         seg1 0x00 length 15cm
         seg2 0x01 length 187.1cm
         seg3 0x02 length 18.1cm
@@ -31,48 +42,53 @@ module SWTbahnfull
         seg23 0x0d length 17.5cm
         seg24 0x0e length 23.3cm
         seg25 0x0f length 23.3cm
+        
+        # 16T
         seg26 0x10 length 10cm
         seg27 0x11 length 55cm
         seg28 0x12 length 10cm
         seg29 0x13 length 23.3cm
         seg30 0x14 length 15cm
-        seg44 0x15 length 11.3cm
-        seg45 0x16 length 15cm
-        seg46 0x17 length 74.7cm
-        seg47 0x18 length 15cm
-        seg48 0x19 length 23.3cm
-        seg49 0x1a length 23.3cm
-        seg50 0x1b length 56cm
-        seg51 0x1c length 23.3cm
-        seg52 0x1d length 23.3cm
-        seg53 0x1e length 23.3cm
-        seg54 0x1f length 15cm
-        seg55 0x20 length 88.6cm
-        seg56 0x21 length 15.5cm
-        seg57 0x22 length 15cm
-        seg58 0x23 length 88.1cm
-        seg59 0x24 length 15cm
-        seg60 0x25 length 23.3cm
-        seg61 0x26 length 10.4cm
-        seg62 0x27 length 10.4cm
-        seg77 0x28 length 10.4cm
-        seg78 0x29 length 59.7cm
-        seg80 0x2a length 23.3cm
-        seg81 0x2b length 15cm
-        seg82 0x2c length 146.5cm
-        seg85 0x2d length 23.3cm
-        seg86 0x27 length 15cm
+        seg42 0x15 length 23.3cm
+        seg43 0x16 length 23.3cm
+        seg44 0x17 length 11.3cm
+        seg45 0x18 length 15cm
+        seg46 0x19 length 74.7cm
+        seg47 0x1a length 15cm
+        seg48 0x1b length 23.3cm
+        seg49 0x1c length 23.3cm
+        seg50 0x1d length 56cm
+        seg52 0x1e length 23.3cm
+        seg53 0x1f length 23.3cm
+
+        # 16T
+        seg54 0x20 length 15cm
+        seg55 0x21 length 88.6cm
+        seg56 0x22 length 15.5cm
+        seg57 0x23 length 15cm
+        seg58 0x24 length 88.1cm
+        seg59 0x25 length 15cm
+        seg60 0x26 length 23.3cm
+        seg77 0x27 length 10.4cm
+        seg78 0x28 length 59.7cm
+        seg80 0x29 length 23.3cm
+        seg81 0x2a length 15cm
+        seg82 0x2b length 146.5cm
+        seg85 0x2c length 23.3cm
+        seg86 0x2d length 15cm
         seg87 0x2e length 15cm
         seg90 0x2f length 19cm
+        
+        # 16T
         seg91 0x30 length 117.6cm
         seg93 0x31 length 15cm
         seg94 0x32 length 290.6cm
-
     end
 
     segments slave
         # Short partition
         
+        # 16T
         seg8 0x00 length 15cm
         seg9 0x01 length 23.3cm
         seg10 0x02 length 23.3cm
@@ -89,34 +105,38 @@ module SWTbahnfull
         seg35 0x0d length 23.3cm
         seg36 0x0e length 17.2cm
         seg37 0x0f length 115.2cm
+        
+        # 16T with Kehrschleifenmodul
         seg38 0x10 length 15cm
         seg39 0x11 length 13cm
         seg40 0x12 length 23.3cm
         seg41 0x13 length 23.3cm
-        seg42 0x14 length 23.3cm
-        seg43 0x15 length 23.3cm
-        seg63 0x16 length 128.5cm
-        seg64 0x17 length 10.5cm
-        seg65 0x18 length 11.2cm
-        seg66 0x19 length 23.3cm
-        seg67 0x1a length 17.2cm
-        seg68 0x1b length 95.2cm  
-        seg69 0x1c length 15cm
-        seg70 0x1d length 23.3cm
-        seg71 0x1e length 15cm
-        seg72 0x1f length 80.5cm
-        seg73 0x20 length 15cm
-        seg74 0x21 length 15cm
-        seg75 0x22 length 80cm
-        seg76 0x23 length 15cm
-        seg79 0x24 length 23.3cm
-        seg83 0x25 length 18.1cm
-        seg84 0x26 length 23.3cm
+        seg51 0x14 length 23.3cm
+        seg61 0x15 length 10.4cm    # Kehrschleifen
+        seg62 0x16 length 10.4cm    # Kehrschleifen
+        seg63 0x17 length 128.5cm   # Kehrschleifen
+        seg64 0x18 length 10.5cm    # Kehrschleifen
+        seg65 0x19 length 11.2cm    # Kehrschleifen
+        seg66 0x1a length 23.3cm
+        seg67 0x1b length 17.2cm
+        seg68 0x1c length 95.2cm  
+        seg69 0x1d length 15cm
+        seg70 0x1e length 23.3cm
+        seg71 0x1f length 15cm
+        
+        # 16T
+        seg72 0x20 length 80.5cm
+        seg73 0x21 length 15cm
+        seg74 0x22 length 15cm
+        seg75 0x23 length 80cm
+        seg76 0x24 length 15cm
+        seg79 0x25 length 23.3cm
+        seg83 0x26 length 18.1cm
+        seg84 0x27 length 23.3cm
         seg88 0x28 length 15cm
         seg89 0x29 length 23.3cm
         seg92 0x2a length 15cm
         seg95 0x2b length 15cm
-        
     end
 
     signal-type blocksignal
@@ -124,132 +144,43 @@ module SWTbahnfull
     end
 
     signals lightcontrol1
-        # Short partition
-        
-        entry signal8
-        entry signal10
-        entry signal23
-        entry signal25
-        entry signal36
-        entry signal38
- 
-        block signal11
-
-        distant signal9
-        distant signal12
-        distant signal24
-        distant signal33
-        distant signal34
-        distant signal37
-        
-        # Composite signals
-        distant signal7A
-        distant signal35A
-        distant signal46A
-        distant signal48A
-        distant signal50A
-        distant signal53A
-
-        block signal7B
-        block signal35B
-        block signal46B
-        block signal48B
-        block signal50B
-        block signal53B
-
-        composite signal7
-            signals 
-                signal7A
-                signal7B
-            end    
-        composite signal35
-            signals 
-                signal35A
-                signal35B
-            end
-        composite signal46
-            signals 
-                signal46A
-                signal46B
-            end
-        composite signal48
-            signals 
-                signal48A
-                signal48B
-            end
-        composite signal50
-            signals 
-                signal50A
-                signal50B
-            end
-        composite signal53
-            signals 
-                signal53A
-                signal53B
-            end    
-
-        distant signal22A
-        exit signal22B
-
-        composite signal22
-            signals
-                signal22A
-                signal22B
-            end    
-
-        peripheral signal39
-        peripheral signal40
-        peripheral signal41
-        peripheral signal42
-        peripheral signal44
-
-        platformlights platform1
-        platformlights platform2
-        platformlights platform3
-
-    end
-
-    signals lightcontrol2
         # Long partition
         
-        entry signal14
-        entry signal32
-
-        exit signal19
-        exit signal26
-        exit signal28
-        exit signal30
-
         peripheral signal20
         peripheral signal21
         peripheral signal27
         peripheral signal29
+        
         peripheral signal31
         peripheral signal43
 
-        block signal1
-        block signal5
-        block signal15
-        block signal45
-        block signal47
-        block signal49
-        block signal51
+        platformlights platform1
+        platformlights platform2
+    end
+    
+    signals lightcontrol2
+        # Long partition
 
         distant signal2
         distant signal3
         distant signal6
         distant signal13
+    
         distant signal16
         distant signal17
         distant signal52
-
+    end
+    
+    signals lightcontrol3
+        # Long partition
+        
         # Composite signals
         distant signal4A
         distant signal18A
 
         entry signal4B
         entry signal18B
-        
+
         composite signal4
             signals
                 signal4A
@@ -260,7 +191,134 @@ module SWTbahnfull
             signals
                 signal18A
                 signal18B
-            end    
+            end   
+        
+        block signal1
+        block signal5
+        block signal15
+        block signal45
+        block signal47
+        block signal49
+        block signal51
+    end
+
+    signals lightcontrol4
+        # Long partition
+        
+        exit signal19
+        exit signal26
+        entry signal14
+        
+        exit signal28
+        exit signal30
+        entry signal32
+    end
+    
+    signals lightcontrol5
+        # Short partition
+        
+        peripheral signal39
+        peripheral signal40
+        peripheral signal41
+        peripheral signal42
+        
+        distant signal9
+        distant signal12
+        distant signal24
+        distant signal33
+        
+        platformlights platform3
+    end
+
+    signals lightcontrol6
+        # Short partition
+
+        peripheral signal44
+        distant signal34
+        distant signal37
+        block signal11
+
+        # Composite signal
+        distant signal22A
+        exit signal22B
+
+        composite signal22
+            signals
+                signal22A
+                signal22B
+            end  
+
+
+    end
+    
+    signals lightcontrol7
+        # Short partition
+
+        # Composite signals
+        distant signal7A
+        distant signal35A
+        
+        block signal7B
+        block signal35B
+        
+        composite signal7
+            signals 
+                signal7A
+                signal7B
+            end
+        composite signal35
+            signals 
+                signal35A
+                signal35B
+            end
+
+        # Composite signals
+        distant signal46A
+        distant signal48A
+
+        block signal46B
+        block signal48B
+
+        composite signal46
+            signals 
+                signal46A
+                signal46B
+            end
+        composite signal48
+            signals 
+                signal48A
+                signal48B
+            end
+    end
+
+    signals lightcontrol8
+        # Short partition
+        
+        # Composite signals
+        distant signal50A
+        distant signal53A
+
+        block signal50B
+        block signal53B
+
+        composite signal50
+            signals 
+                signal50A
+                signal50B
+            end
+        composite signal53
+            signals 
+                signal53A
+                signal53B
+            end
+        
+        entry signal8
+        
+        entry signal10
+        entry signal23
+        entry signal25
+        entry signal36
+        entry signal38
     end
 
     points onecontrol1
