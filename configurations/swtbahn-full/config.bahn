@@ -23,124 +23,131 @@ module SWTbahnfull
     end
 
     segments master
-        #Long partition
+        # Long partition
         
         # 16T
-        seg1 0x00 length 15cm
-        seg2 0x01 length 187.1cm
-        seg3 0x02 length 18.1cm
-        seg4 0x03 length 23.3cm
-        seg5 0x04 length 23.3cm
-        seg6 0x05 length 15cm
-        seg7 0x06 length 207.8cm
-        seg17 0x07 length 15cm
-        seg18 0x08 length 11.3cm
-        seg19 0x09 length 11.3cm
-        seg20 0x0a length 24.7cm
-        seg21 0x0b length 15.0cm
-        seg22 0x0c length 173,5cm
-        seg23 0x0d length 17.5cm
-        seg24 0x0e length 23.3cm
-        seg25 0x0f length 23.3cm
+        seg1   0x00 length 15cm
+        seg2   0x01 length 187.1cm
+        seg3   0x02 length 18.1cm
+        seg4   0x03 length 23.3cm
+        seg5   0x04 length 23.3cm
+        seg6   0x05 length 15cm
+        seg7a  0x06 length 207.8cm  # Update length
+        seg16b 0x07 length ###cm
+        seg17  0x08 length 15cm
+        seg18  0x09 length 11.3cm
+        seg19  0x0a length 11.3cm
+        seg20  0x0b length 24.7cm
+        seg21  0x0c length 15.0cm
+        seg22  0x0d length 173,5cm
+        seg23  0x0e length 17.5cm
+        seg24  0x0f length 23.3cm
         
         # 16T
-        seg26 0x10 length 10cm
-        seg27 0x11 length 55cm
-        seg28 0x12 length 10cm
-        seg29 0x13 length 23.3cm
-        seg30 0x14 length 15cm
-        seg42 0x15 length 23.3cm
-        seg43 0x16 length 23.3cm
-        seg44 0x17 length 11.3cm
-        seg45 0x18 length 15cm
-        seg46 0x19 length 74.7cm
-        seg47 0x1a length 15cm
-        seg48 0x1b length 23.3cm
-        seg49 0x1c length 23.3cm
-        seg50 0x1d length 56cm
-        seg52 0x1e length 23.3cm
-        seg53 0x1f length 23.3cm
+        seg25  0x10 length 23.3cm
+        seg26  0x11 length 10cm
+        seg27  0x12 length 55cm
+        seg28  0x13 length 10cm
+        seg29  0x14 length 23.3cm
+        seg30  0x15 length 15cm
+        seg31a 0x16 length ###cm
+        seg42b 0x17 length 23.3cm   # Update length
+        seg43  0x18 length 23.3cm
+        seg44  0x19 length 11.3cm
+        seg45  0x1a length 15cm
+        seg46  0x1b length 74.7cm
+        seg47  0x1c length 15cm
+        seg48  0x1d length 23.3cm
+        seg49  0x1e length 23.3cm
+        seg50  0x1f length 56cm
 
         # 16T
-        seg54 0x20 length 15cm
-        seg55 0x21 length 88.6cm
-        seg56 0x22 length 15.5cm
-        seg57 0x23 length 15cm
-        seg58 0x24 length 88.1cm
-        seg59 0x25 length 15cm
-        seg60 0x26 length 23.3cm
-        seg77 0x27 length 10.4cm
-        seg78 0x28 length 59.7cm
-        seg80 0x29 length 23.3cm
-        seg81 0x2a length 15cm
-        seg82 0x2b length 146.5cm
-        seg85 0x2c length 23.3cm
-        seg86 0x2d length 15cm
-        seg87 0x2e length 15cm
-        seg90 0x2f length 19cm
+        seg52  0x20 length 23.3cm
+        seg53  0x21 length 23.3cm
+        seg54  0x22 length 15cm
+        seg55  0x23 length 88.6cm
+        seg56  0x24 length 15.5cm
+        seg57  0x25 length 15cm
+        seg58  0x26 length 88.1cm
+        seg59  0x27 length 15cm
+        seg60  0x28 length 23.3cm
+        seg77  0x29 length 10.4cm
+        seg78a 0x2a length 59.7cm   # Update length
+        seg80  0x2b length 23.3cm
+        seg81  0x2c length 15cm
+        seg82a 0x2d length 146.5cm  # Update length
+        seg85  0x2e length 23.3cm
+        seg86  0x2f length 15cm
         
         # 16T
-        seg91 0x30 length 117.6cm
-        seg93 0x31 length 15cm
-        seg94 0x32 length 290.6cm
+        seg87a 0x30 length 15cm     # Update length
+        seg90  0x31 length 19cm
+        seg91a 0x32 length 117.6cm  # Update length
+        seg93  0x33 length 15cm
+        seg94a 0x34 length 290.6cm  # Update length
     end
 
     segments slave
         # Short partition
         
         # 16T
-        seg8 0x00 length 15cm
-        seg9 0x01 length 23.3cm
-        seg10 0x02 length 23.3cm
-        seg11 0x03 length 20.7cm
-        seg12 0x04 length 127cm
-        seg13 0x05 length 15cm
-        seg14 0x06 length 23.3cm
-        seg15 0x07 length 15cm
-        seg16 0x08 length 90cm
-        seg31 0x09 length 96.5cm
-        seg32 0x0a length 15cm
-        seg33 0x0b length 23.3cm
-        seg34 0x0c length 23.3cm
-        seg35 0x0d length 23.3cm
-        seg36 0x0e length 17.2cm
-        seg37 0x0f length 115.2cm
+        seg7b  0x00 length ###cm
+        seg8   0x01 length 15cm
+        seg9   0x02 length 23.3cm
+        seg10  0x03 length 23.3cm
+        seg11  0x04 length 20.7cm
+        seg12  0x05 length 127cm
+        seg13  0x06 length 15cm
+        seg14  0x07 length 23.3cm
+        seg15  0x08 length 15cm
+        seg16a 0x09 length 90cm     # Update length
+        seg31b 0x0a length 96.5cm   # Update length
+        seg32  0x0b length 15cm
+        seg33  0x0c length 23.3cm
+        seg34  0x0d length 23.3cm
+        seg35  0x0e length 23.3cm
+        seg36  0x0f length 17.2cm
         
         # 16T with Kehrschleifenmodul
-        seg38 0x10 length 15cm
-        seg39 0x11 length 13cm
-        seg40 0x12 length 23.3cm
-        seg41 0x13 length 23.3cm
-        seg51 0x14 length 23.3cm
-        seg61 0x15 length 10.4cm    # Kehrschleifen
-        seg62 0x16 length 10.4cm    # Kehrschleifen
-        seg63 0x17 length 128.5cm   # Kehrschleifen
-        seg64 0x18 length 10.5cm    # Kehrschleifen
-        seg65 0x19 length 11.2cm    # Kehrschleifen
-        seg66 0x1a length 23.3cm
-        seg67 0x1b length 17.2cm
-        seg68 0x1c length 95.2cm  
-        seg69 0x1d length 15cm
-        seg70 0x1e length 23.3cm
-        seg71 0x1f length 15cm
+        seg37  0x10 length 115.2cm
+        seg38  0x11 length 15cm
+        seg39  0x12 length 13cm
+        seg40  0x13 length 23.3cm
+        seg41  0x14 length 23.3cm
+        seg42a 0x15 length ###cm
+        seg51  0x16 length 23.3cm
+        seg61  0x17 length 10.4cm    # Kehrschleifen
+        seg62  0x18 length 10.4cm    # Kehrschleifen
+        seg63  0x19 length 128.5cm   # Kehrschleifen
+        seg64  0x1a length 10.5cm    # Kehrschleifen
+        seg65  0x1b length 11.2cm    # Kehrschleifen
+        seg66  0x1c length 23.3cm
+        seg67  0x1d length 17.2cm
+        seg68  0x1e length 95.2cm  
+        seg69  0x1f length 15cm
         
         # 16T
-        seg72 0x20 length 80.5cm
-        seg73 0x21 length 15cm
-        seg74 0x22 length 15cm
-        seg75 0x23 length 80cm
-        seg76 0x24 length 15cm
-        seg79 0x25 length 23.3cm
-        seg83 0x26 length 18.1cm
-        seg84 0x27 length 23.3cm
-        seg88 0x28 length 15cm
-        seg89 0x29 length 23.3cm
-        seg92 0x2a length 15cm
-        seg95 0x2b length 15cm
-    end
-
-    signal-type blocksignal
-
+        seg70  0x20 length 23.3cm
+        seg71  0x21 length 15cm
+        seg72  0x22 length 80.5cm
+        seg73  0x23 length 15cm
+        seg74  0x24 length 15cm
+        seg75  0x25 length 80cm
+        seg76  0x26 length 15cm
+        seg78b 0x27 length ###cm
+        seg79  0x28 length 23.3cm
+        seg82b 0x29 length ###cm
+        seg83  0x2a length 18.1cm
+        seg84  0x2b length 23.3cm
+        seg87b 0x2c length ###cm
+        seg88  0x2d length 15cm
+        seg89  0x2e length 23.3cm
+        seg91b 0x2f length ###cm
+        
+        # 16T
+        seg92  0x30 length 15cm
+        seg94b 0x31 length ###cm
+        seg95  0x32 length 15cm
     end
 
     signals lightcontrol1
@@ -246,9 +253,7 @@ module SWTbahnfull
             signals
                 signal22A
                 signal22B
-            end  
-
-
+            end
     end
     
     signals lightcontrol7
@@ -488,159 +493,82 @@ module SWTbahnfull
             overlap seg1
             main seg2
             overlap seg3
-            trains
-                cargo
-                passenger
-            end
         block2
             overlap seg6
-            main seg7
-            overlap seg8
-            trains
-                cargo
-                passenger
-            end   
+            main seg7a seg7b
+            overlap seg8  
         block3
             overlap seg11
             main seg12
             overlap seg13
-            trains
-                cargo
-                passenger
-            end
         block4
             overlap seg15
-            main seg16
+            main seg16a seg16b
             overlap seg17
-            trains
-                cargo
-                passenger
-            end
         block5
             overlap seg21
             main seg22
-            overlap seg23
-            trains
-                cargo
-                passenger
-            end    
+            overlap seg23 
         block6
             overlap seg26
             main seg27
-            overlap seg28
-            trains
-                cargo
-                passenger
-            end    
+            overlap seg28 
         block7
             overlap seg30
-            main seg31
+            main seg31a seg31b
             overlap seg32
-            trains
-                cargo
-                passenger
-            end 
         block8
             overlap seg36
             main seg37
             overlap seg38
-            trains
-                cargo
-                passenger
-            end
         block9
             overlap seg45
             main seg46
             overlap seg47
-            trains
-                cargo
-                passenger
-            end
         block10
             overlap seg54
             main seg55
             overlap seg56
-            trains
-                cargo
-                passenger
-            end 
         block11
             overlap seg57
             main seg58
             overlap seg59
-            trains
-                cargo
-                passenger
-            end
         block12
             overlap seg62
             main seg63
             overlap seg64
-            trains
-                cargo
-                passenger
-            end
         block13
             overlap seg67
             main seg68
             overlap seg69
-            trains
-                cargo
-                passenger
-            end
         block14
             overlap seg71
             main seg72
             overlap seg73
-            trains
-                cargo
-                passenger
-            end
         block15
             overlap seg74
             main seg75
             overlap seg76
-            trains
-                cargo
-                passenger
-            end
         block16
             overlap seg77
-            main seg78
+            main seg78a seg78b
             overlap seg79
-            trains
-                cargo
-                passenger
-            end
         block17
             overlap seg81
-            main seg82
-            overlap seg83
-            trains
-                cargo
-                passenger
-            end   
+            main seg82a seg2b
+            overlap seg83  
         block18
             overlap seg86
-            main seg87
+            main seg87a seg87b
             overlap seg88
-            trains
-                cargo
-                passenger
-            end
         block19
             overlap seg90
-            main seg91
-            overlap seg92
-            trains
-                cargo
-                passenger
-            end       
+            main seg91a seg91b
+            overlap seg92     
         block20
             overlap seg93
-            main seg94
+            main seg94a seg94b
             overlap seg95
-                                     
     end
 
     platforms
