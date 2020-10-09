@@ -76,7 +76,7 @@ def create_config(hostname, port, default_output):
 def update_session_and_grab_id(session_id, grab_id):
     try:
         with open(config_file) as infile:
-            config = yaml.load(infile)
+            config = yaml.safe_load(infile)
         config['session_id'] = session_id
         config['grab_id'] = grab_id
         with open(config_file, 'w') as outfile:
@@ -88,7 +88,7 @@ def update_session_and_grab_id(session_id, grab_id):
 def parse_config():
     try:
         with open(config_file) as infile:
-            config = yaml.load(infile)
+            config = yaml.safe_load(infile)
         global hostname, port, default_track_output, session_id, grab_id, server
         hostname = config['hostname']
         port = config['port']
