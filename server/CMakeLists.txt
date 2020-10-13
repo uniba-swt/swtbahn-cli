@@ -71,12 +71,12 @@ add_custom_target(
 add_library(${FOREC_MAIN} SHARED ${SRCFILES} ${FOREC_MAIN}.c)
 add_dependencies(${FOREC_MAIN} forec dot)
 target_include_directories(${FOREC_MAIN} PRIVATE src)
-target_link_libraries(${FOREC_MAIN} bidib)
+target_link_libraries(${FOREC_MAIN} bidib onion)
 
 add_library(${FOREC_MAIN}_static STATIC ${SRCFILES} ${FOREC_MAIN}.c)
 add_dependencies(${FOREC_MAIN}_static forec dot)
 target_include_directories(${FOREC_MAIN}_static PRIVATE src)
-target_link_libraries(${FOREC_MAIN}_static bidib_static)
+target_link_libraries(${FOREC_MAIN}_static bidib_static onion_static)
 
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion pam gnutls gcrypt pthread
