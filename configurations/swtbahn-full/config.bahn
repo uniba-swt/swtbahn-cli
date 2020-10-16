@@ -153,13 +153,13 @@ module SWTbahnfull
     signals lightcontrol1
         # Long partition
         
-        peripheral signal20
-        peripheral signal21
-        peripheral signal27
-        peripheral signal29
+        shunting signal20
+        shunting signal21
+        stop signal27
+        stop signal29
         
-        peripheral signal31
-        peripheral signal43
+        stop signal31
+        shunting signal43
 
         platformlights platform1
         platformlights platform2
@@ -224,10 +224,10 @@ module SWTbahnfull
     signals lightcontrol5
         # Short partition
         
-        peripheral signal39
-        peripheral signal40
-        peripheral signal41
-        peripheral signal42
+        shunting signal39
+        stop signal40
+        shunting signal41
+        stop signal42
         
         distant signal9
         distant signal12
@@ -240,7 +240,7 @@ module SWTbahnfull
     signals lightcontrol6
         # Short partition
 
-        peripheral signal44
+        stop signal44
         distant signal34
         distant signal37
         block signal11
