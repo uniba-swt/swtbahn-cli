@@ -49,7 +49,7 @@ module SWTbahnfull
         seg29  0x14 length 23.3cm
         seg30  0x15 length 15cm
         seg31a 0x16 length 31.7cm
-        seg42b 0x17 length 17.6cm
+        seg42b 0x17 length 46.3cm
         seg43  0x18 length 23.3cm
         seg44  0x19 length 11.3cm
         seg45  0x1a length 15cm
@@ -112,7 +112,7 @@ module SWTbahnfull
         seg39  0x12 length 13cm
         seg40  0x13 length 23.3cm
         seg41  0x14 length 23.3cm
-        seg42a 0x15 length 46.3cm
+        seg42a 0x15 length 17.6cm
         seg51  0x16 length 23.3cm
         seg61  0x17 length 10.4cm    # Kehrschleifen
         seg62  0x18 length 10.4cm    # Kehrschleifen
@@ -144,7 +144,7 @@ module SWTbahnfull
 
         # 16T
         seg92  0x30 length 15cm
-        seg94b 0x31 length 149.9cm
+        seg94b 0x31 length 149.9cm   # Double check the length
         seg95  0x32 length 15cm
     end
 
