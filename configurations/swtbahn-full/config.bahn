@@ -1,5 +1,3 @@
-
-
 module SWTbahnfull
 
     boards
@@ -11,7 +9,7 @@ module SWTbahnfull
         lightcontrol2 0x4
         lightcontrol3 0x5
         lightcontrol4 0x6
-        
+
         # Short partition
         slave 0x7
         onecontrol3 0x8
@@ -24,7 +22,7 @@ module SWTbahnfull
 
     segments master
         # Long partition
-        
+
         # 16T
         seg1   0x00 length 15cm
         seg2   0x01 length 187.1cm
@@ -32,17 +30,17 @@ module SWTbahnfull
         seg4   0x03 length 23.3cm
         seg5   0x04 length 23.3cm
         seg6   0x05 length 15cm
-        seg7a  0x06 length 207.8cm  # Update length
-        seg16b 0x07 length ###cm
+        seg7a  0x06 length 130.5cm
+        seg16b 0x07 length 47.8cm
         seg17  0x08 length 15cm
         seg18  0x09 length 11.3cm
         seg19  0x0a length 11.3cm
         seg20  0x0b length 24.7cm
         seg21  0x0c length 15.0cm
-        seg22  0x0d length 173,5cm
+        seg22  0x0d length 173.5cm
         seg23  0x0e length 17.5cm
         seg24  0x0f length 23.3cm
-        
+
         # 16T
         seg25  0x10 length 23.3cm
         seg26  0x11 length 10cm
@@ -50,8 +48,8 @@ module SWTbahnfull
         seg28  0x13 length 10cm
         seg29  0x14 length 23.3cm
         seg30  0x15 length 15cm
-        seg31a 0x16 length ###cm
-        seg42b 0x17 length 23.3cm   # Update length
+        seg31a 0x16 length 31.7cm
+        seg42b 0x17 length 17.6cm
         seg43  0x18 length 23.3cm
         seg44  0x19 length 11.3cm
         seg45  0x1a length 15cm
@@ -72,26 +70,26 @@ module SWTbahnfull
         seg59  0x27 length 15cm
         seg60  0x28 length 23.3cm
         seg77  0x29 length 10.4cm
-        seg78a 0x2a length 59.7cm   # Update length
+        seg78a 0x2a length 36.9cm
         seg80  0x2b length 23.3cm
         seg81  0x2c length 15cm
-        seg82a 0x2d length 146.5cm  # Update length
+        seg82a 0x2d length 100.2cm
         seg85  0x2e length 23.3cm
         seg86  0x2f length 15cm
-        
+
         # 16T
-        seg87a 0x30 length 15cm     # Update length
+        seg87a 0x30 length 78.5cm
         seg90  0x31 length 19cm
-        seg91a 0x32 length 117.6cm  # Update length
+        seg91a 0x32 length 76cm
         seg93  0x33 length 15cm
-        seg94a 0x34 length 290.6cm  # Update length
+        seg94a 0x34 length 140.7cm
     end
 
     segments slave
         # Short partition
-        
+
         # 16T
-        seg7b  0x00 length ###cm
+        seg7b  0x00 length 77.3cm
         seg8   0x01 length 15cm
         seg9   0x02 length 23.3cm
         seg10  0x03 length 23.3cm
@@ -100,21 +98,21 @@ module SWTbahnfull
         seg13  0x06 length 15cm
         seg14  0x07 length 23.3cm
         seg15  0x08 length 15cm
-        seg16a 0x09 length 90cm     # Update length
-        seg31b 0x0a length 96.5cm   # Update length
+        seg16a 0x09 length 42.2cm
+        seg31b 0x0a length 64.7cm
         seg32  0x0b length 15cm
         seg33  0x0c length 23.3cm
         seg34  0x0d length 23.3cm
         seg35  0x0e length 23.3cm
         seg36  0x0f length 17.2cm
-        
+
         # 16T with Kehrschleifenmodul
         seg37  0x10 length 115.2cm
         seg38  0x11 length 15cm
         seg39  0x12 length 13cm
         seg40  0x13 length 23.3cm
         seg41  0x14 length 23.3cm
-        seg42a 0x15 length ###cm
+        seg42a 0x15 length 46.3cm
         seg51  0x16 length 23.3cm
         seg61  0x17 length 10.4cm    # Kehrschleifen
         seg62  0x18 length 10.4cm    # Kehrschleifen
@@ -123,9 +121,9 @@ module SWTbahnfull
         seg65  0x1b length 11.2cm    # Kehrschleifen
         seg66  0x1c length 23.3cm
         seg67  0x1d length 17.2cm
-        seg68  0x1e length 95.2cm  
+        seg68  0x1e length 95.2cm
         seg69  0x1f length 15cm
-        
+
         # 16T
         seg70  0x20 length 23.3cm
         seg71  0x21 length 15cm
@@ -134,59 +132,59 @@ module SWTbahnfull
         seg74  0x24 length 15cm
         seg75  0x25 length 80cm
         seg76  0x26 length 15cm
-        seg78b 0x27 length ###cm
+        seg78b 0x27 length 22.8cm
         seg79  0x28 length 23.3cm
-        seg82b 0x29 length ###cm
+        seg82b 0x29 length 46.3cm
         seg83  0x2a length 18.1cm
         seg84  0x2b length 23.3cm
-        seg87b 0x2c length ###cm
+        seg87b 0x2c length 39.5cm
         seg88  0x2d length 15cm
         seg89  0x2e length 23.3cm
-        seg91b 0x2f length ###cm
-        
+        seg91b 0x2f length 41.6cm
+
         # 16T
         seg92  0x30 length 15cm
-        seg94b 0x31 length ###cm
+        seg94b 0x31 length 149.9cm
         seg95  0x32 length 15cm
     end
 
     signals lightcontrol1
         # Long partition
-        
-        shunting signal20
-        shunting signal21
-        stop signal27
-        stop signal29
-        
-        stop signal31
-        shunting signal43
 
-        platformlights platform1
-        platformlights platform2
+        shunting signal20 0x00      # TODO: placeholder address, must update
+        shunting signal21 0x01      # TODO: placeholder address, must update
+        halt signal27 0x02          # TODO: placeholder address, must update
+        halt signal29 0x03          # TODO: placeholder address, must update
+
+        halt signal31 0x04          # TODO: placeholder address, must update
+        shunting signal43 0x05      # TODO: placeholder address, must update
+
+        platformlight platformlight1 0x06   # TODO: placeholder address, must update
+        platformlight platformlight2 0x07   # TODO: placeholder address, must update
     end
-    
+
     signals lightcontrol2
         # Long partition
 
-        distant signal2
-        distant signal3
-        distant signal6
-        distant signal13
-    
-        distant signal16
-        distant signal17
-        distant signal52
+        distant signal2 0x08
+        distant signal3 0x09
+        distant signal6 0x0A
+        distant signal13 0x0B
+
+        distant signal16 0x0C
+        distant signal17 0x0D
+        distant signal52 0x0E
     end
-    
+
     signals lightcontrol3
         # Long partition
-        
-        # Composite signals
-        distant signal4A
-        distant signal18A
 
-        entry signal4B
-        entry signal18B
+        # Composite signals
+        distant signal4A 0x0F
+        distant signal18A 0x10
+
+        entry signal4B 0x11
+        entry signal18B 0x12
 
         composite signal4
             signals
@@ -198,56 +196,56 @@ module SWTbahnfull
             signals
                 signal18A
                 signal18B
-            end   
-        
-        block signal1
-        block signal5
-        block signal15
-        block signal45
-        block signal47
-        block signal49
-        block signal51
+            end
+
+        block signal1 0x13
+        block signal5 0x14
+        block signal15 0x15
+        block signal45 0x16
+        block signal47 0x17
+        block signal49 0x18
+        block signal51 0x19
     end
 
     signals lightcontrol4
         # Long partition
-        
-        exit signal19
-        exit signal26
-        entry signal14
-        
-        exit signal28
-        exit signal30
-        entry signal32
+
+        exit signal19 0x1A
+        exit signal26 0x1B
+        entry signal14 0x1C
+
+        exit signal28 0x1D
+        exit signal30 0x1E
+        entry signal32 0x1F
     end
-    
+
     signals lightcontrol5
         # Short partition
-        
-        shunting signal39
-        stop signal40
-        shunting signal41
-        stop signal42
-        
-        distant signal9
-        distant signal12
-        distant signal24
-        distant signal33
-        
-        platformlights platform3
+
+        shunting signal39 0x20
+        halt signal40 0x21
+        shunting signal41 0x22
+        halt signal42 0x23
+
+        distant signal9 0x24
+        distant signal12 0x25
+        distant signal24 0x26
+        distant signal33 0x27
+
+        platformlight platformlight3 0x28
     end
 
     signals lightcontrol6
         # Short partition
 
-        stop signal44
-        distant signal34
-        distant signal37
-        block signal11
+        halt signal44 0x28
+        distant signal34 0x29
+        distant signal37 0x2A
+        block signal11 0x2B
 
         # Composite signal
-        distant signal22A
-        exit signal22B
+        distant signal22A 0x2C
+        exit signal22B 0x2D
 
         composite signal22
             signals
@@ -255,42 +253,42 @@ module SWTbahnfull
                 signal22B
             end
     end
-    
+
     signals lightcontrol7
         # Short partition
 
         # Composite signals
-        distant signal7A
-        distant signal35A
-        
-        block signal7B
-        block signal35B
-        
+        distant signal7A 0x2E
+        distant signal35A 0x2F
+
+        block signal7B 0x30
+        block signal35B 0x31
+
         composite signal7
-            signals 
+            signals
                 signal7A
                 signal7B
             end
         composite signal35
-            signals 
+            signals
                 signal35A
                 signal35B
             end
 
         # Composite signals
-        distant signal46A
-        distant signal48A
+        distant signal46A 0x32
+        distant signal48A 0x33
 
-        block signal46B
-        block signal48B
+        block signal46B 0x34
+        block signal48B 0x35
 
         composite signal46
-            signals 
+            signals
                 signal46A
                 signal46B
             end
         composite signal48
-            signals 
+            signals
                 signal48A
                 signal48B
             end
@@ -298,37 +296,37 @@ module SWTbahnfull
 
     signals lightcontrol8
         # Short partition
-        
-        # Composite signals
-        distant signal50A
-        distant signal53A
 
-        block signal50B
-        block signal53B
+        # Composite signals
+        distant signal50A 0x36
+        distant signal53A 0x37
+
+        block signal50B 0x38
+        block signal53B 0x39
 
         composite signal50
-            signals 
+            signals
                 signal50A
                 signal50B
             end
         composite signal53
-            signals 
+            signals
                 signal53A
                 signal53B
             end
-        
-        entry signal8
-        
-        entry signal10
-        entry signal23
-        entry signal25
-        entry signal36
-        entry signal38
+
+        entry signal8 0x3A
+
+        entry signal10 0x3B
+        entry signal23 0x3C
+        entry signal25 0x3D
+        entry signal36 0x3E
+        entry signal38 0x3F
     end
 
     points onecontrol1
         # Long partition
-        
+
         point1 0x00 segment seg4
             normal 0x01
             reverse 0x00
@@ -336,11 +334,11 @@ module SWTbahnfull
         point2 0x01 segment seg5
             normal 0x01
             reverse 0x00
-            initial normal            
+            initial normal
         point6 0x02 segment seg18
             normal 0x01
             reverse 0x00
-            initial normal            
+            initial normal
         point7 0x03 segment seg19
             normal 0x01
             reverse 0x00
@@ -360,7 +358,7 @@ module SWTbahnfull
         point17 0x07 segment seg43
             normal 0x01
             reverse 0x00
-            initial normal                 
+            initial normal
     end
 
     points onecontrol2
@@ -369,7 +367,7 @@ module SWTbahnfull
         point18 0x00 segment seg44
             normal 0x01
             reverse 0x00
-            initial normal            
+            initial normal
         point19 0x01 segment seg48
             normal 0x01
             reverse 0x00
@@ -377,7 +375,7 @@ module SWTbahnfull
         point20 0x02 segment seg49
             normal 0x01
             reverse 0x00
-            initial normal       
+            initial normal
         point22 0x03 segment seg53
             normal 0x01
             reverse 0x00
@@ -385,7 +383,7 @@ module SWTbahnfull
         point23 0x04 segment seg60
             normal 0x01
             reverse 0x00
-            initial normal    
+            initial normal
         point26 0x05 segment seg80
             normal 0x01
             reverse 0x00
@@ -395,14 +393,14 @@ module SWTbahnfull
             reverse 0x00
             initial normal
     end
-    
+
     points onecontrol3
         # Short partition
 
         point3 0x00 segment seg9
             normal 0x01
             reverse 0x00
-            initial normal        
+            initial normal
         point4 0x01 segment seg10
             normal 0x01
             reverse 0x00
@@ -426,7 +424,7 @@ module SWTbahnfull
         point14 0x06 segment seg39
             normal 0x01
             reverse 0x00
-            initial normal            
+            initial normal
         point15 0x07 segment seg40
             normal 0x01
             reverse 0x00
@@ -439,7 +437,7 @@ module SWTbahnfull
         point16 0x00 segment seg41
             normal 0x01
             reverse 0x00
-            initial normal            
+            initial normal
         point21 0x01 segment seg51
             normal 0x01
             reverse 0x00
@@ -459,36 +457,37 @@ module SWTbahnfull
         point29 0x05 segment seg89
             normal 0x01
             reverse 0x00
-            initial normal  
+            initial normal
     end
 
-    trains
-        cargo_db 0x0001
-            steps 126
-            calibration 
-                5 15 30 45 60 75 90  100 120
-                end
-            weight 100g
-            length 13cm
-            type cargo
-            peripherals
-                head_light bit 4 initial 1
-            end     
-        passenger_brengdirect 0x0002
-            steps 126
-            calibration 
-                5 15 30 45 60 75 90  100 120
-                end
-            weight 100g
-            length 13cm
-            type passenger
-            peripherals
-                head_light bit 4 initial 1
-                cabin_light bit 6 initial 1
-            end             
-    end 
+	trains
+		cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+        end
+	end
 
-    blocks 
+    blocks
         block1
             overlap seg1
             main seg2
@@ -496,7 +495,7 @@ module SWTbahnfull
         block2
             overlap seg6
             main seg7a seg7b
-            overlap seg8  
+            overlap seg8
         block3
             overlap seg11
             main seg12
@@ -508,11 +507,11 @@ module SWTbahnfull
         block5
             overlap seg21
             main seg22
-            overlap seg23 
+            overlap seg23
         block6
             overlap seg26
             main seg27
-            overlap seg28 
+            overlap seg28
         block7
             overlap seg30
             main seg31a seg31b
@@ -521,18 +520,6 @@ module SWTbahnfull
             overlap seg36
             main seg37
             overlap seg38
-        block9
-            overlap seg45
-            main seg46
-            overlap seg47
-        block10
-            overlap seg54
-            main seg55
-            overlap seg56
-        block11
-            overlap seg57
-            main seg58
-            overlap seg59
         block12
             overlap seg62
             main seg63
@@ -541,22 +528,10 @@ module SWTbahnfull
             overlap seg67
             main seg68
             overlap seg69
-        block14
-            overlap seg71
-            main seg72
-            overlap seg73
-        block15
-            overlap seg74
-            main seg75
-            overlap seg76
-        block16
-            overlap seg77
-            main seg78a seg78b
-            overlap seg79
         block17
             overlap seg81
-            main seg82a seg2b
-            overlap seg83  
+            main seg82a seg82b 
+            overlap seg83
         block18
             overlap seg86
             main seg87a seg87b
@@ -564,7 +539,7 @@ module SWTbahnfull
         block19
             overlap seg90
             main seg91a seg91b
-            overlap seg92     
+            overlap seg92
         block20
             overlap seg93
             main seg94a seg94b
@@ -572,12 +547,35 @@ module SWTbahnfull
     end
 
     platforms
-        platform1 overlap seg72 main seg73
-        platform2 overlap seg75 main seg76
-        platform3 overlap seg46 main seg47
-        platform4 overlap seg55 main seg56
-        platform5 overlap seg58 main seg59
-        platform6 overlap seg78 main seg79
+        block14 
+            overlap seg71 
+            main seg72 
+            overlap seg73
+
+        block15 
+            overlap seg74 
+            main seg75 
+            overlap seg76
+
+        block9
+            overlap seg45
+            main seg46
+            overlap seg47
+
+        block10
+            overlap seg54
+            main seg55
+            overlap seg56
+
+        block11
+            overlap seg57
+            main seg58
+            overlap seg59
+
+        block16
+            overlap seg77
+            main seg78a seg78b
+            overlap seg79
     end
 
     crossings
@@ -589,6 +587,7 @@ module SWTbahnfull
         # Blocks
         block1.down -- point7.straight
         block1.up -- point1.stem
+
         block2.down -- point2.straight
         block2.up -- point3.straight
 
@@ -597,32 +596,31 @@ module SWTbahnfull
 
         block4.down -- point5.straight
         block4.up -- point6.straight
-
-        block5.down -- crossing1.down2
+        
         block5.up -- point8.down2
 
         block6.down -- point9.up1
         block6.up -- point10.stem
 
         block7.down -- point10.straight
-        block7.up -- point11.up2
+        block7.up -- point11.down1
 
         block8.down -- point13.straight
         block8.up -- point14.straight
 
         block9.down -- point18.stem
         block10.down -- point22.down2
-        block11.down -- point22.up2
-    
+        block11.down -- point22.down1
+
         block12.up -- point24.side
         block12.down -- point23.stem
 
         block13.down -- point13.side
         block13.up -- point14.side
-    
+
         block14.down -- point25.straight
 
-        block15.down -- point25.side 
+        block15.down -- point25.side
 
         block16.down -- point10.side
 
@@ -636,7 +634,7 @@ module SWTbahnfull
         block19.up -- point29.straight
 
         block20.down -- point24.straight
-        block20.up -- point8.down1
+        block20.up -- point8.up2
 
         # Points
         point1.straight -- point2.stem
@@ -647,17 +645,17 @@ module SWTbahnfull
         point6.side -- point17.side
 
         point8.up1 -- point9.down2
-        point8.up2 -- point1.side
+        point8.down1 -- point1.side
 
-        point9.up2 -- point2.side
-        point9.down1 -- point26.stem
+        point9.down1 -- point2.side
+        point9.up2 -- point26.stem
 
         point11.up1 -- point3.side
         point11.down2 -- point27.stem
-        point11.down1 -- point12.up2
+        point11.up2 -- point12.down1
 
         point24.stem -- point12.down2
-        point13.stem -- point12.down1
+        point13.stem -- point12.up2
         point14.stem -- point15.straight
         point15.stem -- point16.stem
         point16.straight -- point17.stem
@@ -672,15 +670,75 @@ module SWTbahnfull
 
 
         # Crossings
-        crossing1.down1 -- point7.side
+        crossing1.down1 -- point18.straight
         crossing1.down2 -- block5.down
         crossing1.up1 -- point17.straight
-        crossing1.up2 -- point18.straight
-    
-        crossing2.down1 -- point20.side
+        crossing1.up2 -- point7.side
+
+        crossing2.up2 -- point20.side
         crossing2.down2 -- point19.side
         crossing2.up1 -- point23.side
-        crossing2.up2 -- point22.down1
-    end
+        crossing2.down1 -- point22.up2
 
+        # Signals
+        block1.down -- signal1
+        block1.up -- signal4
+
+        block2.down -- signal5
+        block2.up -- signal7
+
+        block3.down -- signal8
+        block3.up -- signal10
+
+        block4.down -- signal12
+        block4.up -- signal14
+
+        block5.down -- signal15
+        block5.up -- signal18
+
+        block6.down -- signal19
+        block6.up -- signal20
+
+        block7.down -- signal19
+        block7.up -- signal20
+
+        block8.down -- signal23
+        block8.up -- signal25
+
+        block9.down -- signal26
+        block9.up -- signal27
+
+        block10.down -- signal28
+        block10.up -- signal29
+
+        block11.down -- signal30
+        block11.up -- signal31
+
+        block12.down -- signal32
+        block12.up -- signal35
+
+        block13.down -- signal36
+        block13.up -- signal38
+
+        block14.down -- signal39
+        block14.up -- signal40
+
+        block15.down -- signal41
+        block15.up -- signal42
+        
+        block16.down -- signal43
+        block16.up -- signal44
+
+        block17.down -- signal45
+        block17.up -- signal46
+
+        block18.down -- signal47
+        block18.up -- signal48
+
+        block19.down -- signal49
+        block19.up -- signal50
+
+        block20.down -- signal53
+        block20.up -- signal51
+    end
 end
