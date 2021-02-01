@@ -161,7 +161,7 @@ module SWTbahnStandard
 		crossing1.up2 -- platform1.down
 
 		# points
-		point1.straight -- buffer3.down
+		point1.straight -- buffer3.up
 		point1.side -- point6.straight
 
 		point2.side -- point8.stem
