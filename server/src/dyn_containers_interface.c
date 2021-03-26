@@ -90,14 +90,19 @@ void dyn_containers_reset_interface(
 	for (size_t i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
 		dyn_containers_interface->interlockers_io[i] = 
 		(struct t_interlocker_io) {
-			.input_load = false
+			.input_load = false,
+			.input_unload = false, 
+			
+			.output_in_use = false
 		};
 	}
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		dyn_containers_interface->interlocker_instances_io[i] = 
 		(struct t_interlocker_instance_io) {
 			.input_grab = false,
-			
+			.input_release = false,
+			.input_interlocker_type = -1,
+
 			.output_in_use = false
 		};
 	}

@@ -100,10 +100,15 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
-		if (filename == NULL || temp_filepath == NULL || engine_file_exists(filename)) {
+		if (filename == NULL || temp_filepath == NULL) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file is invalid");
 			return OCS_NOT_IMPLEMENTED;
 		}
+  
+ 		if (engine_file_exists(filename)) {
+			syslog_server(LOG_ERR, "Request: Upload - engine file already exists");
+			return OCS_NOT_IMPLEMENTED;
+		}  
 		
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", engine_dir, filename);

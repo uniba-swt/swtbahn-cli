@@ -65,7 +65,7 @@ typedef struct {
 		char input_requested_forwards;				// Input defined by the train engine
 		
 		bool output_in_use;							// Whether this instance is still in use
-		int  output_train_engine_type;				// Train engine in use
+		int  output_train_engine_type;				// Train engine type in use
 		int  output_nominal_speed;					// Output defined by the train engine
 		char output_nominal_forwards;				// Output defined by the train engine
 
@@ -73,16 +73,24 @@ typedef struct {
 		char output_nominal_forwards_pre;			// Previous output defined by the train engine
 	} train_engine_instances_io[TRAIN_ENGINE_INSTANCE_COUNT_MAX];
 	
-	// TODO: Interlocker information
+	// Interlocker information
 	struct t_interlocker_io {
-		bool input_load;							// Load the train engine specified by filepath
+		bool input_load;							// Load the interlocker specified by filepath
+		bool input_unload;							// Unload the interlocker
+		char input_filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
+
+		bool output_in_use;							// Whether the container is still in use
+		char output_name[NAME_MAX];					// Name of the interlocker algorithm
 	} interlockers_io[INTERLOCKER_COUNT_MAX];
 	
 	// TODO: Interlocker instance information
 	struct t_interlocker_instance_io {
 		bool input_grab;							// Desire to use this instance
+		bool input_release;							// Desire to stop using this instance
+		int  input_interlocker_type;				// Desired interlocker to use
 
 		bool output_in_use;							// Whether this instance is still in use
+		int  output_interlocker_type;				// Interlocker type in use
 	} interlocker_instances_io[INTERLOCKER_INSTANCE_COUNT_MAX];
 } t_dyn_containers_interface;
 
