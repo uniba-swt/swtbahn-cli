@@ -287,7 +287,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Request train route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			// Call interlocking function to find and grant a route
+			// Use interlocking algorithm to find and grant a route
 			const int route_id = grant_route_with_algorithm(grabbed_trains[grab_id].name->str, 
 			                                                data_source_name, 
 			                                                data_destination_name);

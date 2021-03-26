@@ -88,9 +88,13 @@ typedef struct {
 		bool input_grab;							// Desire to use this instance
 		bool input_release;							// Desire to stop using this instance
 		int  input_interlocker_type;				// Desired interlocker to use
+		char input_src_signal_id[NAME_MAX];			// Input defined by interlocker
+		char input_dst_signal_id[NAME_MAX];			// Input defined by interlocker
+		char input_train_id[NAME_MAX];				// Input defined by interlocker
 
 		bool output_in_use;							// Whether this instance is still in use
 		int  output_interlocker_type;				// Interlocker type in use
+		char output_route_id[NAME_MAX];				// Output defined by interlocker
 	} interlocker_instances_io[INTERLOCKER_INSTANCE_COUNT_MAX];
 } t_dyn_containers_interface;
 
