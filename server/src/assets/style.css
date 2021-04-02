@@ -13,9 +13,26 @@ body {
   width: 100%;
 }
 
-#driverLogo {
+#userLogo {
   text-align: right;
   font-size: 45pt;
   font-weight: bold;
   color: #054479;
+}
+
+#upload {
+  display: inline-block;
+  background-color: #e1e1e1;
+  color: #000;
+  padding: 0.5rem;
+  font-family: sans-serif;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+#file-chosen {
+  margin-left: 0.3rem;
+  font-family: sans-serif;
+  font-size: smaller;
 }

@@ -2,8 +2,12 @@
 <html lang="en">
   <head>
     <link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
+
     <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css" />
+    <link
+      rel="stylesheet"
+      href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css"
+    />
     <link rel="stylesheet" href="style.css" />
 
     <script src="popper-1.14.6.js"></script>
@@ -22,13 +26,13 @@
         <div id="swtLogo"></div>
       </div>
       <div class="col-sm-6">
-        <div id="driverLogo">Driver</div>
+        <div id="userLogo">Driver</div>
       </div>
     </div>
     <hr />
 
     <div class="card-deck">
-      <div class="card" style="width: 21rem">
+      <div class="card" style="width: 23rem">
         <div class="card-body">
           <h3 class="card-title">System</h3>
 
@@ -85,25 +89,20 @@
           <h3 class="card-title">Custom Engine</h3>
 
           <div class="form-group">
-            <div class="row">
-              <div class="col-sm-3">
-                <label
-                  class="form-label"
-                  for="selectEngineFile"
-                  style="padding: 0.5rem"
-                  >SCCharts File (*.sctx):</label
-                >
-              </div>
-              <div class="col-sm-9">
-                <input
-                  class="form-control form-control-md"
-                  type="file"
-                  id="selectEngineFile"
-                  accept=".sctx"
-                  style="border: 0rem"
-                />
-              </div>
+            <div>
+              <input
+                class="form-control form-control-md"
+                type="file"
+                id="selectEngineFile"
+                accept=".sctx"
+                style="border: 0rem"
+                hidden
+              />
+
+              <label id="upload" for="selectEngineFile"> Choose (*.sctx)</label>
+              <span id="file-chosen">Keine Datei ausgewählt.</span>
             </div>
+
             <button
               id="uploadEngineButton"
               type="button"
@@ -160,7 +159,7 @@
         </div>
       </div>
 
-      <div class="card" style="width: 21rem">
+      <div class="card" style="width: 23rem">
         <div class="card-body">
           <h3 class="card-title">Train Driver</h3>
           <p class="card-text">
@@ -186,8 +185,8 @@
                 <label class="input-group-text" for="grabEngine">Engine</label>
               </div>
               <select class="custom-select" id="grabEngine">
-                <option>libtrain_engine_default (unremovable)</option>
-                <option>libtrain_engine_linear (unremovable)</option>
+                <option>libtrain_engine_default</option>
+                <option>libtrain_engine_linear</option>
               </select>
             </div>
 
