@@ -653,8 +653,7 @@ $(document).ready(
 
         // Alternative filechooser button for Driver and Controller
         $('#selectUploadFile').change(function () {
-            const fileChosen = document.getElementById('fileSelected');
-            fileChosen.textContent = this.files[0].name;
+            $('#fileSelected').text(this.files[0].name);
         });
 
     }

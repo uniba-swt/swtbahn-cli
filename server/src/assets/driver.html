@@ -4,7 +4,7 @@
     <link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
 
     <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css" />
-    <link rel="stylesheet"  href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css"/>
+    <link rel="stylesheet" href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css" />
     <link rel="stylesheet" href="style.css" />
 
     <script src="popper-1.14.6.js"></script>
@@ -34,7 +34,7 @@
           <h3 class="card-title">System</h3>
 
           <div class="form-group">
-            <button  id="pingButton" type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
+            <button id="pingButton" type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
             <br />
             <div class="alert alert-info" role="alert">
               <span id="pingResponse"></span>
@@ -45,8 +45,8 @@
 
           <div class="form-group">
             <div style="display: flex; justify-content: space-between">
-              <button id="startupButton"  type="button" class="btn btn-outline-primary" style="width: 49%"> Startup</button>
-              <button id="shutdownButton"  type="button" class="btn btn-outline-primary"  style="width: 49%" >Shutdown</button>
+              <button id="startupButton" type="button" class="btn btn-outline-primary" style="width: 49%"> Startup</button>
+              <button id="shutdownButton" type="button" class="btn btn-outline-primary" style="width: 49%" >Shutdown</button>
             </div>
             <br />
             <div class="alert alert-info" role="alert">
@@ -68,7 +68,7 @@
           <div class="form-group">
             <div>
               <input class="form-control form-control-md" type="file" id="selectUploadFile" accept=".sctx" style="border: 0rem" hidden/>
-              <label id="upload" for="selectUploadFile"> Choose (*.sctx)</label>
+              <label id="upload" for="selectUploadFile">Choose (*.sctx)</label>
               <span id="fileSelected">No SCCharts model selected.</span>
             </div>
 
@@ -94,7 +94,7 @@
 
             <div style="display: flex; justify-content: space-between">
               <button id="refreshEnginesButton" type="button" class="btn btn-outline-primary" style="width: 49%">Refresh</button>
-              <button id="removeEngineButton" type="button"  class="btn btn-outline-primary" style="width: 49%">Remove</button>
+              <button id="removeEngineButton" type="button" class="btn btn-outline-primary" style="width: 49%">Remove</button>
             </div>
 
             <br />
@@ -163,7 +163,7 @@
               </div>
               <div class="col-4">
                 <button id="speedPlus" type="button" class="btn btn-outline-primary" >+</button>
-                <button id="speedMinus"  type="button" class="btn btn-outline-primary">–</button>
+                <button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
               </div>
             </div>
 
@@ -174,14 +174,14 @@
               <div class="input-group-prepend">
                 <label class="input-group-text">Direction</label>
               </div>
-              <input id="direction" type="checkbox" checked data-toggle="toggle"  data-on="Forward" data-off="Backward" />
+              <input id="direction" type="checkbox" checked data-toggle="toggle" data-on="Forward" data-off="Backward" />
             </div>
 
             <br />
 
             <div style="display: flex; justify-content: space-between">
               <button id="driveTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Drive</button>
-              <button id="stopTrainButton"  type="button" class="btn btn-outline-primary" style="width: 49%">Stop</button>
+              <button id="stopTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Stop</button>
             </div>
 
             <br />
@@ -225,3 +225,16 @@
             <div style="display: flex; justify-content: space-between">
               <button id="requestRouteButton" type="button" class="btn btn-outline-primary" style="width: 49%">Request</button>
               <button id="driveRouteButton" type="button" class="btn btn-outline-primary" style="width: 49%">Drive</button>
+            </div>
+            
+            </br>
+
+            <div class="alert alert-info" role="alert">
+              <span id="routeResponse"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
