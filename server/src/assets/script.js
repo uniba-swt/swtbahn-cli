@@ -270,7 +270,7 @@ $(document).ready(
         // Custom Engines
         $('#uploadEngineButton').click(function () {
             $('#uploadResponse').text('Waiting');
-            var files = $('#selectEngineFile').prop('files');
+            var files = $('#selectUploadFile').prop('files');
             if (files.length != 1) {
                 $('#uploadResponse').text('Specify an SCCharts file!');
                 return;
