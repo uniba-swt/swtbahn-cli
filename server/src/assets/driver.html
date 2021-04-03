@@ -4,10 +4,7 @@
     <link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
 
     <link rel="stylesheet" href="bootstrap-4.2.1-dist/css/bootstrap.min.css" />
-    <link
-      rel="stylesheet"
-      href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css"
-    />
+    <link rel="stylesheet"  href="bootstrap4-toggle-3.6.1/css/bootstrap4-toggle.min.css"/>
     <link rel="stylesheet" href="style.css" />
 
     <script src="popper-1.14.6.js"></script>
@@ -17,7 +14,7 @@
 
     <title>SWTbahn Driver Client</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, inital-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
   <body>
@@ -37,13 +34,7 @@
           <h3 class="card-title">System</h3>
 
           <div class="form-group">
-            <button
-              id="pingButton"
-              type="button"
-              class="btn btn-outline-primary btn-block"
-            >
-              Ping SWTbahn Server
-            </button>
+            <button  id="pingButton" type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
             <br />
             <div class="alert alert-info" role="alert">
               <span id="pingResponse"></span>
@@ -54,22 +45,8 @@
 
           <div class="form-group">
             <div style="display: flex; justify-content: space-between">
-              <button
-                id="startupButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Startup
-              </button>
-              <button
-                id="shutdownButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Shutdown
-              </button>
+              <button id="startupButton"  type="button" class="btn btn-outline-primary" style="width: 49%"> Startup</button>
+              <button id="shutdownButton"  type="button" class="btn btn-outline-primary"  style="width: 49%" >Shutdown</button>
             </div>
             <br />
             <div class="alert alert-info" role="alert">
@@ -90,26 +67,12 @@
 
           <div class="form-group">
             <div>
-              <input
-                class="form-control form-control-md"
-                type="file"
-                id="selectEngineFile"
-                accept=".sctx"
-                style="border: 0rem"
-                hidden
-              />
-
+              <input class="form-control form-control-md" type="file" id="selectEngineFile" accept=".sctx" style="border: 0rem" hidden/>
               <label id="upload" for="selectEngineFile"> Choose (*.sctx)</label>
-              <span id="file-chosen">Keine Datei ausgewählt.</span>
+              <span id="fileSelected">No SCCharts model selected.</span>
             </div>
 
-            <button
-              id="uploadEngineButton"
-              type="button"
-              class="btn btn-outline-primary btn-block"
-            >
-              Upload
-            </button>
+            <button id="uploadEngineButton" type="button" class="btn btn-outline-primary btn-block">Upload</button>
 
             <br />
 
@@ -121,9 +84,7 @@
           <br />
 
           <div class="form-group">
-            <label class="form-label" for="availableEngines"
-              >Available Engines:</label
-            >
+            <label class="form-label" for="availableEngines">Available Engines:</label>
             <select class="form-control" id="availableEngines">
               <option>libtrain_engine_default (unremovable)</option>
               <option>libtrain_engine_linear (unremovable)</option>
@@ -132,22 +93,8 @@
             <br />
 
             <div style="display: flex; justify-content: space-between">
-              <button
-                id="refreshEnginesButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Refresh
-              </button>
-              <button
-                id="removeEngineButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Remove
-              </button>
+              <button id="refreshEnginesButton" type="button" class="btn btn-outline-primary" style="width: 49%">Refresh</button>
+              <button id="removeEngineButton" type="button"  class="btn btn-outline-primary" style="width: 49%">Remove</button>
             </div>
 
             <br />
@@ -193,22 +140,8 @@
             <br />
 
             <div style="display: flex; justify-content: space-between">
-              <button
-                id="grabTrainButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Grab
-              </button>
-              <button
-                id="releaseTrainButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Release
-              </button>
+              <button id="grabTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Grab</button>
+              <button id="releaseTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Release</button>
             </div>
 
             <br />
@@ -225,30 +158,12 @@
               <div class="col-8">
                 <div class="input-group-prepend" style="margin-bottom: 0.5rem">
                   <label class="input-group-text">DCC Speed</label>
-                  <input
-                    type="text"
-                    class="form-control form-control"
-                    id="dccSpeed"
-                    readonly
-                    value="0"
-                  />
+                  <input type="text" class="form-control form-control" id="dccSpeed" readonly value="0" />
                 </div>
               </div>
               <div class="col-4">
-                <button
-                  id="speedPlus"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  +
-                </button>
-                <button
-                  id="speedMinus"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  –
-                </button>
+                <button id="speedPlus" type="button" class="btn btn-outline-primary" >+</button>
+                <button id="speedMinus"  type="button" class="btn btn-outline-primary">–</button>
               </div>
             </div>
 
@@ -259,35 +174,14 @@
               <div class="input-group-prepend">
                 <label class="input-group-text">Direction</label>
               </div>
-              <input
-                id="direction"
-                type="checkbox"
-                checked
-                data-toggle="toggle"
-                data-on="Forward"
-                data-off="Backward"
-              />
+              <input id="direction" type="checkbox" checked data-toggle="toggle"  data-on="Forward" data-off="Backward" />
             </div>
 
             <br />
 
             <div style="display: flex; justify-content: space-between">
-              <button
-                id="driveTrainButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Drive
-              </button>
-              <button
-                id="stopTrainButton"
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Stop
-              </button>
+              <button id="driveTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Drive</button>
+              <button id="stopTrainButton"  type="button" class="btn btn-outline-primary" style="width: 49%">Stop</button>
             </div>
 
             <br />
@@ -302,30 +196,12 @@
               <div class="col-7">
                 <div class="input-group-prepend" style="margin-bottom: 0.5rem">
                   <label class="input-group-text">From</label>
-                  <input
-                    type="text"
-                    class="form-control form-control"
-                    id="signalIdFrom"
-                    readonly
-                    value="0"
-                  />
+                  <input type="text" class="form-control form-control" id="signalIdFrom" readonly value="0"/>
                 </div>
               </div>
               <div class="col-5">
-                <button
-                  id="signalPlusFrom"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  +
-                </button>
-                <button
-                  id="signalMinusFrom"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  –
-                </button>
+                <button id="signalPlusFrom" type="button" class="btn btn-outline-primary">+</button>
+                <button id="signalMinusFrom" type="button" class="btn btn-outline-primary">–</button>
               </div>
             </div>
 
@@ -335,54 +211,20 @@
               <div class="col-7">
                 <div class="input-group-prepend" style="margin-bottom: 0.5rem">
                   <label class="input-group-text">To</label>
-                  <input
-                    type="text"
-                    class="form-control form-control"
-                    id="signalIdTo"
-                    readonly
-                    value="0"
-                  />
+                  <input type="text" class="form-control form-control" id="signalIdTo" readonly value="0"/>
                 </div>
               </div>
               <div class="col-5">
-                <button
-                  id="signalPlusTo"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  +
-                </button>
-                <button
-                  id="signalMinusTo"
-                  type="button"
-                  class="btn btn-outline-primary"
-                >
-                  –
-                </button>
+                <button id="signalPlusTo" type="button" class="btn btn-outline-primary">+</button>
+                <button id="signalMinusTo" type="button" class="btn btn-outline-primary">–</button>
               </div>
             </div>
 
             <br />
 
             <div style="display: flex; justify-content: space-between">
-              <button
-                id="requestRouteButto"
-                n
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Request
-              </button>
-              <button
-                id="driveRouteButto"
-                n
-                type="button"
-                class="btn btn-outline-primary"
-                style="width: 49%"
-              >
-                Drive
-              </button>
+              <button id="requestRouteButton" type="button" class="btn btn-outline-primary" style="width: 49%">Request</button>
+              <button id="driveRouteButton" type="button" class="btn btn-outline-primary" style="width: 49%">Drive</button>
             </div>
 
             <br />
