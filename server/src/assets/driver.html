@@ -83,10 +83,15 @@
 
           <div class="form-group">
             <label class="form-label" for="availableEngines">Available Engines:</label>
-            <select class="form-control" id="availableEngines">
-              <option>libtrain_engine_default (unremovable)</option>
-              <option>libtrain_engine_linear (unremovable)</option>
-            </select>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="availableEngines">Engine</label>
+              </div>
+              <select class="custom-select" id="availableEngines">
+                <option>libtrain_engine_default (unremovable)</option>
+                <option>libtrain_engine_linear (unremovable)</option>
+              </select>
+            </div>
 
             <br />
 
