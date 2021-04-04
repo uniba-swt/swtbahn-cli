@@ -233,13 +233,19 @@ $(document).ready(
                     dataType: 'text',
                     success: function (responseData, textStatus, jqXHR) {
                         routeId = responseData;
+                        $('#routeResponse').parent().removeClass('alert-danger');
+                        $('#routeResponse').parent().addClass('alert-success');
                         $('#routeResponse').text('Route ' + responseData + ' granted');
                     },
                     error: function (responseData, textStatus, errorThrown) {
+                        $('#routeResponse').parent().removeClass('alert-success');
+                        $('#routeResponse').parent().addClass('alert-danger');
                         $('#routeResponse').text('Route not granted!');
                     }
                 });
             } else {
+				$('#routeResponse').parent().removeClass('alert-success');
+				$('#routeResponse').parent().addClass('alert-danger');
                 $('#routeResponse').text('You must have a grabbed train!');
             }
         });
@@ -254,14 +260,20 @@ $(document).ready(
                     data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
                     dataType: 'text',
                     success: function (responseData, textStatus, jqXHR) {
+                        $('#routeResponse').parent().removeClass('alert-danger');
+                        $('#routeResponse').parent().addClass('alert-success');
                         $('#routeResponse')
                             .text('Route ' + responseData + ' driving completed');
                     },
                     error: function (responseData, textStatus, errorThrown) {
+                        $('#routeResponse').parent().removeClass('alert-success');
+                        $('#routeResponse').parent().addClass('alert-danger');
                         $('#routeResponse').text('Route could not be driven!');
                     }
                 });
             } else {
+				$('#routeResponse').parent().removeClass('alert-success');
+				$('#routeResponse').parent().addClass('alert-danger');
                 $('#routeResponse').text('You must have a grabbed train!');
             }
         });
@@ -272,7 +284,9 @@ $(document).ready(
             $('#uploadResponse').text('Waiting');
             var files = $('#selectUploadFile').prop('files');
             if (files.length != 1) {
-                $('#uploadResponse').text('Specify an SCCharts file!');
+				$('#uploadResponse').parent().removeClass('alert-success');
+				$('#uploadResponse').parent().addClass('alert-danger');
+                $('#uploadResponse').text('Select an SCCharts file!');
                 return;
             }
             var file = files[0];
@@ -289,10 +303,14 @@ $(document).ready(
                 dataType: 'text',
                 success: function (responseData, textStatus, jqXHR) {
                     refreshEnginesList();
+                    $('#uploadResponse').parent().removeClass('alert-danger');
+                    $('#uploadResponse').parent().addClass('alert-success');
                     $('#uploadResponse')
                         .text('Engine ' + file.name + ' ready for use');
                 },
                 error: function (responseData, textStatus, errorThrown) {
+                    $('#uploadResponse').parent().removeClass('alert-success');
+                    $('#uploadResponse').parent().addClass('alert-danger');
                     $('#uploadResponse').text('Engine ' + file.name + ' could not be compiled or loaded!');
                 }
             });
@@ -319,9 +337,13 @@ $(document).ready(
                         selectAvailableEngines.append(new Option(value));
                     });
 
+                    $('#refreshRemoveResponse').parent().removeClass('alert-danger');
+                    $('#refreshRemoveResponse').parent().addClass('alert-success');
                     $('#refreshRemoveResponse').text('Refreshed list of train engines');
                 },
                 error: function (responseData, textStatus, errorThrown) {
+                    $('#refreshRemoveResponse').parent().removeClass('alert-success');
+                    $('#refreshRemoveResponse').parent().addClass('alert-danger');
                     $('#refreshRemoveResponse').text('Unable to refresh list of train engines');
                 }
             });
@@ -347,10 +369,14 @@ $(document).ready(
                 dataType: 'text',
                 success: function (responseData, textStatus, jqXHR) {
                     refreshEnginesList();
+                    $('#refreshRemoveResponse').parent().removeClass('alert-danger');
+                    $('#refreshRemoveResponse').parent().addClass('alert-success');
                     $('#refreshRemoveResponse')
                         .text('Engine ' + engineName + ' removed');
                 },
                 error: function (responseData, textStatus, errorThrown) {
+                    $('#refreshRemoveResponse').parent().removeClass('alert-success');
+                    $('#refreshRemoveResponse').parent().addClass('alert-danger');
                     $('#refreshRemoveResponse').text('Engine ' + engineName + ' not found or still in use!');
                 }
             });
@@ -368,9 +394,13 @@ $(document).ready(
                 data: { 'route-id': routeId },
                 dataType: 'text',
                 success: function (responseData, textStatus, jqXHR) {
+                    $('#releaseRouteResponse').parent().removeClass('alert-danger');
+                    $('#releaseRouteResponse').parent().addClass('alert-success');
                     $('#releaseRouteResponse').text('Route ' + routeId + ' released');
                 },
                 error: function (responseData, textStatus, errorThrown) {
+                    $('#releaseRouteResponse').parent().removeClass('alert-success');
+                    $('#releaseRouteResponse').parent().addClass('alert-danger');
                     $('#releaseRouteResponse')
                         .text('System not running or invalid track output!');
                 }
@@ -653,7 +683,11 @@ $(document).ready(
 
         // Alternative filechooser button for Driver and Controller
         $('#selectUploadFile').change(function () {
-            $('#fileSelected').text(this.files[0].name);
+            $('#selectUploadFileResponse').text(this.files[0].name);
+        
+            $('#uploadResponse').text('Selected SCCharts model ' + this.files[0].name);
+            $('#uploadResponse').parent().removeClass('alert-danger');
+            $('#uploadResponse').parent().addClass('alert-success');
         });
 
     }

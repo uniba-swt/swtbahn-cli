@@ -66,13 +66,11 @@
           <h3 class="card-title">Custom Engine</h3>
 
           <div class="form-group">
-            <div>
-              <input class="form-control form-control-md" type="file" id="selectUploadFile" accept=".sctx" style="border: 0rem" hidden/>
-              <label id="upload" for="selectUploadFile">Choose (*.sctx)</label>
-              <span id="fileSelected">No SCCharts model selected.</span>
+            <div style="display: flex; justify-content: space-between">
+              <label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary" style="width: 49%; margin: 0px">Select an SCCharts file (*.sctx)</label>
+              <input id="selectUploadFile" type="file" accept=".sctx" hidden />
+              <button id="uploadEngineButton" type="button" class="btn btn-outline-primary" style="width: 49%">Upload</button>
             </div>
-
-            <button id="uploadEngineButton" type="button" class="btn btn-outline-primary btn-block">Upload</button>
 
             <br />
 

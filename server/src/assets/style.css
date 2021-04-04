@@ -30,9 +30,3 @@ body {
   cursor: pointer;
   margin-top: 1rem;
 }
-
-#fileSelected {
-  margin-left: 0.3rem;
-  font-family: sans-serif;
-  font-size: smaller;
-}
