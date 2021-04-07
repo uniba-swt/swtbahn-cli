@@ -144,7 +144,7 @@ module SWTbahnfull
 
         # 16T
         seg92  0x30 length 15cm
-        seg94b 0x31 length 149.9cm   # Double check the length
+        seg94b 0x31 length 78.4cm
         seg95  0x32 length 15cm
     end
 
