@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
  * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
- * 
+ *
  * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
  * a client-server application to interactively control a BiDiB model railway.
  *
@@ -25,13 +25,11 @@
  *
  */
 
-#ifndef INTERLOCKING_PARSER_H
-#define INTERLOCKING_PARSER_H
+#ifndef SCCHARTS_GEN_TRACK_CONFIG_PARSER_H
+#define SCCHARTS_GEN_TRACK_CONFIG_PARSER_H
 
-#include <glib.h>
+#include "config_data_intern.h"
 
+void parse_track_yaml(yaml_parser_t *parser, t_config_data *data);
 
-GArray *parse_interlocking_table(const char *config_dir);
-
-
-#endif // INTERLOCKING_PARSER_H
+#endif //SCCHARTS_GEN_TRACK_CONFIG_PARSER_H

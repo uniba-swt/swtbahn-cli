@@ -6,3 +6,5 @@ build/
 swtbahn-config.yml
 .syntastic_c_config
 .DS_Store
+.idea
+**/cmake-build-debug/
