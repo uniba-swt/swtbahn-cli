@@ -120,3 +120,48 @@ void dynlib_tick(dynlib_data *library, TickData *tick_data) {
 	}
 }
 
+dynlib_status dynlib_load_interlocking(interlocking_dynlib_data *library, const char filepath[]) {
+    char path[PATH_MAX + NAME_MAX];
+    sprintf(path, "%s.so", filepath);
+
+    // open on linux
+    library->lib_handle = dlopen(path, RTLD_LAZY);
+    if (library->lib_handle == NULL) {
+        // open on macOS
+        sprintf(path, "%s.dylib", filepath);
+        library->lib_handle = dlopen(path, RTLD_LAZY);
+    }
+
+    if (library->lib_handle == NULL) {
+        syslog_server(LOG_ERR, "Could not load dynamic library %s.\n%s", filepath, dlerror());
+        return DYNLIB_LOAD_ERR;
+    }
+
+    // load symbols
+    *(void **) (&library->request_reset_func) = dlsym(library->lib_handle, "request_route_reset");
+    *(void **) (&library->request_tick_func) = dlsym(library->lib_handle, "request_route_tick");
+    *(void **) (&library->drive_reset_func) = dlsym(library->lib_handle, "drive_route_reset");
+    *(void **) (&library->drive_tick_func) = dlsym(library->lib_handle, "drive_route_tick");
+
+    // check
+    if (library->request_reset_func == NULL
+        || library->request_tick_func == NULL
+        || library->drive_reset_func == NULL
+        || library->drive_tick_func == NULL) {
+        syslog_server(LOG_ERR, "Could not find interlocking symbols.\n%s", dlerror());
+        return DYNLIB_LOAD_ERR;
+    }
+
+    return DYNLIB_LOAD_SUCCESS;
+}
+
+void dynlib_close_interlocking(interlocking_dynlib_data *library) {
+    if (library->lib_handle != NULL) {
+        dlclose(library->lib_handle);
+        library->lib_handle = NULL;
+        library->request_reset_func = NULL;
+        library->request_tick_func = NULL;
+        library->drive_reset_func = NULL;
+        library->drive_tick_func = NULL;
+    }
+}

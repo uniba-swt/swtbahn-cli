@@ -17,4 +17,22 @@ typedef struct {
   char internal_variables[1024];
 } TickData;
 
+typedef struct {
+    char* src_signal_id;                                                    // Input
+    char* dst_signal_id;                                                    // Input
+    char* train_id;                                                         // Input
+    char* out;                                                              // Output
+
+    int terminated;
+} request_route_tick_data;
+
+typedef struct {
+    char* route_id;                                                    // Input
+    char* train_id;                                                    // Input
+    char* segment_ids[1024];                                           // Input
+    int count_segments;                                                // Input
+
+    int terminated;
+} drive_route_tick_data;
+
 #endif // TICK_DATA_H

@@ -37,7 +37,8 @@
 #include "handler_controller.h"
 #include "interlocking.h"
 #include "param_verification.h"
-
+#include "interlocking_bahndsl.h"
+#include "bahn_data_util.h"
 
 #define MICROSECOND 1
 #define TRAIN_DRIVE_TIME_STEP 	50000 * MICROSECOND		// 0.05 seconds
@@ -287,22 +288,22 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Request train route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			// Use interlocking algorithm to find and grant a route
-			const int route_id = grant_route_with_algorithm(grabbed_trains[grab_id].name->str, 
-			                                                data_source_name, 
-			                                                data_destination_name);
-			if (route_id != -1) {
-				syslog_server(LOG_NOTICE, "Request: Request train route - "
-				              "train: %s route %d",
-				              grabbed_trains[grab_id].name->str, route_id);
-				onion_response_printf(res, "%d", route_id);
-				return OCS_PROCESSED;
-			} else {
-				syslog_server(LOG_ERR, "Request: Request train route - "
-				              "train: %s route not granted",
-				              grabbed_trains[grab_id].name->str);
-				return OCS_NOT_IMPLEMENTED;
-			}
+            // Use interlocking algorithm to find and grant a route
+            char *route_id = grant_route_with_bahndsl(grabbed_trains[grab_id].name->str,
+                                                      data_source_name,
+                                                      data_destination_name);
+            if (route_id != NULL && !string_equals(route_id, "")) {
+                syslog_server(LOG_NOTICE, "Request: Request train route - "
+                                          "train: %s route %s",
+                              grabbed_trains[grab_id].name->str, route_id);
+                onion_response_printf(res, "%s", route_id);
+                return OCS_PROCESSED;
+            } else {
+                syslog_server(LOG_ERR, "Request: Request train route - "
+                                       "train: %s route not granted",
+                              grabbed_trains[grab_id].name->str);
+                return OCS_NOT_IMPLEMENTED;
+            }
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");

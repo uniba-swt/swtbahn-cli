@@ -34,6 +34,7 @@
 #include "server.h"
 #include "handler_driver.h"
 #include "interlocking.h"
+#include "interlocking_bahndsl.h"
 #include "dyn_containers_interface.h"
 #include "bahn_data_util.h"
 
@@ -65,6 +66,9 @@ static void *start_bidib(void *_) {
         pthread_mutex_unlock(&start_stop_mutex);
         pthread_exit(NULL);
     }
+
+    // load dynamic BahnDSL lib
+    load_interlocking_library();
 	
 	int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
@@ -120,6 +124,7 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 static void *stop_bidib(void *_) {
 	usleep (1000000); // wait for running functions
 	bidib_stop();
+    close_interlocking_library();
 	free_all_grabbed_trains();
     free_config();
 	pthread_mutex_lock(&start_stop_mutex);
