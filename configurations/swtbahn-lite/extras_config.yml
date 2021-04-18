@@ -1,0 +1,127 @@
+# Block layout configuration: SWTbahnLite
+blocks:
+  - id: block1
+    length: 71.20cm
+    main:
+      - seg19
+    overlaps:
+      - seg20
+      - seg18
+    direction: bidirectional
+    signals:
+      - signal10
+      - signal9
+  - id: block2
+    length: 83.35cm
+    main:
+      - seg6
+    overlaps:
+      - seg7
+      - seg5
+    direction: bidirectional
+    signals:
+      - signal4
+      - signal3
+  - id: block3
+    length: 79.45cm
+    main:
+      - seg2
+    overlaps:
+      - seg3
+      - seg1
+    direction: bidirectional
+    signals:
+      - signal2
+      - signal1
+  - id: block4
+    length: 72.15cm
+    main:
+      - seg15
+    overlaps:
+      - seg16
+      - seg14
+    direction: bidirectional
+    signals:
+      - signal7
+      - signal8
+  - id: block5
+    length: 94.60cm
+    main:
+      - seg10
+    overlaps:
+      - seg11
+      - seg9
+    direction: bidirectional
+    signals:
+      - signal6
+      - signal5
+  - id: buffer1
+    length: 10.00cm
+    main:
+      - seg29
+    direction: bidirectional
+  - id: buffer2
+    length: 8.00cm
+    main:
+      - seg25
+    direction: bidirectional
+  - id: buffer3
+    length: 17.30cm
+    main:
+      - seg26
+    direction: bidirectional
+platforms:
+  - id: platform1
+    length: 60.00cm
+    main:
+      - seg28
+    overlaps:
+      - seg27
+    direction: bidirectional
+    signals:
+      - signal14
+      - signal15
+  - id: platform2
+    length: 55.00cm
+    main:
+      - seg24
+    overlaps:
+      - seg23
+    direction: bidirectional
+    signals:
+      - signal11
+crossings:
+signaltypes:
+  - id: entry
+    aspects:
+      - yellow
+      - green
+      - red
+  - id: exit
+    aspects:
+      - yellow
+      - green
+      - red
+  - id: distant
+    aspects:
+      - yellow
+      - green
+  - id: block
+    aspects:
+      - green
+      - red
+  - id: shunting
+    aspects:
+      - white
+      - red
+  - id: halt
+    aspects:
+      - red
+  - id: peripheral
+    aspects:
+      - on
+  - id: platformlight
+    aspects:
+      - on
+      - off
+compositions:

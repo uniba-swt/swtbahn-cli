@@ -1,12 +1,10 @@
-# BiDiB board configuration
+# BiDiB board configuration: SWTbahnLite
 boards:
   - id: master
     unique-id: 0xDA000D680052EF
     features:
-      # seckack on, 200ms
       - number: 0x03
         value: 0x14
-      # track output default off
       - number: 0x6E
         value: 0x00
   - id: lightcontrol
