@@ -2,7 +2,7 @@
 *
 * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
 * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
-* 
+*
 * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
 * a client-server application to interactively control a BiDiB model railway.
 *
@@ -112,6 +112,12 @@ const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
 	"../src/engines/libtrain_engine_linear (unremovable)"
 };
 
+// Interlocker that are available a compile time
+static const unsigned int INTERLOCKER_DEFINED_COUNT = 1;
+const char *interlockerFilepaths[INTERLOCKER_DEFINED_COUNT] = {
+	"../src/interlocker/interlocker_deafault (unremovable)"
+};
+
 // Data needed by instances of train engines and interlocking algorithms
 static const unsigned int TRAIN_ENGINE_INSTANCE_COUNT_MAX = 5;
 static const unsigned int INTERLOCKER_INSTANCE_COUNT_MAX  = 4;
@@ -162,7 +168,7 @@ shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engin
 shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_3;
 shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_4;
 
-typedef struct {	
+typedef struct {
 	bool in_use;						// Whether this instance is still in use
 	int  train_engine_type;				// Train engine in use
 	int  nominal_speed;					// Output defined by the train engine
@@ -177,24 +183,29 @@ shared t_forec_intern_output_train_engine_instance forec_intern_output_train_eng
 // TODO: Interlocker information
 typedef struct {
 	bool load;							// Load the train engine specified by filepath
+	bool unload;						// Unload the train engine
+	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 } t_forec_intern_input_interlocker;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_0;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_1;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_2;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3;
 
-// TODO: Interlocker instance information
+// TODO: Interlocker instance information ----------------------
 typedef struct {
 	bool in_use;						// Whether the container is still in use
+	char *name;							// Name of the interlocker when loaded
 } t_forec_intern_output_interlocker;
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0 = {.in_use = false};
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_1 = {.in_use = false};
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_2 = {.in_use = false};
-shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3 = {.in_use = false};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0 = {.in_use = false, .name = ""};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_1 = {.in_use = false, .name = ""};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_2 = {.in_use = false, .name = ""};
+shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3 = {.in_use = false, .name = ""};
 
-// TODO: Interlocker information
+// TODO: Interlocker information ----------------------
 typedef struct {
 	bool grab;							// Desire to use this instance
+	bool release;						// Desire to stop using this instance
+	int  interlocker_type;				// Desired interlocker to use
 } t_forec_intern_input_interlocker_instance;
 shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_0;
 shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_1;
@@ -204,11 +215,12 @@ shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_
 // TODO: Interlocker instance information
 typedef struct {
 	bool in_use;						// Whether this instance is still in use
+	int  interlocker_type;				// Interlocker engine in use
 } t_forec_intern_output_interlocker_instance;
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false};
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false};
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2 = {.in_use = false};
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3 = {.in_use = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false, .interlocker_type = -1};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false, .interlocker_type = -1};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2 = {.in_use = false, .interlocker_type = -1};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3 = {.in_use = false, .interlocker_type = -1};
 
 
 // TODO: Create shared memory
@@ -216,7 +228,7 @@ shared t_dyn_containers_interface *dyn_containers_interface;
 
 static t_dyn_shm_config shm_config;
 static const int shm_permissions = 0666;
-static const key_t shm_key = 1234; 
+static const key_t shm_key = 1234;
 
 extern pthread_mutex_t dyn_containers_mutex;
 
@@ -253,22 +265,22 @@ thread interlockerInstance3(void);
 
 void main(int argc, char **argv) {
 	syslog_server(LOG_NOTICE, "ForeC: Starting dynamic library containers");
-	
-	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
+
+	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key,
 	                         &dyn_containers_interface);
-	
+
 	abort {
-		par(letInterface, loadEngines, loadInterlockers, 
+		par(letInterface, loadEngines, loadInterlockers,
 		    engineInstance0, engineInstance1, engineInstance2, engineInstance3, engineInstance4,
 		    interlockerInstance0, interlockerInstance1, interlockerInstance2, interlockerInstance3);
 	} when (forec_intern_input.terminate);
-	
+
 	unloadEngines();
 	syslog_server(LOG_NOTICE, "ForeC: Unloaded train engines and instances");
-	
+
 	unloadInterlockers();
 	syslog_server(LOG_NOTICE, "ForeC: Unloaded interlockers and instances");
-	
+
 	dyn_containers_shm_detach(&dyn_containers_interface);
 	syslog_server(LOG_NOTICE, "ForeC: Detached shared memory");
 }
@@ -277,23 +289,23 @@ void main(int argc, char **argv) {
 thread letInterface(void) {
 	char *threadName;
 	threadName = "letInterface";
-	
+
 	pthread_mutex_lock(&dyn_containers_mutex);
 	forec_intern_input.let_period_us = dyn_containers_interface->let_period_us;
 	pthread_mutex_unlock(&dyn_containers_mutex);
-	
+
 	while (true) {
 		//----- Start of tick
-		
+
 		// Read inputs into ForeC shared variables
 		pthread_mutex_lock(&dyn_containers_mutex);
 		forec_intern_input.terminate = dyn_containers_interface->terminate;
-		
+
 		copyEngineInputs(&forec_intern_input_train_engine_0, &dyn_containers_interface->train_engines_io[0]);
 		copyEngineInputs(&forec_intern_input_train_engine_1, &dyn_containers_interface->train_engines_io[1]);
 		copyEngineInputs(&forec_intern_input_train_engine_2, &dyn_containers_interface->train_engines_io[2]);
 		copyEngineInputs(&forec_intern_input_train_engine_3, &dyn_containers_interface->train_engines_io[3]);
-		
+
 		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_0, &dyn_containers_interface->train_engine_instances_io[0]);
 		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_1, &dyn_containers_interface->train_engine_instances_io[1]);
 		copyEngineInstanceInputs(&forec_intern_input_train_engine_instance_2, &dyn_containers_interface->train_engine_instances_io[2]);
@@ -303,15 +315,15 @@ thread letInterface(void) {
 		// TODO: Interlockers
 		pthread_mutex_unlock(&dyn_containers_mutex);
 
-		
+
 		// Wait to the end of the LET period
 		usleep(forec_intern_input.let_period_us);
 
-		
+
 		//----- End of tick
 		// Write ForeC shared variables to outputs
 		pthread_mutex_lock(&dyn_containers_mutex);
-		
+
 		copyEngineOutputs(&dyn_containers_interface->train_engines_io[0], &forec_intern_output_train_engine_0);
 		copyEngineOutputs(&dyn_containers_interface->train_engines_io[1], &forec_intern_output_train_engine_1);
 		copyEngineOutputs(&dyn_containers_interface->train_engines_io[2], &forec_intern_output_train_engine_2);
@@ -352,7 +364,7 @@ thread loadEngines(void) {
 		copyFilename(trainEngines[1].name, trainEngineFilepaths[1], NAME_MAX, PATH_MAX + NAME_MAX);
 		forec_intern_output_train_engine_1.name = trainEngines[1].name;
 	}
-	
+
 	while (true) {
 		// Container 0
 		unsigned int container = 0;
@@ -370,7 +382,7 @@ thread loadEngines(void) {
 			dynlib_close(&trainEngines[container]);
 			forec_intern_output_train_engine_0.in_use = false;
 		}
-		
+
 		// TODO: Container 1, 2, and 3
 		container = 1;
 		if (forec_intern_input_train_engine_1.load && !forec_intern_output_train_engine_1.in_use) {
@@ -387,7 +399,7 @@ thread loadEngines(void) {
 			dynlib_close(&trainEngines[container]);
 			forec_intern_output_train_engine_1.in_use = false;
 		}
-		
+
 		container = 2;
 		if (forec_intern_input_train_engine_2.load && !forec_intern_output_train_engine_2.in_use) {
 			// Load the new dynamic library
@@ -403,7 +415,7 @@ thread loadEngines(void) {
 			dynlib_close(&trainEngines[container]);
 			forec_intern_output_train_engine_2.in_use = false;
 		}
-		
+
 		container = 3;
 		if (forec_intern_input_train_engine_3.load && !forec_intern_output_train_engine_3.in_use) {
 			// Load the new dynamic library
@@ -419,31 +431,111 @@ thread loadEngines(void) {
 			dynlib_close(&trainEngines[container]);
 			forec_intern_output_train_engine_3.in_use = false;
 		}
-		
+
 		pause;
 	}
 }
 
 thread loadInterlockers(void) {
-	// TODO: Same as loadEngines
+	const char *threadName;
+	threadName = "loadInterlockers";
+
+	// Load interlockers that are already available
+	dynlib_status load_status;
+
+	load_status = dynlib_load(&interlockers[0], interlockerFilepaths[0]); // TODO: check standard interlocker
+	printout(threadName, load_status, &interlockers[0]);
+	if (load_status == DYNLIB_LOAD_SUCCESS) {
+		forec_intern_output_interlocker_0.in_use = true;
+	}
+
+	while (true) {
+		// Container 0
+		unsigned int container = 0;
+		if (forec_intern_input_interlocker_0.load && !forec_intern_output_interlocker_0.in_use) {
+			// Load the new dynamic library
+			dynlib_status load_status = dynlib_load(&interlockers[container], forec_intern_input_interlocker_0.filepath);
+			printout(threadName, load_status, &interlockers[container]);
+			if (load_status == DYNLIB_LOAD_SUCCESS) {
+				forec_intern_output_interlocker_0.in_use = true;
+				copyFilename(interlockers[container].name, forec_intern_input_interlocker_0.filepath, NAME_MAX, PATH_MAX + NAME_MAX);
+				forec_intern_output_interlocker_0.name = interlockers[container].name;
+			}
+		} else if (forec_intern_input_interlocker_0.unload) {
+			// Close the previous dynamic library
+			dynlib_close(&interlockers[container]);
+			forec_intern_output_interlocker_0.in_use = false;
+		}
+
+		// TODO: Container 1, 2, and 3
+		container = 1;
+		if (forec_intern_input_interlocker_1.load && !forec_intern_output_interlocker_1.in_use) {
+			// Load the new dynamic library
+			dynlib_status load_status = dynlib_load(&interlockers[container], forec_intern_input_interlocker_1.filepath);
+			printout(threadName, load_status, &interlockers[container]);
+			if (load_status == DYNLIB_LOAD_SUCCESS) {
+				forec_intern_output_interlocker_1.in_use = true;
+				copyFilename(interlockers[container].name, forec_intern_input_interlocker_1.filepath, NAME_MAX, PATH_MAX + NAME_MAX);
+				forec_intern_output_interlocker_1.name = interlockers[container].name;
+			}
+		} else if (forec_intern_input_interlocker_1.unload) {
+			// Close the previous dynamic library
+			dynlib_close(&interlockers[container]);
+			forec_intern_output_interlocker_1.in_use = false;
+		}
+
+		container = 2;
+		if (forec_intern_input_interlocker_2.load && !forec_intern_output_interlocker_2.in_use) {
+			// Load the new dynamic library
+			dynlib_status load_status = dynlib_load(&interlockers[container], forec_intern_input_interlocker_2.filepath);
+			printout(threadName, load_status, &interlockers[container]);
+			if (load_status == DYNLIB_LOAD_SUCCESS) {
+				forec_intern_output_interlocker_2.in_use = true;
+				copyFilename(interlockers[container].name, forec_intern_input_interlocker_2.filepath, NAME_MAX, PATH_MAX + NAME_MAX);
+				forec_intern_output_interlocker_2.name = interlockers[container].name;
+			}
+		} else if (forec_intern_input_interlocker_2.unload) {
+			// Close the previous dynamic library
+			dynlib_close(&interlockers[container]);
+			forec_intern_output_interlocker_2.in_use = false;
+		}
+
+		container = 3;
+		if (forec_intern_interlocker_3.load && !forec_intern_output_interlocker_3.in_use) {
+			// Load the new dynamic library
+			dynlib_status load_status = dynlib_load(&interlockers[container], forec_intern_input_interlocker_3.filepath);
+			printout(threadName, load_status, &interlockers[container]);
+			if (load_status == DYNLIB_LOAD_SUCCESS) {
+				forec_intern_output_interlocker_3.in_use = true;
+				copyFilename(interlockers[container].name, forec_intern_input_interlocker_3.filepath, NAME_MAX, PATH_MAX + NAME_MAX);
+				forec_intern_output_interlocker_3.name = interlockers[container].name;
+			}
+		} else if (forec_intern_input_interlocker_3.unload) {
+			// Close the previous dynamic library
+			dynlib_close(&interlockers[container]);
+			forec_intern_output_interlocker_3.in_use = false;
+		}
+
+		pause;
+	}
 }
 
 
 thread engineInstance0(void) {
 	unsigned int instance = 0;
-	
+
 	const char *threadName;
 	threadName = "engineInstance0";
-		
+
 	while (true) {
 		// Wait for a user to grab a train
 		while (!forec_intern_input_train_engine_instance_0.grab) {
 			pause;
 		}
-		
+
 		forec_intern_output_train_engine_instance_0.train_engine_type = forec_intern_input_train_engine_instance_0.train_engine_type;
 		forec_intern_output_train_engine_instance_0.in_use = true;
-		
+
 		// Reset the data of the train engine instance
 		dynlib_reset(&trainEngines[forec_intern_output_train_engine_instance_0.train_engine_type], &trainEngineInstanceData[instance]);
 		dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_0.train_engine_type], &trainEngineInstanceData[instance]);
@@ -458,23 +550,23 @@ thread engineInstance0(void) {
 			// Copy inputs
 			trainEngineInstanceData[instance].requested_speed = forec_intern_input_train_engine_instance_0.requested_speed;
 			trainEngineInstanceData[instance].requested_forwards = forec_intern_input_train_engine_instance_0.requested_forwards;
-			
+
 			// Execute one tick
 			dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_0.train_engine_type], &trainEngineInstanceData[instance]);
 			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_0.nominal_speed
 			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_0.nominal_forwards) {
-				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName,
 						trainEngines[forec_intern_output_train_engine_instance_0.train_engine_type].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
 						trainEngineInstanceData[instance].nominal_speed,
 						trainEngineInstanceData[instance].nominal_forwards);
-				
+
 				// Update outputs
 				forec_intern_output_train_engine_instance_0.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
 				forec_intern_output_train_engine_instance_0.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
-			
+
 			pause;
 		}
 
@@ -488,19 +580,19 @@ thread engineInstance0(void) {
 
 thread engineInstance1(void) {
 	unsigned int instance = 1;
-	
+
 	const char *threadName;
 	threadName = "engineInstance1";
-		
+
 	while (true) {
 		// Wait for a user to grab a train
 		while (!forec_intern_input_train_engine_instance_1.grab) {
 			pause;
 		}
-		
+
 		forec_intern_output_train_engine_instance_1.train_engine_type = forec_intern_input_train_engine_instance_1.train_engine_type;
 		forec_intern_output_train_engine_instance_1.in_use = true;
-		
+
 		// Reset the data of the train engine instance
 		dynlib_reset(&trainEngines[forec_intern_output_train_engine_instance_1.train_engine_type], &trainEngineInstanceData[instance]);
 		dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_1.train_engine_type], &trainEngineInstanceData[instance]);
@@ -515,23 +607,23 @@ thread engineInstance1(void) {
 			// Copy inputs
 			trainEngineInstanceData[instance].requested_speed = forec_intern_input_train_engine_instance_1.requested_speed;
 			trainEngineInstanceData[instance].requested_forwards = forec_intern_input_train_engine_instance_1.requested_forwards;
-			
+
 			// Execute one tick
 			dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_1.train_engine_type], &trainEngineInstanceData[instance]);
 			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_1.nominal_speed
 			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_1.nominal_forwards) {
-				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName,
 						trainEngines[forec_intern_output_train_engine_instance_1.train_engine_type].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
 						trainEngineInstanceData[instance].nominal_speed,
 						trainEngineInstanceData[instance].nominal_forwards);
-				
+
 				// Update outputs
 				forec_intern_output_train_engine_instance_1.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
 				forec_intern_output_train_engine_instance_1.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
-			
+
 			pause;
 		}
 
@@ -545,19 +637,19 @@ thread engineInstance1(void) {
 
 thread engineInstance2(void) {
 	unsigned int instance = 2;
-	
+
 	const char *threadName;
 	threadName = "engineInstance2";
-		
+
 	while (true) {
 		// Wait for a user to grab a train
 		while (!forec_intern_input_train_engine_instance_2.grab) {
 			pause;
 		}
-		
+
 		forec_intern_output_train_engine_instance_2.train_engine_type = forec_intern_input_train_engine_instance_2.train_engine_type;
 		forec_intern_output_train_engine_instance_2.in_use = true;
-		
+
 		// Reset the data of the train engine instance
 		dynlib_reset(&trainEngines[forec_intern_output_train_engine_instance_2.train_engine_type], &trainEngineInstanceData[instance]);
 		dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_2.train_engine_type], &trainEngineInstanceData[instance]);
@@ -572,23 +664,23 @@ thread engineInstance2(void) {
 			// Copy inputs
 			trainEngineInstanceData[instance].requested_speed = forec_intern_input_train_engine_instance_2.requested_speed;
 			trainEngineInstanceData[instance].requested_forwards = forec_intern_input_train_engine_instance_2.requested_forwards;
-			
+
 			// Execute one tick
 			dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_2.train_engine_type], &trainEngineInstanceData[instance]);
 			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_2.nominal_speed
 			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_2.nominal_forwards) {
-				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName,
 						trainEngines[forec_intern_output_train_engine_instance_2.train_engine_type].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
 						trainEngineInstanceData[instance].nominal_speed,
 						trainEngineInstanceData[instance].nominal_forwards);
-				
+
 				// Update outputs
 				forec_intern_output_train_engine_instance_2.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
 				forec_intern_output_train_engine_instance_2.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
-			
+
 			pause;
 		}
 
@@ -602,19 +694,19 @@ thread engineInstance2(void) {
 
 thread engineInstance3(void) {
 	unsigned int instance = 3;
-	
+
 	const char *threadName;
 	threadName = "engineInstance3";
-		
+
 	while (true) {
 		// Wait for a user to grab a train
 		while (!forec_intern_input_train_engine_instance_3.grab) {
 			pause;
 		}
-		
+
 		forec_intern_output_train_engine_instance_3.train_engine_type = forec_intern_input_train_engine_instance_3.train_engine_type;
 		forec_intern_output_train_engine_instance_3.in_use = true;
-		
+
 		// Reset the data of the train engine instance
 		dynlib_reset(&trainEngines[forec_intern_output_train_engine_instance_3.train_engine_type], &trainEngineInstanceData[instance]);
 		dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_3.train_engine_type], &trainEngineInstanceData[instance]);
@@ -629,23 +721,23 @@ thread engineInstance3(void) {
 			// Copy inputs
 			trainEngineInstanceData[instance].requested_speed = forec_intern_input_train_engine_instance_3.requested_speed;
 			trainEngineInstanceData[instance].requested_forwards = forec_intern_input_train_engine_instance_3.requested_forwards;
-			
+
 			// Execute one tick
 			dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_3.train_engine_type], &trainEngineInstanceData[instance]);
 			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_3.nominal_speed
 			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_3.nominal_forwards) {
-				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName,
 						trainEngines[forec_intern_output_train_engine_instance_3.train_engine_type].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
 						trainEngineInstanceData[instance].nominal_speed,
 						trainEngineInstanceData[instance].nominal_forwards);
-				
+
 				// Update outputs
 				forec_intern_output_train_engine_instance_3.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
 				forec_intern_output_train_engine_instance_3.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
-			
+
 			pause;
 		}
 
@@ -659,19 +751,19 @@ thread engineInstance3(void) {
 
 thread engineInstance4(void) {
 	unsigned int instance = 4;
-	
+
 	const char *threadName;
 	threadName = "engineInstance4";
-		
+
 	while (true) {
 		// Wait for a user to grab a train
 		while (!forec_intern_input_train_engine_instance_4.grab) {
 			pause;
 		}
-		
+
 		forec_intern_output_train_engine_instance_4.train_engine_type = forec_intern_input_train_engine_instance_4.train_engine_type;
 		forec_intern_output_train_engine_instance_4.in_use = true;
-		
+
 		// Reset the data of the train engine instance
 		dynlib_reset(&trainEngines[forec_intern_output_train_engine_instance_4.train_engine_type], &trainEngineInstanceData[instance]);
 		dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_4.train_engine_type], &trainEngineInstanceData[instance]);
@@ -686,23 +778,23 @@ thread engineInstance4(void) {
 			// Copy inputs
 			trainEngineInstanceData[instance].requested_speed = forec_intern_input_train_engine_instance_4.requested_speed;
 			trainEngineInstanceData[instance].requested_forwards = forec_intern_input_train_engine_instance_4.requested_forwards;
-			
+
 			// Execute one tick
 			dynlib_tick(&trainEngines[forec_intern_output_train_engine_instance_4.train_engine_type], &trainEngineInstanceData[instance]);
 			if (trainEngineInstanceData[instance].nominal_speed != forec_intern_output_train_engine_instance_4.nominal_speed
 			        || trainEngineInstanceData[instance].nominal_forwards != forec_intern_output_train_engine_instance_4.nominal_forwards) {
-				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName, 
+				syslog_server(LOG_NOTICE, "%s: %s.tick()  %d %d -> %d %d", threadName,
 						trainEngines[forec_intern_output_train_engine_instance_4.train_engine_type].name,
 						trainEngineInstanceData[instance].requested_speed,
 						trainEngineInstanceData[instance].requested_forwards,
 						trainEngineInstanceData[instance].nominal_speed,
 						trainEngineInstanceData[instance].nominal_forwards);
-				
+
 				// Update outputs
 				forec_intern_output_train_engine_instance_4.nominal_speed = trainEngineInstanceData[instance].nominal_speed;
 				forec_intern_output_train_engine_instance_4.nominal_forwards = trainEngineInstanceData[instance].nominal_forwards;
 			}
-			
+
 			pause;
 		}
 
@@ -715,7 +807,33 @@ thread engineInstance4(void) {
 }
 
 
-thread interlockerInstance0(void) { }
+thread interlockerInstance0(void) {
+	unsigned int instance = 0;
+
+	const char *threadName;
+	threadName = "interlockerInstance0";
+
+	while (true) {
+		// Wait for a user to grab a train
+		while (!forec_intern_input_interlocker_instance_1.grab) {
+			pause;
+		}
+
+		forec_intern_output_interlocker_instance_1.interlocker_type = forec_intern_input_interlocker_instance_1.interlocker_type;
+		forec_intern_output_interlocker_instance_1.in_use = true;
+
+		// Reset the data of the interlocker instance
+		dynlib_reset(&interlockers[forec_intern_output_interlocker_instance_1.interlocker_type], &interlockerInstanceData[instance]);
+		dynlib_tick(&interlockers[forec_intern_output_interlocker_instance_1.interlockerInstanceData_type], &interlockerInstanceData[instance]);
+		syslog_server(LOG_NOTICE, "%s: Reset container", threadName);
+
+		forec_intern_output_train_engine_instance_1.train_engine_type = -1;
+		forec_intern_output_train_engine_instance_1.in_use = false;
+		syslog_server(LOG_NOTICE, "%s: Released container", threadName);
+
+		pause;
+	}
+}
 thread interlockerInstance1(void) { }
 thread interlockerInstance2(void) { }
 thread interlockerInstance3(void) { }
@@ -728,20 +846,20 @@ void copyFilename(char destination[], const char source[], const int name_len, c
 	strncpy(destination, filename, name_len);
 }
 
-void copyEngineInputs(t_forec_intern_input_train_engine *internal, 
+void copyEngineInputs(t_forec_intern_input_train_engine *internal,
                       struct t_train_engine_io *external) {
 	internal->load = external->input_load;
 	internal->unload = external->input_unload;
 	strncpy(internal->filepath, external->input_filepath, PATH_MAX + NAME_MAX);
 }
 
-void copyEngineOutputs(struct t_train_engine_io *external, 
+void copyEngineOutputs(struct t_train_engine_io *external,
                        t_forec_intern_output_train_engine *internal) {
 	external->output_in_use = internal->in_use;
 	strncpy(external->output_name, internal->name, NAME_MAX);
 }
 
-void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *internal, 
+void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *internal,
                               struct t_train_engine_instance_io *external) {
 	internal->grab = external->input_grab;
 	internal->release = external->input_release;
@@ -750,7 +868,7 @@ void copyEngineInstanceInputs(t_forec_intern_input_train_engine_instance *intern
 	internal->requested_forwards = external->input_requested_forwards;
 }
 
-void copyEngineInstanceOutputs(struct t_train_engine_instance_io *external, 
+void copyEngineInstanceOutputs(struct t_train_engine_instance_io *external,
                                t_forec_intern_output_train_engine_instance *internal) {
 	external->output_in_use = internal->in_use;
 	external->output_train_engine_type = internal->train_engine_type;
@@ -782,7 +900,7 @@ void unloadInterlockers(void) {
 	forec_intern_output_interlocker_1.in_use = false;
 	forec_intern_output_interlocker_2.in_use = false;
 	forec_intern_output_interlocker_3.in_use = false;
-	
+
 	forec_intern_output_interlocker_instance_0.in_use = false;
 	forec_intern_output_interlocker_instance_1.in_use = false;
 	forec_intern_output_interlocker_instance_2.in_use = false;
