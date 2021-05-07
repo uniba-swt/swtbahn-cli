@@ -2,8 +2,8 @@ module SWTbahnLite
   boards
     master 0xDA000D680052EF
       features 
-        0x03:0x14
-        0x6E:0x00
+        0x03:0x14  # seckack on, 200ms
+        0x6E:0x00  # track output default off
       end
     lightcontrol 0x05000D6B0083EC
     onecontrol 0x05000D7500DBED
