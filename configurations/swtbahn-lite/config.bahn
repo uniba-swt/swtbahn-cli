@@ -47,7 +47,7 @@ module SWTbahnLite
     entry signal4 0x03
     entry signal5 0x04
     entry signal6 0x05
-    entry signal7 0x06
+    block signal7 0x06
     block signal8 0x07
     block signal9 0x08
     block signal10 0x09
