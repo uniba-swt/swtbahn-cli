@@ -82,8 +82,8 @@ bool route_is_clear(const int route_id, const char *train_id) {
 	// Signals of tracks that intersect the route have to be red (stop aspect)
 	if (route->signals != NULL) {
 		for (int signal_index = 0; signal_index < route->signals->len; ++signal_index) {
-            char *signal_id = g_array_index(route->signals, char *, signal_index);
-            if (!string_equals(signal_id, "stop")) {
+			char *signal_id = g_array_index(route->signals, char *, signal_index);
+				if (!string_equals(track_state_get_value(signal_id), "stop")) {
 				syslog_server(LOG_ERR, "Route is clear: Route %d - signal %s is not in the stop aspect",
 				              route_id, signal_id);
 				return false;
@@ -93,7 +93,7 @@ bool route_is_clear(const int route_id, const char *train_id) {
 
 	// All track segments on the route have to be clear
 	for (int segment_index = 0; segment_index < route->path->len; ++segment_index) {
-        char * segment_id = g_array_index(route->path, char *, segment_index);
+		char * segment_id = g_array_index(route->path, char *, segment_index);
 		if (is_segment_occupied(segment_id)) {
 			syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared",
 			              route_id, segment_id);
@@ -114,7 +114,7 @@ bool set_route_points_signals(const int route_id) {
 			t_interlocking_point point = g_array_index(route->points, t_interlocking_point, point_index);
 			const char *point_id = point.id;
 			char *pos = config_get_point_position(route->id, point_id);
-            if (track_state_set_value(point_id, pos)) {
+			if (track_state_set_value(point_id, pos)) {
 				syslog_server(LOG_ERR, "Execute route: Set point - invalid parameters");
 				return false;
 			} else {
