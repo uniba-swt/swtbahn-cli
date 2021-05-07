@@ -70,6 +70,8 @@ blocks:
     main:
       - seg26
     direction: bidirectional
+    signals:
+      - signal13
 platforms:
   - id: platform1
     length: 60.00cm
@@ -90,6 +92,7 @@ platforms:
     direction: bidirectional
     signals:
       - signal11
+      - signal12
 crossings:
 signaltypes:
   - id: entry
