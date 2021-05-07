@@ -52,7 +52,10 @@ module SWTbahnLite
     block signal9 0x08
     block signal10 0x09
     block signal11 0x0A
+    halt signal12 0xF0    # Physically part of signalends
+    halt signal13 0xF1    # Physically part of signalends
     block signal14 0x0B
+    halt signal15 0xF2    # Physically part of signalends
     peripheral signalends 0x12
     peripheral lanterns 0x13
   end
@@ -145,6 +148,8 @@ module SWTbahnLite
     signal9 -- block1.up
     signal10 -- block1.down
     signal11 -- platform2.down
+    signal12 -- platform2.up
+    signal13 -- buffer3.down
     signal14 -- platform1.down
     signal15 -- platform1.up
 
