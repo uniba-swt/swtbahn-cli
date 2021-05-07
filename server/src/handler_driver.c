@@ -294,14 +294,14 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			                                          data_destination_name);
 			if (route_id != NULL && !string_equals(route_id, "")) {
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
-				                          "train: %s route %s",
-				                          grabbed_trains[grab_id].name->str, route_id);
+				              "train: %s route %s",
+				              grabbed_trains[grab_id].name->str, route_id);
 				onion_response_printf(res, "%s", route_id);
 				return OCS_PROCESSED;
 			} else {
 				syslog_server(LOG_ERR, "Request: Request train route - "
-				                       "train: %s route not granted",
-				                       grabbed_trains[grab_id].name->str);
+				              "train: %s route not granted",
+				              grabbed_trains[grab_id].name->str);
 				return OCS_NOT_IMPLEMENTED;
 			}
 		}
