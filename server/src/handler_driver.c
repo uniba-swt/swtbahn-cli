@@ -37,7 +37,8 @@
 #include "handler_controller.h"
 #include "interlocking.h"
 #include "param_verification.h"
-
+#include "interlocking_bahndsl.h"
+#include "bahn_data_util.h"
 
 #define MICROSECOND 1
 #define TRAIN_DRIVE_TIME_STEP 	50000 * MICROSECOND		// 0.05 seconds
@@ -91,14 +92,14 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 static bool drive_route(const int grab_id, const int route_id) {
 	const char *train_id = grabbed_trains[grab_id].name->str;
 	t_interlocking_route *route = get_route(route_id);
-	if (route->train_id == NULL) {
+	if (route->train == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
 		return false;
 	}
 
 	pthread_mutex_lock(&interlocker_mutex);
-	if (strcmp(train_id, route->train_id->str)) {
+    if (strcmp(train_id, route->train) != 0) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
 		return false;
@@ -109,13 +110,13 @@ static bool drive_route(const int grab_id, const int route_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const int requested_speed = 20;
-	const char requested_forwards = (route->direction == CLOCKWISE);
+	const char requested_forwards = true;
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
 	                                       requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set entry signal to red (stop aspect)
-	const char *signal_id = route->source.id;
+	const char *signal_id = route->source;
 	if (bidib_set_signal(signal_id, "red")) {
 		syslog_server(LOG_ERR, "Drive route: Entry signal not set to stop aspect");
 		return false;
@@ -127,7 +128,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 		
 	// Wait until the destination has been reached
 	const int path_count = route->path->len;
-	const char *destination = g_array_index(route->path, t_interlocking_path_segment, path_count - 1).id;
+	const char *destination = g_array_index(route->path, char *, path_count - 1);
 	while (!train_position_is_at(train_id, destination)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
@@ -288,14 +289,14 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			// Use interlocking algorithm to find and grant a route
-			const int route_id = grant_route_with_algorithm(grabbed_trains[grab_id].name->str, 
-			                                                data_source_name, 
-			                                                data_destination_name);
-			if (route_id != -1) {
+			char *route_id = grant_route_with_bahndsl(grabbed_trains[grab_id].name->str,
+			                                          data_source_name,
+			                                          data_destination_name);
+			if (route_id != NULL && !string_equals(route_id, "")) {
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
-				              "train: %s route %d",
+				              "train: %s route %s",
 				              grabbed_trains[grab_id].name->str, route_id);
-				onion_response_printf(res, "%d", route_id);
+				onion_response_printf(res, "%s", route_id);
 				return OCS_PROCESSED;
 			} else {
 				syslog_server(LOG_ERR, "Request: Request train route - "

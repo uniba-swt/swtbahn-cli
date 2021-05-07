@@ -40,6 +40,16 @@ typedef struct {
 	void (*tick_func)(TickData *);
 } dynlib_data;
 
+typedef struct {
+    // Handle to the dynamic library
+    void *lib_handle;
+
+    // Library interface functions
+    void (*request_reset_func)(request_route_tick_data *);
+    void (*request_tick_func)(request_route_tick_data *);
+    void (*drive_reset_func)(drive_route_tick_data *);
+    void (*drive_tick_func)(drive_route_tick_data *);
+} interlocking_dynlib_data;
 
 dynlib_status dynlib_compile_scchart_to_c(const char filepath[]);
 
@@ -48,5 +58,8 @@ bool dynlib_is_loaded(dynlib_data *library);
 void dynlib_close(dynlib_data *library);
 void dynlib_reset(dynlib_data *library, TickData *tick_data);
 void dynlib_tick(dynlib_data *library, TickData *TickData);
+
+dynlib_status dynlib_load_interlocking(interlocking_dynlib_data *library, const char filepath[]);
+void dynlib_close_interlocking(interlocking_dynlib_data *library);
 
 #endif	// DYNLIB_H

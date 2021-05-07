@@ -1,0 +1,151 @@
+# Block layout configuration: SWTbahnStandard
+blocks:
+  - id: block1
+    length: 92.50cm
+    main:
+      - seg4
+    overlaps:
+      - seg3
+      - seg5
+    direction: bidirectional
+    trains:
+      - cargo
+      - passenger
+    signals:
+      - signal2
+      - signal3
+    limit: 300.0km/h
+  - id: block2
+    length: 105.50cm
+    main:
+      - seg8
+    overlaps:
+      - seg7
+      - seg9
+    direction: bidirectional
+    signals:
+      - signal4
+      - signal6
+    limit: 350.0km/h
+  - id: block3
+    length: 142.10cm
+    main:
+      - seg12
+    overlaps:
+      - seg11
+      - seg13
+    direction: bidirectional
+    trains:
+      - cargo
+    signals:
+      - signal7
+      - signal8
+  - id: block4
+    length: 111.80cm
+    main:
+      - seg16
+    overlaps:
+      - seg15
+      - seg17
+    direction: bidirectional
+    signals:
+      - signal10
+      - signal12
+  - id: block5
+    length: 101.00cm
+    main:
+      - seg28
+    overlaps:
+      - seg27
+      - seg29
+    direction: bidirectional
+    signals:
+      - signal9
+      - signal11
+  - id: block6
+    length: 132.55cm
+    main:
+      - seg21
+    overlaps:
+      - seg20
+      - seg22
+    direction: bidirectional
+    signals:
+      - signal13
+      - signal5
+  - id: block7
+    length: 65.10cm
+    main:
+      - seg31
+    overlaps:
+      - seg30a
+      - seg32a
+    direction: bidirectional
+    signals:
+      - signal14
+      - signal15
+  - id: buffer3
+    length: 20.00cm
+    main:
+      - seg1
+    direction: bidirectional
+platforms:
+  - id: platform1
+    length: 76.20cm
+    main:
+      - seg37
+    overlaps:
+      - seg36
+      - seg38
+    direction: bidirectional
+    signals:
+      - signal16
+      - signal17
+  - id: platform2
+    length: 83.80cm
+    main:
+      - seg40
+    overlaps:
+      - seg39
+      - seg41
+    direction: bidirectional
+    signals:
+      - signal18
+      - signal19
+crossings:
+  - id: crossing1
+    segment: seg35
+signaltypes:
+  - id: entry
+    aspects:
+      - yellow
+      - green
+      - red
+  - id: exit
+    aspects:
+      - yellow
+      - green
+      - red
+  - id: distant
+    aspects:
+      - yellow
+      - green
+  - id: block
+    aspects:
+      - green
+      - red
+  - id: shunting
+    aspects:
+      - white
+      - red
+  - id: halt
+    aspects:
+      - red
+  - id: peripheral
+    aspects:
+      - on
+  - id: platformlight
+    aspects:
+      - on
+      - off
+compositions:

@@ -1,66 +1,159 @@
-# Track configuration
+# Track configuration: SWTbahnLite
 boards:
+  - id: onecontrol
+    points-board:
+      - id: point1
+        number: 0x00
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg4
+      - id: point2
+        number: 0x01
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg8
+      - id: point3
+        number: 0x02
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg12
+      - id: point4
+        number: 0x03
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg13
+      - id: point5
+        number: 0x04
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg17
+      - id: point6
+        number: 0x05
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg21
+      - id: point7
+        number: 0x06
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg22
   - id: master
     segments:
       - id: seg1
         address: 0x00
+        length: 10.0cm
       - id: seg2
         address: 0x01
+        length: 57.5cm
       - id: seg3
         address: 0x02
+        length: 11.95cm
       - id: seg4
         address: 0x03
+        length: 19.0cm
       - id: seg5
         address: 0x04
+        length: 11.95cm
       - id: seg6
         address: 0x05
+        length: 61.4cm
       - id: seg7
         address: 0x06
+        length: 10.0cm
       - id: seg8
         address: 0x07
+        length: 13.0cm
       - id: seg9
         address: 0x08
+        length: 8.0cm
       - id: seg10
         address: 0x09
+        length: 70.75cm
       - id: seg11
         address: 0x0A
+        length: 15.85cm
       - id: seg12
         address: 0x0B
+        length: 11.3cm
       - id: seg13
         address: 0x0C
+        length: 10.9cm
       - id: seg14
         address: 0x0D
+        length: 8.0cm
       - id: seg15
         address: 0x0E
+        length: 56.0cm
       - id: seg16
         address: 0x0F
+        length: 8.15cm
       - id: seg17
         address: 0x10
+        length: 11.3cm
       - id: seg18
         address: 0x11
+        length: 20.2cm
       - id: seg19
         address: 0x12
+        length: 40.8cm
       - id: seg20
         address: 0x13
+        length: 10.2cm
       - id: seg21
         address: 0x14
+        length: 10.9cm
       - id: seg22
         address: 0x15
+        length: 11.3cm
       - id: seg23
         address: 0x16
+        length: 5.0cm
       - id: seg24
         address: 0x17
+        length: 50.0cm
       - id: seg25
         address: 0x18
+        length: 8.0cm
       - id: seg26
         address: 0x19
+        length: 17.3cm
       - id: seg27
         address: 0x1A
+        length: 10.0cm
       - id: seg28
         address: 0x1B
+        length: 50.0cm
       - id: seg29
         address: 0x1C
-
+        length: 10.0cm
   - id: lightcontrol
     signals-board:
       - id: signal1
@@ -73,6 +166,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: entry
       - id: signal2
         number: 0x01
         aspects:
@@ -83,6 +177,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: entry
       - id: signal3
         number: 0x02
         aspects:
@@ -93,6 +188,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: entry
       - id: signal4
         number: 0x03
         aspects:
@@ -103,6 +199,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: entry
       - id: signal5
         number: 0x04
         aspects:
@@ -113,6 +210,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: entry
       - id: signal6
         number: 0x05
         aspects:
@@ -123,6 +221,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: entry
       - id: signal7
         number: 0x06
         aspects:
@@ -131,6 +230,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal8
         number: 0x07
         aspects:
@@ -139,6 +239,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal9
         number: 0x08
         aspects:
@@ -147,6 +248,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal10
         number: 0x09
         aspects:
@@ -155,6 +257,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal11
         number: 0x0A
         aspects:
@@ -163,6 +266,21 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
+      - id: signal12
+        number: 0xF0
+        aspects:
+          - id: red
+            value: 0x00
+        initial: red
+        type: halt
+      - id: signal13
+        number: 0xF1
+        aspects:
+          - id: red
+            value: 0x00
+        initial: red
+        type: halt
       - id: signal14
         number: 0x0B
         aspects:
@@ -171,78 +289,25 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
+      - id: signal15
+        number: 0xF2
+        aspects:
+          - id: red
+            value: 0x00
+        initial: red
+        type: halt
       - id: signalends
         number: 0x12
         aspects:
           - id: on
             value: 0x00
-          - id: off
-            value: 0x01
         initial: on
+        type: peripheral
       - id: lanterns
         number: 0x13
         aspects:
           - id: on
             value: 0x00
-          - id: off
-            value: 0x01
         initial: on
-
-  - id: onecontrol
-    points-board:
-      - id: point1
-        number: 0x00
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point2
-        number: 0x01
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point3
-        number: 0x02
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point4
-        number: 0x03
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point5
-        number: 0x04
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point6
-        number: 0x05
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point7
-        number: 0x06
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
+        type: peripheral

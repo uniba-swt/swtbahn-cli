@@ -1,0 +1,93 @@
+def request_route(string src_signal_id, string dst_signal_id, string train_id): string
+
+    # 1. Get all routes
+    string route_ids[] = get routes from src_signal_id to dst_signal_id
+    if route_ids.len == 0
+        return ""
+    end
+
+    # 2. Find shortest route
+    string id = get_shortest_route(route_ids)
+
+    # 3. Check route grantability
+    if !route_is_grantable(id, train_id)
+        return ""
+    end
+
+    # 4. Check route clearance
+    if !route_is_clear(id)
+        return ""
+    end
+
+    # 5. Block the route
+    grant id to train_id
+
+    # 6. Set the points and signals
+    set_points_signals(id)
+
+    return id
+end
+
+def route_is_grantable(string route_id, string train_id): bool
+    string conflict_routes[] = get config route.conflicts route_id
+    for string id in conflict_routes
+        string conflict_train_id = get config route.train id
+        if conflict_train_id == train_id
+            return false
+        end
+    end
+
+    return true
+end
+
+def route_is_clear(string route_id): bool
+    # check entry signal
+    string src_signal = get config route.source route_id
+    string src_state = get state src_signal
+    if src_state != "stop"
+        return false
+    end
+
+    #  All track segments on the route have to be clear
+    string block_ids[] = get config route.sections route_id
+    for string block_id in block_ids
+        if is_block_occupied(block_id)
+            return false
+        end
+    end
+
+    return true
+end
+
+def set_points_signals(string route_id)
+    # switch all points
+    string point_ids[] = get config route.point_positions route_id
+    for string point_id in point_ids
+        string pos = get position point_id in route_id
+        if pos == "normal"
+            set state point_id to normal
+        else
+            set state point_id to reverse
+        end
+    end
+
+    # set entry signal to green
+    string entry_id = get config route.source route_id
+    set state entry_id to clear
+end
+
+def drive_route(string route_id, string train_id, string segment_ids[])
+    # get block
+    string block_id = get_block(route_id, segment_ids)
+    if block_id != ""
+
+        # protect block by controlling the immediate signals
+        string pre_block = get_previous_block(route_id, block_id)
+        if pre_block != ""
+            string signal_ids[] = get config block.block_signals pre_block
+            for string signal_id in signal_ids
+                set state signal_id to stop
+            end
+        end
+    end
+end
