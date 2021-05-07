@@ -225,14 +225,12 @@ boards:
       - id: signal7
         number: 0x06
         aspects:
-          - id: yellow
-            value: 0x02
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
-        type: entry
+        type: block
       - id: signal8
         number: 0x07
         aspects:
