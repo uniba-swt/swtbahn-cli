@@ -236,76 +236,76 @@ boards:
       - id: signal8
         number: 0x07
         aspects:
-          - id: yellow
-            value: 0x02
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
-        type: entry
+        type: block
       - id: signal9
         number: 0x08
         aspects:
-          - id: yellow
-            value: 0x02
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
-        type: entry
+        type: block
       - id: signal10
         number: 0x09
         aspects:
-          - id: yellow
-            value: 0x02
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
-        type: entry
+        type: block
       - id: signal11
         number: 0x0A
         aspects:
-          - id: yellow
-            value: 0x02
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
-        type: entry
+        type: block
       - id: signal12
+        number: 0xF0
+        aspects:
+          - id: red
+            value: 0x00
+        initial: red
+        type: halt
+      - id: signal13
+        number: 0xF1
+        aspects:
+          - id: red
+            value: 0x00
+        initial: red
+        type: halt
+      - id: signal14
+        number: 0x0B
+        aspects:
+          - id: green
+            value: 0x01
+          - id: red
+            value: 0x00
+        initial: red
+        type: block
+      - id: signal15
+        number: 0xF2
+        aspects:
+          - id: red
+            value: 0x00
+        initial: red
+        type: halt
+      - id: signalends
         number: 0x12
         aspects:
           - id: on
             value: 0x00
         initial: on
         type: peripheral
-      - id: signal14
-        number: 0x0B
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal15
-        number: 0x0C
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
       - id: lanterns
         number: 0x13
         aspects:
