@@ -110,7 +110,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const int requested_speed = 20;
-    const char requested_forwards = true; // train direction is no long supported by interlocking table
+	const char requested_forwards = true;
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
 	                                       requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -128,7 +128,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 		
 	// Wait until the destination has been reached
 	const int path_count = route->path->len;
-    const char *destination = g_array_index(route->path, char *, path_count - 1);
+	const char *destination = g_array_index(route->path, char *, path_count - 1);
 	while (!train_position_is_at(train_id, destination)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
@@ -288,22 +288,22 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Request train route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-            // Use interlocking algorithm to find and grant a route
-            char *route_id = grant_route_with_bahndsl(grabbed_trains[grab_id].name->str,
-                                                      data_source_name,
-                                                      data_destination_name);
-            if (route_id != NULL && !string_equals(route_id, "")) {
-                syslog_server(LOG_NOTICE, "Request: Request train route - "
-                                          "train: %s route %s",
-                              grabbed_trains[grab_id].name->str, route_id);
-                onion_response_printf(res, "%s", route_id);
-                return OCS_PROCESSED;
-            } else {
-                syslog_server(LOG_ERR, "Request: Request train route - "
-                                       "train: %s route not granted",
-                              grabbed_trains[grab_id].name->str);
-                return OCS_NOT_IMPLEMENTED;
-            }
+			// Use interlocking algorithm to find and grant a route
+			char *route_id = grant_route_with_bahndsl(grabbed_trains[grab_id].name->str,
+			                                          data_source_name,
+			                                          data_destination_name);
+			if (route_id != NULL && !string_equals(route_id, "")) {
+				syslog_server(LOG_NOTICE, "Request: Request train route - "
+				                          "train: %s route %s",
+				                          grabbed_trains[grab_id].name->str, route_id);
+				onion_response_printf(res, "%s", route_id);
+				return OCS_PROCESSED;
+			} else {
+				syslog_server(LOG_ERR, "Request: Request train route - "
+				                       "train: %s route not granted",
+				                       grabbed_trains[grab_id].name->str);
+				return OCS_NOT_IMPLEMENTED;
+			}
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");
