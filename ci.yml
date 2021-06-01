@@ -1,0 +1,8 @@
+services:
+  build:
+    build:
+      context: ./
+      dockerfile: Dockerfile.ci
+      target: build
+    volumes:
+      - ./:/app/swtbahn-cli

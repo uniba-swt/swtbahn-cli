@@ -17,7 +17,7 @@ set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINA
 # ADJUSTMENT SECTION BEGIN
 # - - - - - - - - - - - - -
 
-set(LIBONION_DIR /home/pi/SWTbahn/onion)
+set(LIBONION_DIR /app/onion)
 add_library(onion SHARED IMPORTED)
 set_target_properties(onion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
 	${LIBONION_DIR}/src)
@@ -30,7 +30,7 @@ set_target_properties(onion_static PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
 set_target_properties(onion_static PROPERTIES IMPORTED_LOCATION
 	${LIBONION_DIR}/bin/src/onion/libonion_static.a)
 
-set(LIBBIDIB_DIR /home/pi/SWTbahn/libbidib)
+set(LIBBIDIB_DIR /app/libbidib)
 add_library(bidib SHARED IMPORTED)
 set_target_properties(bidib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
 	${LIBBIDIB_DIR}/include)
