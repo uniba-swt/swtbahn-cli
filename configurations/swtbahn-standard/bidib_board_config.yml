@@ -1,6 +1,5 @@
-#bidib board configuration
+# BiDiB board configuration: SWTbahnStandard
 boards:
-
   - id: onecontrol1
     unique-id: 0x05000D7500E8ED
   - id: onecontrol2
@@ -12,5 +11,5 @@ boards:
   - id: master
     unique-id: 0xDA000D680001EE
     features:
-    - number: 0x03
-      value: 0x14
+      - number: 0x03
+        value: 0x14

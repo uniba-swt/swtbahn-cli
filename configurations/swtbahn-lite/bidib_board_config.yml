@@ -1,4 +1,4 @@
-# BiDiB board configuration
+# BiDiB board configuration: SWTbahnLite
 boards:
   - id: master
     unique-id: 0xDA000D680052EF
