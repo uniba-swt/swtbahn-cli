@@ -29,17 +29,17 @@
 #define SWTBAHN_CLI_INTERLOCKING_BAHNDSL_H
 
 /**
- * Load dynamic interlocking library compiled by BahnDSL
+ * Load dynamic interlocker compiled by BahnDSL
  * File: interlocker/libinterlocker_default
  * Should being called once in the application lifetimme
- * @return 0 if successful, otherwise -1
+ * @return 0 if successful, otherwise 1
  */
-int load_interlocking_library();
+int load_interlocker_default();
 
 /**
- * Close dynamic interlocking library compiled by BahnDSL
+ * Close dynamic interlocker compiled by BahnDSL
  */
-void close_interlocking_library();
+void close_interlocker_default();
 
 /**
   * Finds and grants a requested train route.
