@@ -35,7 +35,7 @@
 
 pthread_mutex_t interlocker_bahndsl_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static interlocking_dynlib_data lib_interlocking = {};
+static dynlib_data lib_interlocking = {};
 
 int load_interlocking_library() {
     const char *path = "../src/interlocking/libinterlocking_default";
@@ -49,7 +49,7 @@ int load_interlocking_library() {
 }
 
 void close_interlocking_library() {
-    dynlib_close_interlocking(&lib_interlocking);
+    dynlib_close(&lib_interlocking);
 }
 
 char *grant_route_with_bahndsl(const char *train_id, const char *source_id, const char *destination_id) {

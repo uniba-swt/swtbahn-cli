@@ -14,6 +14,8 @@ const char compiler_output_dir[] = "engines";
 const char sccharts_compiler_command[] = "java -jar \"$KICO_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.netlist";
 const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
+dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);
+
 
 // Compiles a given SCCharts model into a dynamic library
 dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
@@ -46,7 +48,7 @@ dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
 }
 
 // Loads a dynamic library from a given filepath
-dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
+dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_type type) {
 	// Make sure no library has been loaded
 	dynlib_close(library);
 	
@@ -67,6 +69,8 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 			return DYNLIB_LOAD_ERR;
 		}
 	}
+
+	library->type = type;
 	
 	// Try and locate the functions of the library interface
 	
@@ -79,6 +83,15 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 	 */
 	dlerror();
 	
+	dynlib_status status = DYNLIB_LOAD_ERR;
+	if (library->type == TRAIN_ENGINE) {
+		status = dynlib_load_train_engine_funcs(library);
+	}
+	
+	return status;
+}
+
+dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library) {
 	*(void **) (&library->reset_func) = dlsym(library->lib_handle, dynlib_symbol_reset);
 	char *error;
 	if ((error = dlerror()) != NULL) {
@@ -92,7 +105,7 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
 	}
-	
+
 	return DYNLIB_LOAD_SUCCESS;
 }
 
@@ -120,7 +133,7 @@ void dynlib_tick(dynlib_data *library, TickData *tick_data) {
 	}
 }
 
-dynlib_status dynlib_load_interlocking(interlocking_dynlib_data *library, const char filepath[]) {
+dynlib_status dynlib_load_interlocking(dynlib_data *library, const char filepath[]) {
     char path[PATH_MAX + NAME_MAX];
     sprintf(path, "%s.so", filepath);
 
@@ -155,13 +168,3 @@ dynlib_status dynlib_load_interlocking(interlocking_dynlib_data *library, const 
     return DYNLIB_LOAD_SUCCESS;
 }
 
-void dynlib_close_interlocking(interlocking_dynlib_data *library) {
-    if (library->lib_handle != NULL) {
-        dlclose(library->lib_handle);
-        library->lib_handle = NULL;
-        library->request_reset_func = NULL;
-        library->request_tick_func = NULL;
-        library->drive_reset_func = NULL;
-        library->drive_tick_func = NULL;
-    }
-}

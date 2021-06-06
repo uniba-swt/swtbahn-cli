@@ -8,3 +8,5 @@ swtbahn-config.yml
 .DS_Store
 .idea
 **/cmake-build-debug/
+
+server/src/.vscode/

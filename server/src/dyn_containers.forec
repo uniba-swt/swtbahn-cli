@@ -95,6 +95,15 @@ int DYNLIB_LOAD_RESET_ERR;
 int DYNLIB_LOAD_TICK_ERR;
 #define DYNLIB_LOAD_TICK_ERR__global_0_0 DYNLIB_LOAD_TICK_ERR
 
+int TRAIN_ENGINE;
+#define TRAIN_ENGINE__global_0_0 TRAIN_ENGINE
+
+int INTERLOCKER;
+#define INTERLOCKER__global_0_0 INTERLOCKER
+
+int DRIVE_ROUTE;
+#define DRIVE_ROUTE__global_0_0 DRIVE_ROUTE
+
 typedef void TickData;
 #define TickData__global_0_0 TickData
 
@@ -337,7 +346,7 @@ thread loadEngines(void) {
 	// Load train engines that are already available
 	dynlib_status load_status;
 
-	load_status = dynlib_load(&trainEngines[0], trainEngineFilepaths[0]);
+	load_status = dynlib_load(&trainEngines[0], trainEngineFilepaths[0], TRAIN_ENGINE);
 	printout(threadName, load_status, &trainEngines[0]);
 	if (load_status == DYNLIB_LOAD_SUCCESS) {
 		forec_intern_output_train_engine_0.in_use = true;
@@ -345,7 +354,7 @@ thread loadEngines(void) {
 		forec_intern_output_train_engine_0.name = trainEngines[0].name;
 	}
 
-	load_status = dynlib_load(&trainEngines[1], trainEngineFilepaths[1]);
+	load_status = dynlib_load(&trainEngines[1], trainEngineFilepaths[1], TRAIN_ENGINE);
 	printout(threadName, load_status, &trainEngines[1]);
 	if (load_status == DYNLIB_LOAD_SUCCESS) {
 		forec_intern_output_train_engine_1.in_use = true;
@@ -358,7 +367,7 @@ thread loadEngines(void) {
 		unsigned int container = 0;
 		if (forec_intern_input_train_engine_0.load && !forec_intern_output_train_engine_0.in_use) {
 			// Load the new dynamic library
-			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.filepath);
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_0.filepath, TRAIN_ENGINE);
 			printout(threadName, load_status, &trainEngines[container]);
 			if (load_status == DYNLIB_LOAD_SUCCESS) {
 				forec_intern_output_train_engine_0.in_use = true;
@@ -375,7 +384,7 @@ thread loadEngines(void) {
 		container = 1;
 		if (forec_intern_input_train_engine_1.load && !forec_intern_output_train_engine_1.in_use) {
 			// Load the new dynamic library
-			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_1.filepath);
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_1.filepath, TRAIN_ENGINE);
 			printout(threadName, load_status, &trainEngines[container]);
 			if (load_status == DYNLIB_LOAD_SUCCESS) {
 				forec_intern_output_train_engine_1.in_use = true;
@@ -391,7 +400,7 @@ thread loadEngines(void) {
 		container = 2;
 		if (forec_intern_input_train_engine_2.load && !forec_intern_output_train_engine_2.in_use) {
 			// Load the new dynamic library
-			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_2.filepath);
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_2.filepath, TRAIN_ENGINE);
 			printout(threadName, load_status, &trainEngines[container]);
 			if (load_status == DYNLIB_LOAD_SUCCESS) {
 				forec_intern_output_train_engine_2.in_use = true;
@@ -407,7 +416,7 @@ thread loadEngines(void) {
 		container = 3;
 		if (forec_intern_input_train_engine_3.load && !forec_intern_output_train_engine_3.in_use) {
 			// Load the new dynamic library
-			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_3.filepath);
+			dynlib_status load_status = dynlib_load(&trainEngines[container], forec_intern_input_train_engine_3.filepath, TRAIN_ENGINE);
 			printout(threadName, load_status, &trainEngines[container]);
 			if (load_status == DYNLIB_LOAD_SUCCESS) {
 				forec_intern_output_train_engine_3.in_use = true;
