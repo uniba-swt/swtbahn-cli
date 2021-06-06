@@ -22,6 +22,7 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Nicolas Gross <https://github.com/nicolasgross>
+ * - Tri Nguyen <https://github.com/trinnguyen>
  *
  */
 
@@ -42,11 +43,6 @@ int load_interlocker_default();
  * Close dynamic interlocker compiled by BahnDSL
  */
 void close_interlocker_default();
-
-bool route_is_unavailable_or_conflicted(const int route_id);
-bool route_is_clear(const int route_id, const char *train_id);
-bool set_route_points_signals(const int route_id);
-bool block_route(const int route_id, const char *train_id);
 
 /**
   * Finds and grants a requested train route.

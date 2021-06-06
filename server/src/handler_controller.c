@@ -22,6 +22,7 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Nicolas Gross <https://github.com/nicolasgross>
+ * - Tri Nguyen <https://github.com/trinnguyen>
  *
  */
 
@@ -55,114 +56,10 @@ void close_interlocker_default() {
 	dynlib_close(&interlocker);
 }
 
-bool route_is_unavailable_or_conflicted(const int route_id) {
-	t_interlocking_route *route = get_route(route_id);
-
-	// Check if the route has been granted (unavailable)
-	if (route->train != NULL) {
-		syslog_server(LOG_ERR, "Route has already been granted: %d", route_id);
-		return true;
-	} else {
-		syslog_server(LOG_NOTICE, "Route available: %d", route_id);
-	}
-	
-	// Check conflicts
-	if (route->conflicts != NULL) {
-		for (int i = 0; i < route->conflicts->len; ++i) {
-			char *conflicted_route_id = g_array_index(route->conflicts, char *, i);
-			if (get_route_str(conflicted_route_id)->train != NULL) {
-				syslog_server(LOG_ERR, "Conflicting route has been granted: %d", conflicted_route_id);
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-bool route_is_clear(const int route_id, const char *train_id) {
-	if (route_id == -1) {
-		syslog_server(LOG_ERR, "Route is clear: Route %d is invalid", route_id);
-		return false;
-	} else {
-		syslog_server(LOG_NOTICE, "Route is clear: Route %d is valid for train %s", route_id, train_id);
-	}
-
-	t_interlocking_route *route = get_route(route_id);
-	// Signal at the route source has to be red (stop aspect)
-	if (!string_equals(track_state_get_value(route->source), "stop")) {
-		syslog_server(LOG_ERR, "Route is clear: Route %d - source signal is not in the stop aspect", route_id);
-		return false;
-	}
-	
-	// Signals of tracks that intersect the route have to be red (stop aspect)
-	if (route->signals != NULL) {
-		for (int signal_index = 0; signal_index < route->signals->len; ++signal_index) {
-			char *signal_id = g_array_index(route->signals, char *, signal_index);
-				if (!string_equals(track_state_get_value(signal_id), "stop")) {
-				syslog_server(LOG_ERR, "Route is clear: Route %d - signal %s is not in the stop aspect",
-				              route_id, signal_id);
-				return false;
-			}
-		}
-	}
-
-	// All track segments on the route have to be clear
-	for (int segment_index = 0; segment_index < route->path->len; ++segment_index) {
-		char * segment_id = g_array_index(route->path, char *, segment_index);
-		if (is_segment_occupied(segment_id)) {
-			syslog_server(LOG_ERR, "Route is clear: Route %d - track segment %s has not been cleared",
-			              route_id, segment_id);
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool set_route_points_signals(const int route_id) {
-	syslog_server(LOG_NOTICE, "set_route_points_signals: route_id = %d", route_id);
-	              t_interlocking_route *route = get_route(route_id);
-
-	// Set points
-	if (route->points != NULL) {
-		for (int point_index = 0; point_index < route->points->len; ++point_index) {
-			t_interlocking_point point = g_array_index(route->points, t_interlocking_point, point_index);
-			const char *point_id = point.id;
-			char *pos = config_get_point_position(route->id, point_id);
-			if (track_state_set_value(point_id, pos)) {
-				syslog_server(LOG_ERR, "Execute route: Set point - invalid parameters");
-				return false;
-			} else {
-				syslog_server(LOG_NOTICE, "Execute route: Set point - point: %s state: %s", point_id, pos);
-				bidib_flush();
-			}
-		}
-	}
-	
-	// Set entry signal to green (proceed aspect)
-	if (track_state_set_value(route->source, "clear")) {
-		syslog_server(LOG_ERR, "Execute route: Set signal - invalid parameters");
-		return false;
-	} else {
-		syslog_server(LOG_NOTICE, "Execute route: Set signal - signal: %s state: %s", route->source, "green");
-		bidib_flush();
-	}
-
-	return true;
-}
-
-bool block_route(const int route_id, const char *train_id) {
-	syslog_server(LOG_NOTICE, "Block route: train %s on route %d", train_id, route_id);
-	t_interlocking_route *route = get_route(route_id);
-	route->train = strdup(train_id);
-	return true;
-}
-
 char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 
-	init_cached_track_state();
+	bahn_data_util_init_cached_track_state();
 
 	// Initialise tick data
 	TickData_interlocker tick_data = {
@@ -182,7 +79,7 @@ char *grant_route(const char *train_id, const char *source_id, const char *desti
 	free(tick_data.src_signal_id);
 	free(tick_data.dst_signal_id);
 	free(tick_data.train_id);
-	free_cached_track_state();
+	bahn_data_util_free_cached_track_state();
 
 	// Return the result
 	char *route_id = tick_data.out;

@@ -60,7 +60,7 @@ static void *start_bidib(void *_) {
 		pthread_exit(NULL);
 	}
 
-	int succ_config = initialise_config(config_directory);
+	int succ_config = bahn_data_util_initialise_config(config_directory);
     if (!succ_config) {
         pthread_mutex_lock(&start_stop_mutex);
         starting = false;
@@ -131,7 +131,7 @@ static void *stop_bidib(void *_) {
 	usleep (1000000); // wait for running functions
 	bidib_stop();
 	free_all_grabbed_trains();
-    free_config();
+    bahn_data_util_free_config();
 	pthread_mutex_lock(&start_stop_mutex);
 	stopping = false;
 	pthread_mutex_unlock(&start_stop_mutex);
