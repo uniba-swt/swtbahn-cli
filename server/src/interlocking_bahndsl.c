@@ -51,20 +51,19 @@ void close_interlocker_default() {
     dynlib_close(&lib_interlocking);
 }
 
-char *grant_route_with_bahndsl(const char *train_id, const char *source_id, const char *destination_id) {
+char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
     pthread_mutex_lock(&interlocker_bahndsl_mutex);
 
-    // init cache
     init_cached_track_state();
 
     // request route
-    request_route_tick_data tick_data = {.src_signal_id = strdup(source_id),
+    TickData_interlocker tick_data = {.src_signal_id = strdup(source_id),
             .dst_signal_id = strdup(destination_id),
             .train_id = strdup(train_id)};
 
-    lib_interlocking.request_reset_func(&tick_data);
-    while (tick_data.terminated == 0) {
-        lib_interlocking.request_tick_func(&tick_data);
+    dynlib_interlocker_reset(&lib_interlocking, &tick_data);
+    while (!tick_data.terminated) {
+        dynlib_interlocker_tick(&lib_interlocking, &tick_data);
     }
 
     // Free

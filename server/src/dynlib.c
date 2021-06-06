@@ -125,14 +125,14 @@ dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library) {
 dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library) {
 	char *error;
 
-    *(void **) (&library->request_reset_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_reset);
+    *(void **) (&library->interlocker_reset_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_reset);
 	if ((error = dlerror()) != NULL) {
 		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_interlocker_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
 
 	dlerror();
-    *(void **) (&library->request_tick_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_tick);
+    *(void **) (&library->interlocker_tick_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_tick);
 	if ((error = dlerror()) != NULL) {
 		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_interlocker_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
@@ -144,13 +144,13 @@ dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library) {
 dynlib_status dynlib_load_drive_route_funcs(dynlib_data *library) {
 	char *error;
 
-    *(void **) (&library->drive_reset_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_reset);
+    *(void **) (&library->drive_route_reset_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_reset);
 	if ((error = dlerror()) != NULL) {
 		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_drive_route_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
 
-    *(void **) (&library->drive_tick_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_tick);
+    *(void **) (&library->drive_route_tick_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_tick);
 	if ((error = dlerror()) != NULL) {
 		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_drive_route_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
@@ -171,15 +171,38 @@ void dynlib_close(dynlib_data *library) {
 	}
 }
 
-void dynlib_reset(dynlib_data *library, TickData *tick_data) {
+void dynlib_train_engine_reset(dynlib_data *library, TickData_train_engine *tick_data) {
 	if (dynlib_is_loaded(library)) {
 		(*library->train_engine_reset_func)(tick_data);
 	}
 }
 
-void dynlib_tick(dynlib_data *library, TickData *tick_data) {
+void dynlib_train_engine_tick(dynlib_data *library, TickData_train_engine *tick_data) {
 	if (dynlib_is_loaded(library)) {
 		(*library->train_engine_tick_func)(tick_data);
 	}
 }
 
+void dynlib_interlocker_reset(dynlib_data *library, TickData_interlocker *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->interlocker_reset_func)(tick_data);
+	}
+}
+
+void dynlib_interlocker_tick(dynlib_data *library, TickData_interlocker *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->interlocker_tick_func)(tick_data);
+	}
+}
+
+void dynlib_drive_route_reset(dynlib_data *library, TickData_drive_route *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->drive_route_reset_func)(tick_data);
+	}
+}
+
+void dynlib_drive_route_tick(dynlib_data *library, TickData_drive_route *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->drive_route_tick_func)(tick_data);
+	}
+}

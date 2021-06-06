@@ -15,24 +15,28 @@ typedef struct {
   char nominal_forwards;
   
   char internal_variables[1024];
-} TickData;
+} TickData_train_engine;
 
 typedef struct {
-    char* src_signal_id;    // Input
-    char* dst_signal_id;    // Input
-    char* train_id;         // Input
-    char* out;              // Output
+  char* src_signal_id;    // Input
+  char* dst_signal_id;    // Input
+  char* train_id;         // Input
+  char* out;              // Output
 
-    int terminated;
-} request_route_tick_data;
+  bool terminated;        // Internal
+
+  char internal_variables[4096];
+} TickData_interlocker;
 
 typedef struct {
-    char* route_id;           // Input
-    char* train_id;           // Input
-    char* segment_ids[1024];  // Input
-    int count_segments;       // Input
+  char* route_id;           // Input
+  char* train_id;           // Input
+  char* segment_ids[1024];  // Input
+  int count_segments;       // Input
 
-    int terminated;
-} drive_route_tick_data;
+  bool terminated;          // Internal
+
+  char internal_variables[2048];
+} TickData_drive_route;
 
 #endif // TICK_DATA_H

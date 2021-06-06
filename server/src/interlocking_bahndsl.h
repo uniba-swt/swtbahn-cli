@@ -50,6 +50,6 @@ void close_interlocker_default();
   * @param name of the destination signal
   * @return ID of the route if it has been granted, otherwise NULL
   */ 
-char *grant_route_with_bahndsl(const char *train_id, const char *source_id, const char *destination_id);
+char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
 
 #endif //SWTBAHN_CLI_INTERLOCKING_BAHNDSL_H
