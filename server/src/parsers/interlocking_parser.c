@@ -49,13 +49,13 @@ bool init_parser(const char *config_dir, const char *table_file,
     *fh = fopen(full_path, "r");
 
     if (*fh == NULL) {
-        syslog_server(LOG_ERR, "%Failed to open %s", table_file);
+        syslog_server(LOG_ERR, "%Interlocking parser: Failed to open %s", table_file);
         return false;
     }
 
     if (!yaml_parser_initialize(parser)) {
         fclose(*fh);
-        syslog_server(LOG_ERR, "Failed to initialize interlocking table parser");
+        syslog_server(LOG_ERR, "Interlocking parser: Failed to initialise the interlocking table parser");
         return false;
     }
 
@@ -400,7 +400,7 @@ GHashTable *parse(yaml_parser_t *parser) {
 
 GHashTable *parse_interlocking_table(const char *config_dir) {
     if (config_dir == NULL) {
-        syslog_server(LOG_INFO, "No interlocking table loaded because of missing config dir");
+        syslog_server(LOG_ERR, "Interlocking parser: config directory is missing");
         return false;
     }
 
@@ -408,6 +408,7 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
     FILE *fh;
     yaml_parser_t parser;
     if (!init_parser(config_dir, "interlocking_table.yml", &fh, &parser)) {
+        syslog_server(LOG_ERR, "Interlocking parser: Interlocking table file is missing");
         return false;
     }
 
@@ -420,11 +421,11 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
 
     // success
     if (routes != NULL) {
-        syslog_server(LOG_INFO, "Interlocking table loaded successfully: %d", g_hash_table_size(routes));
+        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %d routes", g_hash_table_size(routes));
         return routes;
     }
 
     // error
-    syslog_server(LOG_ERR, "Failed to load interlocking table");
+    syslog_server(LOG_ERR, "Interlocking parser: Failed to load interlocking table");
     return NULL;
 }

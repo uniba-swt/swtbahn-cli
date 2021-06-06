@@ -78,18 +78,19 @@ typedef struct {
 bool interlocking_table_initialise(const char *config_dir);
 
 /**
- * Free the array that stores interlocking table
+ * Free the array that stores the interlocking table.
  */
 void free_interlocking_table(void);
 
 /**
- * Return the array of route ID for a given source and destination signal
+ * Return the array of route ID for a given source and destination signal.
+ * 
  * @return array if it exists, otherwise NULL
  */
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id);
 
 /**
- * Return first route
+ * Return the first route between the source and destination signals.
  *
  * @param source_id
  * @param destination_id
