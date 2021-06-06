@@ -44,8 +44,8 @@ typedef struct {
 	void *lib_handle;
 
 	// Library interface functions for a train engine
-	void (*reset_func)(TickData *);
-	void (*tick_func)(TickData *);
+	void (*train_engine_reset_func)(TickData *);
+	void (*train_engine_tick_func)(TickData *);
 
     // Library interface functions for an interlocker
     void (*request_reset_func)(request_route_tick_data *);
@@ -64,7 +64,5 @@ bool dynlib_is_loaded(dynlib_data *library);
 void dynlib_close(dynlib_data *library);
 void dynlib_reset(dynlib_data *library, TickData *tick_data);
 void dynlib_tick(dynlib_data *library, TickData *TickData);
-
-dynlib_status dynlib_load_interlocking(dynlib_data *library, const char filepath[]);
 
 #endif	// DYNLIB_H

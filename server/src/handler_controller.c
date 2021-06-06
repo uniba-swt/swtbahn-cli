@@ -35,7 +35,6 @@
 #include "interlocking.h"
 #include "bahn_data_util.h"
 
-#include "interlocking_algorithm.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -143,46 +142,7 @@ bool block_route(const int route_id, const char *train_id) {
 	return true;
 }
 
-int grant_route_with_algorithm(const char *train_id, const char *source_id, const char *destination_id) {
-	t_interlocking_algorithm_tick_data interlocking_data;
-	interlocking_algorithm_reset(&interlocking_data);
-
-	// Set the inputs
-	interlocking_data.request_available = true;
-	interlocking_data.train_id = train_id;
-	interlocking_data.source_id = source_id;
-	interlocking_data.destination_id = destination_id;
-	
-	// Execute the algorithm
-	pthread_mutex_lock(&interlocker_mutex);
-    init_cached_track_state();
-	interlocking_algorithm_tick(&interlocking_data);
-    free_cached_track_state();
-	pthread_mutex_unlock(&interlocker_mutex);
-
-	interlocking_data.request_available = false;
-
-	switch (interlocking_data.route_id) {
-		case (-1):
-			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (1. Wait)");
-			return -1;
-		case (-2):
-			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (2. Find)");
-			return -1;
-		case (-3):
-			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Grantable)");
-			return -1;
-		case (-4):
-			syslog_server(LOG_ERR, "Grant route with algorithm: Route could not be granted (3. Clearance)");
-			return -1;
-		default:
-			break;
-	} 
-	
-	// Return the ID of the granted route
-	syslog_server(LOG_NOTICE, "Grant route with algorithm: Route %d has been granted", interlocking_data.route_id);
-	return interlocking_data.route_id;
-}
+// TODO: grant_route_with_bahndsl
 
 void release_route(const int route_id) {
 	pthread_mutex_lock(&interlocker_mutex);

@@ -38,8 +38,8 @@ pthread_mutex_t interlocker_bahndsl_mutex = PTHREAD_MUTEX_INITIALIZER;
 static dynlib_data lib_interlocking = {};
 
 int load_interlocking_library() {
-    const char *path = "../src/interlocking/libinterlocking_default";
-    dynlib_status status = dynlib_load_interlocking(&lib_interlocking, path);
+    const char *path = "../src/interlockers/libinterlocker_default";
+    dynlib_status status = dynlib_load(&lib_interlocking, path, INTERLOCKER);
     if (status == DYNLIB_LOAD_SUCCESS) {
         syslog_server(LOG_NOTICE, "Loaded dynamic interlocking library: %s", path);
         return 0;

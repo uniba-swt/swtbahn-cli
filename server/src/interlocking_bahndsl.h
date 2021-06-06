@@ -30,8 +30,8 @@
 
 /**
  * Load dynamic interlocking library compiled by BahnDSL
- * File: interlocking/libinterlocking_default
- * Should being called once if the application lifetimme
+ * File: interlocker/libinterlocker_default
+ * Should being called once in the application lifetimme
  * @return 0 if successful, otherwise -1
  */
 int load_interlocking_library();
@@ -42,12 +42,14 @@ int load_interlocking_library();
 void close_interlocking_library();
 
 /**
- * Finds and grants a requested train route using the dynamic library compiled by BahnDSL
- * @param train_id
- * @param source_id
- * @param destination_id
- * @return ID of the route if it has been granted, otherwise NULL
- */
+  * Finds and grants a requested train route.
+  * A requested route is defined by a pair of source and destination signals. 
+  * 
+  * @param name of requesting train
+  * @param name of the source signal
+  * @param name of the destination signal
+  * @return ID of the route if it has been granted, otherwise NULL
+  */ 
 char *grant_route_with_bahndsl(const char *train_id, const char *source_id, const char *destination_id);
 
 #endif //SWTBAHN_CLI_INTERLOCKING_BAHNDSL_H
