@@ -31,12 +31,29 @@
 #include <string.h>
 
 #include "server.h"
+#include "dyn_containers_interface.h"
 #include "param_verification.h"
 #include "interlocking.h"
 #include "bahn_data_util.h"
 
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static dynlib_data interlocker = {};
+
+int load_interlocker_default() {
+	const char *path = "../src/interlockers/libinterlocker_default";
+	dynlib_status status = dynlib_load(&interlocker, path, INTERLOCKER);
+	if (status == DYNLIB_LOAD_SUCCESS) {
+		return 1;
+	}
+
+	return 0;
+}
+
+void close_interlocker_default() {
+	dynlib_close(&interlocker);
+}
 
 bool route_is_unavailable_or_conflicted(const int route_id) {
 	t_interlocking_route *route = get_route(route_id);
@@ -142,7 +159,42 @@ bool block_route(const int route_id, const char *train_id) {
 	return true;
 }
 
-// TODO: grant_route_with_bahndsl
+char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
+	pthread_mutex_lock(&interlocker_mutex);
+
+	init_cached_track_state();
+
+	// Initialise tick data
+	TickData_interlocker tick_data = {
+		.src_signal_id = strndup(source_id, NAME_MAX),
+		.dst_signal_id = strndup(destination_id, NAME_MAX),
+		.train_id = strndup(train_id, NAME_MAX)
+	};
+	dynlib_interlocker_reset(&interlocker, &tick_data);
+
+	// Ask interlocker to grant requested route.
+	// May take multiple ticks to process the request.
+	while (!tick_data.terminated) {
+		dynlib_interlocker_tick(&interlocker, &tick_data);
+	}
+
+	// Signal and train strings are no longer needed
+	free(tick_data.src_signal_id);
+	free(tick_data.dst_signal_id);
+	free(tick_data.train_id);
+	free_cached_track_state();
+
+	// Return the result
+	char *route_id = tick_data.out;
+	if (route_id != NULL) {
+		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
+	} else {
+		syslog_server(LOG_ERR, "Grant route: Route could not be granted");
+	}
+
+	pthread_mutex_unlock(&interlocker_mutex);
+	return route_id;
+}
 
 void release_route(const int route_id) {
 	pthread_mutex_lock(&interlocker_mutex);

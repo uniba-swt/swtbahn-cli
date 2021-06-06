@@ -37,7 +37,6 @@
 #include "handler_controller.h"
 #include "interlocking.h"
 #include "param_verification.h"
-#include "interlocking_bahndsl.h"
 #include "bahn_data_util.h"
 
 #define MICROSECOND 1

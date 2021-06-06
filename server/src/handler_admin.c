@@ -33,8 +33,8 @@
 
 #include "server.h"
 #include "handler_driver.h"
+#include "handler_controller.h"
 #include "interlocking.h"
-#include "interlocking_bahndsl.h"
 #include "dyn_containers_interface.h"
 #include "bahn_data_util.h"
 
