@@ -68,14 +68,14 @@ static void *start_bidib(void *_) {
         pthread_exit(NULL);
     }
 
-	int err_interlocker = load_interlocker_default();
-	if (err_interlocker) {
+	int succ_interlocker = load_interlocker_default();
+	if (!succ_interlocker) {
     	pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
 		pthread_exit(NULL);
 	}
-	
+
 	int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
 		pthread_mutex_lock(&start_stop_mutex);

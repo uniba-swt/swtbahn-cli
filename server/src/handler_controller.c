@@ -45,11 +45,8 @@ static dynlib_data interlocker = {};
 int load_interlocker_default() {
 	const char *path = "../src/interlockers/libinterlocker_default";
 	dynlib_status status = dynlib_load(&interlocker, path, INTERLOCKER);
-	if (status == DYNLIB_LOAD_SUCCESS) {
-		return 1;
-	}
-
-	return 0;
+	
+	return (status == DYNLIB_LOAD_SUCCESS);
 }
 
 void close_interlocker_default() {
@@ -74,6 +71,7 @@ char *grant_route(const char *train_id, const char *source_id, const char *desti
 	while (!tick_data.terminated) {
 		dynlib_interlocker_tick(&interlocker, &tick_data);
 	}
+	bidib_flush();
 
 	// Signal and train strings are no longer needed
 	free(tick_data.src_signal_id);

@@ -35,7 +35,7 @@ extern pthread_mutex_t interlocker_mutex;
  * Load dynamic interlocker compiled by BahnDSL
  * File: interlocker/libinterlocker_default
  * Should being called once in the application lifetimme
- * @return 0 if successful, otherwise 1
+ * @return 1 if successful, otherwise 0
  */
 int load_interlocker_default();
 

@@ -11,7 +11,7 @@ include_directories(${GLIB_INCLUDE_DIRS})
 
 file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
 
-set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines")
+set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines;${CMAKE_CURRENT_BINARY_DIR}/interlockers")
 
 # - - - - - - - - - - - - -
 # ADJUSTMENT SECTION BEGIN
@@ -61,6 +61,12 @@ add_custom_target(
 	engines_dir
 	ALL
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/engines"
+)
+
+add_custom_target(
+	interlockers_dir
+	ALL
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/interlockers"
 )
 
 

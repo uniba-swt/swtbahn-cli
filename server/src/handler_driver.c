@@ -109,19 +109,20 @@ static bool drive_route(const int grab_id, const int route_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const int requested_speed = 20;
-	const char requested_forwards = true;
+	const char requested_forwards = true;	// TOFIX
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
 	                                       requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set entry signal to red (stop aspect)
 	const char *signal_id = route->source;
-	if (bidib_set_signal(signal_id, "red")) {
-		syslog_server(LOG_ERR, "Drive route: Entry signal not set to stop aspect");
+	const char *signal_aspect = "red";
+	if (bidib_set_signal(signal_id, signal_aspect)) {
+		syslog_server(LOG_ERR, "Drive route: Unable to set entry signal to aspect %s", signal_aspect);
 		return false;
 	} else {
 		syslog_server(LOG_NOTICE, "Drive route: Set signal - signal: %s state: %s",
-		              signal_id, "red");
+		              signal_id, signal_aspect);
 		bidib_flush();
 	}
 		
