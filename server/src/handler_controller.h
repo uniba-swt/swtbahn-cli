@@ -22,6 +22,7 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Nicolas Gross <https://github.com/nicolasgross>
+ * - Tri Nguyen <https://github.com/trinnguyen>
  *
  */
 
@@ -30,10 +31,18 @@
 
 extern pthread_mutex_t interlocker_mutex;
 
-bool route_is_unavailable_or_conflicted(const int route_id);
-bool route_is_clear(const int route_id, const char *train_id);
-bool set_route_points_signals(const int route_id);
-bool block_route(const int route_id, const char *train_id);
+/**
+ * Load dynamic interlocker compiled by BahnDSL
+ * File: interlocker/libinterlocker_default
+ * Should being called once in the application lifetimme
+ * @return 1 if successful, otherwise 0
+ */
+int load_interlocker_default();
+
+/**
+ * Close dynamic interlocker compiled by BahnDSL
+ */
+void close_interlocker_default();
 
 /**
   * Finds and grants a requested train route.
@@ -42,10 +51,9 @@ bool block_route(const int route_id, const char *train_id);
   * @param name of requesting train
   * @param name of the source signal
   * @param name of the destination signal
-  * @return ID of the route if it has been granted, otherwise -1
+  * @return ID of the route if it has been granted, otherwise NULL
   */ 
-int grant_route_with_algorithm(const char *train_id, const char *source_id, 
-                               const char *destination_id);
+char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
 
 void release_route(const int route_id);
 

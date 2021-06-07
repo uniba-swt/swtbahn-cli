@@ -33,8 +33,8 @@
 
 #include "server.h"
 #include "handler_driver.h"
+#include "handler_controller.h"
 #include "interlocking.h"
-#include "interlocking_bahndsl.h"
 #include "dyn_containers_interface.h"
 #include "bahn_data_util.h"
 
@@ -60,16 +60,22 @@ static void *start_bidib(void *_) {
 		pthread_exit(NULL);
 	}
 
-    if (!initialise_config(config_directory)) {
+	int succ_config = bahn_data_util_initialise_config(config_directory);
+    if (!succ_config) {
         pthread_mutex_lock(&start_stop_mutex);
         starting = false;
         pthread_mutex_unlock(&start_stop_mutex);
         pthread_exit(NULL);
     }
 
-    // load dynamic BahnDSL lib
-    load_interlocking_library();
-	
+	int succ_interlocker = load_interlocker_default();
+	if (!succ_interlocker) {
+    	pthread_mutex_lock(&start_stop_mutex);
+		starting = false;
+		pthread_mutex_unlock(&start_stop_mutex);
+		pthread_exit(NULL);
+	}
+
 	int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
 		pthread_mutex_lock(&start_stop_mutex);
@@ -124,9 +130,8 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 static void *stop_bidib(void *_) {
 	usleep (1000000); // wait for running functions
 	bidib_stop();
-    close_interlocking_library();
 	free_all_grabbed_trains();
-    free_config();
+    bahn_data_util_free_config();
 	pthread_mutex_lock(&start_stop_mutex);
 	stopping = false;
 	pthread_mutex_unlock(&start_stop_mutex);
@@ -144,6 +149,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		stopping = true;
 		running = false;
 		dyn_containers_stop();
+		close_interlocker_default();
 		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
 		retval = OCS_PROCESSED;

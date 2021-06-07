@@ -7,12 +7,22 @@
 #include "dynlib.h"
 #include "server.h"
 
-const char dynlib_symbol_reset[] = "reset";
-const char dynlib_symbol_tick[] = "tick";
+const char dynlib_symbol_train_engine_reset[] = "reset";
+const char dynlib_symbol_train_engine_tick[] = "tick";
+
+const char dynlib_symbol_interlocker_reset[] = "request_route_reset";
+const char dynlib_symbol_interlocker_tick[] = "request_route_tick";
+
+const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
+const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 
 const char compiler_output_dir[] = "engines";
 const char sccharts_compiler_command[] = "java -jar \"$KICO_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.netlist";
 const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
+
+dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);
+dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library);
+dynlib_status dynlib_load_drive_route_funcs(dynlib_data *library);
 
 
 // Compiles a given SCCharts model into a dynamic library
@@ -46,7 +56,7 @@ dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
 }
 
 // Loads a dynamic library from a given filepath
-dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
+dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_type type) {
 	// Make sure no library has been loaded
 	dynlib_close(library);
 	
@@ -67,6 +77,8 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 			return DYNLIB_LOAD_ERR;
 		}
 	}
+
+	library->type = type;
 	
 	// Try and locate the functions of the library interface
 	
@@ -79,20 +91,75 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[]) {
 	 */
 	dlerror();
 	
-	*(void **) (&library->reset_func) = dlsym(library->lib_handle, dynlib_symbol_reset);
+	dynlib_status status = DYNLIB_LOAD_ERR;
+	if (library->type == TRAIN_ENGINE) {
+		status = dynlib_load_train_engine_funcs(library);
+	} else if (library->type == INTERLOCKER) {
+		status = dynlib_load_interlocker_funcs(library);
+	} else if (library->type == DRIVE_ROUTE) {
+		status = dynlib_load_drive_route_funcs(library);
+	}
+	
+	if (status == DYNLIB_LOAD_SUCCESS) {
+		syslog_server(LOG_NOTICE, "Loaded dynamic library %s\n", library->filepath);
+	}
+	
+	return status;
+}
+
+dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library) {
 	char *error;
+
+	*(void **) (&library->train_engine_reset_func) = dlsym(library->lib_handle, dynlib_symbol_train_engine_reset);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_reset, error);
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_train_engine_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
 	
 	dlerror();
-	*(void **) (&library->tick_func) = dlsym(library->lib_handle, dynlib_symbol_tick);
+	*(void **) (&library->train_engine_tick_func) = dlsym(library->lib_handle, dynlib_symbol_train_engine_tick);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_tick, error);
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_train_engine_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
 	}
-	
+
+	return DYNLIB_LOAD_SUCCESS;
+}
+
+dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library) {
+	char *error;
+
+    *(void **) (&library->interlocker_reset_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_reset);
+	if ((error = dlerror()) != NULL) {
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_interlocker_reset, error);
+		return DYNLIB_LOAD_RESET_ERR;
+	}
+
+	dlerror();
+    *(void **) (&library->interlocker_tick_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_tick);
+	if ((error = dlerror()) != NULL) {
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_interlocker_tick, error);
+		return DYNLIB_LOAD_TICK_ERR;
+	}
+
+	return DYNLIB_LOAD_SUCCESS;
+}
+
+dynlib_status dynlib_load_drive_route_funcs(dynlib_data *library) {
+	char *error;
+
+    *(void **) (&library->drive_route_reset_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_reset);
+	if ((error = dlerror()) != NULL) {
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_drive_route_reset, error);
+		return DYNLIB_LOAD_RESET_ERR;
+	}
+
+    *(void **) (&library->drive_route_tick_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_tick);
+	if ((error = dlerror()) != NULL) {
+		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_drive_route_tick, error);
+		return DYNLIB_LOAD_TICK_ERR;
+	}
+
 	return DYNLIB_LOAD_SUCCESS;
 }
 
@@ -108,60 +175,38 @@ void dynlib_close(dynlib_data *library) {
 	}
 }
 
-void dynlib_reset(dynlib_data *library, TickData *tick_data) {
+void dynlib_train_engine_reset(dynlib_data *library, TickData_train_engine *tick_data) {
 	if (dynlib_is_loaded(library)) {
-		(*library->reset_func)(tick_data);
+		(*library->train_engine_reset_func)(tick_data);
 	}
 }
 
-void dynlib_tick(dynlib_data *library, TickData *tick_data) {
+void dynlib_train_engine_tick(dynlib_data *library, TickData_train_engine *tick_data) {
 	if (dynlib_is_loaded(library)) {
-		(*library->tick_func)(tick_data);
+		(*library->train_engine_tick_func)(tick_data);
 	}
 }
 
-dynlib_status dynlib_load_interlocking(interlocking_dynlib_data *library, const char filepath[]) {
-    char path[PATH_MAX + NAME_MAX];
-    sprintf(path, "%s.so", filepath);
-
-    // open on linux
-    library->lib_handle = dlopen(path, RTLD_LAZY);
-    if (library->lib_handle == NULL) {
-        // open on macOS
-        sprintf(path, "%s.dylib", filepath);
-        library->lib_handle = dlopen(path, RTLD_LAZY);
-    }
-
-    if (library->lib_handle == NULL) {
-        syslog_server(LOG_ERR, "Could not load dynamic library %s.\n%s", filepath, dlerror());
-        return DYNLIB_LOAD_ERR;
-    }
-
-    // load symbols
-    *(void **) (&library->request_reset_func) = dlsym(library->lib_handle, "request_route_reset");
-    *(void **) (&library->request_tick_func) = dlsym(library->lib_handle, "request_route_tick");
-    *(void **) (&library->drive_reset_func) = dlsym(library->lib_handle, "drive_route_reset");
-    *(void **) (&library->drive_tick_func) = dlsym(library->lib_handle, "drive_route_tick");
-
-    // check
-    if (library->request_reset_func == NULL
-        || library->request_tick_func == NULL
-        || library->drive_reset_func == NULL
-        || library->drive_tick_func == NULL) {
-        syslog_server(LOG_ERR, "Could not find interlocking symbols.\n%s", dlerror());
-        return DYNLIB_LOAD_ERR;
-    }
-
-    return DYNLIB_LOAD_SUCCESS;
+void dynlib_interlocker_reset(dynlib_data *library, TickData_interlocker *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->interlocker_reset_func)(tick_data);
+	}
 }
 
-void dynlib_close_interlocking(interlocking_dynlib_data *library) {
-    if (library->lib_handle != NULL) {
-        dlclose(library->lib_handle);
-        library->lib_handle = NULL;
-        library->request_reset_func = NULL;
-        library->request_tick_func = NULL;
-        library->drive_reset_func = NULL;
-        library->drive_tick_func = NULL;
-    }
+void dynlib_interlocker_tick(dynlib_data *library, TickData_interlocker *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->interlocker_tick_func)(tick_data);
+	}
+}
+
+void dynlib_drive_route_reset(dynlib_data *library, TickData_drive_route *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->drive_route_reset_func)(tick_data);
+	}
+}
+
+void dynlib_drive_route_tick(dynlib_data *library, TickData_drive_route *tick_data) {
+	if (dynlib_is_loaded(library)) {
+		(*library->drive_route_tick_func)(tick_data);
+	}
 }

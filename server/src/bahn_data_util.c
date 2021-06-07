@@ -52,7 +52,7 @@ typedef enum {
     TYPE_NOT_SUPPORTED
 } e_config_type;
 
-bool initialise_config(const char *config_dir) {
+bool bahn_data_util_initialise_config(const char *config_dir) {
 
     if (!interlocking_table_initialise(config_dir)) {
         return false;
@@ -65,7 +65,7 @@ bool initialise_config(const char *config_dir) {
     return true;
 }
 
-void free_config() {
+void bahn_data_util_free_config() {
     free_config_data(config_data);
     free_interlocking_table();
 }
@@ -76,11 +76,11 @@ bool string_equals(const char *str1, const char *str2) {
 
 GArray *cached_allocated_str;
 
-void init_cached_track_state() {
+void bahn_data_util_init_cached_track_state() {
     cached_allocated_str = g_array_sized_new(FALSE, FALSE, sizeof(char *), 16);
 }
 
-void free_cached_track_state() {
+void bahn_data_util_free_cached_track_state() {
     if (cached_allocated_str != NULL) {
         g_array_free(cached_allocated_str, true);
         cached_allocated_str = NULL;

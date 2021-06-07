@@ -78,18 +78,19 @@ typedef struct {
 bool interlocking_table_initialise(const char *config_dir);
 
 /**
- * Free the array that stores interlocking table
+ * Free the array that stores the interlocking table.
  */
 void free_interlocking_table(void);
 
 /**
- * Return the array of route ID for a given source and destination signal
+ * Return the array of route ID for a given source and destination signal.
+ * 
  * @return array if it exists, otherwise NULL
  */
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id);
 
 /**
- * Return first route
+ * Return the first route between the source and destination signals.
  *
  * @param source_id
  * @param destination_id
@@ -99,20 +100,11 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
 
 /**
  * Return the route (pointer to a struct) for a given route_id
- * This method should be removed soon, the route_id is now in type 'char *', although the value is still a number
  *
  * @param route_id route
  * @return the route pointer if it exists, otherwise NULL
  */
 t_interlocking_route *get_route(int route_id);
-
-/**
- * Return the route (pointer to a struct) for a given route_id
- *
- * @param route_id route
- * @return the route pointer if it exists, otherwise NULL
- */
-t_interlocking_route *get_route_str(char *route_id);
 
 #endif // INTERLOCKING_H
 
