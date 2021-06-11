@@ -264,7 +264,7 @@ def driver():
 @click.command(help="Grab a train")
 @click.argument('train')
 @click.option('--engine', '-e', help="The train engine behaviour to use.",
-        default="default")
+        default="libtrain_engine_default (unremovable)")
 def grab(train, engine):
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
