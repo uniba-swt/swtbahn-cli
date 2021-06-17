@@ -13,6 +13,7 @@
 
     <title>SWTbahn Stellwerk Client</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
@@ -28,7 +29,7 @@
 
     <div class="card-deck">
 
-        <div class="card" style="width: 18rem;">
+        <div class="card" style="width: 22rem;">
             <div class="card-body">
                 <h3 class="card-title"> System</h3>
 
@@ -53,20 +54,68 @@
                     </div>
                 </div>
 
+                <br />
+
+                <div class="form-group">
+                    <h3>Custom Interlocker</h3>
+                    <div style="display: flex; justify-content: space-between">
+                        <label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary" style="width: 49%; margin: 0px">Select an SCCharts file (*.sctx)</label>
+                        <input id="selectUploadFile" type="file" accept=".sctx" hidden />
+                        <button id="uploadInterlockerButton" type="button" class="btn btn-outline-primary" style="width: 49%">Upload</button>
+                    </div>
+
+                    <br />
+
+                    <div class="alert alert-info" role="alert">
+                        <span id="uploadResponse"></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <label class="form-label" for="availableInterlockers">Available Interlockers:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="availableInterlockers">Interlocker</label>
+                        </div>
+                        <select class="custom-select" id="availableInterlockers">
+                            <option>libinterlocker_default (unremovable)</option>
+                        </select>
+                    </div>
+
+                    <br />
+
+                    <div style="display: flex; justify-content: space-between">
+                        <button id="refreshInterlockersButton" type="button" class="btn btn-outline-primary" style="width: 49%">Refresh</button>
+                        <button id="removeInterlockerButton" type="button" class="btn btn-outline-primary" style="width: 49%">Remove</button>
+                    </div>
+
+                    <br />
+
+                    <div class="alert alert-info" role="alert">
+                        <span id="refreshRemoveInterlockerResponse"></span>
+                    </div>
+                </div>
             </div>
         </div>
 
 
-        <div class="card" style="width: 18rem;">
+        <div class="card" style="width: 22rem;">
             <div class="card-body">
                 <h3 class="card-title">Point Controller</h3>
 
                 <div class="form-group">
-
-                    <div style="display: flex; justify-content: space-between;">
-                        <button id=pointMinus type="button" class="btn btn-outline-primary">–</button>
-                        <input id=pointId readonly value="point1">
-                        <button id=pointPlus type="button" class="btn btn-outline-primary">+</button>
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="input-group-prepend" style="margin-bottom: 0.5rem">
+                                <input id=pointId readonly value="point1">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button id=pointMinus type="button" class="btn btn-outline-primary">–</button>
+                            <button id=pointPlus type="button" class="btn btn-outline-primary">+</button>
+                        </div>
                     </div>
 
                     </br>
@@ -83,21 +132,19 @@
 
                 </br>
 
-            </div>
-        </div>
-
-        </br>
-
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
                 <h3 class="card-title">Signal Controller</h3>
 
                 <div class="form-group">
-
-                    <div style="display: flex; justify-content: space-between;">
-                        <button id=signalMinus type="button" class="btn btn-outline-primary">–</button>
-                        <input id=signalId readonly value="signal1">
-                        <button id=signalPlus type="button" class="btn btn-outline-primary">+</button>
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="input-group-prepend" style="margin-bottom: 0.5rem">
+                                <input id=signalId readonly value="signal1">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button id=signalMinus type="button" class="btn btn-outline-primary">–</button>
+                            <button id=signalPlus type="button" class="btn btn-outline-primary">+</button>
+                        </div>
                     </div>
 
                     </br>
