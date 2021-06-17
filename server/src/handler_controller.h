@@ -66,6 +66,11 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 onion_connection_status handler_set_signal(void *_, onion_request *req,
                                            onion_response *res);
 
+onion_connection_status handler_set_interlocker(void *_, onion_request *req,
+                                                onion_response *res);
 
-#endif
+onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
+                                                  onion_response *res);
+
+#endif	// SWTSERVER_HANDLER_CONTROLLER_H
 

@@ -102,14 +102,19 @@ void dyn_containers_reset_interface(
 			.input_grab = false,
 			.input_release = false,
 			.input_interlocker_type = -1,
+			
+			.input_src_signal_id = "",
+			.input_dst_signal_id = "",
+			.input_train_id = "",
 
-			.output_in_use = false
+			.output_in_use = false,
+			.output_return_code = "",
+			.output_terminated = false
 		};
 	}
 }
 
-// Execute the outputs of the train engines and interlocking algorithms
-// via the BiDiB library
+// Execute the outputs of the train engines and interlockers via the BiDiB library
 static void *dyn_containers_actuate(void *_) {
 	do {
 		pthread_mutex_lock(&grabbed_trains_mutex);
@@ -145,11 +150,33 @@ static void *dyn_containers_actuate(void *_) {
 				}
 			}
 		}
+		
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 
-		// TODO: Actuate the points and signals based on the interlocker outputs		
+
+		pthread_mutex_lock(&dyn_containers_mutex);
 		
+		// TODO: Interlockers cannot be run continuously because they will keep granting the same routes according to their inputs.
+		for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+			struct t_interlocker_instance_io * const interlocker_instance = 
+				&dyn_containers_interface->interlocker_instances_io[i];
+			if (interlocker_instance->output_in_use) {
+				if (interlocker_instance->output_terminated
+						&& strncmp(interlocker_instance->output_return_code, "", NAME_MAX)) {
+					// Interlocker sends point and signal commands via the BiDiB library, 
+					// but we have to flush the commands to the BiDiB boards
+					bidib_flush();
+					syslog_server(LOG_NOTICE, "Request: Set points and signals - interlocker type %s return code %s",
+								  interlocker_instance->output_interlocker_type,
+								  interlocker_instance->output_return_code);
+					// TODO: Clear inputs? Set signals to ""?
+				}
+			}
+		}
+			
+		pthread_mutex_unlock(&dyn_containers_mutex);
+
 		usleep(let_period_us);
 	} while (running);
 	
@@ -335,7 +362,7 @@ GString *dyn_containers_get_train_engines(void) {
 	return train_engine_names;
 }
 
-int dyn_containers_set_train_engine(t_train_data * const grabbed_train, 
+int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
                                      const char *train, const char *engine) {
 	if (engine == NULL) {
 		syslog_server(LOG_ERR, "Could not set train engine because engine was NULL");
@@ -422,5 +449,143 @@ void dyn_containers_set_train_engine_instance_inputs(const int dyn_containers_en
 	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_instance_io->input_requested_speed = requested_speed;
 	train_engine_instance_io->input_requested_forwards = requested_forwards;
+	pthread_mutex_unlock(&dyn_containers_mutex);
+}
+
+// Finds the first available slot for a interlocker
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_free_interlocker_slot(void) {
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		struct t_interlocker_io * const interlocker_io =
+			&dyn_containers_interface->interlockers_io[i];
+		if (!interlocker_io->output_in_use) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// Finds the slot of a interlocker
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_interlocker_slot(const char name[]) {
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		struct t_interlocker_io * const interlocker_io =
+			&dyn_containers_interface->interlockers_io[i];
+		if (interlocker_io->output_in_use &&
+			strcmp(interlocker_io->output_name, name) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// Loads interlocker into specified slot
+// Can only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_interlocker(const int interlocker_slot, const char filepath[]) {
+	struct t_interlocker_io * const interlocker_io =
+		&dyn_containers_interface->interlockers_io[interlocker_slot];
+	interlocker_io->input_load = true;
+	interlocker_io->input_unload = false;
+	strcpy(interlocker_io->input_filepath, filepath);
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	syslog_server(LOG_NOTICE,
+	              "Waiting for interlocker %s to be dynamically loaded into slot %d",
+	              filepath, interlocker_slot);
+	while (!interlocker_io->output_in_use) {
+		usleep(let_period_us);
+	}
+	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_io->input_load = false;
+	syslog_server(LOG_NOTICE,
+	              "Interlocker %s has been dynamically loaded into interlocker slot %d",
+	              filepath, interlocker_slot);
+}
+
+// Unloads interlocker at specified slot
+// Can only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_interlocker(const int interlocker_slot) {
+	// Check that no instance of the interlocker is in use
+	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		struct t_interlocker_instance_io * const interlocker_instance =
+			&dyn_containers_interface->interlocker_instances_io[i];
+		if (interlocker_instance->output_in_use &&
+			interlocker_instance->output_interlocker_type == interlocker_slot) {
+			return false;
+		}
+	}
+
+	// Unload the interlocker
+	struct t_interlocker_io * const interlocker_io = 
+	    &dyn_containers_interface->interlockers_io[interlocker_slot];
+	interlocker_io->input_load = false;
+	interlocker_io->input_unload = true;
+	strcpy(interlocker_io->input_filepath, "");
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	syslog_server(LOG_NOTICE, 
+				  "Waiting for interlocker %s at slot %d to be unloaded", 
+				  interlocker_io->input_filepath, interlocker_slot);
+	while (interlocker_io->output_in_use) {
+		usleep(let_period_us);
+	}
+	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_io->input_unload = false;
+	syslog_server(LOG_NOTICE, 
+				  "Unloaded interlocker at slot %d", 
+				  interlocker_slot);
+	return true;
+}
+
+GString *dyn_containers_get_interlockers(void) {
+	GString *interlocker_names = g_string_new(NULL);
+	int i = 0;
+	for (i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		struct t_interlocker_io * const interlocker_io =
+			&dyn_containers_interface->interlockers_io[i];
+		if (!interlocker_io->output_in_use) {
+			continue;
+		}
+		// Copy string
+		if (i != 0) {
+			g_string_append(interlocker_names, ",");
+		}
+		g_string_append(interlocker_names, interlocker_io->output_name);
+	}
+	return interlocker_names;
+}
+
+void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance) {
+	if (dyn_containers_interface == NULL) {
+		return;
+	}
+	
+	struct t_interlocker_instance_io * const interlocker_instance_io = 
+		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+
+	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_instance_io->input_release = true;
+	pthread_mutex_unlock(&dyn_containers_mutex);
+
+	int instance_in_use = true;
+	do {
+		usleep(let_period_us);
+		instance_in_use = interlocker_instance_io->output_in_use;
+	} while (instance_in_use);
+	
+	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_instance_io->input_release = false;
+	pthread_mutex_unlock(&dyn_containers_mutex);
+}
+
+void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
+                                                    const char *src_signal_id, 
+                                                    const char *dst_signal_id,
+                                                    const char *train_id) {
+	struct t_interlocker_instance_io * const interlocker_instance_io = 
+		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+
+	pthread_mutex_lock(&dyn_containers_mutex);
+	strncpy(interlocker_instance_io->input_src_signal_id, src_signal_id, NAME_MAX);
+	strncpy(interlocker_instance_io->input_dst_signal_id, dst_signal_id, NAME_MAX);
+	strncpy(interlocker_instance_io->input_train_id, train_id, NAME_MAX);
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }

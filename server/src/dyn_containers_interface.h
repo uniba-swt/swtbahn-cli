@@ -83,7 +83,7 @@ typedef struct {
 		char output_name[NAME_MAX];					// Name of the interlocker algorithm
 	} interlockers_io[INTERLOCKER_COUNT_MAX];
 	
-	// TODO: Interlocker instance information
+	// Interlocker instance information
 	struct t_interlocker_instance_io {
 		bool input_grab;							// Desire to use this instance
 		bool input_release;							// Desire to stop using this instance
@@ -94,7 +94,8 @@ typedef struct {
 
 		bool output_in_use;							// Whether this instance is still in use
 		int  output_interlocker_type;				// Interlocker type in use
-		char output_route_id[NAME_MAX];				// Output defined by interlocker
+		char output_return_code[NAME_MAX];			// Output defined by interlocker
+		bool output_terminated;                     // Output defined by interlocker
 	} interlocker_instances_io[INTERLOCKER_INSTANCE_COUNT_MAX];
 } t_dyn_containers_interface;
 
@@ -146,13 +147,40 @@ bool dyn_containers_free_engine(const int engine_slot);
 GString *dyn_containers_get_train_engines(void);
 
 // Finds the requested train engine, and finds an available train engine instance to use
-int dyn_containers_set_train_engine(t_train_data * const grabbed_train, 
-                                     const char *train, const char *engine);
+int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
+                                             const char *train, const char *engine);
 
 void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_instance);
 
 void dyn_containers_set_train_engine_instance_inputs(const int dyn_containers_engine_instance, 
                                                      const int requested_speed, 
                                                      const char requested_forwards);
+
+
+// Finds the first available slot for a interlocker
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_free_interlocker_slot(void);
+
+// Finds the slot of a interlocker
+// Can only be called while the dyn_containers_mutex is locked
+const int dyn_containers_get_interlocker_slot(const char name[]);
+
+// Loads interlocker into specified slot
+// Can only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_interlocker(const int interlocker_slot, const char filepath[]);
+
+// Unloads interlocker at specified slot
+// Can only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_interlocker(const int interlocker_slot);
+
+// Gets a comma-separated string of interlockers that have been loaded
+GString *dyn_containers_get_interlockers(void);
+
+void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance);
+
+void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
+                                                    const char *src_signal_id, 
+                                                    const char *dst_signal_id,
+                                                    const char *train_id);
 
 #endif	// DYN_CONTAINERS_INTERFACE_H

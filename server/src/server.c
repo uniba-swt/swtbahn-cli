@@ -179,7 +179,9 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
 	onion_url_add(urls, "upload/refresh-engines", handler_refresh_engines);
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
-
+	onion_url_add(urls, "upload/interlocker", handler_upload_interlocker);
+	onion_url_add(urls, "upload/refresh-interlockers", handler_refresh_interlockers);
+	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
 
 	// --- monitor functions ---
 	onion_url_add(urls, "monitor/trains", handler_get_trains);

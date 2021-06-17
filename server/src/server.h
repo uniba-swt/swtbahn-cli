@@ -43,5 +43,5 @@ void build_response_header(onion_response *res);
 
 void syslog_server(int priority, const char *format, ...);
 
-#endif
+#endif	// SWTSERVER_SERVER_H
 

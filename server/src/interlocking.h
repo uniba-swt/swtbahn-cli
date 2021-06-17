@@ -21,8 +21,8 @@
  * The following people contributed to the conception and realization of the
  * present swtbahn-cli (in alphabetic order by surname):
  *
- * - Eugene Yip <https://github.com/eyip002>
  * - Tri Nguyen <https://github.com/trinnguyen>
+ * - Eugene Yip <https://github.com/eyip002>
  *
  */
 
@@ -59,11 +59,11 @@ typedef struct {
     char *source;
     char *destination;
     float length;
-    GArray *path;		// g_array_index(route->path, char *, segment_index)
-    GArray *sections;		// g_array_index(route->sections, char *, segment_index)
-    GArray *points;		// g_array_index(route->points, t_interlocking_point, point_index)
-    GArray *signals;	// g_array_index(route->signals, char *, signal_index)
-    GArray *conflicts;	// g_array_index(route->conflicts, char *, conflict_index)
+    GArray *path;       // g_array_index(route->path, char *, segment_index)
+    GArray *sections;   // g_array_index(route->sections, char *, segment_index)
+    GArray *points;     // g_array_index(route->points, t_interlocking_point, point_index)
+    GArray *signals;    // g_array_index(route->signals, char *, signal_index)
+    GArray *conflicts;  // g_array_index(route->conflicts, char *, conflict_index)
     char *train;
 } t_interlocking_route;
 
