@@ -74,6 +74,15 @@ boards:
             value: 0x01
         initial: on
         type: platformlight
+    peripherals:
+      - id: CLK_OC1
+        port: 0x0027
+        aspects:
+          - id: on
+            value: 0x00
+          - id: off
+            value: 0x01
+        initial: on
   - id: onecontrol1
     points-board:
       - id: point2
