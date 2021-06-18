@@ -758,6 +758,8 @@ $(document).ready(
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			var interlockerName = $('#availableInterlockers option:selected').text();
 			if (interlockerName.search("unremovable") != -1) {
+				$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
+				$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
 				$('#refreshRemoveInterlockerResponse').text('Interlocker ' + interlockerName + ' is unremovable!');
 				return;
 			}
