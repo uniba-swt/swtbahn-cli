@@ -128,10 +128,8 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 }
 
 static void *stop_bidib(void *_) {
-	usleep (1000000); // wait for running functions
+	usleep (1000000); // 1 second, wait for running functions
 	bidib_stop();
-	free_all_grabbed_trains();
-    bahn_data_util_free_config();
 	pthread_mutex_lock(&start_stop_mutex);
 	stopping = false;
 	pthread_mutex_unlock(&start_stop_mutex);
@@ -148,8 +146,10 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;
+		free_all_grabbed_trains();
 		dyn_containers_stop();
 		close_interlocker_default();
+		bahn_data_util_free_config();
 		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
 		retval = OCS_PROCESSED;

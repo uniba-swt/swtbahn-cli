@@ -91,6 +91,12 @@ void free_point(void *pointer) {
     free(point);
 }
 
+void nullify_track_config_tables(void) {
+    tb_segments = NULL;
+    tb_signals = NULL;
+    tb_points = NULL;
+}
+
 void track_yaml_sequence_start(char *scalar) {
     if (track_mapping == TRACK_ROOT && str_equal(scalar, "boards")) {
         track_sequence = BOARDS;

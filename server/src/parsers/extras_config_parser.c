@@ -110,6 +110,13 @@ void free_composite_signal(void *pointer) {
     free(composite_signal);
 }
 
+void nullify_extras_config_tables(void) {
+    tb_blocks = NULL;
+    tb_crossing = NULL;
+    tb_signal_types = NULL;
+    tb_composite_signals = NULL;
+}
+
 void extras_yaml_sequence_start(char *scalar) {
     log_debug("extras_yaml_sequence_start: %s", scalar);
     switch (extras_mapping) {

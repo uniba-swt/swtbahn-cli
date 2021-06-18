@@ -358,6 +358,8 @@ $(document).ready(
             $('#refreshRemoveResponse').text('Waiting');
             var engineName = $('#availableEngines option:selected').text();
             if (engineName.search("unremovable") != -1) {
+				$('#refreshRemoveResponse').parent().removeClass('alert-success');
+				$('#refreshRemoveResponse').parent().addClass('alert-danger');
                 $('#refreshRemoveResponse').text('Engine ' + engineName + ' is unremovable!');
                 return;
             }

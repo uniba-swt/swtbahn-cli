@@ -31,6 +31,8 @@
 #include <yaml.h>
 #include "config_data_intern.h"
 
+void nullify_extras_config_tables(void);
+
 void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data);
 
 #endif //SCCHARTS_GEN_EXTRAS_CONFIG_PARSER_H
