@@ -71,6 +71,10 @@ void free_train(void *pointer) {
     free(train);
 }
 
+void nullify_train_config_table(void) {
+	tb_trains = NULL;
+}
+
 void train_yaml_sequence_start(char *scalar) {
     log_debug("train_yaml_sequence_start: %s", scalar);
     if (train_mapping == TRAIN_ROOT && str_equal(scalar, "trains")) {

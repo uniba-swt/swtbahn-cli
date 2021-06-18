@@ -89,6 +89,8 @@ void free_interlocking_table(void) {
         g_hash_table_destroy(route_hash_table);
         route_hash_table = NULL;
     }
+
+    syslog_server(LOG_NOTICE, "Interlocking table freed");
 }
 
 bool interlocking_table_initialise(const char *config_dir) {

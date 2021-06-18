@@ -5,9 +5,9 @@ boards:
   - id: onecontrol2
     unique-id: 0x05000D7500DAED
   - id: lightcontrol1
-    unique-id: 0x05000D6B0072EC
+    unique-id: 0x45000D6B0072EC
   - id: lightcontrol2
-    unique-id: 0x05000D6B0067EC
+    unique-id: 0x45000D6B0067EC
   - id: master
     unique-id: 0xDA000D680001EE
     features:

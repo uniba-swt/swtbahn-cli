@@ -87,10 +87,14 @@ void free_config_data(t_config_data config_data) {
         config_data.table_points = NULL;
     }
 
+    nullify_track_config_tables();
+        
     if (config_data.table_trains != NULL) {
         g_hash_table_destroy(config_data.table_trains);
         config_data.table_trains = NULL;
     }
+    
+    nullify_train_config_table();
 
     if (config_data.table_blocks != NULL) {
         g_hash_table_destroy(config_data.table_blocks);
@@ -101,9 +105,19 @@ void free_config_data(t_config_data config_data) {
         g_hash_table_destroy(config_data.table_crossings);
         config_data.table_crossings = NULL;
     }
+    
+    if (config_data.table_signal_types != NULL) {
+        g_hash_table_destroy(config_data.table_signal_types);
+        config_data.table_signal_types = NULL;
+    }
 
     if (config_data.table_composite_signals != NULL) {
         g_hash_table_destroy(config_data.table_composite_signals);
         config_data.table_composite_signals = NULL;
     }
+    
+    nullify_extras_config_tables();
+    
+    syslog_server(LOG_NOTICE, "Config data freed");
+
 }

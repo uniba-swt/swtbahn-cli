@@ -2,8 +2,8 @@ module SWTbahnStandard
 	boards
 		onecontrol1 0x05000D7500E8ED
 		onecontrol2 0x05000D7500DAED
-		lightcontrol1 0x05000D6B0072EC
-		lightcontrol2 0x05000D6B0067EC
+		lightcontrol1 0x45000D6B0072EC
+		lightcontrol2 0x45000D6B0067EC
 		master 0xDA000D680001EE features 0x03:0x14 end
 	end
 	segments master

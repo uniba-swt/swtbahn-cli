@@ -358,6 +358,8 @@ $(document).ready(
             $('#refreshRemoveEngineResponse').text('Waiting');
             var engineName = $('#availableEngines option:selected').text();
             if (engineName.search("unremovable") != -1) {
+                $('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
+                $('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
                 $('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' is unremovable!');
                 return;
             }
@@ -371,8 +373,7 @@ $(document).ready(
                     refreshEnginesList();
                     $('#refreshRemoveEngineResponse').parent().removeClass('alert-danger');
                     $('#refreshRemoveEngineResponse').parent().addClass('alert-success');
-                    $('#refreshRemoveEngineResponse')
-                        .text('Engine ' + engineName + ' removed');
+                    $('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' removed');
                 },
                 error: function (responseData, textStatus, errorThrown) {
                     $('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
