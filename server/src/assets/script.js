@@ -337,30 +337,30 @@ $(document).ready(
                         selectAvailableEngines.append(new Option(value));
                     });
 
-                    $('#refreshRemoveResponse').parent().removeClass('alert-danger');
-                    $('#refreshRemoveResponse').parent().addClass('alert-success');
-                    $('#refreshRemoveResponse').text('Refreshed list of train engines');
+                    $('#refreshRemoveEngineResponse').parent().removeClass('alert-danger');
+                    $('#refreshRemoveEngineResponse').parent().addClass('alert-success');
+                    $('#refreshRemoveEngineResponse').text('Refreshed list of train engines');
                 },
                 error: function (responseData, textStatus, errorThrown) {
-                    $('#refreshRemoveResponse').parent().removeClass('alert-success');
-                    $('#refreshRemoveResponse').parent().addClass('alert-danger');
-                    $('#refreshRemoveResponse').text('Unable to refresh list of train engines');
+                    $('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
+                    $('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
+                    $('#refreshRemoveEngineResponse').text('Unable to refresh list of train engines');
                 }
             });
         }
 
         $('#refreshEnginesButton').click(function () {
-            $('#refreshRemoveResponse').text('Waiting');
+            $('#refreshRemoveEngineResponse').text('Waiting');
             refreshEnginesList();
         });
 
         $('#removeEngineButton').click(function () {
-            $('#refreshRemoveResponse').text('Waiting');
+            $('#refreshRemoveEngineResponse').text('Waiting');
             var engineName = $('#availableEngines option:selected').text();
             if (engineName.search("unremovable") != -1) {
-				$('#refreshRemoveResponse').parent().removeClass('alert-success');
-				$('#refreshRemoveResponse').parent().addClass('alert-danger');
-                $('#refreshRemoveResponse').text('Engine ' + engineName + ' is unremovable!');
+                $('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
+                $('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
+                $('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' is unremovable!');
                 return;
             }
             $.ajax({
@@ -371,15 +371,14 @@ $(document).ready(
                 dataType: 'text',
                 success: function (responseData, textStatus, jqXHR) {
                     refreshEnginesList();
-                    $('#refreshRemoveResponse').parent().removeClass('alert-danger');
-                    $('#refreshRemoveResponse').parent().addClass('alert-success');
-                    $('#refreshRemoveResponse')
-                        .text('Engine ' + engineName + ' removed');
+                    $('#refreshRemoveEngineResponse').parent().removeClass('alert-danger');
+                    $('#refreshRemoveEngineResponse').parent().addClass('alert-success');
+                    $('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' removed');
                 },
                 error: function (responseData, textStatus, errorThrown) {
-                    $('#refreshRemoveResponse').parent().removeClass('alert-success');
-                    $('#refreshRemoveResponse').parent().addClass('alert-danger');
-                    $('#refreshRemoveResponse').text('Engine ' + engineName + ' not found or still in use!');
+                    $('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
+                    $('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
+                    $('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' not found or still in use!');
                 }
             });
         });
@@ -683,7 +682,110 @@ $(document).ready(
             });
         });
 
-        // Alternative filechooser button for Driver and Controller
+
+		// Custom Interlockers
+		$('#uploadInterlockerButton').click(function () {
+			$('#uploadResponse').text('Waiting');
+			var files = $('#selectUploadFile').prop('files');
+			if (files.length != 1) {
+				$('#uploadResponse').parent().removeClass('alert-success');
+				$('#uploadResponse').parent().addClass('alert-danger');
+				$('#uploadResponse').text('Select an SCCharts file!');
+				return;
+			}
+			var file = files[0];
+			var formData = new FormData();
+			formData.append('file', file);
+			$.ajax({
+				type: 'POST',
+				url: '/upload/interlocker',
+				crossDomain: true,
+				data: formData,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					refreshInterlockersList();
+					$('#uploadResponse').parent().removeClass('alert-danger');
+					$('#uploadResponse').parent().addClass('alert-success');
+					$('#uploadResponse')
+						.text('Interlocker ' + file.name + ' ready for use');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#uploadResponse').parent().removeClass('alert-success');
+					$('#uploadResponse').parent().addClass('alert-danger');
+					$('#uploadResponse').text('Interlocker ' + file.name + ' could not be compiled or loaded!');
+				}
+			});
+		});
+
+		function refreshInterlockersList() {
+			$.ajax({
+				type: 'POST',
+				url: '/upload/refresh-interlockers',
+				crossDomain: true,
+				data: null,
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					var interlockerList = responseData.split(",");
+
+					var selectAvailableInterlockers = $("#availableInterlockers");
+
+					selectAvailableInterlockers.empty();
+
+					$.each(interlockerList, function (key, value) {
+						selectAvailableInterlockers.append(new Option(value));
+					});
+
+					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
+					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
+					$('#refreshRemoveInterlockerResponse').text('Refreshed list of interlockers');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
+					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
+					$('#refreshRemoveInterlockerResponse').text('Unable to refresh list of interlockers');
+				}
+			});
+		}
+
+		$('#refreshInterlockersButton').click(function () {
+			$('#refreshRemoveInterlockerResponse').text('Waiting');
+			refreshInterlockersList();
+		});
+
+		$('#removeInterlockerButton').click(function () {
+			$('#refreshRemoveInterlockerResponse').text('Waiting');
+			var interlockerName = $('#availableInterlockers option:selected').text();
+			if (interlockerName.search("unremovable") != -1) {
+				$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
+				$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
+				$('#refreshRemoveInterlockerResponse').text('Interlocker ' + interlockerName + ' is unremovable!');
+				return;
+			}
+			$.ajax({
+				type: 'POST',
+				url: '/upload/remove-interlocker',
+				crossDomain: true,
+				data: { 'interlocker-name': interlockerName },
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					refreshInterlockersList();
+					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
+					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
+					$('#refreshRemoveInterlockerResponse')
+						.text('Interlocker ' + interlockerName + ' removed');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
+					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
+					$('#refreshRemoveInterlockerResponse').text('Interlocker ' + interlockerName + ' not found or still in use!');
+				}
+			});
+		});
+
+        // File chooser button for Driver and Controller
         $('#selectUploadFile').change(function () {
             $('#selectUploadFileResponse').text(this.files[0].name);
         

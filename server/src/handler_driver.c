@@ -111,7 +111,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 	const int requested_speed = 20;
 	const char requested_forwards = true;	// TOFIX
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
-	                                       requested_speed, requested_forwards);
+	                                                requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set entry signal to red (stop aspect)
@@ -167,7 +167,7 @@ static int grab_train(const char *train, const char *engine) {
 	increment_next_grab_id();
 	grabbed_trains[grab_id].name = g_string_new(train);
 	strcpy(grabbed_trains[grab_id].track_output, "master");
-	if (dyn_containers_set_train_engine(&grabbed_trains[grab_id], train, engine)) {
+	if (dyn_containers_set_train_engine_instance(&grabbed_trains[grab_id], train, engine)) {
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_ERR, "Train engine %s could not be used", engine);
 		return -1;

@@ -43,7 +43,7 @@ pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 static dynlib_data interlocker = {};
 
 int load_interlocker_default() {
-	const char *path = "../src/interlockers/libinterlocker_default";
+	const char *path = "../src/interlockers/libinterlocker_default (unremovable)";
 	dynlib_status status = dynlib_load(&interlocker, path, INTERLOCKER);
 	
 	return (status == DYNLIB_LOAD_SUCCESS);
@@ -174,3 +174,16 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 	}
 }
 
+onion_connection_status handler_set_interlocker(void *_, onion_request *req,
+                                                onion_response *res) {
+	build_response_header(res);
+	
+	return OCS_NOT_IMPLEMENTED;
+}
+
+onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
+                                                  onion_response *res) {
+	build_response_header(res);
+	
+	return OCS_NOT_IMPLEMENTED;
+}

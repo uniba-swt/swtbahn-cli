@@ -21,6 +21,7 @@
  * The following people contributed to the conception and realization of the
  * present swtbahn-cli (in alphabetic order by surname):
  *
+ * - Ben-Oliver Hosak <https://github.com/hosakb>
  * - Eugene Yip <https://github.com/eyip002>
  *
  */
@@ -38,6 +39,15 @@ onion_connection_status handler_refresh_engines(void *_, onion_request *req,
 onion_connection_status handler_remove_engine(void *_, onion_request *req,
                                               onion_response *res);
 
+onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
+                                                   onion_response *res);
 
-#endif
+onion_connection_status handler_refresh_interlockers(void *_, onion_request *req,
+                                                     onion_response *res);
+
+onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
+                                                   onion_response *res);
+
+
+#endif	// SWTSERVER_HANDLER_UPLOAD_H
 

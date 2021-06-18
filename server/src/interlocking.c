@@ -21,8 +21,8 @@
  * The following people contributed to the conception and realization of the
  * present swtbahn-cli (in alphabetic order by surname):
  *
- * - Eugene Yip <https://github.com/eyip002>
  * - Tri Nguyen <https://github.com/trinnguyen>
+ * - Eugene Yip <https://github.com/eyip002>
  *
  */
 
