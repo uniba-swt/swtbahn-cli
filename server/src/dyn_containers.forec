@@ -228,6 +228,7 @@ typedef struct {
 	bool grab;							// Desire to use this instance
 	bool release;                       // Desire to stop using this instance
 	int interlocker_type;               // Desired interlocker to use
+	bool reset;                         // Desire to reset the interlocker
 
 	char *src_signal_id;                // Input defined by interlocker
 	char *dst_signal_id;                // Input defined by interlocker
@@ -240,15 +241,16 @@ shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_
 
 typedef struct {
 	bool in_use;						// Whether this instance is still in use
+	bool has_reset;                     // Whether this instance has been reset
 	int interlocker_type;               // Interlocker type in use
 
-	char *return_code;                  // Output defined by interlocker
+	char *route_id;                     // Output defined by interlocker
 	bool terminated;                    // Output defined by interlocker
 } t_forec_intern_output_interlocker_instance;
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false, .interlocker_type = -1, .return_code = "", .terminated = false};
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false, .interlocker_type = -1, .return_code = "", .terminated = false};
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2 = {.in_use = false, .interlocker_type = -1, .return_code = "", .terminated = false};
-shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3 = {.in_use = false, .interlocker_type = -1, .return_code = "", .terminated = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = "", .terminated = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = "", .terminated = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_2 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = "", .terminated = false};
+shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = "", .terminated = false};
 
 
 // Create shared memory
@@ -379,7 +381,16 @@ thread letInterface(void) {
 		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[3], &forec_intern_output_train_engine_instance_3);
 		copyEngineInstanceOutputs(&dyn_containers_interface->train_engine_instances_io[4], &forec_intern_output_train_engine_instance_4);
 
-		// TODO: Interlockers
+		copyInterlockerOutputs(&dyn_containers_interface->interlockers_io[0], &forec_intern_output_interlocker_0);
+		copyInterlockerOutputs(&dyn_containers_interface->interlockers_io[1], &forec_intern_output_interlocker_1);
+		copyInterlockerOutputs(&dyn_containers_interface->interlockers_io[2], &forec_intern_output_interlocker_2);
+		copyInterlockerOutputs(&dyn_containers_interface->interlockers_io[3], &forec_intern_output_interlocker_3);
+
+		copyInterlockerInstanceOutputs(&dyn_containers_interface->interlocker_instances_io[0], &forec_intern_output_interlocker_instance_0);
+		copyInterlockerInstanceOutputs(&dyn_containers_interface->interlocker_instances_io[1], &forec_intern_output_interlocker_instance_1);
+		copyInterlockerInstanceOutputs(&dyn_containers_interface->interlocker_instances_io[2], &forec_intern_output_interlocker_instance_2);
+		copyInterlockerInstanceOutputs(&dyn_containers_interface->interlocker_instances_io[3], &forec_intern_output_interlocker_instance_3);
+
 		pthread_mutex_unlock(&dyn_containers_mutex);
 
 		pause;
@@ -858,6 +869,8 @@ thread interlockerInstance0(void) {
 	
 	const char *threadName;
 	threadName = "interlockerInstance0";
+	
+	int reset_pre = forec_intern_input_interlocker_instance_0.reset;
 		
 	while (true) {
 		// Wait for a user to set an interlocker
@@ -867,39 +880,48 @@ thread interlockerInstance0(void) {
 		
 		forec_intern_output_interlocker_instance_0.interlocker_type = forec_intern_input_interlocker_instance_0.interlocker_type;
 		forec_intern_output_interlocker_instance_0.in_use = true;
-		
-		// Reset the data of the interlocker instance
-		dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
-		dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
-		syslog_server(LOG_NOTICE, "%s: Reset container  %s %s %s -> %s %d", threadName,
-		              interlockerInstanceData[instance].src_signal_id,
-		              interlockerInstanceData[instance].dst_signal_id,
-		              interlockerInstanceData[instance].train_id,
-		              interlockerInstanceData[instance].out,
-		              interlockerInstanceData[instance].terminated);
-		              
 
-		// Execute the chosen train engine
+		// Execute the chosen interlocker
 		while (!forec_intern_input_interlocker_instance_0.release) {
+			// Reset rising edge
+			if (forec_intern_input_interlocker_instance_0.reset 
+					&& !forec_intern_output_interlocker_instance_0.has_reset) {
+				// Reset the interlocker so that it can execute its alglorithm from the start	
+				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
+				forec_intern_output_interlocker_instance_0.has_reset = true;		
+				syslog_server(LOG_NOTICE, "%s: Reset container  %s %s %s -> %s %d", threadName,
+				              interlockerInstanceData[instance].src_signal_id,
+				              interlockerInstanceData[instance].dst_signal_id,
+				              interlockerInstanceData[instance].train_id,
+				              interlockerInstanceData[instance].route_id,
+				              interlockerInstanceData[instance].terminated);
+				
+				// Update outputs
+				strncpy(forec_intern_output_interlocker_instance_0.route_id, interlockerInstanceData[instance].route_id, name_max);
+				forec_intern_output_interlocker_instance_0.terminated = interlockerInstanceData[instance].terminated;
+
+				pause;
+			}
+
 			// Copy inputs
 			strncpy(interlockerInstanceData[instance].src_signal_id, forec_intern_input_interlocker_instance_0.src_signal_id, name_max);
 			strncpy(interlockerInstanceData[instance].dst_signal_id, forec_intern_input_interlocker_instance_0.dst_signal_id, name_max);
 			strncpy(interlockerInstanceData[instance].train_id, forec_intern_input_interlocker_instance_0.train_id, name_max);
 			
 			// Execute one tick
-			dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
-			if (strncmp (interlockerInstanceData[instance].out, forec_intern_output_interlocker_instance_0.return_code, name_max)
-					|| interlockerInstanceData[instance].terminated != forec_intern_output_interlocker_instance_0.terminated) {
+			if (!forec_intern_input_interlocker_instance_0.reset && !interlockerInstanceData[instance].terminated) {
+				forec_intern_output_interlocker_instance_0.has_reset = false;		
+				dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
 				syslog_server(LOG_NOTICE, "%s: %s.tick() %s %s %s -> %s %d", threadName, 
 						      interlockers[forec_intern_output_interlocker_instance_0.interlocker_type].name,
 						      interlockerInstanceData[instance].src_signal_id,
 						      interlockerInstanceData[instance].dst_signal_id,
 						      interlockerInstanceData[instance].train_id,
-						      interlockerInstanceData[instance].out,
+						      interlockerInstanceData[instance].route_id,
 						      interlockerInstanceData[instance].terminated);
 				
 				// Update outputs
-				strncpy(forec_intern_output_interlocker_instance_0.return_code, interlockerInstanceData[instance].out, name_max);
+				strncpy(forec_intern_output_interlocker_instance_0.route_id, interlockerInstanceData[instance].route_id, name_max);
 				forec_intern_output_interlocker_instance_0.terminated = interlockerInstanceData[instance].terminated;
 			}
 			
@@ -990,6 +1012,7 @@ void copyInterlockerInstanceInputs(t_forec_intern_input_interlocker_instance *in
 	internal->grab = external->input_grab;
 	internal->release = external->input_release;
 	internal->interlocker_type = external->input_interlocker_type;
+	internal->reset = external->input_reset;
 	
 	strncpy(internal->src_signal_id, external->input_src_signal_id, name_max);
 	strncpy(internal->dst_signal_id, external->input_dst_signal_id, name_max);
@@ -999,9 +1022,10 @@ void copyInterlockerInstanceInputs(t_forec_intern_input_interlocker_instance *in
 void copyInterlockerInstanceOutputs(struct t_interlocker_instance_io *external, 
                                     t_forec_intern_output_interlocker_instance *internal) {
 	external->output_in_use = internal->in_use;
+	external->output_has_reset = internal->has_reset;
 	external->output_interlocker_type = internal->interlocker_type;
 	
-	strncpy(external->output_return_code, internal->return_code, name_max);
+	strncpy(external->output_route_id, internal->route_id, name_max);
 	external->output_terminated = internal->terminated;
 }
 

@@ -80,7 +80,7 @@ char *grant_route(const char *train_id, const char *source_id, const char *desti
 	bahn_data_util_free_cached_track_state();
 
 	// Return the result
-	char *route_id = tick_data.out;
+	char *route_id = tick_data.route_id;
 	if (route_id != NULL) {
 		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
 	} else {

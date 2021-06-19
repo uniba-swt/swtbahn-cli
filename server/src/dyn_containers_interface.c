@@ -102,13 +102,15 @@ void dyn_containers_reset_interface(
 			.input_grab = false,
 			.input_release = false,
 			.input_interlocker_type = -1,
+			.input_reset = false,
 			
 			.input_src_signal_id = "",
 			.input_dst_signal_id = "",
 			.input_train_id = "",
 
 			.output_in_use = false,
-			.output_return_code = "",
+			.output_has_reset = false,
+			.output_route_id = "",
 			.output_terminated = false
 		};
 	}
@@ -163,13 +165,13 @@ static void *dyn_containers_actuate(void *_) {
 				&dyn_containers_interface->interlocker_instances_io[i];
 			if (interlocker_instance->output_in_use) {
 				if (interlocker_instance->output_terminated
-						&& strncmp(interlocker_instance->output_return_code, "", NAME_MAX)) {
-					// Interlocker sends point and signal commands via the BiDiB library, 
-					// but we have to flush the commands to the BiDiB boards
+						&& !strncmp(interlocker_instance->output_route_id, "", NAME_MAX)) {
+					// Interlocker has sent point and signal commands via the BiDiB library, 
+					// but we have to flush them to the BiDiB boards
 					bidib_flush();
-					syslog_server(LOG_NOTICE, "Request: Set points and signals - interlocker type %s return code %s",
-								  interlocker_instance->output_interlocker_type,
-								  interlocker_instance->output_return_code);
+					syslog_server(LOG_NOTICE, "Request: Set points and signals for route id %s - interlocker type %s",
+					              interlocker_instance->output_route_id,
+								  interlocker_instance->output_interlocker_type);
 					// TODO: Clear inputs? Set signals to ""?
 				}
 			}
@@ -587,5 +589,19 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
 	strncpy(interlocker_instance_io->input_src_signal_id, src_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_dst_signal_id, dst_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_train_id, train_id, NAME_MAX);
+	pthread_mutex_unlock(&dyn_containers_mutex);
+}
+
+void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
+                                                     struct t_interlocker_instance_io interlocker_instance_io_copy) {
+	struct t_interlocker_instance_io * const interlocker_instance_io = 
+		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+	
+	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_instance_io_copy.output_in_use = interlocker_instance_io->output_in_use;
+	interlocker_instance_io_copy.output_has_reset = interlocker_instance_io->output_has_reset;
+	interlocker_instance_io_copy.output_interlocker_type = interlocker_instance_io->output_interlocker_type;
+	strncpy(interlocker_instance_io_copy.output_route_id, interlocker_instance_io->output_route_id, NAME_MAX);
+	interlocker_instance_io_copy.output_terminated = interlocker_instance_io->output_terminated;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }

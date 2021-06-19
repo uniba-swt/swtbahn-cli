@@ -88,13 +88,15 @@ typedef struct {
 		bool input_grab;							// Desire to use this instance
 		bool input_release;							// Desire to stop using this instance
 		int  input_interlocker_type;				// Desired interlocker to use
+		bool input_reset;                           // Desire to reset the interlocker
 		char input_src_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_dst_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_train_id[NAME_MAX];				// Input defined by interlocker
 
 		bool output_in_use;							// Whether this instance is still in use
+		bool output_has_reset;                      // Whether this instance has been reset
 		int  output_interlocker_type;				// Interlocker type in use
-		char output_return_code[NAME_MAX];			// Output defined by interlocker
+		char output_route_id[NAME_MAX];			    // Output defined by interlocker
 		bool output_terminated;                     // Output defined by interlocker
 	} interlocker_instances_io[INTERLOCKER_INSTANCE_COUNT_MAX];
 } t_dyn_containers_interface;
@@ -182,5 +184,8 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id);
+
+void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
+                                                     struct t_interlocker_instance_io interlocker_instance_io_copy);
 
 #endif	// DYN_CONTAINERS_INTERFACE_H
