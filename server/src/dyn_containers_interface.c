@@ -102,7 +102,7 @@ void dyn_containers_reset_interface(
 			.input_grab = false,
 			.input_release = false,
 			.input_interlocker_type = -1,
-			.input_reset = false,
+			.input_reset = true,
 			
 			.input_src_signal_id = "",
 			.input_dst_signal_id = "",
@@ -579,6 +579,7 @@ void dyn_containers_free_interlocker_instance(const int dyn_containers_interlock
 }
 
 void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
+                                                    const bool reset,
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id) {
@@ -586,6 +587,7 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
 		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
 
 	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_instance_io->input_reset = reset;
 	strncpy(interlocker_instance_io->input_src_signal_id, src_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_dst_signal_id, dst_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_train_id, train_id, NAME_MAX);
@@ -593,15 +595,15 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
 }
 
 void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
-                                                     struct t_interlocker_instance_io interlocker_instance_io_copy) {
+                                                     struct t_interlocker_instance_io *interlocker_instance_io_copy) {
 	struct t_interlocker_instance_io * const interlocker_instance_io = 
 		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
-	interlocker_instance_io_copy.output_in_use = interlocker_instance_io->output_in_use;
-	interlocker_instance_io_copy.output_has_reset = interlocker_instance_io->output_has_reset;
-	interlocker_instance_io_copy.output_interlocker_type = interlocker_instance_io->output_interlocker_type;
-	strncpy(interlocker_instance_io_copy.output_route_id, interlocker_instance_io->output_route_id, NAME_MAX);
-	interlocker_instance_io_copy.output_terminated = interlocker_instance_io->output_terminated;
+	interlocker_instance_io_copy->output_in_use = interlocker_instance_io->output_in_use;
+	interlocker_instance_io_copy->output_has_reset = interlocker_instance_io->output_has_reset;
+	interlocker_instance_io_copy->output_interlocker_type = interlocker_instance_io->output_interlocker_type;
+	strncpy(interlocker_instance_io_copy->output_route_id, interlocker_instance_io->output_route_id, NAME_MAX);
+	interlocker_instance_io_copy->output_terminated = interlocker_instance_io->output_terminated;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }

@@ -181,11 +181,12 @@ GString *dyn_containers_get_interlockers(void);
 void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance);
 
 void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
+                                                    const bool reset,
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id);
 
 void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
-                                                     struct t_interlocker_instance_io interlocker_instance_io_copy);
+                                                     struct t_interlocker_instance_io *interlocker_instance_io_copy);
 
 #endif	// DYN_CONTAINERS_INTERFACE_H
