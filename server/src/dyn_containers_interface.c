@@ -578,8 +578,17 @@ void dyn_containers_free_interlocker_instance(const int dyn_containers_interlock
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }
 
+void dyn_containers_set_interlocker_instance_reset(const int dyn_containers_interlocker_instance,
+                                                   const bool reset) {
+	struct t_interlocker_instance_io * const interlocker_instance_io = 
+		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+
+	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_instance_io->input_reset = reset;
+	pthread_mutex_unlock(&dyn_containers_mutex);
+}
+
 void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
-                                                    const bool reset,
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id) {
@@ -587,7 +596,6 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
 		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
 
 	pthread_mutex_lock(&dyn_containers_mutex);
-	interlocker_instance_io->input_reset = reset;
 	strncpy(interlocker_instance_io->input_src_signal_id, src_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_dst_signal_id, dst_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_train_id, train_id, NAME_MAX);
