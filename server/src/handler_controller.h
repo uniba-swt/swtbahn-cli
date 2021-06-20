@@ -53,7 +53,7 @@ void close_interlocker_default();
   * @param name of the destination signal
   * @return ID of the route if it has been granted, otherwise NULL
   */ 
-char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
+const char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
 
 void release_route(const int route_id);
 

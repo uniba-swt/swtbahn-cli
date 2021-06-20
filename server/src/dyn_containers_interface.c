@@ -56,6 +56,7 @@ static const key_t shm_key = 1234;
 
 void dyn_containers_reset_interface(
         t_dyn_containers_interface * const dyn_containers_interface) {
+	dyn_containers_interface->running = false;
 	dyn_containers_interface->terminate = false;
 
 	dyn_containers_interface->let_period_us = let_period_us;
@@ -102,15 +103,13 @@ void dyn_containers_reset_interface(
 			.input_grab = false,
 			.input_release = false,
 			.input_interlocker_type = -1,
-			.input_reset = true,
+			.input_reset = false,
 			
 			.input_src_signal_id = "",
 			.input_dst_signal_id = "",
 			.input_train_id = "",
 
 			.output_in_use = false,
-			.output_has_reset = false,
-			.output_route_id = "",
 			.output_terminated = false
 		};
 	}
@@ -118,6 +117,10 @@ void dyn_containers_reset_interface(
 
 // Execute the outputs of the train engines and interlockers via the BiDiB library
 static void *dyn_containers_actuate(void *_) {
+	while (!running) {
+		// Empty
+	}
+	
 	do {
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		pthread_mutex_lock(&dyn_containers_mutex);
@@ -137,14 +140,15 @@ static void *dyn_containers_actuate(void *_) {
 												  ? engine_instance->output_nominal_speed 
 												  : -engine_instance->output_nominal_speed, 
 												  grabbed_trains[i].track_output)) {
-							syslog_server(LOG_ERR, "Request: Set train speed - bad parameter values");
+							syslog_server(LOG_ERR, "Request: Set train speed - train: %s: bad parameter values",
+							              grabbed_trains[i].name->str);
 						} else {
 							bidib_flush();
 							syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
-								   grabbed_trains[i].name->str, 
-								   engine_instance->output_nominal_forwards 
-								   ? engine_instance->output_nominal_speed 
-								   : -engine_instance->output_nominal_speed);
+							              grabbed_trains[i].name->str, 
+							              engine_instance->output_nominal_forwards 
+							              ? engine_instance->output_nominal_speed 
+							              : -engine_instance->output_nominal_speed);
 							engine_instance->output_nominal_speed_pre = engine_instance->output_nominal_speed;
 							engine_instance->output_nominal_forwards_pre = engine_instance->output_nominal_forwards;
 						}
@@ -156,32 +160,9 @@ static void *dyn_containers_actuate(void *_) {
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 
-
-		pthread_mutex_lock(&dyn_containers_mutex);
-		
-		// TODO: Interlockers cannot be run continuously because they will keep granting the same routes according to their inputs.
-		for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
-			struct t_interlocker_instance_io * const interlocker_instance = 
-				&dyn_containers_interface->interlocker_instances_io[i];
-			if (interlocker_instance->output_in_use) {
-				if (interlocker_instance->output_terminated
-						&& !strncmp(interlocker_instance->output_route_id, "", NAME_MAX)) {
-					// Interlocker has sent point and signal commands via the BiDiB library, 
-					// but we have to flush them to the BiDiB boards
-					bidib_flush();
-					syslog_server(LOG_NOTICE, "Request: Set points and signals for route id %s - interlocker type %s",
-					              interlocker_instance->output_route_id,
-								  interlocker_instance->output_interlocker_type);
-					// TODO: Clear inputs? Set signals to ""?
-				}
-			}
-		}
-			
-		pthread_mutex_unlock(&dyn_containers_mutex);
-
 		usleep(let_period_us);
 	} while (running);
-	
+
 	dyn_containers_interface->terminate = true;
 	
 	// TODO: Ensure that all trains really stop
@@ -207,6 +188,10 @@ void dyn_containers_stop(void) {
 	dyn_containers_shm_detach(&dyn_containers_interface);
 	dyn_containers_shm_delete(&shm_config);
 	syslog_server(LOG_NOTICE, "Closed dynamic library containers");
+}
+
+const bool dyn_containers_is_running(void) {
+	return dyn_containers_interface->running;
 }
 
 // General function to obtain a shared memory segment based on a given key
@@ -365,7 +350,7 @@ GString *dyn_containers_get_train_engines(void) {
 }
 
 int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
-                                     const char *train, const char *engine) {
+                                             const char *train, const char *engine) {
 	if (engine == NULL) {
 		syslog_server(LOG_ERR, "Could not set train engine because engine was NULL");
 		return 1;
@@ -555,6 +540,61 @@ GString *dyn_containers_get_interlockers(void) {
 	return interlocker_names;
 }
 
+int dyn_containers_set_interlocker_instance(const char *interlocker, 
+                                            int * const interlocker_instance) {
+	if (interlocker == NULL) {
+		syslog_server(LOG_ERR, "Could not set interlocker because it was NULL");
+		return 1;
+	}
+	
+	pthread_mutex_lock(&dyn_containers_mutex);
+	int interlocker_type = -1;
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		struct t_interlocker_io * const interlocker_io = 
+		    &dyn_containers_interface->interlockers_io[i];
+		if (strcmp(interlocker_io->output_name, interlocker) == 0) {
+			interlocker_type = i;
+			break;
+		}
+	}
+
+	if (interlocker_type == -1) {
+		pthread_mutex_unlock(&dyn_containers_mutex);
+		syslog_server(LOG_ERR, "Interlocker %s could not be found", interlocker);
+		return 1;
+	}
+	
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		struct t_interlocker_instance_io * const interlocker_instance_io = 
+		    &dyn_containers_interface->interlocker_instances_io[i];
+		int instance_in_use = interlocker_instance_io->output_in_use; 
+		if (!instance_in_use) {
+			interlocker_instance_io->input_grab = true;
+			interlocker_instance_io->input_interlocker_type = interlocker_type;
+			interlocker_instance_io->input_reset = false;
+			pthread_mutex_unlock(&dyn_containers_mutex);
+
+			do {
+				usleep(let_period_us);
+				instance_in_use = interlocker_instance_io->output_in_use;
+
+			} while (!instance_in_use);
+			
+			pthread_mutex_lock(&dyn_containers_mutex);
+			interlocker_instance_io->input_grab = false;
+			pthread_mutex_unlock(&dyn_containers_mutex);
+			
+			*interlocker_instance = i;
+			syslog_server(LOG_NOTICE, "Interlocker %d in use by instance %d", interlocker_type, *interlocker_instance);
+			return 0;
+		}
+	}
+
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	syslog_server(LOG_ERR, "No interlocker instances available for %s", interlocker);
+	return 1;
+}
+
 void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance) {
 	if (dyn_containers_interface == NULL) {
 		return;
@@ -596,6 +636,7 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
 		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
 
 	pthread_mutex_lock(&dyn_containers_mutex);
+	interlocker_instance_io->input_reset = true;
 	strncpy(interlocker_instance_io->input_src_signal_id, src_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_dst_signal_id, dst_signal_id, NAME_MAX);
 	strncpy(interlocker_instance_io->input_train_id, train_id, NAME_MAX);

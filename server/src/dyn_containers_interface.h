@@ -43,6 +43,7 @@
 
 // Input interface with the environment
 typedef struct {
+	volatile bool running;							// Whether the containers are ready
 	volatile bool terminate;						// Whether to terminate program execution
 	int let_period_us;								// Period of the Logical Execution Time (LET) in microseconds
 	
@@ -117,6 +118,8 @@ int dyn_containers_start(void);
 
 void dyn_containers_stop(void);
 
+const bool dyn_containers_is_running(void);
+
 // Obtains a shared memory segment based on a given key
 void dyn_containers_shm_create(t_dyn_shm_config * const shm_config, 
                               const int shm_permissions, const key_t shm_key, 
@@ -177,6 +180,10 @@ bool dyn_containers_free_interlocker(const int interlocker_slot);
 
 // Gets a comma-separated string of interlockers that have been loaded
 GString *dyn_containers_get_interlockers(void);
+
+// Finds the requested interlocker, and finds an available interlocker instance to use
+int dyn_containers_set_interlocker_instance(const char *interlocker, 
+                                            int * const interlocker_instance);
 
 void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance);
 

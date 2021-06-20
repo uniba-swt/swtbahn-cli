@@ -42,47 +42,61 @@ pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static dynlib_data interlocker = {};
 
+static int dyn_containers_engine_instance = -1;
+
 int load_interlocker_default() {
-	const char *path = "../src/interlockers/libinterlocker_default (unremovable)";
-	dynlib_status status = dynlib_load(&interlocker, path, INTERLOCKER);
+	while (!dyn_containers_is_running()) {
+		// Empty
+	}
 	
-	return (status == DYNLIB_LOAD_SUCCESS);
+	const char interlocker_name[] = "libinterlocker_default (unremovable)";
+	if (dyn_containers_set_interlocker_instance(interlocker_name, &dyn_containers_engine_instance)) {
+		syslog_server(LOG_ERR, "Interlocker %s could not be used", interlocker_name);
+		return 0;
+	}
+	
+	return 1;
 }
 
 void close_interlocker_default() {
 	dynlib_close(&interlocker);
 }
 
-char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
+const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 
 	bahn_data_util_init_cached_track_state();
-
-	// Initialise tick data
-	TickData_interlocker tick_data = {
-		.src_signal_id = strndup(source_id, NAME_MAX),
-		.dst_signal_id = strndup(destination_id, NAME_MAX),
-		.train_id = strndup(train_id, NAME_MAX)
-	};
-	dynlib_interlocker_reset(&interlocker, &tick_data);
-
-	// Ask interlocker to grant requested route.
+	
+	// Ask the interlocker to grant requested route.
 	// May take multiple ticks to process the request.
-	while (!tick_data.terminated) {
-		dynlib_interlocker_tick(&interlocker, &tick_data);
-	}
-	bidib_flush();
+	dyn_containers_set_interlocker_instance_inputs(dyn_containers_engine_instance, 
+                                                   source_id, destination_id, 
+                                                   train_id);
 
-	// Signal and train strings are no longer needed
-	free(tick_data.src_signal_id);
-	free(tick_data.dst_signal_id);
-	free(tick_data.train_id);
+	struct t_interlocker_instance_io interlocker_instance_io;	
+	do {
+		dyn_containers_get_interlocker_instance_outputs(dyn_containers_engine_instance,
+		                                                &interlocker_instance_io);
+	} while (!interlocker_instance_io.output_has_reset);
+	
+	dyn_containers_set_interlocker_instance_reset(dyn_containers_engine_instance, false);
+	
+	do {
+		dyn_containers_get_interlocker_instance_outputs(dyn_containers_engine_instance,
+		                                                &interlocker_instance_io);
+	} while (!interlocker_instance_io.output_terminated);
+	
 	bahn_data_util_free_cached_track_state();
 
 	// Return the result
-	char *route_id = tick_data.route_id;
-	if (route_id != NULL) {
+	const char *route_id = interlocker_instance_io.output_route_id;
+	if (route_id != NULL && !string_equals(route_id, "")) {
 		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
+		
+		bidib_flush();
+		syslog_server(LOG_NOTICE, "Request: Set points and signals for route id \"%s\" - interlocker type %d",
+		              interlocker_instance_io.output_route_id,
+		              interlocker_instance_io.output_interlocker_type);
 	} else {
 		syslog_server(LOG_ERR, "Grant route: Route could not be granted");
 	}
