@@ -10,11 +10,11 @@
 const char dynlib_symbol_train_engine_reset[] = "reset";
 const char dynlib_symbol_train_engine_tick[] = "tick";
 
-const char dynlib_symbol_interlocker_reset[] = "reset";
-const char dynlib_symbol_interlocker_tick[] = "tick";
+const char dynlib_symbol_interlocker_reset[] = "request_route_reset";
+const char dynlib_symbol_interlocker_tick[] = "request_route_tick";
 
-const char dynlib_symbol_drive_route_reset[] = "reset";
-const char dynlib_symbol_drive_route_tick[] = "tick";
+const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
+const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 
 const char sccharts_compiler_command[] = "java -jar \"$KIELER_PATH\"/scc.jar -s de.cau.cs.kieler.sccharts.statebased.lean.c.template";
 const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra -I../src";

@@ -928,12 +928,14 @@ thread interlockerInstance0(void) {
 					pause;
 				}
 			}
+			
+			forec_intern_output_interlocker_instance_0.has_reset = false;
 
 			// Execute interlocker until it terminates
 			if (!interlockerInstanceData[instance].terminated) {
+
 				while (!interlockerInstanceData[instance].terminated) {
 					dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
-					forec_intern_output_interlocker_instance_0.has_reset = false;
 
 					if (interlockerInstanceData[instance].route_id == NULL) {
 						interlockerInstanceData[instance].route_id = "";
