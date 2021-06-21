@@ -240,7 +240,7 @@ $(document).ready(
                     error: function (responseData, textStatus, errorThrown) {
                         $('#routeResponse').parent().removeClass('alert-success');
                         $('#routeResponse').parent().addClass('alert-danger');
-                        $('#routeResponse').text('Route not granted!');
+                        $('#routeResponse').text(responseData.responseText);
                     }
                 });
             } else {
@@ -311,7 +311,7 @@ $(document).ready(
                 error: function (responseData, textStatus, errorThrown) {
                     $('#uploadResponse').parent().removeClass('alert-success');
                     $('#uploadResponse').parent().addClass('alert-danger');
-                    $('#uploadResponse').text('Engine ' + file.name + ' could not be compiled or loaded!');
+                    $('#uploadResponse').text(responseData.responseText);
                 }
             });
         });
@@ -378,7 +378,7 @@ $(document).ready(
                 error: function (responseData, textStatus, errorThrown) {
                     $('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
                     $('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
-                    $('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' not found or still in use!');
+                    $('#refreshRemoveEngineResponse').text(responseData.responseText);
                 }
             });
         });
@@ -715,7 +715,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#uploadResponse').parent().removeClass('alert-success');
 					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#uploadResponse').text('Interlocker ' + file.name + ' could not be compiled or loaded!');
+					$('#uploadResponse').text(responseData.responseText);
 				}
 			});
 		});
@@ -780,7 +780,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text('Interlocker ' + interlockerName + ' not found or still in use!');
+					$('#refreshRemoveInterlockerResponse').text(responseData.responseText);
 				}
 			});
 		});
