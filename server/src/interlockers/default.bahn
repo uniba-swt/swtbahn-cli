@@ -1,5 +1,4 @@
 def request_route(string src_signal_id, string dst_signal_id, string train_id): string
-
     # 1. Get all routes
     string route_ids[] = get routes from src_signal_id to dst_signal_id
     if route_ids.len == 0
