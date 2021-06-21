@@ -32,17 +32,10 @@
 extern pthread_mutex_t interlocker_mutex;
 
 /**
- * Load dynamic interlocker compiled by BahnDSL
- * File: interlocker/libinterlocker_default
- * Should being called once in the application lifetimme
+ * Loads the default interlocker
  * @return 1 if successful, otherwise 0
  */
-int load_interlocker_default();
-
-/**
- * Close dynamic interlocker compiled by BahnDSL
- */
-void close_interlocker_default();
+int load_default_interlocker_instance();
 
 /**
   * Finds and grants a requested train route.
@@ -51,7 +44,7 @@ void close_interlocker_default();
   * @param name of requesting train
   * @param name of the source signal
   * @param name of the destination signal
-  * @return ID of the route if it has been granted, otherwise NULL
+  * @return ID of the route if it has been granted, otherwise an error string
   */ 
 const char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
 

@@ -76,7 +76,7 @@ static void *start_bidib(void *_) {
 		pthread_exit(NULL);
 	}
 	
-	int succ_interlocker = load_interlocker_default();
+	int succ_interlocker = load_default_interlocker_instance();
 	if (!succ_interlocker) {
     	pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
@@ -148,7 +148,6 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		running = false;
 		free_all_grabbed_trains();
 		dyn_containers_stop();
-		close_interlocker_default();
 		bahn_data_util_free_config();
 		pthread_join(start_stop_thread, NULL);
 		pthread_create(&start_stop_thread, NULL, stop_bidib, NULL);
