@@ -17,7 +17,7 @@ const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
 const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 
 const char sccharts_compiler_command[] = "java -jar \"$KIELER_PATH\"/scc.jar -s de.cau.cs.kieler.sccharts.statebased.lean.c.template";
-const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra -I../src";
+const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
 const char bahndsl_compiler_command[] = "bahnc -o %s -m library";
 
@@ -26,7 +26,7 @@ dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library);
 dynlib_status dynlib_load_drive_route_funcs(dynlib_data *library);
 
 
-// Compiles a given SCCharts model into a dynamic library
+// Compiles a given SCCharts model into a shared library
 dynlib_status dynlib_compile_scchart(const char filepath[], const char output_dir[]) {
 	// Get the filename
 	char filepath_copy[PATH_MAX + NAME_MAX];
@@ -39,7 +39,7 @@ dynlib_status dynlib_compile_scchart(const char filepath[], const char output_di
 
 	int ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
-		return DYNLIB_COMPILE_C_ERR;
+		return DYNLIB_COMPILE_SCCHARTS_C_ERR;
 	}
 
 	// Compile the C file into a dynamic library
@@ -50,13 +50,13 @@ dynlib_status dynlib_compile_scchart(const char filepath[], const char output_di
 	
 	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
-		return DYNLIB_COMPILE_SHARED_ERR;
+		return DYNLIB_COMPILE_SHARED_SCCHARTS_ERR;
 	}
 	
 	return DYNLIB_COMPILE_SUCCESS;
 }
 
-// Compiles a given BahnDSL model into a dynamic library
+// Compiles a given BahnDSL model into a shared library
 dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_dir[]) {
 	// Get the filename
 	char filepath_copy[PATH_MAX + NAME_MAX];

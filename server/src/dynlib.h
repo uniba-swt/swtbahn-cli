@@ -38,15 +38,15 @@ typedef enum {
 	DYNLIB_LOAD_SUCCESS,
 
 	// Could not compile SCCharts model into C file
-	DYNLIB_COMPILE_C_ERR,
+	DYNLIB_COMPILE_SCCHARTS_C_ERR,
+	
+	// Could not compile SCCharts' C file into shared library
+	DYNLIB_COMPILE_SHARED_SCCHARTS_ERR,
 	
 	// Could not compile Bahn DSL model into shared library
 	DYNLIB_COMPILE_SHARED_BAHNDSL_ERR,
 	
-	// Could not compile library into shared library
-	DYNLIB_COMPILE_SHARED_ERR,
-	
-	// Could not load the dynamic library
+	// Could not load the shared library
 	DYNLIB_LOAD_ERR,
 	
 	// Could not find address of reset(...)

@@ -124,7 +124,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
 		dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
-		if (status == DYNLIB_COMPILE_C_ERR || status == DYNLIB_COMPILE_SHARED_ERR) {
+		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled", filepath);
 			return OCS_NOT_IMPLEMENTED;
 		}
