@@ -68,8 +68,9 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	sprintf(command1, bahndsl_compiler_command, output_dir);
 	
 	char command2[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command2, "%s %s.bahn", 
-			command1, filename);
+	sprintf(command2, "%s %s/%s.bahn", 
+			command1, 
+			output_dir, filename);
 	
 	const int ret = system(command2);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
