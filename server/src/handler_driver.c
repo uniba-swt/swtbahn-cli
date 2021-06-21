@@ -218,7 +218,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 				bidib_free_train_state_query(train_state);
 				int grab_id = grab_train(data_train, data_engine);
 				if (grab_id == -1) {
-					syslog_server(LOG_ERR, "Request: Grab train - train already grabbed");
+					syslog_server(LOG_ERR, "Request: Grab train - train already grabbed or engine not found");
 					return OCS_NOT_IMPLEMENTED;
 				} else {
 					syslog_server(LOG_NOTICE, "Request: Grab train - train: %s", data_train);

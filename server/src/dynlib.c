@@ -16,7 +16,7 @@ const char dynlib_symbol_interlocker_tick[] = "request_route_tick";
 const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
 const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 
-const char sccharts_compiler_command[] = "java -jar \"$KIELER_PATH\"/scc.jar -s de.cau.cs.kieler.sccharts.statebased.lean.c.template";
+const char sccharts_compiler_command[] = "java -jar \"$KIELER_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.priority";
 const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
 const char bahndsl_compiler_command[] = "bahnc -o %s -m library";
