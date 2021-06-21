@@ -89,6 +89,9 @@ shared int dynlib_load_success = DYNLIB_LOAD_SUCCESS;
 int DYNLIB_COMPILE_C_ERR;
 #define DYNLIB_COMPILE_C_ERR__global_0_0 DYNLIB_COMPILE_C_ERR
 
+int DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;
+#define DYNLIB_COMPILE_SHARED_BAHNDSL_ERR__global_0_0 DYNLIB_COMPILE_SHARED_BAHNDSL_ERR
+
 int DYNLIB_COMPILE_SHARED_ERR;
 #define DYNLIB_COMPILE_SHARED_ERR__global_0_0 DYNLIB_COMPILE_SHARED_ERR
 
@@ -1087,6 +1090,9 @@ void printout(const char *threadName, const dynlib_status status, const dynlib_d
 		case (DYNLIB_COMPILE_C_ERR):
 			syslog_server(LOG_ERR, "%s: Could not compile SCCharts model into C file '%s'", threadName, library->filepath);
 			break;
+		case (DYNLIB_COMPILE_SHARED_BAHNDSL_ERR):
+			syslog_server(LOG_ERR, "%s: Could not compile BahnDSL file into shared library '%s'", threadName, library->filepath);
+			break;			
 		case (DYNLIB_COMPILE_SHARED_ERR):
 			syslog_server(LOG_ERR, "%s: Could not compile C file into shared library '%s'", threadName, library->filepath);
 			break;

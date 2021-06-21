@@ -690,7 +690,7 @@ $(document).ready(
 			if (files.length != 1) {
 				$('#uploadResponse').parent().removeClass('alert-success');
 				$('#uploadResponse').parent().addClass('alert-danger');
-				$('#uploadResponse').text('Select an SCCharts file!');
+				$('#uploadResponse').text('Select a BahnDSL file!');
 				return;
 			}
 			var file = files[0];

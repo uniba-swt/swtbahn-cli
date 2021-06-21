@@ -43,7 +43,7 @@ const static char engine_dir[] = "engines";
 const static char engine_extensions[][5] = { "c", "h", "sctx" };
 
 const static char interlocker_dir[] = "interlockers";
-const static char interlocker_extensions[][5] = { "c", "h", "sctx" };
+const static char interlocker_extensions[][5] = { "bahn" };
 
 
 extern pthread_mutex_t dyn_containers_mutex;
@@ -123,7 +123,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
-		dynlib_status status = dynlib_compile_scchart_to_c(filepath, engine_dir);
+		dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
 		if (status == DYNLIB_COMPILE_C_ERR || status == DYNLIB_COMPILE_SHARED_ERR) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled", filepath);
 			return OCS_NOT_IMPLEMENTED;
@@ -238,7 +238,7 @@ bool remove_interlocker_files(const char library_name[]) {
 		sprintf(filepath, "%s/%s.%s", interlocker_dir, name, interlocker_extensions[i]);
 		result = remove(filepath);
 	}
-	sprintf(filepath, "%s/lib%s.so", interlocker_dir, name);
+	sprintf(filepath, "%s/libinterlocking_%s.so", interlocker_dir, name);
 	result += remove(filepath);
 
 	return (result == 0);
@@ -268,13 +268,13 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", interlocker_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
-		syslog_server(LOG_NOTICE, "Request: Upload - copied interlocker SCCharts file from %s to %s",
+		syslog_server(LOG_NOTICE, "Request: Upload - copied interlocker BahnDSL file from %s to %s",
 		              temp_filepath, final_filepath);
 
 		char filepath[sizeof(final_filepath)];
-		remove_file_extension(filepath, final_filepath, ".sctx");
-		dynlib_status status = dynlib_compile_scchart_to_c(filepath, interlocker_dir);
-		if (status == DYNLIB_COMPILE_C_ERR || status == DYNLIB_COMPILE_SHARED_ERR) {
+		remove_file_extension(filepath, final_filepath, ".bahn");
+		dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
+		if (status == DYNLIB_COMPILE_SHARED_BAHNDSL_ERR) {
 			syslog_server(LOG_ERR, "Request: Upload - interlocker file %s could not be compiled", filepath);
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -288,8 +288,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 
-		snprintf(final_filepath, sizeof(final_filepath), "%s/lib%s", interlocker_dir, filename);
-		remove_file_extension(filepath, final_filepath, ".sctx");
+		snprintf(final_filepath, sizeof(final_filepath), "%s/libinterlocking_%s", interlocker_dir, filename);
+		remove_file_extension(filepath, final_filepath, ".bahn");
 		dyn_containers_set_interlocker(interlocker_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		return OCS_PROCESSED;

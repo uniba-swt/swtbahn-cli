@@ -40,6 +40,9 @@ typedef enum {
 	// Could not compile SCCharts model into C file
 	DYNLIB_COMPILE_C_ERR,
 	
+	// Could not compile Bahn DSL model into shared library
+	DYNLIB_COMPILE_SHARED_BAHNDSL_ERR,
+	
 	// Could not compile library into shared library
 	DYNLIB_COMPILE_SHARED_ERR,
 	
@@ -84,7 +87,8 @@ typedef struct {
 } dynlib_data;
 
 
-dynlib_status dynlib_compile_scchart_to_c(const char filepath[], const char output_dir[]);
+dynlib_status dynlib_compile_scchart(const char filepath[], const char output_dir[]);
+dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_dir[]);
 
 dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_type type);
 bool dynlib_is_loaded(dynlib_data *library);
