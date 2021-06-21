@@ -304,10 +304,10 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 					                      data_source_name, data_destination_name);
 				} else if (strcmp(route_id, "not_grantable") == 0) {
 					onion_response_printf(res, "Route found conflicts with others");
-				} else if (strcmp(route_id, "not_clear") == 0) {
-					onion_response_printf(res, "Route found has occupied tracks");
+				} else if (strcmp(route_id, "%s", "not_clear") == 0) {
+					onion_response_printf(res, "%s", "Route found has occupied tracks");
 				} else {
-					onion_response_printf(res, "Route could not be granted");
+					onion_response_printf(res, "%s", "Route could not be granted");
 				}
 			
 				syslog_server(LOG_ERR, "Request: Request train route - "
