@@ -56,6 +56,15 @@ char serial_device[INPUT_MAX_LEN];
 char config_directory[INPUT_MAX_LEN];
 
 
+void syslog_server(int priority, const char *format, ...) {
+	char string[1024];
+	va_list arg;
+	va_start(arg, format);
+	vsnprintf(string, 1024, format, arg);
+	
+	syslog(priority, "server: %s", string);
+}
+
 void build_response_header(onion_response *res) {
 	onion_response_set_header(res, "Access-Control-Allow-Origin", 
 	                               "*");
@@ -80,13 +89,18 @@ static onion_connection_status handler_assets(void *_, onion_request *req,
 	const char local_path[] = "../src/assets/";
 	char *global_path = realpath(local_path, NULL);
 	if (!global_path) {
-		ONION_ERROR("Cannot calculate the global path of the given directory (%s).",
+		syslog_server(LOG_ERR, "Onion: Cannot calculate the global path of the given directory (%s)",
+		              local_path);
+		ONION_ERROR("Cannot calculate the global path of the given directory (%s)",
 		            local_path);
 		return OCS_NOT_IMPLEMENTED;
 	}
+	
 	struct stat st;
 	if (stat(global_path, &st) != 0) {
-		ONION_ERROR("Cannot access to the exported directory/file (%s).", global_path);
+		syslog_server(LOG_ERR, "Onion: Cannot access to the exported directory/file (%s)", 
+		              global_path);
+		ONION_ERROR("Cannot access to the exported directory/file (%s)", global_path);
 		onion_low_free(global_path);
 		return OCS_NOT_IMPLEMENTED;
 	}
@@ -124,15 +138,6 @@ static int eval_args(int argc, char **argv) {
 			   "<IP address> <port>\n");
 		return 1;
 	}
-}
-
-void syslog_server(int priority, const char *format, ...) {
-	char string[1024];
-	va_list arg;
-	va_start(arg, format);
-	vsnprintf(string, 1024, format, arg);
-	
-	syslog(priority, "server: %s", string);
 }
 
 int main(int argc, char **argv) {
