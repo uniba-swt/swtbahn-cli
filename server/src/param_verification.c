@@ -90,3 +90,15 @@ int params_check_route_id(const char *data_route_id) {
 	}
 	return route_id;
 }
+
+int params_check_is_number(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)) {
+		return 0;
+	}
+	
+	char *p;
+	strtod(string, &p);
+	
+	return (*p == '\0');
+}
+
