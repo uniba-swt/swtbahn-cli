@@ -119,5 +119,4 @@ void free_config_data(t_config_data config_data) {
     nullify_extras_config_tables();
     
     syslog_server(LOG_NOTICE, "Config data freed");
-
 }

@@ -123,7 +123,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
-		dynlib_status status = dynlib_compile_scchart_to_c(filepath);
+		dynlib_status status = dynlib_compile_scchart_to_c(filepath, engine_dir);
 		if (status == DYNLIB_COMPILE_C_ERR || status == DYNLIB_COMPILE_SHARED_ERR) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled", filepath);
 			return OCS_NOT_IMPLEMENTED;
@@ -273,7 +273,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
-		dynlib_status status = dynlib_compile_scchart_to_c(filepath);
+		dynlib_status status = dynlib_compile_scchart_to_c(filepath, interlocker_dir);
 		if (status == DYNLIB_COMPILE_C_ERR || status == DYNLIB_COMPILE_SHARED_ERR) {
 			syslog_server(LOG_ERR, "Request: Upload - interlocker file %s could not be compiled", filepath);
 			return OCS_NOT_IMPLEMENTED;

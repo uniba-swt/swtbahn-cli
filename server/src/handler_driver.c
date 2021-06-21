@@ -65,7 +65,7 @@ bool train_grabbed(const char *train) {
 	for (size_t i = 0; i < MAX_TRAINS; i++) {
 		if (grabbed_trains[i].is_valid 
 				&& grabbed_trains[i].name != NULL 
-				&& !strcmp(grabbed_trains[i].name->str, train)) {
+				&& strcmp(grabbed_trains[i].name->str, train) == 0) {
 			grabbed = true;
 			break;
 		}
@@ -78,7 +78,7 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 
 	for (size_t i = 0; i < train_position_query.length; i++) {
-		if (!strcmp(segment, train_position_query.segments[i])) {
+		if (strcmp(segment, train_position_query.segments[i]) == 0) {
 			bidib_free_train_position_query(train_position_query);
 			return true;
 		}
@@ -146,7 +146,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 static int grab_train(const char *train, const char *engine) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < MAX_TRAINS; i++) {
-		if (grabbed_trains[i].is_valid && !strcmp(grabbed_trains[i].name->str, train)) {
+		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return -1;
 		}
@@ -289,9 +289,9 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			// Use interlocker to find and grant a route
-			char *route_id = grant_route(grabbed_trains[grab_id].name->str,
-			                             data_source_name,
-			                             data_destination_name);
+			const char *route_id = grant_route(grabbed_trains[grab_id].name->str,
+			                                   data_source_name,
+			                                   data_destination_name);
 			if (route_id != NULL && !string_equals(route_id, "")) {
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
 				              "train: %s route %s",

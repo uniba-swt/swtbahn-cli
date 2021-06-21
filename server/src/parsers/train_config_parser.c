@@ -75,12 +75,13 @@ void nullify_train_config_table(void) {
 	tb_trains = NULL;
 }
 
-void train_yaml_sequence_start(char *scalar) {
+void train_yaml_sequence_start(char *scalar) {	
     log_debug("train_yaml_sequence_start: %s", scalar);
     if (train_mapping == TRAIN_ROOT && str_equal(scalar, "trains")) {
         train_sequence = TRAINS;
-        if (tb_trains == NULL)
+        if (tb_trains == NULL) {
             tb_trains = g_hash_table_new_full(g_str_hash, g_str_equal, free_train_id_key, free_train);
+        }
         return;
     }
 
@@ -190,6 +191,9 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
 }
 
 void parse_train_yaml(yaml_parser_t *parser, t_config_data *data) {
+    train_mapping = TRAIN_ROOT;
+    train_sequence = TRAIN_SEQ_NONE;
+
     parse_yaml_content(parser, train_yaml_sequence_start, train_yaml_sequence_end, train_yaml_mapping_start, train_yaml_mapping_end, train_yaml_scalar);
     data->table_trains = tb_trains;
 }

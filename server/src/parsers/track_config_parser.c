@@ -302,6 +302,9 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 }
 
 void parse_track_yaml(yaml_parser_t *parser, t_config_data *data) {
+    track_mapping = TRACK_ROOT;
+    track_sequence = TRACK_SEQ_NONE;
+    
     parse_yaml_content(parser, track_yaml_sequence_start, track_yaml_sequence_end, track_yaml_mapping_start, track_yaml_mapping_end, track_yaml_scalar);
     data->table_segments = tb_segments;
     data->table_signals = tb_signals;

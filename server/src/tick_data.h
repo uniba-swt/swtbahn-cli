@@ -23,8 +23,8 @@ typedef struct {
   char *dst_signal_id;      // Input
   char *train_id;           // Input
   
-  char *out;                // Output
-  bool terminated;          // Output
+  char *route_id;           // Output
+  bool terminated;          // Output (internal variable)
 
   char internal_variables[4096];
 } TickData_interlocker;
@@ -35,7 +35,7 @@ typedef struct {
   char *segment_ids[1024];  // Input
   int count_segments;       // Input
 
-  bool terminated;          // Output
+  bool terminated;          // Output (internal variable)
 
   char internal_variables[2048];
 } TickData_drive_route;

@@ -374,6 +374,9 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
 }
 
 void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data) {
+	extras_mapping = EXTRAS_ROOT;
+    extras_sequence = EXTRAS_SEQ_NONE;
+    
     parse_yaml_content(parser, extras_yaml_sequence_start, extras_yaml_sequence_end, extras_yaml_mapping_start, extras_yaml_mapping_end, extras_yaml_scalar);
     data->table_blocks = tb_blocks;
     data->table_crossings = tb_crossing;

@@ -84,7 +84,7 @@ typedef struct {
 } dynlib_data;
 
 
-dynlib_status dynlib_compile_scchart_to_c(const char filepath[]);
+dynlib_status dynlib_compile_scchart_to_c(const char filepath[], const char output_dir[]);
 
 dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_type type);
 bool dynlib_is_loaded(dynlib_data *library);

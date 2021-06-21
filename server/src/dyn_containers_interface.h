@@ -43,6 +43,7 @@
 
 // Input interface with the environment
 typedef struct {
+	volatile bool running;							// Whether the containers are ready
 	volatile bool terminate;						// Whether to terminate program execution
 	int let_period_us;								// Period of the Logical Execution Time (LET) in microseconds
 	
@@ -88,13 +89,15 @@ typedef struct {
 		bool input_grab;							// Desire to use this instance
 		bool input_release;							// Desire to stop using this instance
 		int  input_interlocker_type;				// Desired interlocker to use
+		bool input_reset;                           // Desire to reset the interlocker
 		char input_src_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_dst_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_train_id[NAME_MAX];				// Input defined by interlocker
 
 		bool output_in_use;							// Whether this instance is still in use
+		bool output_has_reset;                      // Whether this instance has been reset
 		int  output_interlocker_type;				// Interlocker type in use
-		char output_return_code[NAME_MAX];			// Output defined by interlocker
+		char output_route_id[NAME_MAX];			    // Output defined by interlocker
 		bool output_terminated;                     // Output defined by interlocker
 	} interlocker_instances_io[INTERLOCKER_INSTANCE_COUNT_MAX];
 } t_dyn_containers_interface;
@@ -114,6 +117,8 @@ extern pthread_mutex_t dyn_containers_mutex;
 int dyn_containers_start(void);
 
 void dyn_containers_stop(void);
+
+const bool dyn_containers_is_running(void);
 
 // Obtains a shared memory segment based on a given key
 void dyn_containers_shm_create(t_dyn_shm_config * const shm_config, 
@@ -176,11 +181,21 @@ bool dyn_containers_free_interlocker(const int interlocker_slot);
 // Gets a comma-separated string of interlockers that have been loaded
 GString *dyn_containers_get_interlockers(void);
 
+// Finds the requested interlocker, and finds an available interlocker instance to use
+int dyn_containers_set_interlocker_instance(const char *interlocker, 
+                                            int * const interlocker_instance);
+
 void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance);
+
+void dyn_containers_set_interlocker_instance_reset(const int dyn_containers_interlocker_instance,
+                                                   const bool reset);
 
 void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id);
+
+void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
+                                                     struct t_interlocker_instance_io *interlocker_instance_io_copy);
 
 #endif	// DYN_CONTAINERS_INTERFACE_H

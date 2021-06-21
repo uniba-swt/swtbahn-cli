@@ -10,15 +10,14 @@
 const char dynlib_symbol_train_engine_reset[] = "reset";
 const char dynlib_symbol_train_engine_tick[] = "tick";
 
-const char dynlib_symbol_interlocker_reset[] = "request_route_reset";
-const char dynlib_symbol_interlocker_tick[] = "request_route_tick";
+const char dynlib_symbol_interlocker_reset[] = "reset";
+const char dynlib_symbol_interlocker_tick[] = "tick";
 
-const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
-const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
+const char dynlib_symbol_drive_route_reset[] = "reset";
+const char dynlib_symbol_drive_route_tick[] = "tick";
 
-const char compiler_output_dir[] = "engines";
-const char sccharts_compiler_command[] = "java -jar \"$KICO_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.netlist";
-const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
+const char sccharts_compiler_command[] = "java -jar \"$KIELER_PATH\"/scc.jar -s de.cau.cs.kieler.sccharts.statebased.lean.c.template";
+const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra -I../src";
 
 dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);
 dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library);
@@ -26,7 +25,7 @@ dynlib_status dynlib_load_drive_route_funcs(dynlib_data *library);
 
 
 // Compiles a given SCCharts model into a dynamic library
-dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
+dynlib_status dynlib_compile_scchart_to_c(const char filepath[], const char output_dir[]) {
 	// Get the filename
 	char filepath_copy[PATH_MAX + NAME_MAX];
 	strncpy(filepath_copy, filepath, PATH_MAX + NAME_MAX);
@@ -34,7 +33,7 @@ dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
 	
 	// Compile the SCCharts model to a C file
 	char command[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command, "%s -o %s %s.sctx", sccharts_compiler_command, compiler_output_dir, filepath);
+	sprintf(command, "%s -o %s %s.sctx", sccharts_compiler_command, output_dir, filepath);
 
 	int ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
@@ -44,8 +43,8 @@ dynlib_status dynlib_compile_scchart_to_c(const char filepath[]) {
 	// Compile the C file into a dynamic library
 	sprintf(command, "%s -o %s/lib%s.so %s/%s.c", 
 			c_compiler_command, 
-			compiler_output_dir, filename, 
-			compiler_output_dir, filename);
+			output_dir, filename, 
+			output_dir, filename);
 	
 	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
