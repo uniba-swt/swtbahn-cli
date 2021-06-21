@@ -41,9 +41,11 @@
 
 const static char engine_dir[] = "engines";
 const static char engine_extensions[][5] = { "c", "h", "sctx" };
+const static int engine_extensions_count = 3;
 
 const static char interlocker_dir[] = "interlockers";
 const static char interlocker_extensions[][5] = { "bahn" };
+const static int interlocker_extensions_count = 1;
 
 
 extern pthread_mutex_t dyn_containers_mutex;
@@ -83,7 +85,7 @@ bool remove_engine_files(const char library_name[]) {
 	
 	int result = 0;
 	char filepath[PATH_MAX + NAME_MAX];
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < engine_extensions_count; i++) {
 		sprintf(filepath, "%s/%s.%s", engine_dir, name, engine_extensions[i]);
 		result = remove(filepath);
 	}
@@ -228,13 +230,13 @@ bool interlocker_file_exists(const char filename[]) {
 }
 
 bool remove_interlocker_files(const char library_name[]) {
-	// Remove the prefix "lib"
+	// Remove the prefix "libinterlocking_"
 	char name[PATH_MAX + NAME_MAX];
-	strcpy(name, library_name + 3);
+	strcpy(name, library_name + 16);
 
 	int result = 0;
 	char filepath[PATH_MAX + NAME_MAX];
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < interlocker_extensions_count; i++) {
 		sprintf(filepath, "%s/%s.%s", interlocker_dir, name, interlocker_extensions[i]);
 		result = remove(filepath);
 	}
