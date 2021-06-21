@@ -2,20 +2,21 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
     # 1. Get all routes
     string route_ids[] = get routes from src_signal_id to dst_signal_id
     if route_ids.len == 0
-        return ""
+        return "no_routes"
     end
 
     # 2. Find shortest route
     string id = get_shortest_route(route_ids)
 
     # 3. Check route grantability
+    # TODO: If not grantable, try the next shortest route 
     if !route_is_grantable(id, train_id)
-        return ""
+        return "not_grantable"
     end
 
     # 4. Check route clearance
     if !route_is_clear(id)
-        return ""
+        return "not_clear"
     end
 
     # 5. Block the route
@@ -28,6 +29,9 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
 end
 
 def route_is_grantable(string route_id, string train_id): bool
+    # Check if trains are on conflicting routes
+    # Does not check if trains on conflicting routes are driving 
+    # away from route_id
     string conflict_routes[] = get config route.conflicts route_id
     for string id in conflict_routes
         string conflict_train_id = get config route.train id
@@ -40,12 +44,15 @@ def route_is_grantable(string route_id, string train_id): bool
 end
 
 def route_is_clear(string route_id): bool
-    # check entry signal
+    # Check entry signal
     string src_signal = get config route.source route_id
     string src_state = get state src_signal
     if src_state != "stop"
         return false
     end
+
+    # Signals of tracks that intersect the route have to be red (stop aspect)
+    # TODO
 
     #  All track segments on the route have to be clear
     string block_ids[] = get config route.sections route_id
@@ -59,7 +66,7 @@ def route_is_clear(string route_id): bool
 end
 
 def set_points_signals(string route_id)
-    # switch all points
+    # Switch all points
     string point_ids[] = get config route.point_positions route_id
     for string point_id in point_ids
         string pos = get position point_id in route_id
@@ -70,17 +77,17 @@ def set_points_signals(string route_id)
         end
     end
 
-    # set entry signal to green
+    # Set entry signal to green
     string entry_id = get config route.source route_id
     set state entry_id to clear
 end
 
 def drive_route(string route_id, string train_id, string segment_ids[])
-    # get block
+    # Get block
     string block_id = get_block(route_id, segment_ids)
     if block_id != ""
 
-        # protect block by controlling the immediate signals
+        # Protect the block by controlling the immediate signals
         string pre_block = get_previous_block(route_id, block_id)
         if pre_block != ""
             string signal_ids[] = get config block.block_signals pre_block

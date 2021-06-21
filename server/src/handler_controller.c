@@ -85,7 +85,7 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 
 	// Return the result
 	const char *route_id = interlocker_instance_io.output_route_id;
-	if (route_id != NULL && !string_equals(route_id, "")) {
+	if (route_id != NULL && params_check_is_number(route_id)) {
 		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
 		
 		bidib_flush();
@@ -93,7 +93,15 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 		              interlocker_instance_io.output_route_id,
 		              interlocker_instance_io.output_interlocker_type);
 	} else {
-		syslog_server(LOG_ERR, "Grant route: Route could not be granted");
+		if (strcmp(route_id, "no_routes") == 0) {
+			syslog_server(LOG_ERR, "Grant route: No routes possible from %s to %s", source_id, destination_id);
+		} else if (strcmp(route_id, "not_grantable") == 0) {
+			syslog_server(LOG_ERR, "Grant route: Route found conflicts with others");
+		} else if (strcmp(route_id, "not_clear") == 0) {
+			syslog_server(LOG_ERR, "Grant route: Route found has occupied tracks");
+		} else {
+			syslog_server(LOG_ERR, "Grant route: Route could not be granted");
+		}
 	}
 
 	pthread_mutex_unlock(&interlocker_mutex);

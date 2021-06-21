@@ -28,6 +28,8 @@
 #ifndef SWTSERVER_HANDLER_ADMIN_H
 #define SWTSERVER_HANDLER_ADMIN_H
 
+#include <stdbool.h>
+
 
 int params_check_session_id(const char *data_session_id);
 
@@ -41,7 +43,7 @@ int params_check_state(const char *data_state);
 
 int params_check_route_id(const char *data_route_id);
 
-int params_check_is_number(const char *string);
+bool params_check_is_number(const char *string);
 
 
 #endif	// SWTSERVER_HANDLER_ADMIN_H
