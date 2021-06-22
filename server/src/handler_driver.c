@@ -46,23 +46,34 @@ pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned int next_grab_id = 0;
 
-t_train_data grabbed_trains[MAX_TRAINS] = {
+t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
 	{ .is_valid = false, .dyn_containers_engine_instance = -1 }
 };
 
 
 static void increment_next_grab_id(void) {
-	if (next_grab_id == MAX_TRAINS - 1) {
+	if (next_grab_id == TRAIN_ENGINE_INSTANCE_COUNT_MAX - 1) {
 		next_grab_id = 0;
 	} else {
 		next_grab_id++;
 	}
 }
 
+const int train_get_grab_id(const char *train) {
+	pthread_mutex_lock(&grabbed_trains_mutex);
+	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		if (strcmp(grabbed_trains[i].name->str, train) == 0) {
+			return i;
+		}
+	}
+	return -1;
+	pthread_mutex_unlock(&grabbed_trains_mutex);
+}
+
 bool train_grabbed(const char *train) {
 	bool grabbed = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	for (size_t i = 0; i < MAX_TRAINS; i++) {
+	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid 
 				&& grabbed_trains[i].name != NULL 
 				&& strcmp(grabbed_trains[i].name->str, train) == 0) {
@@ -145,7 +156,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 
 static int grab_train(const char *train, const char *engine) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	for (size_t i = 0; i < MAX_TRAINS; i++) {
+	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return -1;
@@ -193,7 +204,7 @@ static bool free_train(int grab_id) {
 }
 
 void free_all_grabbed_trains(void) {
-	for (size_t i = 0; i < MAX_TRAINS; i++) {
+	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		free_train(i);
 	}
 }
@@ -240,7 +251,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Release train - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
@@ -277,7 +288,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 		const char *data_source_name = onion_request_get_post(req, "source");
 		const char *data_destination_name = onion_request_get_post(req, "destination");
 		const int client_session_id = params_check_session_id(data_session_id);
-		const int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Request train route - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
@@ -332,7 +343,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const int client_session_id = params_check_session_id(data_session_id);
-		const int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		const int route_id = params_check_route_id(data_route_id);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Drive route - invalid session id");
@@ -365,7 +376,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		int speed = params_check_speed(data_speed);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Set train speed - invalid session id");
@@ -409,7 +420,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		int speed  = params_check_calibrated_speed(data_speed);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Set calibrated train speed - invalid session id");
@@ -456,7 +467,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Set train emergency stop - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
@@ -500,7 +511,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		const char *data_state = onion_request_get_post(req, "state");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, MAX_TRAINS);
+		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		int state = params_check_state(data_state);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Set train peripheral - invalid session id");

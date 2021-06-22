@@ -37,11 +37,22 @@
 #include "interlocking.h"
 #include "bahn_data_util.h"
 
-
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // TODO: Turn into a proper structure for multiple interlocker instances
-static int dyn_containers_interlocker_instance = -1;
+static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] = {
+	{ .is_valid = false, .dyn_containers_interlocker_instance = -1 }
+};
+
+
+void free_all_interlockers(void) {
+	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		if (interlocker_instances[i].is_valid) {
+			dyn_containers_free_interlocker_instance(&interlocker_instances[i]);
+			interlocker_instances[i].is_valid = false;
+		}
+	}
+}
 
 int load_default_interlocker_instance() {
 	while (!dyn_containers_is_running()) {
@@ -49,10 +60,11 @@ int load_default_interlocker_instance() {
 	}
 	
 	const char interlocker_name[] = "libinterlocker_default (unremovable)";
-	if (dyn_containers_set_interlocker_instance(interlocker_name, &dyn_containers_interlocker_instance)) {
+	if (dyn_containers_set_interlocker_instance(&interlocker_instances[0], interlocker_name)) {
 		syslog_server(LOG_ERR, "Interlocker %s could not be used", interlocker_name);
 		return 0;
 	}
+	interlocker_instances[0].is_valid = true;
 	
 	return 1;
 }
@@ -64,20 +76,21 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 	
 	// Ask the interlocker to grant requested route.
 	// May take multiple ticks to process the request.
-	dyn_containers_set_interlocker_instance_inputs(dyn_containers_interlocker_instance, 
+	dyn_containers_set_interlocker_instance_inputs(&interlocker_instances[0], 
                                                    source_id, destination_id, 
                                                    train_id);
 
 	struct t_interlocker_instance_io interlocker_instance_io;	
 	do {
-		dyn_containers_get_interlocker_instance_outputs(dyn_containers_interlocker_instance,
+		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[0],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_has_reset);
 	
-	dyn_containers_set_interlocker_instance_reset(dyn_containers_interlocker_instance, false);
+	dyn_containers_set_interlocker_instance_reset(&interlocker_instances[0], 
+	                                              false);
 	
 	do {
-		dyn_containers_get_interlocker_instance_outputs(dyn_containers_interlocker_instance,
+		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[0],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_terminated);
 	

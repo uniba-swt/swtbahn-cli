@@ -57,15 +57,19 @@ static void *start_bidib(void *_) {
 		pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
+		
+		syslog_server(LOG_ERR, "Request: Start - Could not start BiDiB serial connection");
 		pthread_exit(NULL);
 	}
 
 	int succ_config = bahn_data_util_initialise_config(config_directory);
-    if (!succ_config) {
-        pthread_mutex_lock(&start_stop_mutex);
-        starting = false;
-        pthread_mutex_unlock(&start_stop_mutex);
-        pthread_exit(NULL);
+	if (!succ_config) {
+		pthread_mutex_lock(&start_stop_mutex);
+		starting = false;
+		pthread_mutex_unlock(&start_stop_mutex);
+
+		syslog_server(LOG_ERR, "Request: Start - Could not initialise interlocking tables");
+		pthread_exit(NULL);
     }
 
 	int err_dyn_containers = dyn_containers_start();
@@ -73,6 +77,8 @@ static void *start_bidib(void *_) {
 		pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
+
+		syslog_server(LOG_ERR, "Request: Start - Could not start shared library containers");
 		pthread_exit(NULL);
 	}
 	
@@ -81,6 +87,8 @@ static void *start_bidib(void *_) {
     	pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
+
+		syslog_server(LOG_ERR, "Request: Start - Could not load default interlocker instance");
 		pthread_exit(NULL);
 	}
 	
@@ -104,6 +112,7 @@ static void *start_bidib(void *_) {
 		}
 		usleep(500000);	// 0.5 seconds
 	}
+	
 	pthread_exit(NULL);
 }
 
@@ -114,21 +123,25 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 	pthread_mutex_lock(&start_stop_mutex);
 	if (!running && !starting && !stopping && ((onion_request_get_flags(req) &
 	                                           OR_METHODS) == OR_POST)) {
+		// Necessary when restarting the server because libbidib closes syslog on exit
+		openlog("swtbahn", 0, LOG_LOCAL0);	
+
 		session_id = time(NULL);
-		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
-		starting = true;
+		starting = true;		
 		pthread_create(&start_stop_thread, NULL, start_bidib, NULL);
+
+		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
 		retval = OCS_NOT_IMPLEMENTED;
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
+
 	return retval;
 }
 
 static void *stop_bidib(void *_) {
-	usleep (1000000); // 1 second, wait for running functions
 	bidib_stop();
 	pthread_mutex_lock(&start_stop_mutex);
 	stopping = false;
@@ -139,14 +152,17 @@ static void *stop_bidib(void *_) {
 onion_connection_status handler_shutdown(void *_, onion_request *req,
                                          onion_response *res) {
 	build_response_header(res);
-	int retval;
+	int retval = OCS_NOT_IMPLEMENTED;
+	
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && !starting && !stopping && ((onion_request_get_flags(req) &
 	                                          OR_METHODS) == OR_POST)) {
+		session_id = 0;
 		syslog_server(LOG_NOTICE, "Request: Stop");
 		stopping = true;
 		running = false;
 		free_all_grabbed_trains();
+		free_all_interlockers();
 		dyn_containers_stop();
 		bahn_data_util_free_config();
 		pthread_join(start_stop_thread, NULL);
@@ -157,6 +173,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		retval = OCS_NOT_IMPLEMENTED;
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
+	
 	return retval;
 }
 

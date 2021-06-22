@@ -29,7 +29,19 @@
 #ifndef SWTSERVER_HANDLER_CONTROLLER_H
 #define SWTSERVER_HANDLER_CONTROLLER_H
 
+#define INTERLOCKER_COUNT_MAX           4
+#define INTERLOCKER_INSTANCE_COUNT_MAX  4
+
 extern pthread_mutex_t interlocker_mutex;
+
+typedef struct {
+	bool is_valid;
+	GString *name;
+	int dyn_containers_interlocker_instance;
+} t_interlocker_data;
+
+
+void free_all_interlockers(void);
 
 /**
  * Loads the default interlocker

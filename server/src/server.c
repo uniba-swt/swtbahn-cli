@@ -48,7 +48,7 @@
 #define INPUT_MAX_LEN 256
 
 
-volatile time_t session_id;
+volatile time_t session_id = 0;
 volatile bool starting = false;
 volatile bool stopping = false;
 volatile bool running = false;
