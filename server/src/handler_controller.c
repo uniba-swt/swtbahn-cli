@@ -47,6 +47,57 @@ static GString *selected_interlocker_name;
 static int selected_interlocker_instance = -1;
 
 
+const int set_interlocker(const char *interlocker_name) {
+	if (selected_interlocker_instance != -1) {
+		return selected_interlocker_instance;
+	}
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		if (!interlocker_instances[i].is_valid) {
+			if (dyn_containers_set_interlocker_instance(
+					&interlocker_instances[i], interlocker_name)
+			) {
+				syslog_server(LOG_ERR, "Interlocker %s could not be used in instance %d", 
+							  interlocker_name, i);
+			} else {
+				selected_interlocker_instance = i;
+				interlocker_instances[selected_interlocker_instance].is_valid = true;
+				break;
+			}
+		}
+	}
+	pthread_mutex_unlock(&interlocker_mutex);
+	return selected_interlocker_instance;
+}
+
+const int unset_interlocker(const char *interlocker_name) {
+	if (selected_interlocker_instance == -1) {
+		return selected_interlocker_instance;
+	}
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	if (strcmp(selected_interlocker_name->str, interlocker_name) == 0
+			&& interlocker_instances[selected_interlocker_instance].is_valid) {
+		dyn_containers_free_interlocker_instance(&interlocker_instances[selected_interlocker_instance]);
+		interlocker_instances[selected_interlocker_instance].is_valid = false;
+		g_string_free(selected_interlocker_name, true);
+		selected_interlocker_instance = -1;
+	}
+	pthread_mutex_unlock(&interlocker_mutex);
+	return selected_interlocker_instance;
+}
+
+const int load_default_interlocker_instance() {
+	while (!dyn_containers_is_running()) {
+		// Empty
+	}
+	
+	selected_interlocker_name = g_string_new("libinterlocker_default (unremovable)");	
+	const int result = set_interlocker(selected_interlocker_name->str);
+	return (result == -1);
+}
+
 void free_all_interlockers(void) {
 	g_string_free(selected_interlocker_name, true);
 
@@ -58,29 +109,6 @@ void free_all_interlockers(void) {
 		}
 		pthread_mutex_unlock(&interlocker_mutex);
 	}	
-}
-
-int load_default_interlocker_instance() {
-	while (!dyn_containers_is_running()) {
-		// Empty
-	}
-	
-	selected_interlocker_name = g_string_new("libinterlocker_default (unremovable)");
-	selected_interlocker_instance = 0;
-	
-	pthread_mutex_lock(&interlocker_mutex);
-	if (dyn_containers_set_interlocker_instance(
-		    &interlocker_instances[selected_interlocker_instance], 
-		    selected_interlocker_name->str)
-	) {
-		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Interlocker %s could not be used", selected_interlocker_name->str);
-		return 0;
-	}
-	pthread_mutex_unlock(&interlocker_mutex);
-	
-	interlocker_instances[selected_interlocker_instance].is_valid = true;
-	return 1;
 }
 
 const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
@@ -221,20 +249,78 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 onion_connection_status handler_get_interlocker(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);
-	
-	return OCS_NOT_IMPLEMENTED;
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		if (selected_interlocker_instance != -1) {
+			onion_response_printf(res, "%s", selected_interlocker_name->str);
+			return OCS_PROCESSED;
+		} else {
+			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
+			return OCS_NOT_IMPLEMENTED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Get interlocker - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
 }
 
 onion_connection_status handler_set_interlocker(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);
-	
-	return OCS_NOT_IMPLEMENTED;
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_interlocker = onion_request_get_post(req, "name");
+		if (data_interlocker == NULL) {
+			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			if (selected_interlocker_instance != -1) {
+				syslog_server(LOG_ERR, "Request: Set interlocker - another interlocker instance already set");
+				return OCS_NOT_IMPLEMENTED;
+			}
+
+			set_interlocker(data_interlocker);
+			if (selected_interlocker_instance == -1) {
+				syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters or "
+				                       "no more interlocker instances can be loaded");
+				return OCS_NOT_IMPLEMENTED;
+			} else {
+				onion_response_printf(res, "%s", selected_interlocker_name->str);
+				syslog_server(LOG_NOTICE, "Request: Set interlocker - %s",
+				              selected_interlocker_name->str);
+				return OCS_PROCESSED;
+			}
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Set interlocker - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
 }
 
 onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
                                                   onion_response *res) {
 	build_response_header(res);
-	
-	return OCS_NOT_IMPLEMENTED;
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_interlocker = onion_request_get_post(req, "interlocker");
+		if (data_interlocker == NULL) {
+			syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			if (selected_interlocker_instance == -1) {
+				syslog_server(LOG_ERR, "Request: Unset interlocker - no interlocker instance to unset");
+				return OCS_NOT_IMPLEMENTED;
+			}
+			
+			unset_interlocker(data_interlocker);
+			if (selected_interlocker_instance != -1) {
+				syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
+				return OCS_NOT_IMPLEMENTED;
+			} else {
+				syslog_server(LOG_NOTICE, "Request: Unset interlocker - %s",
+				              data_interlocker);
+				return OCS_PROCESSED;
+			}
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Unset interlocker - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
 }

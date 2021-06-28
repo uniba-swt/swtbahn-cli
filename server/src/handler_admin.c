@@ -82,8 +82,8 @@ static void *start_bidib(void *_) {
 		pthread_exit(NULL);
 	}
 	
-	int succ_interlocker = load_default_interlocker_instance();
-	if (!succ_interlocker) {
+	int err_interlocker = load_default_interlocker_instance();
+	if (err_interlocker) {
     	pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);

@@ -45,9 +45,9 @@ void free_all_interlockers(void);
 
 /**
  * Loads the default interlocker
- * @return 1 if successful, otherwise 0
+ * @return 0 if successful, otherwise 1
  */
-int load_default_interlocker_instance();
+const int load_default_interlocker_instance();
 
 /**
   * Finds and grants a requested train route.
