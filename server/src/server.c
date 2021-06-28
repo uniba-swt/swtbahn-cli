@@ -166,6 +166,9 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "controller/release-route", handler_release_route);
 	onion_url_add(urls, "controller/set-point", handler_set_point);
 	onion_url_add(urls, "controller/set-signal", handler_set_signal);
+	onion_url_add(urls, "controller/get-interlocker", handler_get_interlocker);
+	onion_url_add(urls, "controller/set-interlocker", handler_set_interlocker);
+	onion_url_add(urls, "controller/unset-interlocker", handler_unset_interlocker);
 	
 	// --- train driver functions ---
 	onion_url_add(urls, "driver/grab-train", handler_grab_train);
