@@ -303,7 +303,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			const char *route_id = grant_route(grabbed_trains[grab_id].name->str,
 			                                   data_source_name,
 			                                   data_destination_name);
-			if (route_id != NULL && !string_equals(route_id, "")) {
+			if (route_id != NULL && params_check_is_number(route_id)) {
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
 				              "train: %s route %s",
 				              grabbed_trains[grab_id].name->str, route_id);
@@ -313,14 +313,16 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 				syslog_server(LOG_ERR, "Request: Request train route - "
 				              "train: %s route not granted",
 				              grabbed_trains[grab_id].name->str);
-
-				if (strcmp(route_id, "no_routes") == 0) {
+				if (strcmp(route_id, "no_interlocker") == 0) {
+					onion_response_printf(res, "No interlocker has been selected for use");
+				} else if (strcmp(route_id, "no_routes") == 0) {
 					onion_response_printf(res, "No routes possible from %s to %s", 
 					                      data_source_name, data_destination_name);
 				} else if (strcmp(route_id, "not_grantable") == 0) {
 					onion_response_printf(res, "Route found conflicts with others");
 				} else if (strcmp(route_id, "not_clear") == 0) {
-					onion_response_printf(res, "Route found has occupied tracks");
+					onion_response_printf(res, "Route found has occupied tracks "
+					                      "or source signal is not stop");
 				} else {
 					onion_response_printf(res, "Route could not be granted");
 				}

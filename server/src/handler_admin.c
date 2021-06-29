@@ -82,8 +82,8 @@ static void *start_bidib(void *_) {
 		pthread_exit(NULL);
 	}
 	
-	int succ_interlocker = load_default_interlocker_instance();
-	if (!succ_interlocker) {
+	int err_interlocker = load_default_interlocker_instance();
+	if (err_interlocker) {
     	pthread_mutex_lock(&start_stop_mutex);
 		starting = false;
 		pthread_mutex_unlock(&start_stop_mutex);
@@ -184,7 +184,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
 		long int state = strtol(data_state, &end, 10);
-		if (data_state == NULL || (state == 0L || state == LONG_MAX || state == LONG_MIN) ||
+		if (data_state == NULL || (state == LONG_MAX || state == LONG_MIN) ||
 		    *end != '\0') {
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
