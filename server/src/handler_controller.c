@@ -61,10 +61,11 @@ const int set_interlocker(const char *interlocker_name) {
 				syslog_server(LOG_ERR, "Interlocker %s could not be used in instance %d", 
 							  interlocker_name, i);
 			} else {
+				selected_interlocker_name = g_string_new(interlocker_name);
 				selected_interlocker_instance = i;
 				interlocker_instances[selected_interlocker_instance].is_valid = true;
-				break;
 			}
+			break;
 		}
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -99,7 +100,9 @@ const int load_default_interlocker_instance() {
 }
 
 void free_all_interlockers(void) {
-	g_string_free(selected_interlocker_name, true);
+	if (selected_interlocker_name != NULL) {
+		g_string_free(selected_interlocker_name, true);
+	}
 
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		pthread_mutex_lock(&interlocker_mutex);
@@ -112,6 +115,11 @@ void free_all_interlockers(void) {
 }
 
 const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
+	if (selected_interlocker_instance == -1) {
+		syslog_server(LOG_ERR, "Grant route: No interlocker has been set");
+		return "no_interlocker";
+	}
+	
 	pthread_mutex_lock(&interlocker_mutex);
 
 	bahn_data_util_init_cached_track_state();
@@ -167,9 +175,17 @@ void release_route(const int route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train != NULL) {
+		const char *signal_id = route->source;
+		const char *signal_aspect = "red";
+		if (bidib_set_signal(signal_id, signal_aspect)) {
+			syslog_server(LOG_ERR, "Release route: Unable to set entry signal to aspect %s", signal_aspect);
+		}
+		bidib_flush();
+		
         free(route->train);
         route->train = NULL;
     }
+
 	pthread_mutex_unlock(&interlocker_mutex);
 }
 
@@ -254,7 +270,7 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req,
 			onion_response_printf(res, "%s", selected_interlocker_name->str);
 			return OCS_PROCESSED;
 		} else {
-			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
+			syslog_server(LOG_NOTICE, "Request: Get interlocker - none selected");
 			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
@@ -267,7 +283,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		const char *data_interlocker = onion_request_get_post(req, "name");
+		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
 			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
@@ -311,7 +327,7 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
 			
 			unset_interlocker(data_interlocker);
 			if (selected_interlocker_instance != -1) {
-				syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
+				syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				syslog_server(LOG_NOTICE, "Request: Unset interlocker - %s",
