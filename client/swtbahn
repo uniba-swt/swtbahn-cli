@@ -253,6 +253,60 @@ def set_signal(signal, state):
             click.echo(e, err=True)
 
 
+@click.command(help="Get the interlocker in use")
+def get_interlocker():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/controller/get-interlocker")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text + "\n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Set an interlocker to use")
+@click.argument('interlocker')
+def set_interlocker(interlocker):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/controller/set-interlocker", 
+                    data = {'interlocker': interlocker})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Interlocker set to " + interlocker + " \n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Unset an interlocker from use")
+@click.argument('interlocker')
+def unset_interlocker(interlocker):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/controller/unset-interlocker", 
+                    data = {'interlocker': interlocker})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Interlocker " + interlocker + " is unset \n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
 
 # --- driver ---
 
@@ -668,6 +722,9 @@ admin.add_command(set_track_output)
 controller.add_command(release_route)
 controller.add_command(set_point)
 controller.add_command(set_signal)
+controller.add_command(get_interlocker)
+controller.add_command(set_interlocker)
+controller.add_command(unset_interlocker)
 
 driver.add_command(grab)
 driver.add_command(release)
