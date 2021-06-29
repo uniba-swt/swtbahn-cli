@@ -455,7 +455,6 @@ thread loadEngines(void) {
 			forec_intern_output_train_engine_0.name = "";
 		}
 		
-		// TODO: Container 1, 2, and 3
 		container = 1;
 		if (forec_intern_input_train_engine_1.load && !forec_intern_output_train_engine_1.in_use) {
 			// Load the new dynamic library

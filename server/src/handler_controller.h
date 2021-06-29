@@ -45,9 +45,9 @@ void free_all_interlockers(void);
 
 /**
  * Loads the default interlocker
- * @return 1 if successful, otherwise 0
+ * @return 0 if successful, otherwise 1
  */
-int load_default_interlocker_instance();
+const int load_default_interlocker_instance();
 
 /**
   * Finds and grants a requested train route.
@@ -70,6 +70,9 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 
 onion_connection_status handler_set_signal(void *_, onion_request *req,
                                            onion_response *res);
+
+onion_connection_status handler_get_interlocker(void *_, onion_request *req,
+                                                onion_response *res);
 
 onion_connection_status handler_set_interlocker(void *_, onion_request *req,
                                                 onion_response *res);
