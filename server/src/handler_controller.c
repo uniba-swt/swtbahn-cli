@@ -159,9 +159,9 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 		if (strcmp(route_id, "no_routes") == 0) {
 			syslog_server(LOG_ERR, "Grant route: No routes possible from %s to %s", source_id, destination_id);
 		} else if (strcmp(route_id, "not_grantable") == 0) {
-			syslog_server(LOG_ERR, "Grant route: Route found conflicts with others");
+			syslog_server(LOG_ERR, "Grant route: Conflicting routes are in use");
 		} else if (strcmp(route_id, "not_clear") == 0) {
-			syslog_server(LOG_ERR, "Grant route: Route found has occupied tracks or source signal is not stop");
+			syslog_server(LOG_ERR, "Grant route: Route found has occupied blocks or source signal is not stop");
 		} else {
 			syslog_server(LOG_ERR, "Grant route: Route could not be granted");
 		}
