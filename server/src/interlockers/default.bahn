@@ -2,7 +2,7 @@
 # train driver. A route is defined by a source signal and 
 # a destination signal
 def request_route(string src_signal_id, string dst_signal_id, string train_id): string
-    # 1. Get all routes from src_signal_id to dst_signal_id
+    # 1. Get all routes that go from src_signal_id to dst_signal_id
     string route_ids[] = get routes from src_signal_id to dst_signal_id
     if route_ids.len == 0
         return "no_routes"
