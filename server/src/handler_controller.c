@@ -163,7 +163,7 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 		} else if (strcmp(route_id, "not_clear") == 0) {
 			syslog_server(LOG_ERR, "Grant route: Route found has occupied blocks or source signal is not stop");
 		} else {
-			syslog_server(LOG_ERR, "Grant route: Route could not be granted");
+			syslog_server(LOG_ERR, "Grant route: Route could not be granted (%s)", route_id);
 		}
 	}
 
