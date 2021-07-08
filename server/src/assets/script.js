@@ -232,42 +232,38 @@ $(document).ready(
                     },
                     dataType: 'text',
                     success: function (responseData, textStatus, jqXHR) {
-                        if (responseData.responseText = "") {
-                            $('#requestRouteButton').removeClass('btn-outline-primary');
-                            $('#requestRouteButton').addClass('btn-outline-danger');
-                            $('#requestRouteButton').text("No interlocker set!")
-                        } else {
-                            $('#requestRouteButton').removeClass('btn-outline-danger');
-                            $('#requestRouteButton').addClass('btn-outline-primary');
-                            $.ajax({
-                                type: 'POST',
-                                url: '/driver/request-route',
-                                crossDomain: true,
-                                data: {
-                                    'session-id': sessionId,
-                                    'grab-id': grabId,
-                                    'source': source,
-                                    'destination': destination
-                                },
-                                dataType: 'text',
-                                success: function (responseData, textStatus, jqXHR) {
-                                    routeId = responseData;
-                                    $('#routeResponse').parent().removeClass('alert-danger');
-                                    $('#routeResponse').parent().addClass('alert-success');
-                                    $('#routeResponse').text('Route ' + responseData + ' granted');
-                                },
-                                error: function (responseData, textStatus, errorThrown) {
-                                    $('#routeResponse').parent().removeClass('alert-success');
-                                    $('#routeResponse').parent().addClass('alert-danger');
-                                    $('#routeResponse').text(responseData.responseText);
-                                }
-                            });
-                        }
+                        $('#requestRouteButton').removeClass('btn-outline-danger');
+                        $('#requestRouteButton').addClass('btn-outline-primary');
+                        $.ajax({
+                            type: 'POST',
+                            url: '/driver/request-route',
+                            crossDomain: true,
+                            data: {
+                                'session-id': sessionId,
+                                'grab-id': grabId,
+                                'source': source,
+                                'destination': destination
+                            },
+                            dataType: 'text',
+                            success: function (responseData, textStatus, jqXHR) {
+                                routeId = responseData;
+                                $('routeId').text = routeId;
+                                $('#routeResponse').parent().removeClass('alert-danger');
+                                $('#routeResponse').parent().addClass('alert-success');
+                                $('#routeResponse').text('Route ' + responseData + ' granted');
+                            },
+                            error: function (responseData, textStatus, errorThrown) {
+                                $('#routeResponse').parent().removeClass('alert-success');
+                                $('#routeResponse').parent().addClass('alert-danger');
+                                $('#routeResponse').text(responseData.responseText);
+                            }
+                        });
+                    
                     },
                     error: function (responseData, textStatus, errorThrown) {
                         $('#routeResponse').parent().removeClass('alert-success');
                         $('#routeResponse').parent().addClass('alert-danger');
-                        $('#routeResponse').text(responseData.responseText);
+                        $('#routeResponse').text("No interlocker set!");
                     }
                 });
             } else {
@@ -425,6 +421,7 @@ $(document).ready(
                     $('#releaseRouteResponse').parent().removeClass('alert-danger');
                     $('#releaseRouteResponse').parent().addClass('alert-success');
                     $('#releaseRouteResponse').text('Route ' + routeId + ' released');
+                    $('routeId').text = "";
                 },
                 error: function (responseData, textStatus, errorThrown) {
                     $('#releaseRouteResponse').parent().removeClass('alert-success');
@@ -815,8 +812,6 @@ $(document).ready(
         $('#setInterlockerButton').click(function () {
             $('#refreshRemoveInterlockerResponse').text('Waiting');
             var interlockerName = $('#availableInterlockers option:selected').text();
-            let interlocker = $('.custom-select :selected').text();
-            $('.label-change').text(interlocker);
             $.ajax({
                 type: 'POST',
                 url: '/upload/interlocker',
@@ -829,6 +824,8 @@ $(document).ready(
                     $('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
                     $('#refreshRemoveInterlockerResponse')
                         .text('Interlocker ' + interlockerName + ' is set');
+                    let interlocker = $('.custom-select :selected').text();
+                    $('.label-change').text(interlocker);
                 },
                 error: function (responseData, textStatus, errorThrown) {
                     $('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
@@ -854,6 +851,7 @@ $(document).ready(
                     $('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
                     $('#refreshRemoveInterlockerResponse')
                         .text('Interlocker ' + interlockerName + ' is unset');
+                        $('.label-change').text('No interlocker set!');
                 },
                 error: function (responseData, textStatus, errorThrown) {
                     $('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
