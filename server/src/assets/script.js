@@ -273,6 +273,74 @@ $(document).ready(
 			}
 		});
 
+
+		/* $('#requestRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			source = $('#signalIdFrom').val();
+			destination = $('#signalIdTo').val();
+			if (sessionId != 0 && grabId != -1) {
+
+				ajaxGetInterlocker().then(ajaxRequestRoute);
+				
+			} else {
+				$('#routeResponse').parent().removeClass('alert-success');
+				$('#routeResponse').parent().addClass('alert-danger');
+				$('#routeResponse').text('You must have a grabbed train!');
+			}
+		});
+
+		function ajaxGetInterlocker(){
+			return $.ajax({
+				type: 'POST',
+				url: '/controller/get-interlocker',
+				crossDomain: true,
+				data: {
+					'session-id': sessionId,
+					'grab-id': grabId,
+					'source': source,
+					'destination': destination
+				},
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					$('#requestRouteButton').removeClass('btn-outline-danger');
+					$('#requestRouteButton').addClass('btn-outline-primary');
+
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#routeResponse').parent().removeClass('alert-success');
+					$('#routeResponse').parent().addClass('alert-danger');
+					$('#routeResponse').text("No interlocker set!");
+				}
+			});
+		}
+
+		function ajaxRequestRoute(responseData, textStatus, jqXHR){
+			return $.ajax({
+				type: 'POST',
+				url: '/driver/request-route',
+				crossDomain: true,
+				data: {
+					'session-id': sessionId,
+					'grab-id': grabId,
+					'source': source,
+					'destination': destination
+				},
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					routeId = responseData;
+					$('routeId').text = routeId;
+					$('#routeResponse').parent().removeClass('alert-danger');
+					$('#routeResponse').parent().addClass('alert-success');
+					$('#routeResponse').text('Route ' + responseData + ' granted');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#routeResponse').parent().removeClass('alert-success');
+					$('#routeResponse').parent().addClass('alert-danger');
+					$('#routeResponse').text(responseData.responseText);
+				}
+			});
+		} */
+
 		$('#driveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
 			if (sessionId != 0 && grabId != -1) {
@@ -814,7 +882,7 @@ $(document).ready(
 			var interlockerName = $('#availableInterlockers option:selected').text();
 			$.ajax({
 				type: 'POST',
-				url: '/upload/interlocker',
+				url: '/controller/set-interlocker',
 				crossDomain: true,
 				data: { 'interlocker-name': interlockerName },
 				dataType: 'text',
@@ -841,7 +909,7 @@ $(document).ready(
 			$('.label-change').text('No interlocker set');
 			$.ajax({
 				type: 'POST',
-				url: '/upload/interlocker',
+				url: '/controller/unset-interlocker',
 				crossDomain: true,
 				data: { 'interlocker-name': interlockerName },
 				dataType: 'text',
