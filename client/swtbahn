@@ -196,7 +196,7 @@ def controller():
 
 
 @click.command(help="Release a route")
-@click.argument('route-id', type=click.IntRange(0, 9))
+@click.argument('route-id', type=int)
 def release_route(route_id):
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)

@@ -324,7 +324,8 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 					onion_response_printf(res, "Route found has occupied tracks "
 					                      "or source signal is not stop");
 				} else {
-					onion_response_printf(res, "Route could not be granted");
+					onion_response_printf(res, "Route could not be granted (%s)",
+					                      route_id);
 				}
 
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
