@@ -2,193 +2,193 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+	<link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" />
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 
-    <link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="style.css" />
 
-    <script src="script.js"></script>
+	<script src="script.js"></script>
 
-    <title>SWTbahn Stellwerk Client</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>SWTbahn Stellwerk Client</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-    <div class="row">
-        <div class="col-sm-6">
-            <div id="swtLogo"></div>
-        </div>
-        <div class="col-sm-6">
-            <div id="userLogo">Stellwerk</div>
-        </div>
-    </div>
-    <hr />
+	<div class="row">
+		<div class="col-sm-6">
+			<div id="swtLogo"></div>
+		</div>
+		<div class="col-sm-6">
+			<div id="userLogo">Stellwerk</div>
+		</div>
+	</div>
+	<hr />
 
-    <div class="card-deck">
+	<div class="card-deck">
 
-        <div class="card" style="width: 22rem;">
-            <div class="card-body">
-                <h3 class="card-title"> System</h3>
+		<div class="card" style="width: 22rem;">
+			<div class="card-body">
+				<h3 class="card-title"> System</h3>
 
-                <div class="form-group">
-                    <button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn
-                        Server</button>
-                    <br />
-                    <div class="alert alert-info" role="alert">
-                        <span id=pingResponse></span>
-                    </div>
-                </div>
+				<div class="form-group">
+					<button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn
+						Server</button>
+					<br />
+					<div class="alert alert-info" role="alert">
+						<span id=pingResponse></span>
+					</div>
+				</div>
 
-                <br />
+				<br />
 
-                <div class="form-group">
-                    <div style="display: flex; justify-content: space-between;">
-                        <button id=startupButton type="button" class="btn btn-outline-primary"
-                            style="width: 49%;">Startup</button>
-                        <button id=shutdownButton type="button" class="btn btn-outline-primary"
-                            style="width: 49%;">Shutdown</button>
-                    </div>
-                    <br />
-                    <div class="alert alert-info" role="alert">
-                        <span id=startupShutdownResponse></span>
-                    </div>
-                </div>
+				<div class="form-group">
+					<div style="display: flex; justify-content: space-between;">
+						<button id=startupButton type="button" class="btn btn-outline-primary"
+							style="width: 49%;">Startup</button>
+						<button id=shutdownButton type="button" class="btn btn-outline-primary"
+							style="width: 49%;">Shutdown</button>
+					</div>
+					<br />
+					<div class="alert alert-info" role="alert">
+						<span id=startupShutdownResponse></span>
+					</div>
+				</div>
 
-                <br />
+				<br />
 
-                <div class="form-group">
-                    <h3>Custom Interlocker</h3>
-                    <div style="display: flex; justify-content: space-between">
-                        <label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary"
-                            style="width: 49%; margin: 0px">Select a BahnDSL file (*.bahn)</label>
-                        <input id="selectUploadFile" type="file" accept=".bahn" hidden />
-                        <button id="uploadInterlockerButton" type="button" class="btn btn-outline-primary"
-                            style="width: 49%">Upload</button>
-                    </div>
+				<div class="form-group">
+					<h3>Custom Interlocker</h3>
+					<div style="display: flex; justify-content: space-between">
+						<label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary"
+							style="width: 49%; margin: 0px">Select a BahnDSL file (*.bahn)</label>
+						<input id="selectUploadFile" type="file" accept=".bahn" hidden />
+						<button id="uploadInterlockerButton" type="button" class="btn btn-outline-primary"
+							style="width: 49%">Upload</button>
+					</div>
 
-                    <br />
+					<br />
 
-                    <div class="alert alert-info" role="alert">
-                        <span id="uploadResponse"></span>
-                    </div>
-                </div>
+					<div class="alert alert-info" role="alert">
+						<span id="uploadResponse"></span>
+					</div>
+				</div>
 
-                <br />
+				<br />
 
-                <div class="form-group">
-                    <label class="form-label" for="availableInterlockers">Available Interlockers:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <label id="interlocker-label" class="input-group-text"
-                                for="availableInterlockers">Interlocker</label>
-                        </div>
-                        <select class="custom-select" id="availableInterlockers">
-                            <option>libinterlocker_default (unremovable)</option>
-                        </select>
-                        <label id="set-interlocker" class="input-group-text label-change"
-                            for="availableInterlockers">libinterlocker_default (unremovable)</label>
-                    </div>
+				<div class="form-group">
+					<label class="form-label" for="availableInterlockers">Available Interlockers:</label>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<label id="interlocker-label" class="input-group-text"
+								for="availableInterlockers">Interlocker</label>
+						</div>
+						<select class="custom-select" id="availableInterlockers">
+							<option>libinterlocker_default (unremovable)</option>
+						</select>
+						<label id="set-interlocker" class="input-group-text label-change"
+							for="availableInterlockers">libinterlocker_default (unremovable)</label>
+					</div>
 
-                    <br />
+					<br />
 
-                    <div style="display: flex; justify-content: space-evenly">
-                        <button id="setInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
-                            style="width: 23%">Set</button>
-                        <button id="unsetInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
-                            style="width: 23%">Unset</button>
-                        <button id="refreshInterlockersButton" type="button" class="btn btn-outline-primary btn-sm"
-                            style="width: 23%">Refresh</button>
-                        <button id="removeInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
-                            style="width: 23%">Remove</button>
+					<div style="display: flex; justify-content: space-evenly">
+						<button id="setInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
+							style="width: 23%">Set</button>
+						<button id="unsetInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
+							style="width: 23%">Unset</button>
+						<button id="refreshInterlockersButton" type="button" class="btn btn-outline-primary btn-sm"
+							style="width: 23%">Refresh</button>
+						<button id="removeInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
+							style="width: 23%">Remove</button>
 
-                    </div>
+					</div>
 
-                    <br />
+					<br />
 
-                    <div class="alert alert-info" role="alert">
-                        <span id="refreshRemoveInterlockerResponse"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+					<div class="alert alert-info" role="alert">
+						<span id="refreshRemoveInterlockerResponse"></span>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-        <div class="card" style="width: 22rem;">
-            <div class="card-body">
-                <h3 class="card-title">Point Controller</h3>
+		<div class="card" style="width: 22rem;">
+			<div class="card-body">
+				<h3 class="card-title">Point Controller</h3>
 
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="input-group-prepend" style="margin-bottom: 0.5rem">
-                                <input id=pointId readonly value="point1">
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <button id=pointMinus type="button" class="btn btn-outline-primary">–</button>
-                            <button id=pointPlus type="button" class="btn btn-outline-primary">+</button>
-                        </div>
-                    </div>
+				<div class="form-group">
+					<div class="row">
+						<div class="col-8">
+							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+								<input id=pointId readonly value="point1">
+							</div>
+						</div>
+						<div class="col-4">
+							<button id=pointMinus type="button" class="btn btn-outline-primary">–</button>
+							<button id=pointPlus type="button" class="btn btn-outline-primary">+</button>
+						</div>
+					</div>
 
-                    </br>
+					</br>
 
-                    <div style="display: flex; justify-content: space-between;">
-                        <button id=setPointButtonNormal type="button" class=" pointBtn btn btn-outline-primary"
-                            style="width: 49%;">normal</button>
-                        <button id=setPointButtonReverse type="button" class=" pointBtn btn btn-outline-primary"
-                            style="width: 49%;">reverse</button>
-                    </div>
-                    </br>
-                    <div class="alert alert-info" role="alert">
-                        <span id=setPointResponse></span>
-                    </div>
-                </div>
+					<div style="display: flex; justify-content: space-between;">
+						<button id=setPointButtonNormal type="button" class=" pointBtn btn btn-outline-primary"
+							style="width: 49%;">normal</button>
+						<button id=setPointButtonReverse type="button" class=" pointBtn btn btn-outline-primary"
+							style="width: 49%;">reverse</button>
+					</div>
+					</br>
+					<div class="alert alert-info" role="alert">
+						<span id=setPointResponse></span>
+					</div>
+				</div>
 
-                </br>
+				</br>
 
-                <h3 class="card-title">Signal Controller</h3>
+				<h3 class="card-title">Signal Controller</h3>
 
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="input-group-prepend" style="margin-bottom: 0.5rem">
-                                <input id=signalId readonly value="signal1">
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <button id=signalMinus type="button" class="btn btn-outline-primary">–</button>
-                            <button id=signalPlus type="button" class="btn btn-outline-primary">+</button>
-                        </div>
-                    </div>
+				<div class="form-group">
+					<div class="row">
+						<div class="col-8">
+							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+								<input id=signalId readonly value="signal1">
+							</div>
+						</div>
+						<div class="col-4">
+							<button id=signalMinus type="button" class="btn btn-outline-primary">–</button>
+							<button id=signalPlus type="button" class="btn btn-outline-primary">+</button>
+						</div>
+					</div>
 
-                    </br>
+					</br>
 
-                    <div style="display: flex; justify-content: space-between;">
-                        <button id=setSignalButtonRed type="button" class=" signalBtn btn btn-outline-danger"
-                            style="width: 32%;">red</button>
-                        <button id=setSignalButtonYellow type="button" class=" signalBtn btn btn-outline-warning"
-                            style="width: 32%;">yellow</button>
-                        <button id=setSignalButtonGreen type="button" class=" signalBtn btn btn-outline-success"
-                            style="width: 32%; ">green</button>
-                    </div>
+					<div style="display: flex; justify-content: space-between;">
+						<button id=setSignalButtonRed type="button" class=" signalBtn btn btn-outline-danger"
+							style="width: 32%;">red</button>
+						<button id=setSignalButtonYellow type="button" class=" signalBtn btn btn-outline-warning"
+							style="width: 32%;">yellow</button>
+						<button id=setSignalButtonGreen type="button" class=" signalBtn btn btn-outline-success"
+							style="width: 32%; ">green</button>
+					</div>
 
-                    </br>
+					</br>
 
-                    <div class="alert alert-info" role="alert">
-                        <span id=setSignalResponse></span>
-                    </div>
+					<div class="alert alert-info" role="alert">
+						<span id=setSignalResponse></span>
+					</div>
 
-                </div>
+				</div>
 
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>
