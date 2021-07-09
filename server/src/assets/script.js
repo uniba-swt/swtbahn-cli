@@ -478,7 +478,7 @@ $(document).ready(
 		// Controller
 		$('#releaseRouteButton').click(function () {
 			$('#releaseRouteResponse').text('Waiting');
-			var routeId = $('#routeId').val(); // Check for datatyoe int vs. string -> response
+			var routeId = $('#routeId').text(); // Check for datatyoe int vs. string -> response
 			$.ajax({
 				type: 'POST',
 				url: '/controller/release-route',
@@ -489,7 +489,7 @@ $(document).ready(
 					$('#releaseRouteResponse').parent().removeClass('alert-danger');
 					$('#releaseRouteResponse').parent().addClass('alert-success');
 					$('#releaseRouteResponse').text('Route ' + routeId + ' released');
-					$('routeId').text("None");
+					$('#routeId').text("None");
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#releaseRouteResponse').parent().removeClass('alert-success');
