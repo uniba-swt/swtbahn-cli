@@ -884,7 +884,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/controller/set-interlocker',
 				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
+				data: { 'interlocker': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
@@ -911,7 +911,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/controller/unset-interlocker',
 				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
+				data: { 'interlocker': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
