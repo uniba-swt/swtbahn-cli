@@ -247,7 +247,7 @@ $(document).ready(
 							dataType: 'text',
 							success: function (responseData, textStatus, jqXHR) {
 								routeId = responseData;
-								$('#routeId').text = routeId;
+								$('#routeId').text(routeId);
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
 								$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -328,7 +328,7 @@ $(document).ready(
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					routeId = responseData;
-					$('routeId').text = routeId;
+					$('routeId').text(routeId);
 					$('#routeResponse').parent().removeClass('alert-danger');
 					$('#routeResponse').parent().addClass('alert-success');
 					$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -478,7 +478,7 @@ $(document).ready(
 		// Controller
 		$('#releaseRouteButton').click(function () {
 			$('#releaseRouteResponse').text('Waiting');
-			var routeId = $('#routeId').val();
+			var routeId = $('#routeId').val(); // Check for datatyoe int vs. string -> response
 			$.ajax({
 				type: 'POST',
 				url: '/controller/release-route',
@@ -489,7 +489,7 @@ $(document).ready(
 					$('#releaseRouteResponse').parent().removeClass('alert-danger');
 					$('#releaseRouteResponse').parent().addClass('alert-success');
 					$('#releaseRouteResponse').text('Route ' + routeId + ' released');
-					$('#routeId').text = "";
+					$('routeId').text("None");
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#releaseRouteResponse').parent().removeClass('alert-success');
@@ -880,15 +880,14 @@ $(document).ready(
 		$('#setInterlockerButton').click(function () {
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			var interlockerName = $('#availableInterlockers option:selected').text();
-			console.log(interlockerName);
 			$.ajax({
 				type: 'POST',
 				url: '/controller/set-interlocker',
 				crossDomain: true,
-				data: { 'interlocker': interlockerName },
+				data: { 'interlocker-name': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
-					refreshInterlockersList(); 
+					refreshInterlockersList();
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
 					$('#refreshRemoveInterlockerResponse')
@@ -912,12 +911,12 @@ $(document).ready(
 				type: 'POST',
 				url: '/controller/unset-interlocker',
 				crossDomain: true,
-				data: { 'interlocker': interlockerName },
+				data: { 'interlocker-name': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').parent().addrouteClass('alert-success');
+					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
 					$('#refreshRemoveInterlockerResponse')
 						.text('Interlocker ' + interlockerName + ' is unset');
 					$('.label-change').text('No interlocker set!');
