@@ -880,14 +880,15 @@ $(document).ready(
 		$('#setInterlockerButton').click(function () {
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			var interlockerName = $('#availableInterlockers option:selected').text();
+			console.log(interlockerName);
 			$.ajax({
 				type: 'POST',
 				url: '/controller/set-interlocker',
 				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
+				data: { 'interlocker': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
-					refreshInterlockersList();
+					refreshInterlockersList(); 
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
 					$('#refreshRemoveInterlockerResponse')
@@ -911,7 +912,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/controller/unset-interlocker',
 				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
+				data: { 'interlocker': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
