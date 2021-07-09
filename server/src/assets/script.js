@@ -247,7 +247,7 @@ $(document).ready(
 							dataType: 'text',
 							success: function (responseData, textStatus, jqXHR) {
 								routeId = responseData;
-								$('routeId').text = routeId;
+								$('#routeId').text = routeId;
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
 								$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -489,7 +489,7 @@ $(document).ready(
 					$('#releaseRouteResponse').parent().removeClass('alert-danger');
 					$('#releaseRouteResponse').parent().addClass('alert-success');
 					$('#releaseRouteResponse').text('Route ' + routeId + ' released');
-					$('routeId').text = "";
+					$('#routeId').text = "";
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#releaseRouteResponse').parent().removeClass('alert-success');
@@ -917,7 +917,7 @@ $(document).ready(
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
+					$('#refreshRemoveInterlockerResponse').parent().addrouteClass('alert-success');
 					$('#refreshRemoveInterlockerResponse')
 						.text('Interlocker ' + interlockerName + ' is unset');
 					$('.label-change').text('No interlocker set!');
