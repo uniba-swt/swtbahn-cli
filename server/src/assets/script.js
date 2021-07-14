@@ -247,7 +247,7 @@ $(document).ready(
 							dataType: 'text',
 							success: function (responseData, textStatus, jqXHR) {
 								routeId = responseData;
-								$('routeId').text = routeId;
+								$('#routeId').text(routeId);
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
 								$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -328,7 +328,7 @@ $(document).ready(
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					routeId = responseData;
-					$('routeId').text = routeId;
+					$('routeId').text(routeId);
 					$('#routeResponse').parent().removeClass('alert-danger');
 					$('#routeResponse').parent().addClass('alert-success');
 					$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -478,7 +478,7 @@ $(document).ready(
 		// Controller
 		$('#releaseRouteButton').click(function () {
 			$('#releaseRouteResponse').text('Waiting');
-			var routeId = $('#routeId').val();
+			var routeId = $('#routeId').text(); // Check for datatyoe int vs. string -> response
 			$.ajax({
 				type: 'POST',
 				url: '/controller/release-route',
@@ -486,15 +486,15 @@ $(document).ready(
 				data: { 'route-id': routeId },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
-					$('#releaseRouteResponse').parent().removeClass('alert-danger');
-					$('#releaseRouteResponse').parent().addClass('alert-success');
-					$('#releaseRouteResponse').text('Route ' + routeId + ' released');
-					$('routeId').text = "";
+					$('#routeResponse').parent().removeClass('alert-danger');
+					$('#routeResponse').parent().addClass('alert-success');
+					$('#routeResponse').text('Route ' + routeId + ' released');
+					$('#routeId').text("None");
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					$('#releaseRouteResponse').parent().removeClass('alert-success');
-					$('#releaseRouteResponse').parent().addClass('alert-danger');
-					$('#releaseRouteResponse')
+					$('#routeResponse').parent().removeClass('alert-success');
+					$('#routeResponse').parent().addClass('alert-danger');
+					$('#routeResponse')
 						.text('System not running or invalid track output!');
 				}
 			});
@@ -884,7 +884,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/controller/set-interlocker',
 				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
+				data: { 'interlocker': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
@@ -911,7 +911,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/controller/unset-interlocker',
 				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
+				data: { 'interlocker': interlockerName },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
