@@ -3,7 +3,6 @@ var sessionId = 0;
 var grabId = -1;
 var trainId = '';
 var trainEngine = '';
-var routeId = -1;
 
 $(document).ready(
 	function () {
@@ -232,8 +231,6 @@ $(document).ready(
 					},
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
-						$('#requestRouteButton').removeClass('btn-outline-danger');
-						$('#requestRouteButton').addClass('btn-outline-primary');
 						$.ajax({
 							type: 'POST',
 							url: '/driver/request-route',
@@ -246,11 +243,11 @@ $(document).ready(
 							},
 							dataType: 'text',
 							success: function (responseData, textStatus, jqXHR) {
-								routeId = responseData;
-								$('#routeId').text(routeId);
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
 								$('#routeResponse').text('Route ' + responseData + ' granted');
+
+								$('#routeId').text(responseData);
 							},
 							error: function (responseData, textStatus, errorThrown) {
 								$('#routeResponse').parent().removeClass('alert-success');
@@ -344,6 +341,7 @@ $(document).ready(
 		$('#driveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
 			if (sessionId != 0 && grabId != -1) {
+				var routeId = $('#routeId').text();
 				$.ajax({
 					type: 'POST',
 					url: '/driver/drive-route',
@@ -476,28 +474,69 @@ $(document).ready(
 
 
 		// Controller
+		
+		// For driver.html
 		$('#releaseRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').text();
+			if (isNaN(routeId)) {
+				$('#routeResponse').parent().removeClass('alert-success');
+				$('#routeResponse').parent().addClass('alert-danger');
+				$('#routeResponse').text('Route \"' + routeId + '\" is not a number!');
+			} else {
+				$.ajax({
+					type: 'POST',
+					url: '/controller/release-route',
+					crossDomain: true,
+					data: { 'route-id': routeId },
+					dataType: 'text',
+					success: function (responseData, textStatus, jqXHR) {
+						$('#routeResponse').parent().removeClass('alert-danger');
+						$('#routeResponse').parent().addClass('alert-success');
+						$('#routeResponse').text('Route ' + routeId + ' released');
+					
+						$('#routeId').text("None");
+					},
+					error: function (responseData, textStatus, errorThrown) {
+						$('#routeResponse').parent().removeClass('alert-success');
+						$('#routeResponse').parent().addClass('alert-danger');
+						$('#routeResponse')
+							.text('System not running or invalid track output!');
+					}
+				});
+			}
+		});
+		
+		// For client.html
+		$('#releaseRouteButtonClient').click(function () {
 			$('#releaseRouteResponse').text('Waiting');
-			var routeId = $('#routeId').text(); // Check for datatyoe int vs. string -> response
-			$.ajax({
-				type: 'POST',
-				url: '/controller/release-route',
-				crossDomain: true,
-				data: { 'route-id': routeId },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#routeResponse').parent().removeClass('alert-danger');
-					$('#routeResponse').parent().addClass('alert-success');
-					$('#routeResponse').text('Route ' + routeId + ' released');
-					$('#routeId').text("None");
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#routeResponse').parent().removeClass('alert-success');
-					$('#routeResponse').parent().addClass('alert-danger');
-					$('#routeResponse')
-						.text('System not running or invalid track output!');
-				}
-			});
+			var routeId = $('#routeId').val();
+			if (isNaN(routeId)) {
+				$('#releaseRouteResponse').parent().removeClass('alert-success');
+				$('#releaseRouteResponse').parent().addClass('alert-danger');
+				$('#releaseRouteResponse').text('Route \"' + routeId + '\" is not a number!');
+			} else {
+				$.ajax({
+					type: 'POST',
+					url: '/controller/release-route',
+					crossDomain: true,
+					data: { 'route-id': routeId },
+					dataType: 'text',
+					success: function (responseData, textStatus, jqXHR) {
+						$('#releaseRouteResponse').parent().removeClass('alert-danger');
+						$('#releaseRouteResponse').parent().addClass('alert-success');
+						$('#releaseRouteResponse').text('Route ' + routeId + ' released');
+					
+						$('#routeId').text("None");
+					},
+					error: function (responseData, textStatus, errorThrown) {
+						$('#releaseRouteResponse').parent().removeClass('alert-success');
+						$('#releaseRouteResponse').parent().addClass('alert-danger');
+						$('#releaseRouteResponse')
+							.text('System not running or invalid track output!');
+					}
+				});
+			}
 		});
 
 		points = [
@@ -892,8 +931,10 @@ $(document).ready(
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
 					$('#refreshRemoveInterlockerResponse')
 						.text('Interlocker ' + interlockerName + ' is set');
-					let interlocker = $('.custom-select :selected').text();
-					$('.label-change').text(interlocker);
+
+					$('#interlockerInUse').parent().removeClass('alert-danger');
+					$('#interlockerInUse').parent().addClass('alert-success');
+					$('#interlockerInUse').text(interlockerName);
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
@@ -905,8 +946,7 @@ $(document).ready(
 
 		$('#unsetInterlockerButton').click(function () {
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
-			var interlockerName = $('.label-change').text();
-			$('.label-change').text('No interlocker set');
+			var interlockerName = $('#selecedInterlocker').text();
 			$.ajax({
 				type: 'POST',
 				url: '/controller/unset-interlocker',
@@ -919,7 +959,10 @@ $(document).ready(
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
 					$('#refreshRemoveInterlockerResponse')
 						.text('Interlocker ' + interlockerName + ' is unset');
-					$('.label-change').text('No interlocker set!');
+					
+					$('#interlockerInUse').parent().removeClass('alert-success');
+					$('#interlockerInUse').parent().addClass('alert-danger');
+					$('#interlockerInUse').text('No interlocker set!');
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
@@ -939,8 +982,6 @@ $(document).ready(
 		});
 
 	}
-
-
 );
 
 

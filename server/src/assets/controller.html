@@ -37,8 +37,7 @@
 				<h3 class="card-title"> System</h3>
 
 				<div class="form-group">
-					<button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn
-						Server</button>
+					<button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
 					<br />
 					<div class="alert alert-info" role="alert">
 						<span id=pingResponse></span>
@@ -49,10 +48,8 @@
 
 				<div class="form-group">
 					<div style="display: flex; justify-content: space-between;">
-						<button id=startupButton type="button" class="btn btn-outline-primary"
-							style="width: 49%;">Startup</button>
-						<button id=shutdownButton type="button" class="btn btn-outline-primary"
-							style="width: 49%;">Shutdown</button>
+						<button id=startupButton type="button" class="btn btn-outline-primary" style="width: 49%;">Startup</button>
+						<button id=shutdownButton type="button" class="btn btn-outline-primary" style="width: 49%;">Shutdown</button>
 					</div>
 					<br />
 					<div class="alert alert-info" role="alert">
@@ -91,8 +88,13 @@
 						<select class="custom-select" id="availableInterlockers">
 							<option>libinterlocker_default (unremovable)</option>
 						</select>
-						<label id="set-interlocker" class="input-group-text label-change"
-							for="availableInterlockers">libinterlocker_default (unremovable)</label>
+					</div>
+
+					<br />
+				
+					<label class="form-label" for="interlockerInUse">Interlocker in use:</label>
+					<div class="alert alert-info" role="alert">
+						<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
 					</div>
 
 					<br />
@@ -106,7 +108,6 @@
 							style="width: 23%">Refresh</button>
 						<button id="removeInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
 							style="width: 23%">Remove</button>
-
 					</div>
 
 					<br />
