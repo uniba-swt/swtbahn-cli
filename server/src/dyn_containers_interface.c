@@ -125,7 +125,7 @@ static void *dyn_containers_actuate(void *_) {
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		pthread_mutex_lock(&dyn_containers_mutex);
 
-		for (size_t i = 0; i < MAX_TRAINS; i++) {
+		for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 			if (grabbed_trains[i].is_valid && grabbed_trains[i].name != NULL) {
 				const int dyn_containers_engine_instance = 
 				   grabbed_trains[i].dyn_containers_engine_instance;
@@ -425,6 +425,8 @@ void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_i
 	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_instance_io->input_release = false;
 	pthread_mutex_unlock(&dyn_containers_mutex);
+
+	syslog_server(LOG_NOTICE, "Train instance %d released", dyn_containers_engine_instance);
 }
 
 void dyn_containers_set_train_engine_instance_inputs(const int dyn_containers_engine_instance, 
@@ -540,8 +542,8 @@ GString *dyn_containers_get_interlockers(void) {
 	return interlocker_names;
 }
 
-int dyn_containers_set_interlocker_instance(const char *interlocker, 
-                                            int * const interlocker_instance) {
+int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlocker_instance,
+                                            const char *interlocker) {
 	if (interlocker == NULL) {
 		syslog_server(LOG_ERR, "Could not set interlocker because it was NULL");
 		return 1;
@@ -577,14 +579,13 @@ int dyn_containers_set_interlocker_instance(const char *interlocker,
 			do {
 				usleep(let_period_us);
 				instance_in_use = interlocker_instance_io->output_in_use;
-
 			} while (!instance_in_use);
 			
 			pthread_mutex_lock(&dyn_containers_mutex);
 			interlocker_instance_io->input_grab = false;
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			
-			*interlocker_instance = i;
+			interlocker_instance->dyn_containers_interlocker_instance = i;
 			syslog_server(LOG_NOTICE, "Interlocker %d in use by instance %d", interlocker_type, *interlocker_instance);
 			return 0;
 		}
@@ -595,13 +596,13 @@ int dyn_containers_set_interlocker_instance(const char *interlocker,
 	return 1;
 }
 
-void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance) {
+void dyn_containers_free_interlocker_instance(t_interlocker_data * const interlocker_instance) {
 	if (dyn_containers_interface == NULL) {
 		return;
 	}
 	
 	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
 
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_release = true;
@@ -616,24 +617,27 @@ void dyn_containers_free_interlocker_instance(const int dyn_containers_interlock
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_release = false;
 	pthread_mutex_unlock(&dyn_containers_mutex);
+
+	syslog_server(LOG_NOTICE, "Interlocker instance %d released", 
+	              interlocker_instance->dyn_containers_interlocker_instance);
 }
 
-void dyn_containers_set_interlocker_instance_reset(const int dyn_containers_interlocker_instance,
+void dyn_containers_set_interlocker_instance_reset(t_interlocker_data * const interlocker_instance,
                                                    const bool reset) {
 	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
 
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_reset = reset;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }
 
-void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
+void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data * const interlocker_instance, 
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id) {
 	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
 
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_reset = true;
@@ -643,10 +647,10 @@ void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_int
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }
 
-void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
+void dyn_containers_get_interlocker_instance_outputs(t_interlocker_data * const interlocker_instance, 
                                                      struct t_interlocker_instance_io *interlocker_instance_io_copy) {
 	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[dyn_containers_interlocker_instance];
+		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io_copy->output_in_use = interlocker_instance_io->output_in_use;

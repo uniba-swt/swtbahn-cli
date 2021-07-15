@@ -26,7 +26,9 @@
  */
 
 #include <stdlib.h>
+#include <ctype.h>
 
+#include "param_verification.h"
 
 int params_check_session_id(const char *data_session_id) {
 	int client_session_id;
@@ -90,3 +92,15 @@ int params_check_route_id(const char *data_route_id) {
 	}
 	return route_id;
 }
+
+bool params_check_is_number(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)) {
+		return 0;
+	}
+	
+	char *p;
+	strtod(string, &p);
+	
+	return (*p == '\0');
+}
+

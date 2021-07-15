@@ -39,9 +39,10 @@ extern volatile bool running;
 extern char serial_device[128];
 extern char config_directory[128];
 
+void syslog_server(int priority, const char *format, ...);
+
 void build_response_header(onion_response *res);
 
-void syslog_server(int priority, const char *format, ...);
 
 #endif	// SWTSERVER_SERVER_H
 

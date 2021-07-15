@@ -33,12 +33,8 @@
 #include <limits.h>
 
 #include "handler_driver.h"
+#include "handler_controller.h"
 #include "dynlib.h"
-
-#define TRAIN_ENGINE_COUNT_MAX			4
-#define TRAIN_ENGINE_INSTANCE_COUNT_MAX	5
-#define INTERLOCKER_COUNT_MAX			4
-#define INTERLOCKER_INSTANCE_COUNT_MAX	4
 
 
 // Input interface with the environment
@@ -182,20 +178,20 @@ bool dyn_containers_free_interlocker(const int interlocker_slot);
 GString *dyn_containers_get_interlockers(void);
 
 // Finds the requested interlocker, and finds an available interlocker instance to use
-int dyn_containers_set_interlocker_instance(const char *interlocker, 
-                                            int * const interlocker_instance);
+int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlocker_instance,
+                                            const char *interlocker);
 
-void dyn_containers_free_interlocker_instance(const int dyn_containers_interlocker_instance);
+void dyn_containers_free_interlocker_instance(t_interlocker_data * const interlocker_instance);
 
-void dyn_containers_set_interlocker_instance_reset(const int dyn_containers_interlocker_instance,
+void dyn_containers_set_interlocker_instance_reset(t_interlocker_data * const interlocker_instance,
                                                    const bool reset);
 
-void dyn_containers_set_interlocker_instance_inputs(const int dyn_containers_interlocker_instance, 
+void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data * const interlocker_instance, 
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id);
 
-void dyn_containers_get_interlocker_instance_outputs(const int dyn_containers_interlocker_instance, 
+void dyn_containers_get_interlocker_instance_outputs(t_interlocker_data * const interlocker_instance, 
                                                      struct t_interlocker_instance_io *interlocker_instance_io_copy);
 
 #endif	// DYN_CONTAINERS_INTERFACE_H

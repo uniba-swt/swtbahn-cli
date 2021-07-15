@@ -25,8 +25,6 @@ typedef struct {
   
   char *route_id;           // Output
   bool terminated;          // Output (internal variable)
-
-  char internal_variables[4096];
 } TickData_interlocker;
 
 typedef struct {
@@ -36,8 +34,6 @@ typedef struct {
   int count_segments;       // Input
 
   bool terminated;          // Output (internal variable)
-
-  char internal_variables[2048];
 } TickData_drive_route;
 
 #endif	// TICK_DATA_H

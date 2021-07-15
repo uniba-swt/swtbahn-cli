@@ -25,10 +25,10 @@
  *
  */
 
-#include <stdbool.h>
-
 #ifndef BAHN_DATA_UTIL_H
 #define BAHN_DATA_UTIL_H
+
+#include <stdbool.h>
 
 bool bahn_data_util_initialise_config(const char *config_dir);
 

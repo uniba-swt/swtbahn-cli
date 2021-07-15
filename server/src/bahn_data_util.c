@@ -803,14 +803,8 @@ int train_state_get_speed(const char *train_id) {
 bool train_state_set_speed(const char *train_id, int speed) {
     bool result = false;
     if (g_hash_table_contains(config_data.table_trains, train_id)) {
-        result = true;
-        for (size_t i = 0; i < MAX_TRAINS; i++) {
-            int err = bidib_set_train_speed(train_id, speed, grabbed_trains[0].track_output);
-            if (err == 1) {
-                result = false;
-                break;
-            }
-        }
+        const int grab_id = train_get_grab_id(train_id);
+        bidib_set_train_speed(train_id, speed, grabbed_trains[grab_id].track_output);
     } else {
         syslog_server(LOG_ERR, "Invalid train id: %s", train_id);
     }

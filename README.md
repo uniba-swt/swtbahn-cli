@@ -11,10 +11,12 @@ libbidib project.
 ## Dependencies
 
 #### Server
-* A C compiler
+* C compiler
 * Libraries: [onion](https://github.com/uniba-swt/onion), libpam, libgnutls,
 libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
+* KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
+* BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
 
 #### Client
 * python3
