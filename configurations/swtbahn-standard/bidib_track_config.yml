@@ -138,6 +138,8 @@ boards:
         aspects:
           - id: on
             value: 0x00
+          - id: off
+            value: 0x01
         initial: on
       - id: lanterns1
         number: 0x07
@@ -145,6 +147,8 @@ boards:
         aspects:
           - id: on
             value: 0x00
+          - id: off
+            value: 0x01
         initial: on
   - id: lightcontrol2
     signals-board:
