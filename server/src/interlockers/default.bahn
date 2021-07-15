@@ -113,12 +113,6 @@ def set_points(string route_id)
             set state point_id to reverse
         end
     end
-
-    # Get the entry signal of route ID
-    string entry_id = get config route.source route_id
-    
-    # Set the entry signal of route ID to clear (Go aspect)
-    set state entry_id to clear
 end
 
 
