@@ -70,7 +70,7 @@ module SWTbahnLite
     point7 0x06 segment seg22 normal 0x01 reverse 0x00 initial normal
   end
   
-  peripherals
+  peripherals lightcontrol
     onebit lanterns 0x13 port 0x00FF    # Exact port address is not essential
   end
 
