@@ -84,11 +84,13 @@ blocks:
     signals:
       - signal14
       - signal15
-  - id: buffer3
+  - id: buffer
     length: 20.00cm
     main:
       - seg1
     direction: bidirectional
+    signals:
+      - signal1
 platforms:
   - id: platform1
     length: 76.20cm
@@ -141,9 +143,6 @@ signaltypes:
   - id: halt
     aspects:
       - red
-  - id: peripheral
-    aspects:
-      - on
   - id: platformlight
     aspects:
       - on

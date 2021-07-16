@@ -13,3 +13,5 @@ boards:
     features:
       - number: 0x03
         value: 0x14
+      - number: 0x6E
+        value: 0x00
