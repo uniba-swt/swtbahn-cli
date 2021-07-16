@@ -68,7 +68,7 @@ boards:
         initial: on
       - id: lanterns2
         number: 0x07
-        port: 0x00FF
+        port: 0x0018
         aspects:
           - id: on
             value: 0x00
@@ -143,7 +143,7 @@ boards:
         initial: on
       - id: lanterns1
         number: 0x07
-        port: 0x00FF
+        port: 0x0018
         aspects:
           - id: on
             value: 0x00

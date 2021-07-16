@@ -98,12 +98,12 @@ module SWTbahnStandard
 
 	peripherals onecontrol1
 		peripheral sync1 0x06 port 0x0027
-		peripheral lanterns1 0x07 port 0x00FF  # Exact port address is needed
+		peripheral lanterns1 0x07 port 0x0018  # Exact port address is not essential
 	end
 
 	peripherals onecontrol2
 		peripheral sync2 0x06 port 0x0027
-		peripheral lanterns2 0x07 port 0x00FF  # Exact port address is needed
+		peripheral lanterns2 0x07 port 0x0018  # Exact port address is not essential
 	end
 
 	blocks
@@ -117,7 +117,7 @@ module SWTbahnStandard
 		block7 overlap seg30b main seg31 overlap seg32b
 
 		# buffers
-		buffer3 main seg1
+		buffer main seg1
 	end
 
 	crossings
@@ -161,7 +161,7 @@ module SWTbahnStandard
 		crossing1.up2 -- platform1.down
 
 		# points
-		point1.straight -- buffer3.up
+		point1.straight -- buffer.up
 		point1.side -- point6.straight
 
 		point2.side -- point8.stem
@@ -180,6 +180,7 @@ module SWTbahnStandard
 		point11.straight -- point12.down1
 
 		# signals
+		signal1 -- buffer.down
 		signal2 -- block1.down
 		signal3 -- block1.up
 		signal4 -- block2.down
