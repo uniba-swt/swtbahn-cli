@@ -97,13 +97,13 @@ module SWTbahnStandard
 	end
 
 	peripherals onecontrol1
-		peripheral sync1 0x06
-		peripheral lanterns1 0x07
+		peripheral sync1 0x06 port 0x0027
+		peripheral lanterns1 0x07 port 0x0018  # Exact port address is not essential
 	end
 
 	peripherals onecontrol2
-		platformlight sync2 0x06
-		platformlight lanterns2 0x07
+		peripheral sync2 0x06 port 0x0027
+		peripheral lanterns2 0x07 port 0x0018  # Exact port address is not essential
 	end
 
 	blocks
@@ -114,10 +114,10 @@ module SWTbahnStandard
 		block4 overlap seg15 main seg16 overlap seg17
 		block5 overlap seg27 main seg28 overlap seg29
 		block6 overlap seg20 main seg21 overlap seg22
-		block7 overlap seg30a main seg31 overlap seg32a
+		block7 overlap seg30b main seg31 overlap seg32b
 
 		# buffers
-		buffer3 main seg1
+		buffer main seg1
 	end
 
 	crossings
@@ -161,7 +161,7 @@ module SWTbahnStandard
 		crossing1.up2 -- platform1.down
 
 		# points
-		point1.straight -- buffer3.up
+		point1.straight -- buffer.up
 		point1.side -- point6.straight
 
 		point2.side -- point8.stem
@@ -180,6 +180,7 @@ module SWTbahnStandard
 		point11.straight -- point12.down1
 
 		# signals
+		signal1 -- buffer.down
 		signal2 -- block1.down
 		signal3 -- block1.up
 		signal4 -- block2.down
@@ -202,28 +203,28 @@ module SWTbahnStandard
 
 	trains
 		cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 7cm type cargo
-        peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
-        end
-    	regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
-        peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
-        end
-    	regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
-        peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
-        end
-    	cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g type cargo
-        peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
-        end
-    	cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
-        peripherals
-            head_light bit 4 initial 1
-        end
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g type cargo
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+		peripherals
+			head_light bit 4 initial 1
+		end
 	end
 end

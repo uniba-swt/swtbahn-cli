@@ -31,8 +31,8 @@
 #include <onion/onion.h>
 #include <glib.h>
 
-
-#define MAX_TRAINS 5
+#define TRAIN_ENGINE_COUNT_MAX			4
+#define TRAIN_ENGINE_INSTANCE_COUNT_MAX	5
 
 extern pthread_mutex_t grabbed_trains_mutex;
 
@@ -43,8 +43,10 @@ typedef struct {
 	char track_output[32];
 } t_train_data;
 
-extern t_train_data grabbed_trains[MAX_TRAINS];
+extern t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX];
 
+
+const int train_get_grab_id(const char *train);
 
 bool train_grabbed(const char *train);
 
