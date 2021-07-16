@@ -93,7 +93,7 @@ const int load_default_interlocker_instance() {
 	while (!dyn_containers_is_running()) {
 		// Empty
 	}
-	
+
 	selected_interlocker_name = g_string_new("libinterlocker_default (unremovable)");	
 	const int result = set_interlocker(selected_interlocker_name->str);
 	return (result == -1);
@@ -111,7 +111,9 @@ void free_all_interlockers(void) {
 			interlocker_instances[i].is_valid = false;
 		}
 		pthread_mutex_unlock(&interlocker_mutex);
-	}	
+	}
+	
+	selected_interlocker_instance = -1;
 }
 
 const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
@@ -135,7 +137,7 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_has_reset);
-	
+
 	dyn_containers_set_interlocker_instance_reset(&interlocker_instances[selected_interlocker_instance], 
 	                                              false);
 	
