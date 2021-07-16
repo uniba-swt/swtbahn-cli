@@ -959,7 +959,7 @@ $(document).ready(
 
 		$('#unsetInterlockerButton').click(function () {
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
-			var interlockerName = $('#selecedInterlocker').text();
+			var interlockerName = $('#interlockerInUse').text();
 			$.ajax({
 				type: 'POST',
 				url: '/controller/unset-interlocker',
