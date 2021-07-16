@@ -223,12 +223,7 @@ $(document).ready(
 					type: 'POST',
 					url: '/controller/get-interlocker',
 					crossDomain: true,
-					data: {
-						'session-id': sessionId,
-						'grab-id': grabId,
-						'source': source,
-						'destination': destination
-					},
+					data: null,
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$.ajax({
@@ -243,16 +238,16 @@ $(document).ready(
 							},
 							dataType: 'text',
 							success: function (responseData, textStatus, jqXHR) {
+								$('#routeResponse').text('Route ' + responseData + ' granted');
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
-								$('#routeResponse').text('Route ' + responseData + ' granted');
 
 								$('#routeId').text(responseData);
 							},
 							error: function (responseData, textStatus, errorThrown) {
+								$('#routeResponse').text(responseData.responseText);
 								$('#routeResponse').parent().removeClass('alert-success');
 								$('#routeResponse').parent().addClass('alert-danger');
-								$('#routeResponse').text(responseData.responseText);
 							}
 						});
 
@@ -340,8 +335,16 @@ $(document).ready(
 
 		$('#driveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').text();
+			if (isNaN(routeId)) {
+				$('#routeResponse').parent().removeClass('alert-success');
+				$('#routeResponse').parent().addClass('alert-danger');
+				$('#routeResponse').text('Route \"' + routeId + '\" is not a number!');
+				
+				return;
+			}
+			
 			if (sessionId != 0 && grabId != -1) {
-				var routeId = $('#routeId').text();
 				$.ajax({
 					type: 'POST',
 					url: '/driver/drive-route',
@@ -349,15 +352,16 @@ $(document).ready(
 					data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
+						$('#routeResponse').text(responseData);
 						$('#routeResponse').parent().removeClass('alert-danger');
 						$('#routeResponse').parent().addClass('alert-success');
-						$('#routeResponse')
-							.text('Route ' + responseData + ' driving completed');
+						
+						$('#routeId').text("None");
 					},
 					error: function (responseData, textStatus, errorThrown) {
+						$('#routeResponse').text('Route could not be driven!');
 						$('#routeResponse').parent().removeClass('alert-success');
 						$('#routeResponse').parent().addClass('alert-danger');
-						$('#routeResponse').text('Route could not be driven!');
 					}
 				});
 			} else {
@@ -378,6 +382,7 @@ $(document).ready(
 				$('#uploadResponse').text('Select an SCCharts file!');
 				return;
 			}
+			
 			var file = files[0];
 			var formData = new FormData();
 			formData.append('file', file);
@@ -452,6 +457,7 @@ $(document).ready(
 				$('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' is unremovable!');
 				return;
 			}
+			
 			$.ajax({
 				type: 'POST',
 				url: '/upload/remove-engine',
@@ -483,28 +489,30 @@ $(document).ready(
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
 				$('#routeResponse').text('Route \"' + routeId + '\" is not a number!');
-			} else {
-				$.ajax({
-					type: 'POST',
-					url: '/controller/release-route',
-					crossDomain: true,
-					data: { 'route-id': routeId },
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						$('#routeResponse').parent().removeClass('alert-danger');
-						$('#routeResponse').parent().addClass('alert-success');
-						$('#routeResponse').text('Route ' + routeId + ' released');
-					
-						$('#routeId').text("None");
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#routeResponse').parent().removeClass('alert-success');
-						$('#routeResponse').parent().addClass('alert-danger');
-						$('#routeResponse')
-							.text('System not running or invalid track output!');
-					}
-				});
+				
+				return;
 			}
+			
+			$.ajax({
+				type: 'POST',
+				url: '/controller/release-route',
+				crossDomain: true,
+				data: { 'route-id': routeId },
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					$('#routeResponse').parent().removeClass('alert-danger');
+					$('#routeResponse').parent().addClass('alert-success');
+					$('#routeResponse').text('Route ' + routeId + ' released');
+				
+					$('#routeId').text("None");
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#routeResponse').parent().removeClass('alert-success');
+					$('#routeResponse').parent().addClass('alert-danger');
+					$('#routeResponse')
+						.text('System not running or invalid track output!');
+				}
+			});
 		});
 		
 		// For client.html

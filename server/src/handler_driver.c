@@ -359,6 +359,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			if (drive_route(grab_id, route_id)) {
+				onion_response_printf(res, "Route %d driving completed", route_id);
 				return OCS_PROCESSED;
 			} else {
 				return OCS_NOT_IMPLEMENTED;
