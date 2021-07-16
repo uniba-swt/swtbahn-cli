@@ -68,7 +68,7 @@ boards:
         initial: on
       - id: lanterns2
         number: 0x07
-        port: 
+        port: 0x00FF
         aspects:
           - id: on
             value: 0x00
@@ -134,7 +134,7 @@ boards:
     peripherals:
       - id: sync1
         number: 0x06
-        port: 
+        port: 0x0027
         aspects:
           - id: on
             value: 0x00
@@ -143,7 +143,7 @@ boards:
         initial: on
       - id: lanterns1
         number: 0x07
-        port: 
+        port: 0x00FF
         aspects:
           - id: on
             value: 0x00

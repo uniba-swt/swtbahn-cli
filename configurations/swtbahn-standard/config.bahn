@@ -97,13 +97,13 @@ module SWTbahnStandard
 	end
 
 	peripherals onecontrol1
-		peripheral sync1 0x06 port 
-		peripheral lanterns1 0x07 port 
+		peripheral sync1 0x06 port 0x0027
+		peripheral lanterns1 0x07 port 0x00FF  # Exact port address is needed
 	end
 
 	peripherals onecontrol2
 		peripheral sync2 0x06 port 0x0027
-		peripheral lanterns2 0x07 port 
+		peripheral lanterns2 0x07 port 0x00FF  # Exact port address is needed
 	end
 
 	blocks
