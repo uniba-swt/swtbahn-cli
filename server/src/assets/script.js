@@ -63,6 +63,11 @@ $(document).ready(
 					$('#startupShutdownResponse').parent().removeClass('alert-danger');
 					$('#startupShutdownResponse').parent().addClass('alert-success');
 					$('#startupShutdownResponse').text('OK');
+					
+					sessionId = 0;
+					grabId = -1;
+					$('#sessionGrabId')
+						.text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#startupShutdownResponse').parent().removeClass('alert-success');
