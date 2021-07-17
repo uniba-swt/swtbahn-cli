@@ -7,6 +7,7 @@ blocks:
     overlaps:
       - seg3
       - seg5
+    reversed: false
     direction: bidirectional
     trains:
       - cargo
@@ -22,6 +23,7 @@ blocks:
     overlaps:
       - seg7
       - seg9
+    reversed: false
     direction: bidirectional
     signals:
       - signal4
@@ -34,6 +36,7 @@ blocks:
     overlaps:
       - seg11
       - seg13
+    reversed: false
     direction: bidirectional
     trains:
       - cargo
@@ -47,6 +50,7 @@ blocks:
     overlaps:
       - seg15
       - seg17
+    reversed: false
     direction: bidirectional
     signals:
       - signal10
@@ -58,6 +62,7 @@ blocks:
     overlaps:
       - seg27
       - seg29
+    reversed: false
     direction: bidirectional
     signals:
       - signal9
@@ -69,17 +74,19 @@ blocks:
     overlaps:
       - seg20
       - seg22
+    reversed: false
     direction: bidirectional
     signals:
       - signal13
       - signal5
   - id: block7
-    length: 65.10cm
+    length: 64.10cm
     main:
       - seg31
     overlaps:
-      - seg30a
-      - seg32a
+      - seg30b
+      - seg32b
+    reversed: false
     direction: bidirectional
     signals:
       - signal14
@@ -88,6 +95,7 @@ blocks:
     length: 20.00cm
     main:
       - seg1
+    reversed: false
     direction: bidirectional
     signals:
       - signal1
@@ -99,6 +107,7 @@ platforms:
     overlaps:
       - seg36
       - seg38
+    reversed: true
     direction: bidirectional
     signals:
       - signal16
@@ -110,6 +119,7 @@ platforms:
     overlaps:
       - seg39
       - seg41
+    reversed: true
     direction: bidirectional
     signals:
       - signal18
