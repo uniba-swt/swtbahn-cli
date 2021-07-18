@@ -29,6 +29,7 @@
 #define CONFIG_DATA_INTERN_H
 
 #include <glib.h>
+#include <stdbool.h>
 
 typedef struct {
     GHashTable *table_segments;
@@ -78,6 +79,7 @@ typedef struct {
     GArray *signals;
     char *main_segment;
     GArray *overlaps;
+    bool reversed;
     char *direction;
 } t_config_block;
 
