@@ -277,6 +277,11 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                     break;
                 }
 
+                if (string_equals(prop_name, "orientation")) {
+                    result = ((t_interlocking_route *) obj)->orientation;
+                    break;
+                }
+
                 if (string_equals(prop_name, "train")) {
                     result = ((t_interlocking_route *) obj)->train;
                     break;
@@ -521,7 +526,7 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
     if (obj != NULL) {
 		switch (config_type) {
 			case TYPE_BLOCK:
-                if (string_equals(prop_name, "reversed")) {
+                if (string_equals(prop_name, "is_reversed")) {
                     result = ((t_config_block *) obj)->reversed;
                     break;
                 }
