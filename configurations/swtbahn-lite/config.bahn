@@ -8,6 +8,7 @@ module SWTbahnLite
     lightcontrol 0x05000D6B0083EC
     onecontrol 0x05000D7500DBED
   end
+  
   segments master
     seg1 0x00 length 10cm
     seg2 0x01 length 57.5cm
@@ -56,8 +57,7 @@ module SWTbahnLite
     halt signal13 0xF1    # Physically part of signalends
     block signal14 0x0B
     halt signal15 0xF2    # Physically part of signalends
-    peripheral signalends 0x12
-    peripheral lanterns 0x13
+    halt signalends 0x12
   end
 
   points onecontrol
@@ -68,6 +68,10 @@ module SWTbahnLite
     point5 0x04 segment seg17 normal 0x01 reverse 0x00 initial normal
     point6 0x05 segment seg21 normal 0x01 reverse 0x00 initial normal
     point7 0x06 segment seg22 normal 0x01 reverse 0x00 initial normal
+  end
+  
+  peripherals lightcontrol
+    onebit lanterns 0x13 port 0x00FF    # Exact port address is not essential
   end
 
   blocks

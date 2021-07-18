@@ -120,7 +120,11 @@ static bool drive_route(const int grab_id, const int route_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const int requested_speed = 20;
-	const char requested_forwards = true;	// TOFIX
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
+	                                        && train_position_query.orientation_is_left)
+	                                || (strcmp(route->orientation, "anticlockwise") == 0 
+	                                        && !train_position_query.orientation_is_left);
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
 	                                                requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);

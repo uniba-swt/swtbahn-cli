@@ -4,8 +4,13 @@ module SWTbahnStandard
 		onecontrol2 0x05000D7500DAED
 		lightcontrol1 0x45000D6B0072EC
 		lightcontrol2 0x45000D6B0067EC
-		master 0xDA000D680001EE features 0x03:0x14 end
+		master 0xDA000D680001EE
+			features 
+				0x03:0x14  # seckack on, 200ms
+				0x6E:0x00  # track output default off
+			end
 	end
+	
 	segments master
 		seg1 0x00 length 20cm
 		seg2 0x01 length 11.3cm
@@ -61,13 +66,13 @@ module SWTbahnStandard
 		entry signal11 0x05
 		entry signal12 0x06
 		entry signal13 0x07
-		peripheral signal17 0x08
-		peripheral signal19 0x09
+		halt signal17 0x08
+		halt signal19 0x09
 		platformlight platformlights 0x0A
 	end
 
 	signals lightcontrol2
-		peripheral signal1 0x00
+		halt signal1 0x00
 		entry signal2 0x01
 		entry signal8 0x02
 		entry signal9 0x03
@@ -97,13 +102,13 @@ module SWTbahnStandard
 	end
 
 	peripherals onecontrol1
-		peripheral sync1 0x06 port 0x0027
-		peripheral lanterns1 0x07 port 0x0018  # Exact port address is not essential
+		onebit sync1 0x06 port 0x0027
+		onebit lanterns1 0x07 port 0x0018  # Exact port address is not essential
 	end
 
 	peripherals onecontrol2
-		peripheral sync2 0x06 port 0x0027
-		peripheral lanterns2 0x07 port 0x0018  # Exact port address is not essential
+		onebit sync2 0x06 port 0x0027
+		onebit lanterns2 0x07 port 0x0018  # Exact port address is not essential
 	end
 
 	blocks
@@ -114,6 +119,11 @@ module SWTbahnStandard
 		block4 overlap seg15 main seg16 overlap seg17
 		block5 overlap seg27 main seg28 overlap seg29
 		block6 overlap seg20 main seg21 overlap seg22
+
+		# Kehrschleifenmodul actively reverses the block's orientation, but the reversal is
+		# dependent on whether train exits the block from where it entered.
+		# There is no reliable method to correctly infer the train's orientation within the
+		# reversing loop
 		block7 overlap seg30b main seg31 overlap seg32b
 
 		# buffers
@@ -125,8 +135,8 @@ module SWTbahnStandard
 	end
 
 	platforms
-		platform1 overlap seg36 main seg37 overlap seg38
-		platform2 overlap seg39 main seg40 overlap seg41
+		platform1 overlap seg36 main seg37 overlap seg38 reversed
+		platform2 overlap seg39 main seg40 overlap seg41 reversed
 	end
 
 	layout

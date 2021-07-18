@@ -48,6 +48,7 @@ typedef struct {
  * id of the route
  * source signal of the route
  * destination signal of the route
+ * orientation of train at the start of the route
  * path of the route, consisting of track segments
  * points within the route and their required position
  * signals within the route
@@ -58,6 +59,7 @@ typedef struct {
     char *id;
     char *source;
     char *destination;
+    char *orientation;
     float length;
     GArray *path;       // g_array_index(route->path, char *, segment_index)
     GArray *sections;   // g_array_index(route->sections, char *, segment_index)

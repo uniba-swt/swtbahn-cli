@@ -218,6 +218,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_SEGMENT:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_segment *) obj)->id;
@@ -225,6 +226,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_SIGNAL:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_signal *) obj)->id;
@@ -242,6 +244,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_POINT:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_point *) obj)->id;
@@ -269,6 +272,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_TRAIN:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_train *) obj)->id;
@@ -281,6 +285,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_BLOCK:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_block *) obj)->id;
@@ -298,6 +303,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_CROSSING:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_crossing *) obj)->id;
@@ -310,6 +316,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             case TYPE_SIGNAL_TYPE:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_signal_type *) obj)->id;
@@ -345,6 +352,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 }
 
                 break;
+                
             default:
                 break;
         }
@@ -380,17 +388,20 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
                     result = ((t_interlocking_route *) obj)->length;
                 }
                 break;
+                
             case TYPE_BLOCK:
                 if (string_equals(prop_name, "length")) {
                     result = ((t_config_block *) obj)->length;
                     break;
                 }
+                break;
 
             case TYPE_SEGMENT:
                 if (string_equals(prop_name, "length")) {
                     result = ((t_config_segment *) obj)->length;
                 }
                 break;
+                
             case TYPE_TRAIN:
                 if (string_equals(prop_name, "length")) {
                     result = ((t_config_train *) obj)->length;
@@ -401,6 +412,7 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
                     result = ((t_config_train *) obj)->weight;
                 }
                 break;
+                
             default:
                 break;
         }
@@ -411,8 +423,24 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
 }
 
 bool config_get_scalar_bool_value(const char *type, const char *id, const char *prop_name) {
-    // No object type has bool property
-    return false;
+    e_config_type config_type = get_config_type(type);
+    void *obj = get_object(config_type, id);
+    bool result = false;
+    if (obj != NULL) {
+		switch (config_type) {
+			case TYPE_BLOCK:
+                if (string_equals(prop_name, "reversed")) {
+                    result = ((t_config_block *) obj)->reversed;
+                    break;
+                }
+				break;
+				
+            default:
+                break;
+		}
+    }
+    
+    return result;
 }
 
 int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char* data[]) {
@@ -425,17 +453,23 @@ int config_get_array_string_value(const char *type, const char *id, const char *
             case TYPE_ROUTE:
                 result = get_route_array_string_value((t_interlocking_route *)obj, prop_name, data);
                 break;
+                
             case TYPE_SIGNAL:
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_signal *) obj)->aspects;
                     break;
                 }
+                
+                break;
+                
             case TYPE_TRAIN:
                 if (string_equals(prop_name, "peripherals")) {
                     arr = ((t_config_train *) obj)->peripherals;
                     break;
                 }
-
+				
+				break;
+				
             case TYPE_BLOCK:
                 if (string_equals(prop_name, "train_types")) {
                     arr = ((t_config_block *) obj)->train_types;
@@ -451,12 +485,16 @@ int config_get_array_string_value(const char *type, const char *id, const char *
                     arr = ((t_config_block *) obj)->overlaps;
                     break;
                 }
-
+				break;
+				
             case TYPE_SIGNAL_TYPE:
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_signal_type *) obj)->aspects;
                     break;
                 }
+                
+                break;
+                
             default:
                 break;
         }
@@ -597,7 +635,9 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
         for (int i = 0; i < signal->aspects->len; ++i) {
             char *aspect = g_array_index(signal->aspects, char *, i);
             if (string_equals(aspect, value)) {
-                return bidib_set_signal(signal->id, value) == 0;
+                bool result = bidib_set_signal(signal->id, value) == 0;
+                bidib_flush();
+                return result;
             }
         }
     }
@@ -759,6 +799,7 @@ bool track_state_set_value(const char *id, const char *value) {
         case TYPE_POINT:
             if (string_equals(value, "normal") || string_equals(value, "reverse")) {
                 result = bidib_switch_point(id, value) == 0;
+                bidib_flush();
                 syslog_server(LOG_DEBUG, "Set point state: %s to %s => %s", id, value, result ? "true" : "false");
             } else {
                 syslog_server(LOG_DEBUG, "Invalid point state: %s", value);
@@ -766,6 +807,7 @@ bool track_state_set_value(const char *id, const char *value) {
             return result;
         case TYPE_SIGNAL:
             result = set_signal_state(id, value);
+            bidib_flush();
             syslog_server(LOG_DEBUG, "Set signal state: %s to %s => %s", id, value, result ? "true" : "false");
             return result;
         default:
@@ -804,7 +846,8 @@ bool train_state_set_speed(const char *train_id, int speed) {
     bool result = false;
     if (g_hash_table_contains(config_data.table_trains, train_id)) {
         const int grab_id = train_get_grab_id(train_id);
-        bidib_set_train_speed(train_id, speed, grabbed_trains[grab_id].track_output);
+        result = bidib_set_train_speed(train_id, speed, grabbed_trains[grab_id].track_output) == 0;
+        bidib_flush();
     } else {
         syslog_server(LOG_ERR, "Invalid train id: %s", train_id);
     }

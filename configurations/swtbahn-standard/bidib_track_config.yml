@@ -66,6 +66,7 @@ boards:
           - id: off
             value: 0x01
         initial: on
+        type: onebit
       - id: lanterns2
         number: 0x07
         port: 0x0018
@@ -75,6 +76,7 @@ boards:
           - id: off
             value: 0x01
         initial: on
+        type: onebit
   - id: onecontrol1
     points-board:
       - id: point2
@@ -141,6 +143,7 @@ boards:
           - id: off
             value: 0x01
         initial: on
+        type: onebit
       - id: lanterns1
         number: 0x07
         port: 0x0018
@@ -150,15 +153,16 @@ boards:
           - id: off
             value: 0x01
         initial: on
+        type: onebit
   - id: lightcontrol2
     signals-board:
       - id: signal1
         number: 0x00
         aspects:
-          - id: on
+          - id: red
             value: 0x00
-        initial: on
-        type: peripheral
+        initial: red
+        type: halt
       - id: signal2
         number: 0x01
         aspects:
@@ -471,17 +475,17 @@ boards:
       - id: signal17
         number: 0x08
         aspects:
-          - id: on
+          - id: red
             value: 0x00
-        initial: on
-        type: peripheral
+        initial: red
+        type: halt
       - id: signal19
         number: 0x09
         aspects:
-          - id: on
+          - id: red
             value: 0x00
-        initial: on
-        type: peripheral
+        initial: red
+        type: halt
       - id: platformlights
         number: 0x0A
         aspects:

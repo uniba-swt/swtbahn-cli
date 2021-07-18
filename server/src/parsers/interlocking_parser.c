@@ -122,6 +122,7 @@ void free_route(void *item) {
     free(route->id);
     free(route->source);
     free(route->destination);
+    free(route->orientation);
     if (route->train != NULL) {
         free(route->train);
     }
@@ -252,6 +253,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                     route->id = NULL;
                     route->source = NULL;
                     route->destination = NULL;
+                    route->orientation = NULL;
                     route->length = 0;
                     route->path = NULL;
                     route->sections = NULL;
@@ -325,6 +327,11 @@ GHashTable *parse(yaml_parser_t *parser) {
 
                     if (is_str_equal(last_scalar, "destination")) {
                         route->destination = cur_scalar;
+                        break;
+                    }
+                    
+                    if (is_str_equal(last_scalar, "orientation")) {
+                        route->orientation = cur_scalar;
                         break;
                     }
 
