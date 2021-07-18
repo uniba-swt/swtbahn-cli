@@ -75,7 +75,7 @@ boards:
             value: 0x00
           - id: off
             value: 0x01
-        initial: on
+        initial: off
         type: onebit
   - id: onecontrol1
     points-board:
@@ -152,7 +152,7 @@ boards:
             value: 0x00
           - id: off
             value: 0x01
-        initial: on
+        initial: off
         type: onebit
   - id: lightcontrol2
     signals-board:
