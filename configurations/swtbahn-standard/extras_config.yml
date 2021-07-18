@@ -86,7 +86,7 @@ blocks:
     overlaps:
       - seg30b
       - seg32b
-    reversed: false
+    reversed: true
     direction: bidirectional
     signals:
       - signal14

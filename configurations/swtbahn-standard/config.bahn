@@ -119,7 +119,9 @@ module SWTbahnStandard
 		block4 overlap seg15 main seg16 overlap seg17
 		block5 overlap seg27 main seg28 overlap seg29
 		block6 overlap seg20 main seg21 overlap seg22
-		block7 overlap seg30b main seg31 overlap seg32b
+		
+		# Kehrschleifenmodul actively reverses the block's orientation
+		block7 overlap seg30b main seg31 overlap seg32b reversed
 
 		# buffers
 		buffer main seg1
