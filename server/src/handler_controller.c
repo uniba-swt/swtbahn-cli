@@ -153,7 +153,6 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 	if (route_id != NULL && params_check_is_number(route_id)) {
 		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
 		
-		bidib_flush();
 		syslog_server(LOG_NOTICE, "Request: Set points and signals for route id \"%s\" - interlocker type %d",
 		              interlocker_instance_io.output_route_id,
 		              interlocker_instance_io.output_interlocker_type);

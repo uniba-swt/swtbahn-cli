@@ -635,7 +635,9 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
         for (int i = 0; i < signal->aspects->len; ++i) {
             char *aspect = g_array_index(signal->aspects, char *, i);
             if (string_equals(aspect, value)) {
-                return bidib_set_signal(signal->id, value) == 0;
+                bool result = bidib_set_signal(signal->id, value) == 0;
+                bidib_flush();
+                return result;
             }
         }
     }
@@ -797,6 +799,7 @@ bool track_state_set_value(const char *id, const char *value) {
         case TYPE_POINT:
             if (string_equals(value, "normal") || string_equals(value, "reverse")) {
                 result = bidib_switch_point(id, value) == 0;
+                bidib_flush();
                 syslog_server(LOG_DEBUG, "Set point state: %s to %s => %s", id, value, result ? "true" : "false");
             } else {
                 syslog_server(LOG_DEBUG, "Invalid point state: %s", value);
@@ -804,6 +807,7 @@ bool track_state_set_value(const char *id, const char *value) {
             return result;
         case TYPE_SIGNAL:
             result = set_signal_state(id, value);
+            bidib_flush();
             syslog_server(LOG_DEBUG, "Set signal state: %s to %s => %s", id, value, result ? "true" : "false");
             return result;
         default:
@@ -842,7 +846,8 @@ bool train_state_set_speed(const char *train_id, int speed) {
     bool result = false;
     if (g_hash_table_contains(config_data.table_trains, train_id)) {
         const int grab_id = train_get_grab_id(train_id);
-        bidib_set_train_speed(train_id, speed, grabbed_trains[grab_id].track_output);
+        result = bidib_set_train_speed(train_id, speed, grabbed_trains[grab_id].track_output) == 0;
+        bidib_flush();
     } else {
         syslog_server(LOG_ERR, "Invalid train id: %s", train_id);
     }
