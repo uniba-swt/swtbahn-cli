@@ -2772,9 +2772,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -3083,9 +3083,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -3361,9 +3361,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -3583,9 +3583,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -4146,9 +4146,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -4764,9 +4764,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -5703,9 +5703,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -6008,9 +6008,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -8206,9 +8206,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -8498,9 +8498,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -9090,9 +9090,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -9675,9 +9675,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -10878,9 +10878,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -11182,9 +11182,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -11455,9 +11455,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -11957,9 +11957,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -12543,9 +12543,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -12881,9 +12881,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -13116,9 +13116,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -13498,9 +13498,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -13814,9 +13814,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -15326,9 +15326,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -15579,9 +15579,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -16159,9 +16159,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -16681,9 +16681,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -17274,9 +17274,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -17853,9 +17853,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -18704,9 +18704,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -18971,9 +18971,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -19210,9 +19210,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -19441,9 +19441,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -19801,9 +19801,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -20113,9 +20113,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -21001,9 +21001,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -21235,9 +21235,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -21432,9 +21432,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -21630,9 +21630,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -21834,9 +21834,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -22046,9 +22046,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -22266,9 +22266,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -22851,9 +22851,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -24239,9 +24239,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -24552,9 +24552,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -25175,9 +25175,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -26001,9 +26001,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -26769,9 +26769,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -27375,9 +27375,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -28753,9 +28753,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -28961,9 +28961,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -29195,9 +29195,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -30041,9 +30041,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -30879,9 +30879,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -31144,9 +31144,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -31945,9 +31945,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -32201,9 +32201,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -32431,9 +32431,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -32662,9 +32662,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -32883,9 +32883,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -33125,9 +33125,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -33736,9 +33736,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -33949,7 +33949,462 @@ interlocking-table:
   - id: 124 #route124
     source: signal15
     destination: signal19
-    orientation: clockwise
+    orientation: anticlockwise
+    path:
+      # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6 -> point7.normal -> block5 -> point10.normal -> point9.reverse -> point11.normal -> point12.normal1 -> platform2
+      - id: seg34
+      - id: seg35
+      - id: seg24
+      - id: seg23
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg29
+      - id: seg28
+      - id: seg27
+      - id: seg26
+      - id: seg25
+      - id: seg33
+      - id: seg34
+      - id: seg39
+      - id: seg40
+      - id: seg41
+    sections:
+      - id: block6
+      - id: block5
+      - id: platform2
+    length: 543.95cm
+    points:
+      - id: point12
+        position: normal
+      - id: point5
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point7
+        position: normal
+      - id: point10
+        position: normal
+      - id: point9
+        position: reverse
+      - id: point11
+        position: normal
+      - id: point12
+        position: normal
+    conflicts:
+      - id: 230
+      - id: 110
+      - id: 231
+      - id: 111
+      - id: 232
+      - id: 112
+      - id: 233
+      - id: 234
+      - id: 114
+      - id: 235
+      - id: 115
+      - id: 236
+      - id: 116
+      - id: 237
+      - id: 238
+      - id: 239
+      - id: 10
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 240
+      - id: 241
+      - id: 0
+      - id: 121
+      - id: 242
+      - id: 1
+      - id: 122
+      - id: 243
+      - id: 2
+      - id: 123
+      - id: 244
+      - id: 3
+      - id: 245
+      - id: 4
+      - id: 125
+      - id: 246
+      - id: 5
+      - id: 126
+      - id: 247
+      - id: 127
+      - id: 248
+      - id: 7
+      - id: 128
+      - id: 249
+      - id: 8
+      - id: 129
+      - id: 9
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 250
+      - id: 130
+      - id: 251
+      - id: 131
+      - id: 252
+      - id: 132
+      - id: 253
+      - id: 133
+      - id: 254
+      - id: 134
+      - id: 255
+      - id: 135
+      - id: 256
+      - id: 136
+      - id: 257
+      - id: 137
+      - id: 258
+      - id: 138
+      - id: 259
+      - id: 139
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 260
+      - id: 140
+      - id: 261
+      - id: 141
+      - id: 262
+      - id: 142
+      - id: 143
+      - id: 144
+      - id: 145
+      - id: 146
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 48
+      - id: 49
+      - id: 150
+      - id: 151
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 55
+      - id: 56
+      - id: 58
+      - id: 59
+      - id: 160
+      - id: 161
+      - id: 162
+      - id: 163
+      - id: 164
+      - id: 165
+      - id: 166
+      - id: 167
+      - id: 168
+      - id: 169
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 170
+      - id: 171
+      - id: 172
+      - id: 173
+      - id: 174
+      - id: 175
+      - id: 176
+      - id: 177
+      - id: 178
+      - id: 179
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
+      - id: 180
+      - id: 181
+      - id: 182
+      - id: 183
+      - id: 184
+      - id: 185
+      - id: 186
+      - id: 187
+      - id: 188
+      - id: 189
+      - id: 81
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 190
+      - id: 191
+      - id: 192
+      - id: 193
+      - id: 194
+      - id: 195
+      - id: 196
+      - id: 197
+      - id: 198
+      - id: 199
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 95
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 99
+      - id: 200
+      - id: 201
+      - id: 202
+      - id: 203
+      - id: 204
+      - id: 205
+      - id: 206
+      - id: 207
+      - id: 208
+      - id: 209
+      - id: 210
+      - id: 211
+      - id: 212
+      - id: 213
+      - id: 214
+      - id: 215
+      - id: 216
+      - id: 219
+      - id: 220
+      - id: 100
+      - id: 101
+      - id: 222
+      - id: 102
+      - id: 223
+      - id: 103
+      - id: 224
+      - id: 225
+      - id: 226
+      - id: 106
+      - id: 227
+      - id: 107
+      - id: 228
+      - id: 108
+      - id: 229
+      - id: 109
+  - id: 125 #route125
+    source: signal15
+    destination: signal19
+    orientation: anticlockwise
+    path:
+      # point12.reverse2 -> platform2
+      - id: seg34
+      - id: seg39
+      - id: seg40
+      - id: seg41
+    sections:
+      - id: platform2
+    length: 97.90cm
+    points:
+      - id: point12
+        position: reverse
+    conflicts:
+      - id: 190
+      - id: 191
+      - id: 192
+      - id: 193
+      - id: 194
+      - id: 195
+      - id: 196
+      - id: 197
+      - id: 230
+      - id: 110
+      - id: 198
+      - id: 111
+      - id: 199
+      - id: 232
+      - id: 114
+      - id: 235
+      - id: 115
+      - id: 237
+      - id: 90
+      - id: 92
+      - id: 93
+      - id: 95
+      - id: 96
+      - id: 98
+      - id: 13
+      - id: 15
+      - id: 17
+      - id: 18
+      - id: 240
+      - id: 241
+      - id: 0
+      - id: 1
+      - id: 122
+      - id: 243
+      - id: 2
+      - id: 3
+      - id: 124
+      - id: 4
+      - id: 246
+      - id: 5
+      - id: 126
+      - id: 247
+      - id: 127
+      - id: 7
+      - id: 128
+      - id: 249
+      - id: 8
+      - id: 129
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 130
+      - id: 251
+      - id: 131
+      - id: 252
+      - id: 132
+      - id: 133
+      - id: 254
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 258
+      - id: 138
+      - id: 259
+      - id: 30
+      - id: 32
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 140
+      - id: 141
+      - id: 262
+      - id: 142
+      - id: 143
+      - id: 145
+      - id: 146
+      - id: 149
+      - id: 40
+      - id: 42
+      - id: 150
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 56
+      - id: 58
+      - id: 160
+      - id: 161
+      - id: 162
+      - id: 163
+      - id: 164
+      - id: 165
+      - id: 166
+      - id: 167
+      - id: 200
+      - id: 168
+      - id: 169
+      - id: 205
+      - id: 207
+      - id: 60
+      - id: 209
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 170
+      - id: 171
+      - id: 172
+      - id: 173
+      - id: 174
+      - id: 175
+      - id: 176
+      - id: 177
+      - id: 210
+      - id: 178
+      - id: 179
+      - id: 212
+      - id: 213
+      - id: 214
+      - id: 215
+      - id: 216
+      - id: 73
+      - id: 74
+      - id: 180
+      - id: 181
+      - id: 182
+      - id: 183
+      - id: 184
+      - id: 185
+      - id: 186
+      - id: 187
+      - id: 220
+      - id: 100
+      - id: 188
+      - id: 101
+      - id: 189
+      - id: 222
+      - id: 102
+      - id: 103
+      - id: 224
+      - id: 225
+      - id: 227
+      - id: 107
+      - id: 228
+      - id: 108
+      - id: 82
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+  - id: 126 #route126
+    source: signal15
+    destination: signal19
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.normal -> point7.reverse -> block5 -> point10.normal -> point9.reverse -> point11.normal -> point12.normal1 -> platform2
       - id: seg34
@@ -34045,12 +34500,12 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
+      - id: 124
       - id: 245
       - id: 4
       - id: 125
       - id: 246
       - id: 5
-      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -34259,465 +34714,10 @@ interlocking-table:
       - id: 108
       - id: 229
       - id: 109
-  - id: 125 #route125
-    source: signal15
-    destination: signal19
-    orientation: clockwise
-    path:
-      # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6 -> point7.normal -> block5 -> point10.normal -> point9.reverse -> point11.normal -> point12.normal1 -> platform2
-      - id: seg34
-      - id: seg35
-      - id: seg24
-      - id: seg23
-      - id: seg22
-      - id: seg21
-      - id: seg20
-      - id: seg19
-      - id: seg29
-      - id: seg28
-      - id: seg27
-      - id: seg26
-      - id: seg25
-      - id: seg33
-      - id: seg34
-      - id: seg39
-      - id: seg40
-      - id: seg41
-    sections:
-      - id: block6
-      - id: block5
-      - id: platform2
-    length: 543.95cm
-    points:
-      - id: point12
-        position: normal
-      - id: point5
-        position: reverse
-      - id: point4
-        position: normal
-      - id: point7
-        position: normal
-      - id: point10
-        position: normal
-      - id: point9
-        position: reverse
-      - id: point11
-        position: normal
-      - id: point12
-        position: normal
-    conflicts:
-      - id: 230
-      - id: 110
-      - id: 231
-      - id: 111
-      - id: 232
-      - id: 112
-      - id: 233
-      - id: 234
-      - id: 114
-      - id: 235
-      - id: 115
-      - id: 236
-      - id: 116
-      - id: 237
-      - id: 238
-      - id: 239
-      - id: 10
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 17
-      - id: 18
-      - id: 19
-      - id: 240
-      - id: 241
-      - id: 0
-      - id: 121
-      - id: 242
-      - id: 1
-      - id: 122
-      - id: 243
-      - id: 2
-      - id: 123
-      - id: 244
-      - id: 3
-      - id: 124
-      - id: 245
-      - id: 4
-      - id: 246
-      - id: 5
-      - id: 126
-      - id: 247
-      - id: 127
-      - id: 248
-      - id: 7
-      - id: 128
-      - id: 249
-      - id: 8
-      - id: 129
-      - id: 9
-      - id: 20
-      - id: 21
-      - id: 22
-      - id: 24
-      - id: 25
-      - id: 26
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 250
-      - id: 130
-      - id: 251
-      - id: 131
-      - id: 252
-      - id: 132
-      - id: 253
-      - id: 133
-      - id: 254
-      - id: 134
-      - id: 255
-      - id: 135
-      - id: 256
-      - id: 136
-      - id: 257
-      - id: 137
-      - id: 258
-      - id: 138
-      - id: 259
-      - id: 139
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 36
-      - id: 37
-      - id: 38
-      - id: 39
-      - id: 260
-      - id: 140
-      - id: 261
-      - id: 141
-      - id: 262
-      - id: 142
-      - id: 143
-      - id: 144
-      - id: 145
-      - id: 146
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 43
-      - id: 48
-      - id: 49
-      - id: 150
-      - id: 151
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-      - id: 50
-      - id: 51
-      - id: 52
-      - id: 53
-      - id: 55
-      - id: 56
-      - id: 58
-      - id: 59
-      - id: 160
-      - id: 161
-      - id: 162
-      - id: 163
-      - id: 164
-      - id: 165
-      - id: 166
-      - id: 167
-      - id: 168
-      - id: 169
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 170
-      - id: 171
-      - id: 172
-      - id: 173
-      - id: 174
-      - id: 175
-      - id: 176
-      - id: 177
-      - id: 178
-      - id: 179
-      - id: 71
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 180
-      - id: 181
-      - id: 182
-      - id: 183
-      - id: 184
-      - id: 185
-      - id: 186
-      - id: 187
-      - id: 188
-      - id: 189
-      - id: 81
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 190
-      - id: 191
-      - id: 192
-      - id: 193
-      - id: 194
-      - id: 195
-      - id: 196
-      - id: 197
-      - id: 198
-      - id: 199
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 95
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 99
-      - id: 200
-      - id: 201
-      - id: 202
-      - id: 203
-      - id: 204
-      - id: 205
-      - id: 206
-      - id: 207
-      - id: 208
-      - id: 209
-      - id: 210
-      - id: 211
-      - id: 212
-      - id: 213
-      - id: 214
-      - id: 215
-      - id: 216
-      - id: 219
-      - id: 220
-      - id: 100
-      - id: 101
-      - id: 222
-      - id: 102
-      - id: 223
-      - id: 103
-      - id: 224
-      - id: 225
-      - id: 226
-      - id: 106
-      - id: 227
-      - id: 107
-      - id: 228
-      - id: 108
-      - id: 229
-      - id: 109
-  - id: 126 #route126
-    source: signal15
-    destination: signal19
-    orientation: clockwise
-    path:
-      # point12.reverse2 -> platform2
-      - id: seg34
-      - id: seg39
-      - id: seg40
-      - id: seg41
-    sections:
-      - id: platform2
-    length: 97.90cm
-    points:
-      - id: point12
-        position: reverse
-    conflicts:
-      - id: 190
-      - id: 191
-      - id: 192
-      - id: 193
-      - id: 194
-      - id: 195
-      - id: 196
-      - id: 197
-      - id: 230
-      - id: 110
-      - id: 198
-      - id: 111
-      - id: 199
-      - id: 232
-      - id: 114
-      - id: 235
-      - id: 115
-      - id: 237
-      - id: 90
-      - id: 92
-      - id: 93
-      - id: 95
-      - id: 96
-      - id: 98
-      - id: 13
-      - id: 15
-      - id: 17
-      - id: 18
-      - id: 240
-      - id: 241
-      - id: 0
-      - id: 1
-      - id: 122
-      - id: 243
-      - id: 2
-      - id: 3
-      - id: 124
-      - id: 4
-      - id: 125
-      - id: 246
-      - id: 5
-      - id: 247
-      - id: 127
-      - id: 7
-      - id: 128
-      - id: 249
-      - id: 8
-      - id: 129
-      - id: 21
-      - id: 22
-      - id: 24
-      - id: 25
-      - id: 26
-      - id: 27
-      - id: 130
-      - id: 251
-      - id: 131
-      - id: 252
-      - id: 132
-      - id: 133
-      - id: 254
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 258
-      - id: 138
-      - id: 259
-      - id: 30
-      - id: 32
-      - id: 34
-      - id: 35
-      - id: 36
-      - id: 140
-      - id: 141
-      - id: 262
-      - id: 142
-      - id: 143
-      - id: 145
-      - id: 146
-      - id: 149
-      - id: 40
-      - id: 42
-      - id: 150
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-      - id: 50
-      - id: 51
-      - id: 52
-      - id: 53
-      - id: 56
-      - id: 58
-      - id: 160
-      - id: 161
-      - id: 162
-      - id: 163
-      - id: 164
-      - id: 165
-      - id: 166
-      - id: 167
-      - id: 200
-      - id: 168
-      - id: 169
-      - id: 205
-      - id: 207
-      - id: 60
-      - id: 209
-      - id: 62
-      - id: 64
-      - id: 65
-      - id: 170
-      - id: 171
-      - id: 172
-      - id: 173
-      - id: 174
-      - id: 175
-      - id: 176
-      - id: 177
-      - id: 210
-      - id: 178
-      - id: 179
-      - id: 212
-      - id: 213
-      - id: 214
-      - id: 215
-      - id: 216
-      - id: 73
-      - id: 74
-      - id: 180
-      - id: 181
-      - id: 182
-      - id: 183
-      - id: 184
-      - id: 185
-      - id: 186
-      - id: 187
-      - id: 220
-      - id: 100
-      - id: 188
-      - id: 101
-      - id: 189
-      - id: 222
-      - id: 102
-      - id: 103
-      - id: 224
-      - id: 225
-      - id: 227
-      - id: 107
-      - id: 228
-      - id: 108
-      - id: 82
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
   - id: 127 #route127
     source: signal15
     destination: signal9
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.normal -> point7.reverse -> block5
       - id: seg34
@@ -35014,7 +35014,7 @@ interlocking-table:
   - id: 128 #route128
     source: signal15
     destination: signal9
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6 -> point7.normal -> block5
       - id: seg34
@@ -35277,7 +35277,7 @@ interlocking-table:
   - id: 129 #route129
     source: signal15
     destination: signal1
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1 -> point1.normal -> buffer
       - id: seg34
@@ -35574,7 +35574,7 @@ interlocking-table:
   - id: 130 #route130
     source: signal15
     destination: signal2
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1
       - id: seg34
@@ -35864,7 +35864,7 @@ interlocking-table:
   - id: 131 #route131
     source: signal15
     destination: signal10
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.reverse -> block4
       - id: seg34
@@ -36157,7 +36157,7 @@ interlocking-table:
   - id: 132 #route132
     source: signal15
     destination: signal4
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2
       - id: seg34
@@ -36433,7 +36433,7 @@ interlocking-table:
   - id: 133 #route133
     source: signal15
     destination: signal7
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.reverse -> block4 -> point6.reverse -> block3
       - id: seg34
@@ -36736,7 +36736,7 @@ interlocking-table:
   - id: 134 #route134
     source: signal15
     destination: signal7
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1 -> point1.reverse -> point6.normal -> block3
       - id: seg34
@@ -37040,7 +37040,7 @@ interlocking-table:
   - id: 135 #route135
     source: signal15
     destination: signal17
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.normal -> point7.reverse -> block5 -> point10.normal -> point9.reverse -> point11.reverse -> crossing1.line1 -> platform1
       - id: seg34
@@ -37351,7 +37351,7 @@ interlocking-table:
   - id: 136 #route136
     source: signal15
     destination: signal17
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6 -> point7.normal -> block5 -> point10.normal -> point9.reverse -> point11.reverse -> crossing1.line1 -> platform1
       - id: seg34
@@ -37628,7 +37628,7 @@ interlocking-table:
   - id: 137 #route137
     source: signal15
     destination: signal13
-    orientation: clockwise
+    orientation: anticlockwise
     path:
       # point12.normal2 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6
       - id: seg34
@@ -38215,9 +38215,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -39729,9 +39729,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -40610,9 +40610,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -40883,9 +40883,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -41787,9 +41787,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -42033,9 +42033,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -42316,9 +42316,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -56320,9 +56320,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -56589,9 +56589,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -56831,8 +56831,8 @@ interlocking-table:
       - id: 244
       - id: 124
       - id: 245
-      - id: 125
       - id: 246
+      - id: 126
       - id: 247
       - id: 127
       - id: 7
@@ -56968,9 +56968,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -57487,9 +57487,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -58073,9 +58073,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -58953,9 +58953,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -60684,9 +60684,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -60926,9 +60926,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -61185,9 +61185,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -61771,9 +61771,9 @@ interlocking-table:
       - id: 123
       - id: 244
       - id: 3
-      - id: 124
       - id: 4
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -62299,9 +62299,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -63200,9 +63200,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -64023,8 +64023,8 @@ interlocking-table:
       - id: 244
       - id: 124
       - id: 245
-      - id: 125
       - id: 246
+      - id: 126
       - id: 247
       - id: 127
       - id: 7
@@ -64507,9 +64507,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -65116,9 +65116,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -65418,9 +65418,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -66021,9 +66021,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -66619,9 +66619,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -66931,9 +66931,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -67858,9 +67858,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -68053,7 +68053,7 @@ interlocking-table:
   - id: 243 #route243
     source: signal14
     destination: signal19
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.normal1 -> platform2
       - id: seg26
@@ -68301,7 +68301,7 @@ interlocking-table:
   - id: 244 #route244
     source: signal14
     destination: signal9
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.normal -> point7.reverse -> block5
       - id: seg26
@@ -68385,9 +68385,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -68598,7 +68598,7 @@ interlocking-table:
   - id: 245 #route245
     source: signal14
     destination: signal9
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.normal -> block6 -> point7.normal -> block5
       - id: seg26
@@ -68666,9 +68666,9 @@ interlocking-table:
       - id: 3
       - id: 124
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -68861,7 +68861,7 @@ interlocking-table:
   - id: 246 #route246
     source: signal14
     destination: signal9
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6 -> point7.normal -> block5
       - id: seg26
@@ -69133,7 +69133,7 @@ interlocking-table:
   - id: 247 #route247
     source: signal14
     destination: signal9
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.normal -> point7.reverse -> block5
       - id: seg26
@@ -69439,7 +69439,7 @@ interlocking-table:
   - id: 248 #route248
     source: signal14
     destination: signal1
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1 -> point1.normal -> buffer
       - id: seg26
@@ -69523,9 +69523,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -69736,7 +69736,7 @@ interlocking-table:
   - id: 249 #route249
     source: signal14
     destination: signal1
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1 -> point1.normal -> buffer
       - id: seg26
@@ -70042,7 +70042,7 @@ interlocking-table:
   - id: 250 #route250
     source: signal14
     destination: signal2
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1
       - id: seg26
@@ -70121,9 +70121,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -70332,7 +70332,7 @@ interlocking-table:
   - id: 251 #route251
     source: signal14
     destination: signal2
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1
       - id: seg26
@@ -70631,7 +70631,7 @@ interlocking-table:
   - id: 252 #route252
     source: signal14
     destination: signal10
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.reverse -> block4
       - id: seg26
@@ -70933,7 +70933,7 @@ interlocking-table:
   - id: 253 #route253
     source: signal14
     destination: signal10
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.reverse -> block4
       - id: seg26
@@ -71015,9 +71015,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -71226,7 +71226,7 @@ interlocking-table:
   - id: 254 #route254
     source: signal14
     destination: signal4
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2
       - id: seg26
@@ -71511,7 +71511,7 @@ interlocking-table:
   - id: 255 #route255
     source: signal14
     destination: signal4
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2
       - id: seg26
@@ -71583,9 +71583,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -71787,7 +71787,7 @@ interlocking-table:
   - id: 256 #route256
     source: signal14
     destination: signal7
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.reverse -> block4 -> point6.reverse -> block3
       - id: seg26
@@ -71876,9 +71876,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -72090,7 +72090,7 @@ interlocking-table:
   - id: 257 #route257
     source: signal14
     destination: signal7
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1 -> point1.reverse -> point6.normal -> block3
       - id: seg26
@@ -72179,9 +72179,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 6
       - id: 127
@@ -72394,7 +72394,7 @@ interlocking-table:
   - id: 258 #route258
     source: signal14
     destination: signal7
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.reverse -> point8.reverse -> block4 -> point6.reverse -> block3
       - id: seg26
@@ -72706,7 +72706,7 @@ interlocking-table:
   - id: 259 #route259
     source: signal14
     destination: signal7
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.reverse -> point3.reverse -> block2 -> point2.normal -> block1 -> point1.reverse -> point6.normal -> block3
       - id: seg26
@@ -73019,7 +73019,7 @@ interlocking-table:
   - id: 260 #route260
     source: signal14
     destination: signal17
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.reverse -> crossing1.line1 -> platform1
       - id: seg26
@@ -73078,9 +73078,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -73263,7 +73263,7 @@ interlocking-table:
   - id: 261 #route261
     source: signal14
     destination: signal13
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.normal -> point5.normal -> point4.normal -> block6
       - id: seg26
@@ -73324,9 +73324,9 @@ interlocking-table:
       - id: 124
       - id: 245
       - id: 4
-      - id: 125
       - id: 246
       - id: 5
+      - id: 126
       - id: 247
       - id: 127
       - id: 248
@@ -73510,7 +73510,7 @@ interlocking-table:
   - id: 262 #route262
     source: signal14
     destination: signal13
-    orientation: anticlockwise
+    orientation: clockwise
     path:
       # point10.reverse -> point9.reverse -> point11.normal -> point12.reverse1 -> crossing1.line2 -> point5.reverse -> point4.normal -> block6
       - id: seg26

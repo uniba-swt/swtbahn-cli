@@ -119,9 +119,12 @@ module SWTbahnStandard
 		block4 overlap seg15 main seg16 overlap seg17
 		block5 overlap seg27 main seg28 overlap seg29
 		block6 overlap seg20 main seg21 overlap seg22
-		
-		# Kehrschleifenmodul actively reverses the block's orientation
-		block7 overlap seg30b main seg31 overlap seg32b reversed
+
+		# Kehrschleifenmodul actively reverses the block's orientation, but the reversal is
+		# dependent on the train being on an overlap and its direction of movement
+		# There is no reliable method to determine the train's orientation if the train 
+		# stops on an overlap, i.e., stops after block signals
+		block7 overlap seg30b main seg31 overlap seg32b
 
 		# buffers
 		buffer main seg1
