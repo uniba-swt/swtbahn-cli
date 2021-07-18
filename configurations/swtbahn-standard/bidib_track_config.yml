@@ -62,9 +62,9 @@ boards:
         port: 0x0027
         aspects:
           - id: on
-            value: 0x00
-          - id: off
             value: 0x01
+          - id: off
+            value: 0x00
         initial: on
         type: onebit
       - id: lanterns2
@@ -72,9 +72,9 @@ boards:
         port: 0x0018
         aspects:
           - id: on
-            value: 0x00
-          - id: off
             value: 0x01
+          - id: off
+            value: 0x00
         initial: on
         type: onebit
   - id: onecontrol1
@@ -139,9 +139,9 @@ boards:
         port: 0x0027
         aspects:
           - id: on
-            value: 0x00
-          - id: off
             value: 0x01
+          - id: off
+            value: 0x00
         initial: on
         type: onebit
       - id: lanterns1
@@ -149,9 +149,9 @@ boards:
         port: 0x0018
         aspects:
           - id: on
-            value: 0x00
-          - id: off
             value: 0x01
+          - id: off
+            value: 0x00
         initial: on
         type: onebit
   - id: lightcontrol2
