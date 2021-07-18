@@ -692,21 +692,6 @@ e_config_type get_track_state_type(const char *id) {
     return TYPE_NOT_SUPPORTED;
 }
 
-bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
-    if (signal->aspects != NULL) {
-        for (int i = 0; i < signal->aspects->len; ++i) {
-            char *aspect = g_array_index(signal->aspects, char *, i);
-            if (string_equals(aspect, value)) {
-                bool result = bidib_set_signal(signal->id, value) == 0;
-                bidib_flush();
-                return result;
-            }
-        }
-    }
-
-    return false;
-}
-
 /**
  * Get raw signal aspect from bidib state
  * Convert back to signalling action based on signal type
@@ -769,12 +754,27 @@ char *get_signal_state(const char *id) {
     return result;
 }
 
+bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
+    if (signal->aspects != NULL) {
+        for (int i = 0; i < signal->aspects->len; ++i) {
+            char *aspect = g_array_index(signal->aspects, char *, i);
+            if (string_equals(aspect, value)) {
+                bool result = bidib_set_signal(signal->id, value) == 0;
+                bidib_flush();
+                return result;
+            }
+        }
+    }
+
+    return false;
+}
+
 /**
  * Convert the signalling action to raw aspect based on signal types
  * Update bidib state
  * @param id signal name
  * @param value stop, clear or caution
- * @return true of success, otherwise false
+ * @return true if successful, otherwise false
  */
 bool set_signal_state(const char *id, const char *value) {
     t_config_signal *signal = get_object(TYPE_SIGNAL, id);
@@ -782,7 +782,6 @@ bool set_signal_state(const char *id, const char *value) {
         return false;
 
     if (string_equals(value, "stop")) {
-
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
             || string_equals(signal->type, "block")
@@ -825,6 +824,51 @@ bool set_signal_state(const char *id, const char *value) {
         return false;
     }
 
+    return false;
+}
+
+bool set_peripheral_raw_aspect(t_config_peripheral *peripheral, const char *value) {
+    if (peripheral->aspects != NULL) {
+        for (int i = 0; i < peripheral->aspects->len; ++i) {
+            char *aspect = g_array_index(peripheral->aspects, char *, i);
+            if (string_equals(aspect, value)) {
+                bool result = bidib_set_peripheral(peripheral->id, value) == 0;
+                bidib_flush();
+                return result;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Convert the peripheral action to raw aspect based on peripheral types
+ * Update bidib state
+ * @param id peripheral name
+ * @param value on or off
+ * @return true if successful, otherwise false
+ */
+bool set_peripheral_state(const char *id, const char *value) {
+    t_config_peripheral *peripheral = get_object(TYPE_PERIPHERAL, id);
+    if (peripheral == NULL)
+        return false;
+
+    if (string_equals(value, "on")) {
+        if (string_equals(peripheral->type, "onebit")) {
+            return set_peripheral_raw_aspect(peripheral, "high");
+        }
+        
+        return false;
+    }
+    
+    if (string_equals(value, "off")) {
+        if (string_equals(peripheral->type, "onebit")) {
+            return set_peripheral_raw_aspect(peripheral, "low");
+        }
+        
+        return false;
+    }
     return false;
 }
 
@@ -879,7 +923,7 @@ bool track_state_set_value(const char *id, const char *value) {
             syslog_server(LOG_DEBUG, "Set signal state: %s to %s => %s", id, value, result ? "true" : "false");
             return result;
         case TYPE_PERIPHERAL:
-            result = bidib_set_peripheral(id, value) == 0;
+            result = set_peripheral_state(id, value);
             bidib_flush();
             syslog_server(LOG_DEBUG, "Set peripheral state: %s to %s => %s", id, value, result ? "true" : "false");
             return result;
