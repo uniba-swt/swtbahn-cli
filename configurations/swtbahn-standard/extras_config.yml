@@ -158,3 +158,8 @@ signaltypes:
       - high
       - low
 compositions:
+peripheraltypes:
+  - id: onebit
+    aspects:
+      - high
+      - low
