@@ -37,7 +37,9 @@ typedef enum {
     SIGNAL,
     SIGNAL_ASPECT,
     POINT,
-    POINT_ASPECT
+    POINT_ASPECT,
+    PERIPHERAL,
+    PERIPHERAL_ASPECT
 } e_track_mapping_level;
 
 typedef enum {
@@ -47,15 +49,19 @@ typedef enum {
     SIGNALS,
     SIGNAL_ASPECTS,
     POINTS,
-    POINT_ASPECTS
+    POINT_ASPECTS,
+    PERIPHERALS,
+    PERIPHERAL_ASPECTS
 } e_track_sequence_level;
 
 GHashTable *tb_segments;
 GHashTable *tb_signals;
 GHashTable *tb_points;
+GHashTable *tb_peripherals;
 t_config_segment *cur_segment;
 t_config_signal *cur_signal;
 t_config_point *cur_point;
+t_config_peripheral *cur_peripheral;
 e_track_mapping_level track_mapping = TRACK_ROOT;
 e_track_sequence_level track_sequence = TRACK_SEQ_NONE;
 
@@ -91,10 +97,26 @@ void free_point(void *pointer) {
     free(point);
 }
 
+void free_peripheral(void *pointer) {
+    t_config_peripheral *peripheral = (t_config_peripheral *) pointer;
+    log_debug("free peripheral: %s", peripheral->id);
+
+    if (peripheral->aspects != NULL) {
+        log_debug("\tfree aspects:");
+        for (int i = 0; i < peripheral->aspects->len; ++i) {
+            log_debug("\t\t%s", g_array_index(peripheral->aspects, char *, i));
+        }
+        g_array_free(peripheral->aspects, true);
+    }
+
+    free(peripheral);
+}
+
 void nullify_track_config_tables(void) {
     tb_segments = NULL;
     tb_signals = NULL;
     tb_points = NULL;
+    tb_peripherals = NULL;
 }
 
 void track_yaml_sequence_start(char *scalar) {
@@ -134,6 +156,19 @@ void track_yaml_sequence_start(char *scalar) {
         track_sequence = POINT_ASPECTS;
         return;
     }
+
+    if (track_mapping == BOARD && str_equal(scalar, "periperals")) {
+        track_sequence = PERIPHERALS;
+        if (tb_peripherals == NULL)
+            tb_peripherals = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_peripheral);
+        return;
+    }
+
+    if (track_mapping == PERIPHERAL && str_equal(scalar, "aspects")) {
+        track_sequence = PERIPHERAL_ASPECTS;
+        cur_peripheral->aspects = g_array_sized_new(false, false, sizeof(char *), 4);
+        return;
+    }
 }
 
 void track_yaml_sequence_end(char *scalar) {
@@ -142,6 +177,7 @@ void track_yaml_sequence_end(char *scalar) {
         case SEGMENTS:
         case SIGNALS:
         case POINTS:
+        case PERIPHERALS: 
             track_sequence = BOARDS;
             break;
         case SIGNAL_ASPECTS:
@@ -149,6 +185,9 @@ void track_yaml_sequence_end(char *scalar) {
             break;
         case POINT_ASPECTS:
             track_sequence = POINTS;
+            break;
+        case PERIPHERAL_ASPECTS:
+            track_sequence = PERIPHERALS;
             break;
         default:
             break;
@@ -188,6 +227,18 @@ void track_yaml_mapping_start(char *scalar) {
         case POINT_ASPECTS:
             track_mapping = POINT_ASPECT;
             break;
+        case PERIPHERALS:
+            track_mapping = PERIPHERAL;
+            cur_peripheral = malloc(sizeof(t_config_peripheral));
+            cur_peripheral->id = NULL;
+            cur_peripheral->initial = NULL;
+            cur_peripheral->aspects = NULL;
+            cur_peripheral->type = NULL;
+            break;
+        case PERIPHERAL_ASPECTS:
+            track_mapping = PERIPHERAL_ASPECT;
+            break;
+
         default:
             break;
     }
@@ -208,6 +259,10 @@ void track_yaml_mapping_end(char *scalar) {
             log_debug("insert point: %s", cur_point->id);
             g_hash_table_insert(tb_points, strdup(cur_point->id), cur_point);
             break;
+        case PERIPHERAL:
+            log_debug("insert peripheral: %s", cur_peripheral->id);
+            g_hash_table_insert(tb_peripherals, strdup(cur_peripheral->id), cur_peripheral);
+            break;
         default:
             break;
     }
@@ -220,14 +275,18 @@ void track_yaml_mapping_end(char *scalar) {
         case SEGMENT:
         case SIGNAL:
         case POINT:
+        case PERIPHERAL:
             track_mapping = BOARD;
             break;
         case POINT_ASPECT:
             track_mapping = POINT;
-            return;
+            break;
         case SIGNAL_ASPECT:
             track_mapping = SIGNAL;
-            return;
+            break;
+        case PERIPHERAL_ASPECT:
+            track_mapping = PERIPHERAL;
+            break;
         default:
             break;
     }
@@ -245,6 +304,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 cur_segment->length = parse_float(cur_scalar);
                 return;
             }
+            break;
 
         case SIGNAL:
             if (str_equal(last_scalar, "id")) {
@@ -261,6 +321,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 cur_signal->type = cur_scalar;
                 return;
             }
+            break;
 
         case POINT:
             if (str_equal(last_scalar, "id")) {
@@ -277,11 +338,30 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 cur_point->segment = cur_scalar;
                 return;
             }
+            break;
+
+        case PERIPHERAL:
+            if (str_equal(last_scalar, "id")) {
+                cur_peripheral->id = cur_scalar;
+                return;
+            }
+
+            if (str_equal(last_scalar, "initial")) {
+                cur_peripheral->initial = cur_scalar;
+                return;
+            }
+
+            if (str_equal(last_scalar, "type")) {
+                cur_peripheral->type = cur_scalar;
+                return;
+            }
+            break;
 
         case SIGNAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_signal->aspects, cur_scalar);
             }
+            break;
 
         case POINT_ASPECT:
             if (str_equal(last_scalar, "id")) {
@@ -295,7 +375,14 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
                     return;
                 }
             }
+            break;
 
+        case PERIPHERAL_ASPECT:
+            if (str_equal(last_scalar, "id")) {
+                g_array_append_val(cur_peripheral->aspects, cur_scalar);
+            }
+            break;
+            
         default:
             return;
     }
@@ -309,4 +396,5 @@ void parse_track_yaml(yaml_parser_t *parser, t_config_data *data) {
     data->table_segments = tb_segments;
     data->table_signals = tb_signals;
     data->table_points = tb_points;
+    data->table_peripherals = tb_peripherals;
 }

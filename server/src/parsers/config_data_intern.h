@@ -35,11 +35,13 @@ typedef struct {
     GHashTable *table_segments;
     GHashTable *table_signals;
     GHashTable *table_points;
+    GHashTable *table_peripherals;
     GHashTable *table_trains;
     GHashTable *table_blocks; // store: blocks and platforms
     GHashTable *table_crossings;
     GHashTable *table_signal_types;
     GHashTable *table_composite_signals;
+    GHashTable *table_peripheral_types;
 } t_config_data;
 
 typedef struct {
@@ -61,6 +63,13 @@ typedef struct {
     char *normal_aspect;
     char *reverse_aspect;
 } t_config_point;
+
+typedef struct {
+    char *id;
+    char *initial;
+    GArray *aspects;
+    char *type;
+} t_config_peripheral;
 
 typedef struct {
     char *id;
@@ -100,6 +109,11 @@ typedef struct {
     char *exit;
     char *block;
 } t_config_composite_signal;
+
+typedef struct {
+    char *id;
+    GArray *aspects;
+} t_config_peripheral_type;
 
 
 #endif //CONFIG_DATA_INTERN_H

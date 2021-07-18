@@ -86,6 +86,11 @@ void free_config_data(t_config_data config_data) {
         g_hash_table_destroy(config_data.table_points);
         config_data.table_points = NULL;
     }
+    
+	if (config_data.table_peripherals != NULL) {
+        g_hash_table_destroy(config_data.table_peripherals);
+        config_data.table_peripherals = NULL;
+    }
 
     nullify_track_config_tables();
         
@@ -114,6 +119,11 @@ void free_config_data(t_config_data config_data) {
     if (config_data.table_composite_signals != NULL) {
         g_hash_table_destroy(config_data.table_composite_signals);
         config_data.table_composite_signals = NULL;
+    }
+    
+    if (config_data.table_peripheral_types != NULL) {
+        g_hash_table_destroy(config_data.table_peripheral_types);
+        config_data.table_peripheral_types = NULL;
     }
     
     nullify_extras_config_tables();
