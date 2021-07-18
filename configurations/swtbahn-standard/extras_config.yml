@@ -155,6 +155,6 @@ signaltypes:
       - red
   - id: platformlight
     aspects:
-      - on
-      - off
+      - high
+      - low
 compositions:
