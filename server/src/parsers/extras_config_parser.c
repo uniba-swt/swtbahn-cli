@@ -243,7 +243,7 @@ void extras_yaml_mapping_start(char *scalar) {
             cur_block->signals = NULL;
             cur_block->main_segment = NULL;
             cur_block->overlaps = NULL;
-            cur_block->reversed = false;
+            cur_block->is_reversed = false;
             cur_block->direction = NULL;
             break;
         case CROSSINGS:
@@ -371,8 +371,8 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 return;
             }
             
-            if (str_equal(last_scalar, "reversed")) {
-                cur_block->reversed = strcmp(cur_scalar, "true") == 0;
+            if (str_equal(last_scalar, "is_reversed")) {
+                cur_block->is_reversed = strcmp(cur_scalar, "true") == 0;
                 return;
             }
 

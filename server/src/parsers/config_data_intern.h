@@ -88,7 +88,7 @@ typedef struct {
     GArray *signals;
     char *main_segment;
     GArray *overlaps;
-    bool reversed;
+    bool is_reversed;
     char *direction;
 } t_config_block;
 

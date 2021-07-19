@@ -527,7 +527,7 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
 		switch (config_type) {
 			case TYPE_BLOCK:
                 if (string_equals(prop_name, "is_reversed")) {
-                    result = ((t_config_block *) obj)->reversed;
+                    result = ((t_config_block *) obj)->is_reversed;
                     break;
                 }
 				break;
