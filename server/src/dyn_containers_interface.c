@@ -508,11 +508,11 @@ bool dyn_containers_free_interlocker(const int interlocker_slot) {
 	    &dyn_containers_interface->interlockers_io[interlocker_slot];
 	interlocker_io->input_load = false;
 	interlocker_io->input_unload = true;
-	strcpy(interlocker_io->input_filepath, "");
 	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_NOTICE, 
 				  "Waiting for interlocker %s at slot %d to be unloaded", 
 				  interlocker_io->input_filepath, interlocker_slot);
+	strcpy(interlocker_io->input_filepath, "");
 	while (interlocker_io->output_in_use) {
 		usleep(let_period_us);
 	}
