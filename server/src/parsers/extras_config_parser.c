@@ -284,23 +284,23 @@ void extras_yaml_mapping_end(char *scalar) {
     // insert mapping to hash table
     switch (extras_mapping) {
         case BLOCK:
-            log_debug("insert block: %s", cur_block->id);
+            log_debug("extras_yaml_mapping_end: insert block: %s", cur_block->id);
             g_hash_table_insert(tb_blocks, strdup(cur_block->id), cur_block);
             break;
         case CROSSING:
-            log_debug("insert crossing: %s", cur_crossing->id);
+            log_debug("extras_yaml_mapping_end: insert crossing: %s", cur_crossing->id);
             g_hash_table_insert(tb_crossing, strdup(cur_crossing->id), cur_crossing);
             break;
         case SIGNAL_TYPE:
-            log_debug("insert signal type: %s", cur_signal_type->id);
+            log_debug("extras_yaml_mapping_end: insert signal type: %s", cur_signal_type->id);
             g_hash_table_insert(tb_signal_types, strdup(cur_signal_type->id), cur_signal_type);
             break;
         case COMPOSITE_SIGNAL:
-            log_debug("insert composite signal: %s", cur_composite_signal->id);
+            log_debug("extras_yaml_mapping_end: nsert composite signal: %s", cur_composite_signal->id);
             g_hash_table_insert(tb_composite_signals, strdup(cur_composite_signal->id), cur_composite_signal);
             break;
         case PERIPHERAL_TYPE:
-            log_debug("insert peripheral type: %s", cur_peripheral_type->id);
+            log_debug("extras_yaml_mapping_end: insert peripheral type: %s", cur_peripheral_type->id);
             g_hash_table_insert(tb_peripheral_types, strdup(cur_peripheral_type->id), cur_peripheral_type);
             break;
         default:

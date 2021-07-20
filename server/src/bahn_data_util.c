@@ -37,8 +37,6 @@
 
 t_config_data config_data = {};
 
-int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char **data);
-
 typedef enum {
     TYPE_ROUTE,
     TYPE_SEGMENT,
