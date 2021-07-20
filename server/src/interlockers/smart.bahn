@@ -18,6 +18,7 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
     end
 
     # 3. Check whether the route is physically available
+    # TODO: If not clear, try the next shortest route
     if !route_is_clear(route_id)
         return "not_clear"
     end

@@ -1,0 +1,153 @@
+# Method for granting or rejecting a route request from a
+# train driver. A route is defined by a source signal and 
+# a destination signal
+def request_route(string src_signal_id, string dst_signal_id, string train_id): string
+    # 1. Get all routes that go from src_signal_id to dst_signal_id
+    string route_ids[] = get routes from src_signal_id to dst_signal_id
+    if route_ids.len == 0
+        return "no_routes"
+    end
+
+    # Optional step: Find the shortest route
+    string route_id = get_shortest_route(route_ids)
+
+    # 2. Check whether the route can be granted
+    # TODO: If not grantable, try the next shortest route 
+    if !route_is_grantable(route_id, train_id)
+        return "not_grantable"
+    end
+
+    # 3. Check whether the route is physically available
+    # TODO: If not clear, try the next shortest route
+    if !route_is_clear(route_id)
+        return "not_clear"
+    end
+
+    # 4. Grant the route to the train and mark it unavailable
+    grant route_id to train_id
+
+    # 5. Set the points to their required positions
+    set_points(route_id)
+
+    # 6. Set the signals to their required aspects
+    set_signals(route_id)
+
+    return route_id
+end
+
+
+# For a given route ID, checks whether conflicting routes have 
+# already been granted
+def route_is_grantable(string route_id, string train_id): bool
+    # Retrieve all routes that conflict with route ID
+    string conflict_routes[] = get config route.conflicts route_id
+    
+    # Iterate through each conflicting route
+    for string id in conflict_routes
+        # Retrieve the ID of the train that has been granted 
+        # the conflicting route. If the conflicting route has
+        # not been granted, the train ID would be empty
+        string conflict_train_id = get config route.train id
+        
+        # Route ID is not grantable if a conflicting route 
+        # has already been granted to a train
+        # TODO: Check whether the other train is driving 
+        # away from route ID
+        if conflict_train_id != ""
+            return false
+        end
+    end
+
+    return true
+end
+
+
+# Returns whether the route is physically ready for use:
+# Entry signal is in Stop aspect, all possible entries
+# into the route are protected by signals in the Stop aspect,
+# and all blocks are unoccupied
+def route_is_clear(string route_id): bool
+    # Get the source signal of route ID
+    string src_signal = get config route.source route_id
+
+    # Get the current aspect of the source signal
+    string src_state = get state src_signal
+    
+    # Check that the entry signal is in the Stop aspect
+    if src_state != "stop"
+        return false
+    end
+
+	# TODO: Check that all signals along the route are in 
+	# the Stop aspect
+
+    # TODO: Check that the signals of all possible entries  
+    # into route ID are in the Stop aspect
+
+    #  Get all blocks along route ID
+    string block_ids[] = get config route.sections route_id
+    
+    # Iterate through each block
+    for string block_id in block_ids
+        # Check whether the block is occupied
+        if is_block_occupied(block_id)
+            return false
+        end
+    end
+    
+    # TODO: Check that all points, which are special blocks,
+    # along the route are also unoccupied
+
+    return true
+end
+
+
+# For a given route ID, the points along the route
+# are set to their required positions
+def set_points(string route_id)
+    # Get all the points along route ID
+    string point_ids[] = get config route.point_positions route_id
+    
+    # Iterate through each point
+    for string point_id in point_ids
+        # Get the required position of the point
+        string pos = get position point_id in route_id
+        
+        # Set the point to the required position
+        if pos == "normal"
+            set state point_id to normal
+        else
+            set state point_id to reverse
+        end
+    end
+end
+
+
+# For a given route ID, the entry signal is 
+# set to the clear (Go aspect)
+def set_signals(string route_id)
+    # Get the entry signal of route ID
+    string entry_id = get config route.source route_id
+    
+    # Set the entry signal of route ID to clear (Go aspect)
+    set state entry_id to clear
+end
+
+
+# Method for automating the driving of a train along a granted route
+def drive_route(string route_id, string train_id, string segment_ids[])
+    # Get block 
+    string block_id = get_block(route_id, segment_ids)
+    
+    if block_id != ""
+        # Protect the block by controlling the immediate signals
+        string pre_block = get_previous_block(route_id, block_id)
+        if pre_block != ""
+            # Get the block's entry signal 
+            string signal_ids[] = get config block.block_signals pre_block
+            for string signal_id in signal_ids
+                set state signal_id to stop
+            end
+        end
+    end
+end
