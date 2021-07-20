@@ -133,7 +133,7 @@ void train_yaml_mapping_end(char *scalar) {
 
     // insert mapping to hash table
     if (train_mapping == TRAIN) {
-        log_debug("insert train: %s", cur_train->id);
+        log_debug("train_yaml_mapping_end: insert train: %s", cur_train->id);
         g_hash_table_insert(tb_trains, strdup(cur_train->id), cur_train);
     }
 

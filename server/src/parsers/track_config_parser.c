@@ -157,7 +157,7 @@ void track_yaml_sequence_start(char *scalar) {
         return;
     }
 
-    if (track_mapping == BOARD && str_equal(scalar, "periperals")) {
+    if (track_mapping == BOARD && str_equal(scalar, "peripherals")) {
         track_sequence = PERIPHERALS;
         if (tb_peripherals == NULL)
             tb_peripherals = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_peripheral);
@@ -248,19 +248,19 @@ void track_yaml_mapping_end(char *scalar) {
     // insert mapping to hash table
     switch (track_mapping) {
         case SEGMENT:
-            log_debug("insert segment: %s", cur_segment->id);
+            log_debug("track_yaml_mapping_end: insert segment: %s", cur_segment->id);
             g_hash_table_insert(tb_segments, strdup(cur_segment->id), cur_segment);
             break;
         case SIGNAL:
-            log_debug("insert signal: %s", cur_signal->id);
+            log_debug("track_yaml_mapping_end: insert signal: %s", cur_signal->id);
             g_hash_table_insert(tb_signals, strdup(cur_signal->id), cur_signal);
             break;
         case POINT:
-            log_debug("insert point: %s", cur_point->id);
+            log_debug("track_yaml_mapping_end: insert point: %s", cur_point->id);
             g_hash_table_insert(tb_points, strdup(cur_point->id), cur_point);
             break;
         case PERIPHERAL:
-            log_debug("insert peripheral: %s", cur_peripheral->id);
+            log_debug("track_yaml_mapping_end: insert peripheral: %s", cur_peripheral->id);
             g_hash_table_insert(tb_peripherals, strdup(cur_peripheral->id), cur_peripheral);
             break;
         default:
