@@ -8,20 +8,38 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
         return "no_routes"
     end
 
-    # Optional step: Find the shortest route
-    string route_id = get_shortest_route(route_ids)
+	string route_id = ""
+	bool grantable = false
+	bool cleared = false
+	float min_length = 999999999
+	for string route in route_ids
+	    # 2. Check whether the route can be granted
+	    if route_is_grantable(route, train_id)
+	    	grantable = true
+	    	
+	    	# 3a. Check whether the route is physically available
+	    	if route_is_clear(route)
+	    	
+	    		# 3b. Check whether the route is the shortest available
+	    		float length = get config route.length route
+	    		if length < min_length
+	                min_length = length
+			        cleared = true
+			        route_id = route
+	            end
+		    end	
+	    end
+	    
+	    # Check the next route
+	end
+	
+	if !grantable
+		return "not_grantable"
+	end
 
-    # 2. Check whether the route can be granted
-    # TODO: If not grantable, try the next shortest route 
-    if !route_is_grantable(route_id, train_id)
-        return "not_grantable"
-    end
-
-    # 3. Check whether the route is physically available
-    # TODO: If not clear, try the next shortest route
-    if !route_is_clear(route_id)
-        return "not_clear"
-    end
+	if !cleared
+		return "not_clear"
+	end
 
     # 4. Grant the route to the train and mark it unavailable
     grant route_id to train_id
@@ -81,13 +99,13 @@ def route_is_clear(string route_id): bool
     # TODO: Check that the signals of all possible entries into 
     # route ID are in the Stop aspect
 
-    #  Get all blocks along route ID
-    string block_ids[] = get config route.sections route_id
+    #  Get all segments along route ID
+    string seg_ids[] = get config route.path route_id
     
-    # Iterate through each block
-    for string block_id in block_ids
-        # Check whether the block is occupied
-        if is_block_occupied(block_id)
+    # Iterate through the segments
+    for string seg_id in seg_ids
+        # Check whether the segment is occupied
+        if is seg_id occupied
             return false
         end
     end
