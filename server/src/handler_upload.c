@@ -260,9 +260,9 @@ bool interlocker_file_exists(const char filename[]) {
 }
 
 bool remove_interlocker_files(const char library_name[]) {
-	// Remove the prefix "libinterlocking_"
+	// Remove the prefix "libinterlocker_"
 	char name[PATH_MAX + NAME_MAX];
-	strcpy(name, library_name + 16);
+	strcpy(name, library_name + 15);
 
 	int result = 0;
 	char filepath[PATH_MAX + NAME_MAX];
@@ -270,7 +270,7 @@ bool remove_interlocker_files(const char library_name[]) {
 		sprintf(filepath, "%s/%s.%s", interlocker_dir, name, interlocker_extensions[i]);
 		result = remove(filepath);
 	}
-	sprintf(filepath, "%s/libinterlocking_%s.so", interlocker_dir, name);
+	sprintf(filepath, "%s/libinterlocker_%s.so", interlocker_dir, name);
 	result += remove(filepath);
 
 	return (result == 0);
@@ -332,7 +332,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 
-		snprintf(final_filepath, sizeof(final_filepath), "%s/libinterlocking_%s", interlocker_dir, filename);
+		snprintf(final_filepath, sizeof(final_filepath), "%s/libinterlocker_%s", interlocker_dir, filename);
 		remove_file_extension(filepath, final_filepath, ".bahn");
 		dyn_containers_set_interlocker(interlocker_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);

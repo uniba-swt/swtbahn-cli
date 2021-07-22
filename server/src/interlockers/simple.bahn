@@ -18,6 +18,7 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
     end
 
     # 3. Check whether the route is physically available
+    # TODO: If not clear, try the next shortest route
     if !route_is_clear(route_id)
         return "not_clear"
     end
@@ -77,8 +78,11 @@ def route_is_clear(string route_id): bool
         return false
     end
 
-    # TODO: Check that the signals of all possible entries into 
-    # route ID are in the Stop aspect
+	# TODO: Check that all signals along the route are in 
+	# the Stop aspect
+
+    # TODO: Check that the signals of all possible entries  
+    # into route ID are in the Stop aspect
 
     #  Get all blocks along route ID
     string block_ids[] = get config route.sections route_id
@@ -90,6 +94,9 @@ def route_is_clear(string route_id): bool
             return false
         end
     end
+    
+    # TODO: Check that all points, which are special blocks,
+    # along the route are also unoccupied
 
     return true
 end

@@ -37,17 +37,17 @@
 
 t_config_data config_data = {};
 
-int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char **data);
-
 typedef enum {
     TYPE_ROUTE,
     TYPE_SEGMENT,
     TYPE_SIGNAL,
     TYPE_POINT,
+    TYPE_PERIPHERAL,
     TYPE_TRAIN,
     TYPE_BLOCK,
     TYPE_CROSSING,
     TYPE_SIGNAL_TYPE,
+    TYPE_PERIPHERAL_TYPE,
     TYPE_COMPOSITE_SIGNAL,
     TYPE_NOT_SUPPORTED
 } e_config_type;
@@ -116,6 +116,10 @@ e_config_type get_config_type(const char *type) {
         return TYPE_POINT;
     }
 
+    if (string_equals(type, "peripheral")) {
+        return TYPE_PERIPHERAL;
+    }
+
     if (string_equals(type, "train")) {
         return TYPE_TRAIN;
     }
@@ -130,6 +134,10 @@ e_config_type get_config_type(const char *type) {
 
     if (string_equals(type, "signaltype")) {
         return TYPE_SIGNAL_TYPE;
+    }
+
+    if (string_equals(type, "peripheraltype")) {
+        return TYPE_PERIPHERAL_TYPE;
     }
 
     return TYPE_NOT_SUPPORTED;
@@ -149,6 +157,9 @@ void *get_object(e_config_type config_type, const char *id) {
         case TYPE_POINT:
             tb = config_data.table_points;
             break;
+        case TYPE_PERIPHERAL:
+            tb = config_data.table_peripherals;
+            break;
         case TYPE_TRAIN:
             tb = config_data.table_trains;
             break;
@@ -163,6 +174,9 @@ void *get_object(e_config_type config_type, const char *id) {
             break;
         case TYPE_COMPOSITE_SIGNAL:
             tb = config_data.table_composite_signals;
+            break;
+        case TYPE_PERIPHERAL_TYPE:
+            tb = config_data.table_peripheral_types;
             break;
         default:
             break;
@@ -190,6 +204,55 @@ int interlocking_table_get_routes(const char *src_signal_id, const char *dst_sig
     return 0;
 }
 
+int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char* data[]) {
+    if (string_equals(prop_name, "path")) {
+        if (route->path != NULL) {
+            for (int i = 0; i < route->path->len; ++i) {
+                data[i] = g_array_index(route->path, char *, i);
+            }
+            return route->path->len;
+        }
+    }
+
+    if (string_equals(prop_name, "sections")) {
+        if (route->sections != NULL) {
+            for (int i = 0; i < route->sections->len; ++i) {
+                data[i] = g_array_index(route->sections, char *, i);
+            }
+            return route->sections->len;
+        }
+    }
+
+    if (string_equals(prop_name, "point_positions")) {
+        if (route->points != NULL) {
+            for (int i = 0; i < route->points->len; ++i) {
+                data[i] = (&g_array_index(route->points, t_interlocking_point, i))->id;
+            }
+            return route->points->len;
+        }
+    }
+
+    if (string_equals(prop_name, "route_signals")) {
+        if (route->signals != NULL) {
+            for (int i = 0; i < route->signals->len; ++i) {
+                data[i] = g_array_index(route->signals, char *, i);
+            }
+            return route->signals->len;
+        }
+    }
+
+    if (string_equals(prop_name, "conflicts")) {
+        if (route->conflicts != NULL) {
+            for (int i = 0; i < route->conflicts->len; ++i) {
+                data[i] = g_array_index(route->conflicts, char *, i);
+            }
+            return route->conflicts->len;
+        }
+    }
+
+    return 0;
+}
+
 char *config_get_scalar_string_value(const char *type, const char *id, const char *prop_name) {
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
@@ -209,6 +272,11 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
 
                 if (string_equals(prop_name, "destination")) {
                     result = ((t_interlocking_route *) obj)->destination;
+                    break;
+                }
+
+                if (string_equals(prop_name, "orientation")) {
+                    result = ((t_interlocking_route *) obj)->orientation;
                     break;
                 }
 
@@ -271,6 +339,25 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                     break;
                 }
 
+                break;
+                
+
+            case TYPE_PERIPHERAL:
+                if (string_equals(prop_name, "id")) {
+                    result = ((t_config_peripheral *) obj)->id;
+                    break;
+                }
+
+                if (string_equals(prop_name, "initial")) {
+                    result = ((t_config_peripheral *) obj)->initial;
+                    break;
+                }
+
+                if (string_equals(prop_name, "type")) {
+                    result = ((t_config_peripheral *) obj)->type;
+                    break;
+                }
+                
                 break;
                 
             case TYPE_TRAIN:
@@ -353,6 +440,14 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
 
                 break;
                 
+            case TYPE_PERIPHERAL_TYPE:
+                if (string_equals(prop_name, "id")) {
+                    result = ((t_config_peripheral_type *) obj)->id;
+                    break;
+                }
+
+                break;
+                
             default:
                 break;
         }
@@ -429,8 +524,8 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
     if (obj != NULL) {
 		switch (config_type) {
 			case TYPE_BLOCK:
-                if (string_equals(prop_name, "reversed")) {
-                    result = ((t_config_block *) obj)->reversed;
+                if (string_equals(prop_name, "is_reversed")) {
+                    result = ((t_config_block *) obj)->is_reversed;
                     break;
                 }
 				break;
@@ -457,6 +552,14 @@ int config_get_array_string_value(const char *type, const char *id, const char *
             case TYPE_SIGNAL:
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_signal *) obj)->aspects;
+                    break;
+                }
+                
+                break;
+                
+            case TYPE_PERIPHERAL:
+                if (string_equals(prop_name, "aspects")) {
+                    arr = ((t_config_peripheral *) obj)->aspects;
                     break;
                 }
                 
@@ -492,7 +595,13 @@ int config_get_array_string_value(const char *type, const char *id, const char *
                     arr = ((t_config_signal_type *) obj)->aspects;
                     break;
                 }
+                break;
                 
+            case TYPE_PERIPHERAL_TYPE:
+                if (string_equals(prop_name, "aspects")) {
+                    arr = ((t_config_peripheral_type *) obj)->aspects;
+                    break;
+                }
                 break;
                 
             default:
@@ -511,55 +620,6 @@ int config_get_array_string_value(const char *type, const char *id, const char *
     return result;
 }
 
-int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char* data[]) {
-    if (string_equals(prop_name, "path")) {
-        if (route->path != NULL) {
-            for (int i = 0; i < route->path->len; ++i) {
-                data[i] = g_array_index(route->path, char *, i);
-            }
-            return route->path->len;
-        }
-    }
-
-    if (string_equals(prop_name, "sections")) {
-        if (route->sections != NULL) {
-            for (int i = 0; i < route->sections->len; ++i) {
-                data[i] = g_array_index(route->sections, char *, i);
-            }
-            return route->sections->len;
-        }
-    }
-
-    if (string_equals(prop_name, "point_positions")) {
-        if (route->points != NULL) {
-            for (int i = 0; i < route->points->len; ++i) {
-                data[i] = (&g_array_index(route->points, t_interlocking_point, i))->id;
-            }
-            return route->points->len;
-        }
-    }
-
-    if (string_equals(prop_name, "route_signals")) {
-        if (route->signals != NULL) {
-            for (int i = 0; i < route->signals->len; ++i) {
-                data[i] = g_array_index(route->signals, char *, i);
-            }
-            return route->signals->len;
-        }
-    }
-
-    if (string_equals(prop_name, "conflicts")) {
-        if (route->conflicts != NULL) {
-            for (int i = 0; i < route->conflicts->len; ++i) {
-                data[i] = g_array_index(route->conflicts, char *, i);
-            }
-            return route->conflicts->len;
-        }
-    }
-
-    return 0;
-}
-
 int config_get_array_int_value(const char *type, const char *id, const char *prop_name, int data[]) {
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
@@ -572,6 +632,7 @@ int config_get_array_int_value(const char *type, const char *id, const char *pro
                     arr = ((t_config_train *) obj)->calibration;
                     break;
                 }
+                break;
             default:
                 break;
         }
@@ -626,23 +687,12 @@ e_config_type get_track_state_type(const char *id) {
     if (g_hash_table_contains(config_data.table_points, id)) {
         return TYPE_POINT;
     }
-
-    return TYPE_NOT_SUPPORTED;
-}
-
-bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
-    if (signal->aspects != NULL) {
-        for (int i = 0; i < signal->aspects->len; ++i) {
-            char *aspect = g_array_index(signal->aspects, char *, i);
-            if (string_equals(aspect, value)) {
-                bool result = bidib_set_signal(signal->id, value) == 0;
-                bidib_flush();
-                return result;
-            }
-        }
+    
+    if (g_hash_table_contains(config_data.table_peripherals, id)) {
+        return TYPE_PERIPHERAL;
     }
 
-    return false;
+    return TYPE_NOT_SUPPORTED;
 }
 
 /**
@@ -707,12 +757,27 @@ char *get_signal_state(const char *id) {
     return result;
 }
 
+bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
+    if (signal->aspects != NULL) {
+        for (int i = 0; i < signal->aspects->len; ++i) {
+            char *aspect = g_array_index(signal->aspects, char *, i);
+            if (string_equals(aspect, value)) {
+                bool result = bidib_set_signal(signal->id, value) == 0;
+                bidib_flush();
+                return result;
+            }
+        }
+    }
+
+    return false;
+}
+
 /**
  * Convert the signalling action to raw aspect based on signal types
  * Update bidib state
  * @param id signal name
  * @param value stop, clear or caution
- * @return true of success, otherwise false
+ * @return true if successful, otherwise false
  */
 bool set_signal_state(const char *id, const char *value) {
     t_config_signal *signal = get_object(TYPE_SIGNAL, id);
@@ -720,7 +785,6 @@ bool set_signal_state(const char *id, const char *value) {
         return false;
 
     if (string_equals(value, "stop")) {
-
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
             || string_equals(signal->type, "block")
@@ -766,6 +830,51 @@ bool set_signal_state(const char *id, const char *value) {
     return false;
 }
 
+bool set_peripheral_raw_aspect(t_config_peripheral *peripheral, const char *value) {
+    if (peripheral->aspects != NULL) {
+        for (int i = 0; i < peripheral->aspects->len; ++i) {
+            char *aspect = g_array_index(peripheral->aspects, char *, i);
+            if (string_equals(aspect, value)) {
+                bool result = bidib_set_peripheral(peripheral->id, value) == 0;
+                bidib_flush();
+                return result;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Convert the peripheral action to raw aspect based on peripheral types
+ * Update bidib state
+ * @param id peripheral name
+ * @param value on or off
+ * @return true if successful, otherwise false
+ */
+bool set_peripheral_state(const char *id, const char *value) {
+    t_config_peripheral *peripheral = get_object(TYPE_PERIPHERAL, id);
+    if (peripheral == NULL)
+        return false;
+
+    if (string_equals(value, "on")) {
+        if (string_equals(peripheral->type, "onebit")) {
+            return set_peripheral_raw_aspect(peripheral, "high");
+        }
+        
+        return false;
+    }
+    
+    if (string_equals(value, "off")) {
+        if (string_equals(peripheral->type, "onebit")) {
+            return set_peripheral_raw_aspect(peripheral, "low");
+        }
+        
+        return false;
+    }
+    return false;
+}
+
 char *track_state_get_value(const char *id) {
     char *result = NULL;
     e_config_type config_type = get_track_state_type(id);
@@ -777,8 +886,14 @@ char *track_state_get_value(const char *id) {
                 result = strdup(state_query.board_accessory_state.state_id);
             }
             bidib_free_unified_accessory_state_query(state_query);
-        } else if (config_type == TYPE_SIGNAL){
+        } else if (config_type == TYPE_SIGNAL) {
             result = get_signal_state(id);
+        } else if (config_type == TYPE_PERIPHERAL) {
+            t_bidib_peripheral_state_query state_query = bidib_get_peripheral_state(id);
+            if (state_query.available) {
+                result = strdup(state_query.data.state_id);
+            }
+            bidib_free_peripheral_state_query(state_query);
         }
     }
 
@@ -809,6 +924,11 @@ bool track_state_set_value(const char *id, const char *value) {
             result = set_signal_state(id, value);
             bidib_flush();
             syslog_server(LOG_DEBUG, "Set signal state: %s to %s => %s", id, value, result ? "true" : "false");
+            return result;
+        case TYPE_PERIPHERAL:
+            result = set_peripheral_state(id, value);
+            bidib_flush();
+            syslog_server(LOG_DEBUG, "Set peripheral state: %s to %s => %s", id, value, result ? "true" : "false");
             return result;
         default:
             return false;

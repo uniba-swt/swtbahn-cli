@@ -61,21 +61,21 @@ boards:
         number: 0x06
         port: 0x0027
         aspects:
-          - id: on
-            value: 0x00
-          - id: off
+          - id: high
             value: 0x01
-        initial: on
+          - id: low
+            value: 0x00
+        initial: high
         type: onebit
       - id: lanterns2
         number: 0x07
         port: 0x0018
         aspects:
-          - id: on
-            value: 0x00
-          - id: off
+          - id: high
             value: 0x01
-        initial: off
+          - id: low
+            value: 0x00
+        initial: high
         type: onebit
   - id: onecontrol1
     points-board:
@@ -138,21 +138,21 @@ boards:
         number: 0x06
         port: 0x0027
         aspects:
-          - id: on
-            value: 0x00
-          - id: off
+          - id: high
             value: 0x01
-        initial: on
+          - id: low
+            value: 0x00
+        initial: high
         type: onebit
       - id: lanterns1
         number: 0x07
         port: 0x0018
         aspects:
-          - id: on
-            value: 0x00
-          - id: off
+          - id: high
             value: 0x01
-        initial: off
+          - id: low
+            value: 0x00
+        initial: high
         type: onebit
   - id: lightcontrol2
     signals-board:
@@ -489,9 +489,9 @@ boards:
       - id: platformlights
         number: 0x0A
         aspects:
-          - id: on
+          - id: high
             value: 0x00
-          - id: off
+          - id: low
             value: 0x01
-        initial: on
+        initial: high
         type: platformlight

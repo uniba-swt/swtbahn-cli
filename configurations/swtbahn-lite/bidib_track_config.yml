@@ -300,14 +300,18 @@ boards:
       - id: signalends
         number: 0x12
         aspects:
-          - id: on
+          - id: red
             value: 0x00
-        initial: on
-        type: peripheral
+        initial: red
+        type: halt
+    peripherals:
       - id: lanterns
         number: 0x13
+        port: 0x00FF
         aspects:
           - id: on
+            value: 0x01
+          - id: off
             value: 0x00
         initial: on
-        type: peripheral
+        type: onebit

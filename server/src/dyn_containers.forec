@@ -971,6 +971,7 @@ thread interlockerInstance0(void) {
 
 		forec_intern_output_interlocker_instance_0.interlocker_type = -1;
 		forec_intern_output_interlocker_instance_0.in_use = false;
+		forec_intern_output_interlocker_instance_0.route_id = "";
 		syslog_server(LOG_NOTICE, "%s: Released container", threadName);
 
 		pause;
