@@ -1,4 +1,4 @@
-module SWTbahnfull
+module SWTbahnFull
 
     boards
         # Long partition
