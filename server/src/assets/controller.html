@@ -140,10 +140,10 @@
 					</br>
 
 					<div style="display: flex; justify-content: space-between;">
-						<button id=setPointButtonNormal type="button" class=" pointBtn btn btn-outline-primary"
-							style="width: 49%;">normal</button>
-						<button id=setPointButtonReverse type="button" class=" pointBtn btn btn-outline-primary"
-							style="width: 49%;">reverse</button>
+						<button id=setPointButtonNormal type="button" class="pointBtn btn btn-outline-primary"
+							style="width: 49%;">Normal</button>
+						<button id=setPointButtonReverse type="button" class="pointBtn btn btn-outline-primary"
+							style="width: 49%;">Reverse</button>
 					</div>
 					</br>
 					<div class="alert alert-info" role="alert">
@@ -171,18 +171,49 @@
 					</br>
 
 					<div style="display: flex; justify-content: space-between;">
-						<button id=setSignalButtonRed type="button" class=" signalBtn btn btn-outline-danger"
-							style="width: 32%;">red</button>
-						<button id=setSignalButtonYellow type="button" class=" signalBtn btn btn-outline-warning"
-							style="width: 32%;">yellow</button>
-						<button id=setSignalButtonGreen type="button" class=" signalBtn btn btn-outline-success"
-							style="width: 32%; ">green</button>
+						<button id=setSignalButtonRed type="button" class="signalBtn btn btn-outline-danger"
+							style="width: 32%;">Red</button>
+						<button id=setSignalButtonYellow type="button" class="signalBtn btn btn-outline-warning"
+							style="width: 32%;">Yellow</button>
+						<button id=setSignalButtonGreen type="button" class="signalBtn btn btn-outline-success"
+							style="width: 32%; ">Green</button>
 					</div>
 
 					</br>
 
 					<div class="alert alert-info" role="alert">
 						<span id=setSignalResponse></span>
+					</div>
+
+				</div>
+
+				</br>
+				
+				<h3 class="card-title">Peripheral Controller</h3>
+
+				<div class="form-group">
+					<div class="row">
+						<div class="col-7">
+							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+								<label class="input-group-text">ID</label>
+								<input type="text" class="form-control form-control" id=peripheralId>
+							</div>
+							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+								<label class="input-group-text">State</label>
+								<input type="text" class="form-control form-control" id=peripheralState>
+							</div>
+						</div>
+					</div>
+
+					</br>
+
+					<div style="display: flex; justify-content: space-between;">
+						<button id=setPeripheralStateButton type="button" class="peripheralBtn btn btn-outline-primary"
+							style="width: 100%;">Set</button>
+					</div>
+					</br>
+					<div class="alert alert-info" role="alert">
+						<span id=setPeripheralResponse></span>
 					</div>
 
 				</div>

@@ -825,6 +825,30 @@ $(document).ready(
 				}
 			});
 		});
+		
+		$('#setPeripheralStateButton').click(function () {
+			$('#setPeripheralResponse').text('Waiting');
+			var peripheralId = $('#peripheralId').val();
+			var peripheralAspect = $('#peripheralState').val();
+			$.ajax({
+				type: 'POST',
+				url: '/controller/set-peripheral',
+				crossDomain: true,
+				data: { 'peripheral': peripheralId, 'state': peripheralAspect },
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					$('#setPeripheralResponse')
+						.text('Peripheral ' + peripheralId + ' set to ' + peripheralAspect);
+					$('#setPeripheralResponse').parent().removeClass('alert-danger');
+					$('#setPeripheralResponse').parent().addClass('alert-success');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#setPeripheralResponse').text('System not running or invalid aspect!');
+					$('#setPeripheralResponse').parent().removeClass('alert-success');
+					$('#setPeripheralResponse').parent().addClass('alert-danger');
+				}
+			});
+		});
 
 
 		// Custom Interlockers
