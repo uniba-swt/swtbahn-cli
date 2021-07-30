@@ -989,7 +989,7 @@ $(document).ready(
 		$('#selectUploadFile').change(function () {
 			$('#selectUploadFileResponse').text(this.files[0].name);
 
-			$('#uploadResponse').text('Selected SCCharts model ' + this.files[0].name);
+			$('#uploadResponse').text('Selected ' + this.files[0].name);
 			$('#uploadResponse').parent().removeClass('alert-danger');
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
