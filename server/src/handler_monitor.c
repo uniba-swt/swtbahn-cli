@@ -75,12 +75,13 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 			if (train_state.known) {
 				GString *ret_string = g_string_new("");
 				g_string_append_printf(ret_string, "on track: %s - orientation: %s"
-				                       " - speed step: %d",
+				                       " - speed step: %d - detected speed: %d km/h",
 				                       train_state.data.on_track ? "yes" : "no",
 				                       (train_state.data.orientation ==
 				                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
 				                       "left" : "right",
-				                       train_state.data.set_speed_step);
+				                       train_state.data.set_speed_step,
+				                       train_state.data.detected_kmh_speed);
 				bidib_free_train_state_query(train_state);
 				char response[ret_string->len + 1];
 				strcpy(response, ret_string->str);
@@ -389,3 +390,31 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 	}
 }
 
+onion_connection_status handler_get_peripherals(void *_, onion_request *req,
+                                                onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *peripherals = g_string_new("");
+		t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
+		for (size_t i = 0; i < per_query.length; i++) {
+			t_bidib_peripheral_state_query per_state_query =
+				bidib_get_peripheral_state(per_query.ids[i]);
+			g_string_append_printf(peripherals, "%s%s - %s: %d",
+			                       i != 0 ? "\n" : "", per_query.ids[i],
+			                       per_state_query.data.state_id,
+			                       per_state_query.data.state_value);
+			bidib_free_peripheral_state_query(per_state_query);
+		}
+		bidib_free_id_list_query(per_query);
+		char response[peripherals->len + 1];
+		strcpy(response, peripherals->str);
+		g_string_free(peripherals, true);
+		onion_response_printf(res, "%s", response);
+		syslog_server(LOG_NOTICE, "Request: Get peripherals");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get peripherals - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}

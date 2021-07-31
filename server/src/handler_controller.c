@@ -263,6 +263,32 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 	}
 }
 
+onion_connection_status handler_set_peripheral(void *_, onion_request *req,
+                                               onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_peripheral = onion_request_get_post(req, "peripheral");
+		const char *data_state = onion_request_get_post(req, "state");
+		if (data_peripheral == NULL || data_state == NULL) {
+			syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			if (bidib_set_peripheral(data_peripheral, data_state)) {
+				syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
+				return OCS_NOT_IMPLEMENTED;
+			} else {
+				syslog_server(LOG_NOTICE, "Request: Set peripheral - peripheral: %s state: %s",
+				              data_peripheral, data_state);
+				bidib_flush();
+				return OCS_PROCESSED;
+			}
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Set peripheral - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
 onion_connection_status handler_get_interlocker(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);

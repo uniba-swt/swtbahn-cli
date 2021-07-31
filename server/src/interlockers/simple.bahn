@@ -36,9 +36,14 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
 end
 
 
-# For a given route ID, checks whether conflicting routes have 
-# already been granted
+# For a given route ID, checks whether the given route  
+# and conflicting routes have already been granted
 def route_is_grantable(string route_id, string train_id): bool
+    # Check whether the given route is available
+    if is route_id not available
+        return false
+    end
+
     # Retrieve all routes that conflict with route ID
     string conflict_routes[] = get config route.conflicts route_id
     
@@ -60,7 +65,6 @@ def route_is_grantable(string route_id, string train_id): bool
 
     return true
 end
-
 
 # Returns whether the route is physically ready for use:
 # Entry signal is in Stop aspect, all possible entries

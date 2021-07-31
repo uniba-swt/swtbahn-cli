@@ -253,6 +253,26 @@ def set_signal(signal, state):
             click.echo(e, err=True)
 
 
+@click.command(help="Set a peripheral")
+@click.argument('peripheral')
+@click.argument('state')
+def set_peripheral(peripheral, state):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/controller/set-peripheral", 
+                    data = {'peripheral': peripheral, 'state': state})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Peripheral " + peripheral + " set to " + state + " \n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 @click.command(help="Get the interlocker in use")
 def get_interlocker():
     if(parse_config()):
@@ -515,7 +535,7 @@ def emergency_stop(track_output):
         "default one.", default="")
 @click.argument('peripheral')
 @click.argument('state', type=click.Choice(['off', 'on']))
-def set_peripheral(peripheral, state, track_output):
+def set_train_peripheral(peripheral, state, track_output):
     global session_id, grab_id, server, default_track_output
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -551,7 +571,7 @@ def monitor():
     pass
 
 
-@click.command(help="Get the list of trains")
+@click.command(help="Get a list of trains")
 def get_trains():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -588,7 +608,7 @@ def get_train_state(train):
             click.echo(e, err=True)
 
 
-@click.command(help="Get the list of peripherals of a train")
+@click.command(help="Get a list of peripherals of a train")
 @click.argument('train')
 def get_train_peripherals(train):
     if(parse_config()):
@@ -606,7 +626,7 @@ def get_train_peripherals(train):
             click.echo(e, err=True)
 
 
-@click.command(help="Get the list of track outputs")
+@click.command(help="Get a list of track outputs")
 def get_track_outputs():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -622,7 +642,7 @@ def get_track_outputs():
             click.echo(e, err=True)
 
 
-@click.command(help="Get the list of points")
+@click.command(help="Get a list of points")
 def get_points():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -638,7 +658,7 @@ def get_points():
             click.echo(e, err=True)
 
 
-@click.command(help="Get the list of signals")
+@click.command(help="Get a list of signals")
 def get_signals():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -690,7 +710,7 @@ def get_signal_aspects(signal):
             click.echo(e, err=True)
 
 
-@click.command(help="Get the list of segments")
+@click.command(help="Get a list of segments")
 def get_segments():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -705,6 +725,20 @@ def get_segments():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+@click.command(help="Get a list of peripherals")
+def get_peripherals():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/peripherals")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
 
 
 # --- assign commands to goups ---
@@ -722,6 +756,7 @@ admin.add_command(set_track_output)
 controller.add_command(release_route)
 controller.add_command(set_point)
 controller.add_command(set_signal)
+controller.add_command(set_peripheral)
 controller.add_command(get_interlocker)
 controller.add_command(set_interlocker)
 controller.add_command(unset_interlocker)
@@ -733,7 +768,7 @@ driver.add_command(drive_route)
 driver.add_command(set_dcc_speed)
 driver.add_command(set_calibrated_speed)
 driver.add_command(emergency_stop)
-driver.add_command(set_peripheral)
+driver.add_command(set_train_peripheral)
 
 monitor.add_command(get_trains)
 monitor.add_command(get_train_state)
@@ -744,6 +779,7 @@ monitor.add_command(get_signals)
 monitor.add_command(get_point_aspects)
 monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
+monitor.add_command(get_peripherals)
 
 
 

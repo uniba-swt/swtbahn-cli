@@ -166,6 +166,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "controller/release-route", handler_release_route);
 	onion_url_add(urls, "controller/set-point", handler_set_point);
 	onion_url_add(urls, "controller/set-signal", handler_set_signal);
+	onion_url_add(urls, "controller/set-peripheral", handler_set_peripheral);
 	onion_url_add(urls, "controller/get-interlocker", handler_get_interlocker);
 	onion_url_add(urls, "controller/set-interlocker", handler_set_interlocker);
 	onion_url_add(urls, "controller/unset-interlocker", handler_unset_interlocker);
@@ -201,6 +202,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/point-aspects", handler_get_point_aspects);
 	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects);
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
+	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
 
 	onion_listen(o);
 	onion_free(o);
