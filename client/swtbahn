@@ -732,7 +732,7 @@ def get_peripherals():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/periperhals")
+            response = requests.post(server + "/monitor/peripherals")
             if (response.status_code == requests.codes.ok):
                 click.echo(response.text)
             else:
