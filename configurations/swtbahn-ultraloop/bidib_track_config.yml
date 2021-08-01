@@ -1,130 +1,6 @@
-# Track configuration
+# Track configuration: SWTbahnUltraloop
 boards:
-  - id: master
-    segments:
-      - id: seg1
-        address: 0x00
-      - id: seg2
-        address: 0x01
-      - id: seg3
-        address: 0x02
-      - id: seg4
-        address: 0x03
-      - id: seg5
-        address: 0x04
-      - id: seg6
-        address: 0x05
-      - id: seg7
-        address: 0x06
-      - id: seg8
-        address: 0x07
-      - id: seg9
-        address: 0x08
-      - id: seg10
-        address: 0x09
-      - id: seg11
-        address: 0x0a
-      - id: seg12
-        address: 0x0b
-      - id: seg13
-        address: 0x0c
-      - id: seg14
-        address: 0x0d
-      - id: seg15
-        address: 0x0e
-      - id: seg16
-        address: 0x0f
-        
-      - id: seg17
-        address: 0x10
-      - id: seg18
-        address: 0x11
-      - id: seg19
-        address: 0x12
-      - id: seg20
-        address: 0x13
-      - id: seg21
-        address: 0x14
-      - id: seg22
-        address: 0x15
-      - id: seg23
-        address: 0x16
-      - id: seg24
-        address: 0x17
-      - id: seg25
-        address: 0x18
-      - id: seg26
-        address: 0x19
-      - id: seg27
-        address: 0x1a
-      - id: seg28
-        address: 0x1b
-      - id: seg29
-        address: 0x1c
-      - id: seg30
-        address: 0x1d
-      - id: seg31
-        address: 0x1e
-      - id: seg32
-        address: 0x1f
-
   - id: onecontrol
-    points-board:
-      - id: point1
-        number: 0x00
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point2
-        number: 0x01
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: decoupler
-        number: 0x02
-        aspects:
-          - id: trigger
-            value: 0x00
-        initial: trigger
-      - id: point4
-        number: 0x03
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: point5
-        number: 0x04
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: servo_analog_linear
-        number: 0x06
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-      - id: servo_analog_rotary
-        number: 0x07
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-
     signals-board:
       - id: signal1
         number: 0x08
@@ -134,6 +10,7 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal2
         number: 0x09
         aspects:
@@ -142,51 +19,172 @@ boards:
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal3a
-        number: 0x0a
+        number: 0x0A
         aspects:
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal3b
-        number: 0x0b
+        number: 0x0B
         aspects:
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal4
-        number: 0x0c
+        number: 0x0C
         aspects:
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal5
-        number: 0x0d
+        number: 0x0D
         aspects:
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal6
-        number: 0x0e
+        number: 0x0E
         aspects:
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
+        type: block
       - id: signal7
-        number: 0x0f
+        number: 0x0F
         aspects:
           - id: green
             value: 0x01
           - id: red
             value: 0x00
         initial: red
+        type: block
+    points-board:
+      - id: point1
+        number: 0x00
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg28
+      - id: point2
+        number: 0x01
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg31
+      - id: decoupler
+        number: 0x02
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: reverse
+        segment: seg1
+      - id: point4
+        number: 0x03
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg2
+      - id: point5
+        number: 0x04
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg3
+      - id: servo_analog_linear
+        number: 0x06
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg4
+      - id: servo_analog_rotary
+        number: 0x07
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg5
+  - id: master
+    segments:
+      - id: seg1
+        address: 0x01
+        length: 0.0cm
+      - id: seg2
+        address: 0x02
+        length: 0.0cm
+      - id: seg3
+        address: 0x03
+        length: 0.0cm
+      - id: seg4
+        address: 0x04
+        length: 0.0cm
+      - id: seg5
+        address: 0x05
+        length: 0.0cm
+      - id: seg6
+        address: 0x06
+        length: 0.0cm
+      - id: seg7
+        address: 0x07
+        length: 0.0cm
+      - id: seg8
+        address: 0x08
+        length: 0.0cm
+      - id: seg17
+        address: 0x10
+        length: 0.0cm
+      - id: seg18
+        address: 0x11
+        length: 0.0cm
+      - id: seg19
+        address: 0x12
+        length: 0.0cm
+      - id: seg28
+        address: 0x1B
+        length: 0.0cm
+      - id: seg29
+        address: 0x1C
+        length: 0.0cm
+      - id: seg30
+        address: 0x1D
+        length: 0.0cm
+      - id: seg31
+        address: 0x1E
+        length: 0.0cm
+      - id: seg32
+        address: 0x1F
+        length: 0.0cm

@@ -1,0 +1,87 @@
+# Block layout configuration: SWTbahnUltraloop
+blocks:
+  - id: block1
+    length: 0.00cm
+    main:
+      - seg30
+    is_reversed: false
+    direction: bidirectional
+    signals:
+      - signal4
+  - id: block2
+    length: 0.00cm
+    main:
+      - seg29
+    is_reversed: false
+    direction: bidirectional
+  - id: block3
+    length: 0.00cm
+    main:
+      - seg18
+    overlaps:
+      - seg17
+      - seg19
+    is_reversed: false
+    direction: bidirectional
+    signals:
+      - signal5
+      - signal6
+      - signal7
+  - id: buffer1
+    length: 0.00cm
+    main:
+      - seg6
+    is_reversed: false
+    direction: bidirectional
+  - id: buffer2
+    length: 0.00cm
+    main:
+      - seg7
+    is_reversed: false
+    direction: bidirectional
+  - id: buffer3
+    length: 0.00cm
+    main:
+      - seg8
+    is_reversed: false
+    direction: bidirectional
+platforms:
+crossings:
+  - id: crossing1
+    segment: seg32
+signaltypes:
+  - id: entry
+    aspects:
+      - yellow
+      - green
+      - red
+  - id: exit
+    aspects:
+      - yellow
+      - green
+      - red
+  - id: distant
+    aspects:
+      - yellow
+      - green
+  - id: block
+    aspects:
+      - green
+      - red
+  - id: shunting
+    aspects:
+      - white
+      - red
+  - id: halt
+    aspects:
+      - red
+  - id: platformlight
+    aspects:
+      - high
+      - low
+compositions:
+peripheraltypes:
+  - id: onebit
+    aspects:
+      - high
+      - low

@@ -1,237 +1,50 @@
 # Interlocking table
 interlocking-table:
-  - id: 0
-    source: signal3a
-    destination: signal6
-    direction: anti-clockwise
-    path:
-      - id: seg31
-      - id: seg30
-      - id: seg29
-    points:
-      - id: point2
-        position: reverse
-    signals:
-      - id: signal5
-    conflicts:
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 1
-    source: signal3a
-    destination: signal7
-    direction: anti-clockwise
-    path:
-      - id: seg31
-      - id: seg30
-      - id: seg29
-      - id: seg17
-      - id: seg18
-      - id: seg19
-    points:
-      - id: point2
-        position: reverse
-    signals:
-    conflicts:
-      - id: 0
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 2
-    source: signal3b
-    destination: signal6
-    direction: anti-clockwise
-    path:
-      - id: seg31
-      - id: seg30
-      - id: seg29
-    points:
-      - id: point2
-        position: normal
-    signals:
-      - id: signal5
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 3
-    source: signal3b
-    destination: signal7
-    direction: anti-clockwise
-    path:
-      - id: seg31
-      - id: seg30
-      - id: seg29
-      - id: seg17
-      - id: seg18
-      - id: seg19
-    points:
-      - id: point2
-        position: normal
-    signals:
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 4
+  - id: 0 #route0
     source: signal5
     destination: signal4
-    direction: clockwise
+    orientation: clockwise
     path:
-      - id: seg18
-      - id: seg17
+      # block2 -> block1
       - id: seg29
       - id: seg30
-      - id: seg31
+    sections:
+      - id: block2
+      - id: block1
+    length: 0.00cm
     points:
-    signals:
-      - id: signal3a
     conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 5
+  - id: 1 #route1
     source: signal5
-    destination: signal1
-    direction: clockwise
+    destination: signal6
+    orientation: clockwise
     path:
-      - id: seg18
-      - id: seg17
-      - id: seg29
-      - id: seg30
-      - id: seg31
-      - id: seg32
+      # 
+    sections:
+    length: 0.00m
     points:
-      - id: point2
-        position: reverse
-    signals:
     conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 6
-    source: signal5
-    destination: signal2
-    direction: clockwise
+  - id: 2 #route2
+    source: signal6
+    destination: signal5
+    orientation: anticlockwise
     path:
-      - id: seg18
-      - id: seg17
-      - id: seg29
-      - id: seg30
-      - id: seg31
-      - id: seg28
+      # 
+    sections:
+    length: 0.00m
     points:
-      - id: point2
-        position: normal
-    signals:
     conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 7
-      - id: 8
-      - id: 9
-  - id: 7
+  - id: 3 #route3
     source: signal6
     destination: signal7
-    direction: anti-clockwise
+    orientation: anticlockwise
     path:
-      - id: seg30
-      - id: seg29
+      # block3
       - id: seg17
       - id: seg18
       - id: seg19
+    sections:
+      - id: block3
+    length: 0.00cm
     points:
-    signals:
     conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 8
-      - id: 9
-  - id: 8
-    source: signal4
-    destination: signal1
-    direction: clockwise
-    path:
-      - id: seg30
-      - id: seg31
-      - id: seg32
-    points:
-      - id: point2
-        position: reverse
-    signals:
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 9
-  - id: 9
-    source: signal4
-    destination: signal2
-    direction: clockwise
-    path:
-      - id: seg30
-      - id: seg31
-      - id: seg28
-    points:
-      - id: point2
-        position: normal
-    signals:
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8

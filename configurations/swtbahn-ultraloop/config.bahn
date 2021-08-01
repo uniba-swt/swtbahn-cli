@@ -1,0 +1,120 @@
+module SWTbahnUltraloop
+	boards
+		master 0xDA000D6800D8EF
+			features 
+				0x03:0x14  # seckack on, 200ms
+				0x6E:0x00  # track output default off
+			end
+		onecontrol 0x05000D7500EAED
+	end
+
+	segments master
+		seg1 0x01 length 0cm
+		seg2 0x02 length 0cm
+		seg3 0x03 length 0cm
+		seg4 0x04 length 0cm
+		seg5 0x05 length 0cm
+		seg6 0x06 length 0cm
+		seg7 0x07 length 0cm
+		seg8 0x08 length 0cm
+		
+		seg17 0x10 length 0cm
+		seg18 0x11 length 0cm
+		seg19 0x12 length 0cm
+		seg28 0x1B length 0cm
+		seg29 0x1C length 0cm
+		seg30 0x1D length 0cm
+		seg31 0x1E length 0cm
+		seg32 0x1F length 0cm
+	end
+	
+	signals onecontrol
+		block signal1 0x08
+		block signal2 0x09
+		block signal3a 0x0A
+		block signal3b 0x0B
+		block signal4 0x0C
+		block signal5 0x0D
+		block signal6 0x0E
+		block signal7 0x0F
+	end
+
+	points onecontrol
+		point1 0x00 segment seg28 normal 0x01 reverse 0x00 initial normal
+		point2 0x01 segment seg31 normal 0x01 reverse 0x00 initial normal
+		decoupler 0x02 segment seg1 normal 0x01 reverse 0x00 initial reverse
+		point4 0x03 segment seg2 normal 0x01 reverse 0x00 initial normal
+		point5 0x04 segment seg3 normal 0x01 reverse 0x00 initial normal
+		servo_analog_linear 0x06 segment seg4 normal 0x01 reverse 0x00 initial normal
+		servo_analog_rotary 0x07 segment seg5 normal 0x01 reverse 0x00 initial normal
+	end
+
+	peripherals master
+	end
+
+	blocks
+		block1 main seg30
+		block2 main seg29
+		block3 overlap seg17 main seg18 overlap seg19
+		
+		buffer1 main seg6
+		buffer2 main seg7
+		buffer3 main seg8
+	end
+	
+	crossings
+		crossing1 segment seg32
+	end
+	
+	layout
+		crossing1.up1 -- buffer1.up
+		crossing1.up2 -- buffer2.up
+		crossing1.down1 -- point1.up2
+		crossing1.down2 -- point2.side
+		
+		point1.up1 -- buffer3.down
+		point1.down2 -- point2.straight
+		
+		block1.down -- point2.stem
+		block1.up -- block2.down
+		block2.up -- block3.down
+		block3.up -- point1.down1
+		
+	#	signal1 -- point2.straight
+	#	signal2 -- point2.side
+	#	signal3a -- point2.stem
+	#	signal3b -- point2.stem
+		signal4 -- block1.down
+		signal5 -- block3.down
+		signal6 -- block2.up
+		signal7 -- block3.up
+	end
+	
+	trains
+		cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 7cm type cargo
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g type cargo
+		peripherals
+			head_light bit 4 initial 1
+			cabin_light bit 0 initial 1
+		end
+		cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+		peripherals
+			head_light bit 4 initial 1
+		end
+	end
+
+end
