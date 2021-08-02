@@ -121,7 +121,7 @@ interlocking-table:
       - id: point5
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -205,7 +205,7 @@ interlocking-table:
       - id: point1
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -282,7 +282,7 @@ interlocking-table:
       - id: point2
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -379,7 +379,7 @@ interlocking-table:
       - id: point7
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -476,7 +476,7 @@ interlocking-table:
       - id: point1
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 46
       - id: 47
       - id: 48
@@ -562,7 +562,7 @@ interlocking-table:
       - id: point2
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -943,8 +943,8 @@ interlocking-table:
       - id: point5
         position: normal
     conflicts:
-      - id: 44
       - id: 66
+      - id: 45
       - id: 67
       - id: 47
       - id: 69
@@ -957,8 +957,8 @@ interlocking-table:
       - id: 73
       - id: 52
       - id: 74
+      - id: 54
       - id: 33
-      - id: 55
       - id: 57
       - id: 36
       - id: 58
@@ -1208,8 +1208,8 @@ interlocking-table:
       - id: 73
       - id: 52
       - id: 31
-      - id: 54
       - id: 11
+      - id: 55
       - id: 12
       - id: 34
       - id: 56
@@ -1679,7 +1679,7 @@ interlocking-table:
       - id: point5
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -1763,7 +1763,7 @@ interlocking-table:
       - id: point1
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -1840,7 +1840,7 @@ interlocking-table:
       - id: point2
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -1937,7 +1937,7 @@ interlocking-table:
       - id: point7
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -2116,7 +2116,7 @@ interlocking-table:
       - id: point1
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 46
       - id: 47
       - id: 48
@@ -2166,6 +2166,86 @@ interlocking-table:
       - id: 42
       - id: 43
   - id: 24 #route24
+    source: signal3
+    destination: signal5
+    orientation: anticlockwise
+    path:
+      # point1.normal -> block3 -> point3.normal -> block5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block3
+      - id: block5
+    length: 204.35cm
+    points:
+      - id: point1
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 11
+      - id: 55
+      - id: 12
+      - id: 56
+      - id: 13
+      - id: 14
+      - id: 58
+      - id: 15
+      - id: 59
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 62
+      - id: 20
+      - id: 64
+      - id: 21
+      - id: 65
+      - id: 22
+      - id: 66
+      - id: 23
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 30
+      - id: 31
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+  - id: 25 #route25
     source: signal3
     destination: signal5
     orientation: anticlockwise
@@ -2235,7 +2315,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 23
-      - id: 25
+      - id: 24
       - id: 69
       - id: 26
       - id: 27
@@ -2247,86 +2327,6 @@ interlocking-table:
       - id: 30
       - id: 31
       - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 39
-      - id: 40
-      - id: 42
-      - id: 43
-  - id: 25 #route25
-    source: signal3
-    destination: signal5
-    orientation: anticlockwise
-    path:
-      # point1.normal -> block3 -> point3.normal -> block5
-      - id: seg4
-      - id: seg3
-      - id: seg2
-      - id: seg1
-      - id: seg12
-      - id: seg11
-      - id: seg10
-      - id: seg9
-    sections:
-      - id: block3
-      - id: block5
-    length: 204.35cm
-    points:
-      - id: point1
-        position: normal
-      - id: point3
-        position: normal
-    conflicts:
-      - id: 44
-      - id: 45
-      - id: 46
-      - id: 47
-      - id: 48
-      - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
-      - id: 54
-      - id: 11
-      - id: 55
-      - id: 12
-      - id: 56
-      - id: 13
-      - id: 14
-      - id: 58
-      - id: 15
-      - id: 59
-      - id: 16
-      - id: 17
-      - id: 18
-      - id: 19
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 7
-      - id: 8
-      - id: 9
-      - id: 62
-      - id: 20
-      - id: 64
-      - id: 21
-      - id: 65
-      - id: 22
-      - id: 66
-      - id: 23
-      - id: 24
-      - id: 26
-      - id: 27
-      - id: 29
-      - id: 70
-      - id: 72
-      - id: 73
-      - id: 30
-      - id: 31
       - id: 34
       - id: 35
       - id: 37
@@ -2525,8 +2525,8 @@ interlocking-table:
     conflicts:
       - id: 44
       - id: 45
-      - id: 48
-      - id: 50
+      - id: 47
+      - id: 49
       - id: 51
       - id: 52
       - id: 53
@@ -2554,7 +2554,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 67
-      - id: 24
+      - id: 25
       - id: 69
       - id: 26
       - id: 27
@@ -2901,8 +2901,8 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 22
-      - id: 44
       - id: 66
+      - id: 45
       - id: 67
       - id: 68
       - id: 69
@@ -2918,9 +2918,9 @@ interlocking-table:
       - id: 74
       - id: 31
       - id: 53
+      - id: 54
       - id: 11
       - id: 33
-      - id: 55
       - id: 57
       - id: 58
       - id: 15
@@ -2970,7 +2970,7 @@ interlocking-table:
       - id: 45
       - id: 47
       - id: 48
-      - id: 50
+      - id: 49
       - id: 51
       - id: 52
       - id: 53
@@ -3008,7 +3008,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 67
-      - id: 24
+      - id: 25
       - id: 69
       - id: 26
       - id: 27
@@ -3223,7 +3223,7 @@ interlocking-table:
       - id: point5
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 51
@@ -3298,7 +3298,7 @@ interlocking-table:
       - id: point2
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 51
@@ -3378,7 +3378,7 @@ interlocking-table:
       - id: point7
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 51
@@ -3568,7 +3568,7 @@ interlocking-table:
       - id: point1
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 46
       - id: 47
       - id: 48
@@ -3645,7 +3645,7 @@ interlocking-table:
       - id: point2
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -3900,6 +3900,75 @@ interlocking-table:
     destination: signal8
     orientation: clockwise
     path:
+      # point3.reverse -> point4.reverse -> block4
+      - id: seg12
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block4
+    length: 94.35cm
+    points:
+      - id: point3
+        position: reverse
+      - id: point4
+        position: reverse
+    conflicts:
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 11
+      - id: 55
+      - id: 12
+      - id: 56
+      - id: 13
+      - id: 57
+      - id: 14
+      - id: 58
+      - id: 15
+      - id: 59
+      - id: 16
+      - id: 17
+      - id: 0
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 60
+      - id: 64
+      - id: 65
+      - id: 22
+      - id: 66
+      - id: 24
+      - id: 25
+      - id: 69
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 39
+      - id: 42
+      - id: 43
+  - id: 45 #route45
+    source: signal6
+    destination: signal8
+    orientation: clockwise
+    path:
       # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.normal -> point4.normal -> block4
       - id: seg12
       - id: seg1
@@ -3939,7 +4008,7 @@ interlocking-table:
       - id: point4
         position: normal
     conflicts:
-      - id: 45
+      - id: 44
       - id: 46
       - id: 47
       - id: 48
@@ -4012,75 +4081,6 @@ interlocking-table:
       - id: 41
       - id: 42
       - id: 43
-  - id: 45 #route45
-    source: signal6
-    destination: signal8
-    orientation: clockwise
-    path:
-      # point3.reverse -> point4.reverse -> block4
-      - id: seg12
-      - id: seg13
-      - id: seg16
-      - id: seg15
-      - id: seg14
-    sections:
-      - id: block4
-    length: 94.35cm
-    points:
-      - id: point3
-        position: reverse
-      - id: point4
-        position: reverse
-    conflicts:
-      - id: 44
-      - id: 46
-      - id: 47
-      - id: 48
-      - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
-      - id: 53
-      - id: 54
-      - id: 11
-      - id: 55
-      - id: 12
-      - id: 56
-      - id: 13
-      - id: 57
-      - id: 14
-      - id: 58
-      - id: 15
-      - id: 59
-      - id: 16
-      - id: 17
-      - id: 0
-      - id: 7
-      - id: 8
-      - id: 9
-      - id: 60
-      - id: 64
-      - id: 65
-      - id: 22
-      - id: 66
-      - id: 24
-      - id: 25
-      - id: 69
-      - id: 26
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 70
-      - id: 72
-      - id: 73
-      - id: 30
-      - id: 31
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 39
-      - id: 42
-      - id: 43
   - id: 46 #route46
     source: signal6
     destination: signal2
@@ -4137,111 +4137,6 @@ interlocking-table:
     destination: signal10
     orientation: clockwise
     path:
-      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1
-      - id: seg12
-      - id: seg1
-      - id: seg2
-      - id: seg3
-      - id: seg4
-      - id: seg5
-      - id: seg6
-      - id: seg7
-      - id: seg8
-      - id: seg17
-      - id: seg18
-      - id: seg19
-      - id: seg20
-    sections:
-      - id: block3
-      - id: block2
-      - id: block1
-    length: 288.60cm
-    points:
-      - id: point3
-        position: normal
-      - id: point1
-        position: normal
-      - id: point2
-        position: reverse
-      - id: point5
-        position: reverse
-    conflicts:
-      - id: 44
-      - id: 45
-      - id: 46
-      - id: 48
-      - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
-      - id: 53
-      - id: 10
-      - id: 54
-      - id: 11
-      - id: 55
-      - id: 12
-      - id: 56
-      - id: 13
-      - id: 57
-      - id: 14
-      - id: 58
-      - id: 15
-      - id: 59
-      - id: 16
-      - id: 17
-      - id: 18
-      - id: 19
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 20
-      - id: 64
-      - id: 21
-      - id: 65
-      - id: 22
-      - id: 66
-      - id: 23
-      - id: 67
-      - id: 24
-      - id: 25
-      - id: 69
-      - id: 26
-      - id: 27
-      - id: 29
-      - id: 70
-      - id: 71
-      - id: 72
-      - id: 73
-      - id: 30
-      - id: 74
-      - id: 31
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 36
-      - id: 37
-      - id: 38
-      - id: 39
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 43
-  - id: 48 #route48
-    source: signal6
-    destination: signal10
-    orientation: clockwise
-    path:
       # point3.reverse -> point4.reverse -> block4 -> point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1
       - id: seg12
       - id: seg13
@@ -4277,7 +4172,7 @@ interlocking-table:
       - id: 44
       - id: 45
       - id: 46
-      - id: 47
+      - id: 48
       - id: 49
       - id: 50
       - id: 51
@@ -4346,12 +4241,12 @@ interlocking-table:
       - id: 41
       - id: 42
       - id: 43
-  - id: 49 #route49
+  - id: 48 #route48
     source: signal6
-    destination: signal4
+    destination: signal10
     orientation: clockwise
     path:
-      # point3.normal -> block3 -> point1.normal -> block2
+      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1
       - id: seg12
       - id: seg1
       - id: seg2
@@ -4360,24 +4255,36 @@ interlocking-table:
       - id: seg5
       - id: seg6
       - id: seg7
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
     sections:
       - id: block3
       - id: block2
-    length: 193.10cm
+      - id: block1
+    length: 288.60cm
     points:
       - id: point3
         position: normal
       - id: point1
         position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
     conflicts:
       - id: 44
       - id: 45
       - id: 46
       - id: 47
-      - id: 48
+      - id: 49
       - id: 50
       - id: 51
       - id: 52
+      - id: 53
+      - id: 10
       - id: 54
       - id: 11
       - id: 55
@@ -4403,6 +4310,8 @@ interlocking-table:
       - id: 7
       - id: 8
       - id: 9
+      - id: 60
+      - id: 61
       - id: 62
       - id: 63
       - id: 20
@@ -4412,24 +4321,32 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 23
+      - id: 67
       - id: 24
       - id: 25
+      - id: 69
       - id: 26
       - id: 27
       - id: 29
       - id: 70
+      - id: 71
       - id: 72
       - id: 73
       - id: 30
+      - id: 74
       - id: 31
+      - id: 33
       - id: 34
       - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
       - id: 39
       - id: 40
       - id: 41
       - id: 42
       - id: 43
-  - id: 50 #route50
+  - id: 49 #route49
     source: signal6
     destination: signal4
     orientation: clockwise
@@ -4461,7 +4378,7 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 48
-      - id: 49
+      - id: 50
       - id: 51
       - id: 52
       - id: 53
@@ -4520,17 +4437,99 @@ interlocking-table:
       - id: 41
       - id: 42
       - id: 43
+  - id: 50 #route50
+    source: signal6
+    destination: signal4
+    orientation: clockwise
+    path:
+      # point3.normal -> block3 -> point1.normal -> block2
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+    sections:
+      - id: block3
+      - id: block2
+    length: 193.10cm
+    points:
+      - id: point3
+        position: normal
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 11
+      - id: 55
+      - id: 12
+      - id: 56
+      - id: 13
+      - id: 57
+      - id: 14
+      - id: 58
+      - id: 15
+      - id: 59
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 62
+      - id: 63
+      - id: 20
+      - id: 64
+      - id: 21
+      - id: 65
+      - id: 22
+      - id: 66
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 30
+      - id: 31
+      - id: 34
+      - id: 35
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
   - id: 51 #route51
     source: signal6
     destination: signal12
     orientation: clockwise
     path:
-      # point3.reverse -> point4.reverse -> block4 -> point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
       - id: seg12
-      - id: seg13
-      - id: seg16
-      - id: seg15
-      - id: seg14
+      - id: seg1
+      - id: seg2
+      - id: seg3
       - id: seg4
       - id: seg5
       - id: seg6
@@ -4545,18 +4544,16 @@ interlocking-table:
       - id: seg23
       - id: seg24
     sections:
-      - id: block4
+      - id: block3
       - id: block2
       - id: block1
       - id: platform2
-    length: 369.40cm
+    length: 365.80cm
     points:
       - id: point3
-        position: reverse
-      - id: point4
-        position: reverse
+        position: normal
       - id: point1
-        position: reverse
+        position: normal
       - id: point2
         position: reverse
       - id: point5
@@ -4645,11 +4642,12 @@ interlocking-table:
     destination: signal12
     orientation: clockwise
     path:
-      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      # point3.reverse -> point4.reverse -> block4 -> point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
       - id: seg12
-      - id: seg1
-      - id: seg2
-      - id: seg3
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
       - id: seg4
       - id: seg5
       - id: seg6
@@ -4664,16 +4662,18 @@ interlocking-table:
       - id: seg23
       - id: seg24
     sections:
-      - id: block3
+      - id: block4
       - id: block2
       - id: block1
       - id: platform2
-    length: 365.80cm
+    length: 369.40cm
     points:
       - id: point3
-        position: normal
+        position: reverse
+      - id: point4
+        position: reverse
       - id: point1
-        position: normal
+        position: reverse
       - id: point2
         position: reverse
       - id: point5
@@ -4781,7 +4781,7 @@ interlocking-table:
       - id: 45
       - id: 47
       - id: 48
-      - id: 50
+      - id: 49
       - id: 51
       - id: 52
       - id: 54
@@ -4808,7 +4808,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 67
-      - id: 24
+      - id: 25
       - id: 69
       - id: 27
       - id: 28
@@ -4828,107 +4828,6 @@ interlocking-table:
       - id: 39
       - id: 43
   - id: 54 #route54
-    source: signal7
-    destination: signal1
-    orientation: clockwise
-    path:
-      # point4.reverse -> point3.reverse -> block5 -> point2.normal -> block2 -> point1.normal -> block3
-      - id: seg13
-      - id: seg12
-      - id: seg11
-      - id: seg10
-      - id: seg9
-      - id: seg8
-      - id: seg7
-      - id: seg6
-      - id: seg5
-      - id: seg4
-      - id: seg3
-      - id: seg2
-      - id: seg1
-    sections:
-      - id: block5
-      - id: block2
-      - id: block3
-    length: 311.60cm
-    points:
-      - id: point4
-        position: reverse
-      - id: point3
-        position: reverse
-      - id: point2
-        position: normal
-      - id: point1
-        position: normal
-    conflicts:
-      - id: 44
-      - id: 45
-      - id: 46
-      - id: 47
-      - id: 48
-      - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
-      - id: 53
-      - id: 11
-      - id: 55
-      - id: 12
-      - id: 56
-      - id: 13
-      - id: 57
-      - id: 14
-      - id: 58
-      - id: 15
-      - id: 59
-      - id: 16
-      - id: 17
-      - id: 18
-      - id: 19
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 9
-      - id: 60
-      - id: 62
-      - id: 63
-      - id: 20
-      - id: 64
-      - id: 21
-      - id: 65
-      - id: 22
-      - id: 66
-      - id: 23
-      - id: 24
-      - id: 25
-      - id: 69
-      - id: 26
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 70
-      - id: 72
-      - id: 73
-      - id: 30
-      - id: 31
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 36
-      - id: 37
-      - id: 38
-      - id: 39
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 43
-  - id: 55 #route55
     source: signal7
     destination: signal1
     orientation: clockwise
@@ -4976,8 +4875,8 @@ interlocking-table:
       - id: 52
       - id: 53
       - id: 10
-      - id: 54
       - id: 11
+      - id: 55
       - id: 12
       - id: 56
       - id: 57
@@ -5026,6 +4925,107 @@ interlocking-table:
       - id: 74
       - id: 31
       - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+  - id: 55 #route55
+    source: signal7
+    destination: signal1
+    orientation: clockwise
+    path:
+      # point4.reverse -> point3.reverse -> block5 -> point2.normal -> block2 -> point1.normal -> block3
+      - id: seg13
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block5
+      - id: block2
+      - id: block3
+    length: 311.60cm
+    points:
+      - id: point4
+        position: reverse
+      - id: point3
+        position: reverse
+      - id: point2
+        position: normal
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 11
+      - id: 12
+      - id: 56
+      - id: 13
+      - id: 57
+      - id: 14
+      - id: 58
+      - id: 15
+      - id: 59
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 20
+      - id: 64
+      - id: 21
+      - id: 65
+      - id: 22
+      - id: 66
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 69
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 30
+      - id: 31
       - id: 33
       - id: 34
       - id: 35
@@ -5203,7 +5203,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 67
-      - id: 24
+      - id: 25
       - id: 69
       - id: 27
       - id: 28
@@ -5442,7 +5442,7 @@ interlocking-table:
       - id: 45
       - id: 47
       - id: 48
-      - id: 50
+      - id: 49
       - id: 51
       - id: 52
       - id: 53
@@ -5474,7 +5474,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 67
-      - id: 24
+      - id: 25
       - id: 69
       - id: 27
       - id: 28
@@ -5514,8 +5514,8 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 22
-      - id: 44
       - id: 66
+      - id: 45
       - id: 67
       - id: 68
       - id: 47
@@ -5535,9 +5535,9 @@ interlocking-table:
       - id: 31
       - id: 53
       - id: 32
+      - id: 54
       - id: 11
       - id: 33
-      - id: 55
       - id: 57
       - id: 36
       - id: 58
@@ -5592,7 +5592,7 @@ interlocking-table:
       - id: point1
         position: normal
     conflicts:
-      - id: 44
+      - id: 45
       - id: 46
       - id: 47
       - id: 48
@@ -5693,7 +5693,7 @@ interlocking-table:
       - id: point2
         position: reverse
     conflicts:
-      - id: 44
+      - id: 45
       - id: 47
       - id: 48
       - id: 49
@@ -6133,8 +6133,8 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 22
-      - id: 44
       - id: 66
+      - id: 45
       - id: 68
       - id: 47
       - id: 69
@@ -6154,9 +6154,9 @@ interlocking-table:
       - id: 53
       - id: 10
       - id: 32
+      - id: 54
       - id: 11
       - id: 33
-      - id: 55
       - id: 57
       - id: 36
       - id: 58
@@ -6241,7 +6241,7 @@ interlocking-table:
       - id: 45
       - id: 47
       - id: 48
-      - id: 50
+      - id: 49
       - id: 51
       - id: 52
       - id: 53
@@ -6275,7 +6275,7 @@ interlocking-table:
       - id: 22
       - id: 66
       - id: 67
-      - id: 24
+      - id: 25
       - id: 26
       - id: 27
       - id: 28
@@ -6434,8 +6434,8 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 22
-      - id: 44
       - id: 66
+      - id: 45
       - id: 67
       - id: 47
       - id: 69
@@ -6449,9 +6449,9 @@ interlocking-table:
       - id: 74
       - id: 53
       - id: 10
+      - id: 54
       - id: 11
       - id: 33
-      - id: 55
       - id: 57
       - id: 36
       - id: 58
@@ -6718,8 +6718,8 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 22
-      - id: 44
       - id: 66
+      - id: 45
       - id: 67
       - id: 68
       - id: 47
@@ -6739,9 +6739,9 @@ interlocking-table:
       - id: 53
       - id: 10
       - id: 32
+      - id: 54
       - id: 11
       - id: 33
-      - id: 55
       - id: 57
       - id: 36
       - id: 58
