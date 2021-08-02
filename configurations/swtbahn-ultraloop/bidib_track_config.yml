@@ -1,6 +1,70 @@
 # Track configuration: SWTbahnUltraloop
 boards:
   - id: onecontrol
+    points-board:
+      - id: point1
+        number: 0x00
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg28
+      - id: point2
+        number: 0x01
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg31
+      - id: decoupler
+        number: 0x02
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: reverse
+        segment: seg1
+      - id: point4
+        number: 0x03
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg29
+      - id: point5
+        number: 0x04
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg2
+      - id: servo_analog_linear
+        number: 0x06
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg3
+      - id: servo_analog_rotary
+        number: 0x07
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg4
     signals-board:
       - id: signal1
         number: 0x08
@@ -74,70 +138,6 @@ boards:
             value: 0x00
         initial: red
         type: block
-    points-board:
-      - id: point1
-        number: 0x00
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg28
-      - id: point2
-        number: 0x01
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg31
-      - id: decoupler
-        number: 0x02
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: reverse
-        segment: seg1
-      - id: point4
-        number: 0x03
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg2
-      - id: point5
-        number: 0x04
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg3
-      - id: servo_analog_linear
-        number: 0x06
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg4
-      - id: servo_analog_rotary
-        number: 0x07
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg5
   - id: master
     segments:
       - id: seg1

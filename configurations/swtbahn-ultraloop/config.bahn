@@ -43,10 +43,10 @@ module SWTbahnUltraloop
 		point1 0x00 segment seg28 normal 0x01 reverse 0x00 initial normal
 		point2 0x01 segment seg31 normal 0x01 reverse 0x00 initial normal
 		decoupler 0x02 segment seg1 normal 0x01 reverse 0x00 initial reverse
-		point4 0x03 segment seg2 normal 0x01 reverse 0x00 initial normal
-		point5 0x04 segment seg3 normal 0x01 reverse 0x00 initial normal
-		servo_analog_linear 0x06 segment seg4 normal 0x01 reverse 0x00 initial normal
-		servo_analog_rotary 0x07 segment seg5 normal 0x01 reverse 0x00 initial normal
+		point4 0x03 segment seg29 normal 0x01 reverse 0x00 initial normal
+		point5 0x04 segment seg2 normal 0x01 reverse 0x00 initial normal
+		servo_analog_linear 0x06 segment seg3 normal 0x01 reverse 0x00 initial normal
+		servo_analog_rotary 0x07 segment seg4 normal 0x01 reverse 0x00 initial normal
 	end
 
 	peripherals master
@@ -54,12 +54,12 @@ module SWTbahnUltraloop
 
 	blocks
 		block1 main seg30
-		block2 main seg29
 		block3 overlap seg17 main seg18 overlap seg19
 		
-		buffer1 main seg6
-		buffer2 main seg7
-		buffer3 main seg8
+		buffer1 main seg5
+		buffer2 main seg6
+		buffer3 main seg7
+		buffer4 main seg8
 	end
 	
 	crossings
@@ -76,8 +76,9 @@ module SWTbahnUltraloop
 		point1.down2 -- point2.straight
 		
 		block1.down -- point2.stem
-		block1.up -- block2.down
-		block2.up -- block3.down
+		block1.up -- point4.stem
+		point4.side -- block3.down
+		point4.straight -- buffer4.down
 		block3.up -- point1.down1
 		
 	#	signal1 -- point2.straight
@@ -86,7 +87,7 @@ module SWTbahnUltraloop
 	#	signal3b -- point2.stem
 		signal4 -- block1.down
 		signal5 -- block3.down
-		signal6 -- block2.up
+		signal6 -- block1.up
 		signal7 -- block3.up
 	end
 	
