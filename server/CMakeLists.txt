@@ -45,16 +45,11 @@ set_target_properties(bidib_static PROPERTIES IMPORTED_LOCATION
 
 set(FOREC_MAIN dyn_containers)
 set(FOREC_SRC ${CMAKE_SOURCE_DIR}/src)
-add_custom_target(
-	forec
+add_custom_command(
+	OUTPUT ${FOREC_MAIN}.c debug.txt information.xml ${FOREC_MAIN}.dot ${FOREC_MAIN}.pdf
 	COMMAND forecc -mforec_dyn_containers ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
-	BYPRODUCTS ${FOREC_MAIN}.c debug.txt information.xml ${FOREC_MAIN}.dot 
-)
-add_custom_target(
-	dot
 	COMMAND dot -T pdf ${FOREC_MAIN}.dot -o ${FOREC_MAIN}.pdf
-	DEPENDS forec
-	BYPRODUCTS ${FOREC_MAIN}.pdf
+	DEPENDS ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
 )
 
 add_custom_target(
@@ -75,12 +70,10 @@ add_custom_target(
 # - - - - - - - - - - - - -
 
 add_library(${FOREC_MAIN} SHARED ${SRCFILES} ${FOREC_MAIN}.c)
-add_dependencies(${FOREC_MAIN} forec dot)
 target_include_directories(${FOREC_MAIN} PRIVATE src)
 target_link_libraries(${FOREC_MAIN} bidib onion)
 
 add_library(${FOREC_MAIN}_static STATIC ${SRCFILES} ${FOREC_MAIN}.c)
-add_dependencies(${FOREC_MAIN}_static forec dot)
 target_include_directories(${FOREC_MAIN}_static PRIVATE src)
 target_link_libraries(${FOREC_MAIN}_static bidib_static onion_static)
 
