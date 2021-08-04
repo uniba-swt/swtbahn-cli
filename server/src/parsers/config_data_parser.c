@@ -87,7 +87,7 @@ void free_config_data(t_config_data config_data) {
         config_data.table_points = NULL;
     }
     
-	if (config_data.table_peripherals != NULL) {
+    if (config_data.table_peripherals != NULL) {
         g_hash_table_destroy(config_data.table_peripherals);
         config_data.table_peripherals = NULL;
     }

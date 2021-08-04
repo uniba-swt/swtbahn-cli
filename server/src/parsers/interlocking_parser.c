@@ -83,7 +83,7 @@ typedef enum {
     MAPPING_CONFLICT
 } e_mapping_level;
 
-e_mapping_level decrease_mapping_level (e_mapping_level level) {
+e_mapping_level decrease_mapping_level(e_mapping_level level) {
     switch (level) {
         case MAPPING_ROUTE:
             return MAPPING_TABLE;
@@ -98,7 +98,7 @@ e_mapping_level decrease_mapping_level (e_mapping_level level) {
     }
 }
 
-e_sequence_level decrease_sequence_level (e_sequence_level level) {
+e_sequence_level decrease_sequence_level(e_sequence_level level) {
     switch (level) {
         case SEQUENCE_ROUTES:
             return SEQUENCE_NONE;
@@ -161,7 +161,7 @@ GHashTable *parse(yaml_parser_t *parser) {
     t_interlocking_route *route = NULL;
     t_interlocking_point *point = NULL;
 
-    yaml_event_t  event;
+    yaml_event_t event;
     bool error = false;
     char *cur_scalar = NULL;
     char *last_scalar = NULL;
@@ -177,7 +177,7 @@ GHashTable *parse(yaml_parser_t *parser) {
             break;
         }
 
-        switch(event.type) {
+        switch (event.type) {
             case YAML_NO_EVENT:
                 error = true;
                 break;
@@ -307,7 +307,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                 error = true;
                 break;
             case YAML_SCALAR_EVENT:
-                cur_scalar = (char*)event.data.scalar.value;
+                cur_scalar = (char *)event.data.scalar.value;
 
                 if (last_scalar == NULL) {
                     break;
@@ -400,7 +400,7 @@ GHashTable *parse(yaml_parser_t *parser) {
         }
 
         last_scalar = cur_scalar;
-    } while(!error);
+    } while (!error);
 
     return routes;
 }
@@ -428,7 +428,8 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
 
     // success
     if (routes != NULL) {
-        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %d routes", g_hash_table_size(routes));
+        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %d routes", 
+                      g_hash_table_size(routes));
         return routes;
     }
 
