@@ -7,7 +7,7 @@ blocks:
     overlaps:
       - seg20
       - seg18
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal10
@@ -19,7 +19,7 @@ blocks:
     overlaps:
       - seg7
       - seg5
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal4
@@ -31,7 +31,7 @@ blocks:
     overlaps:
       - seg3
       - seg1
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal2
@@ -43,7 +43,7 @@ blocks:
     overlaps:
       - seg16
       - seg14
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal7
@@ -55,7 +55,7 @@ blocks:
     overlaps:
       - seg11
       - seg9
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal6
@@ -64,19 +64,19 @@ blocks:
     length: 10.00cm
     main:
       - seg29
-    reversed: false
+    is_reversed: false
     direction: bidirectional
   - id: buffer2
     length: 8.00cm
     main:
       - seg25
-    reversed: false
+    is_reversed: false
     direction: bidirectional
   - id: buffer3
     length: 17.30cm
     main:
       - seg26
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal13
@@ -87,7 +87,7 @@ platforms:
       - seg28
     overlaps:
       - seg27
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal14
@@ -98,7 +98,7 @@ platforms:
       - seg24
     overlaps:
       - seg23
-    reversed: false
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal11
@@ -132,6 +132,11 @@ signaltypes:
       - red
   - id: platformlight
     aspects:
-      - on
-      - off
+      - high
+      - low
 compositions:
+peripheraltypes:
+  - id: onebit
+    aspects:
+      - high
+      - low

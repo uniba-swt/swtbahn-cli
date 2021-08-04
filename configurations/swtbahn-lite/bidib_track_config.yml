@@ -309,9 +309,9 @@ boards:
         number: 0x13
         port: 0x00FF
         aspects:
-          - id: on
+          - id: high
             value: 0x01
-          - id: off
+          - id: low
             value: 0x00
-        initial: on
+        initial: high
         type: onebit
