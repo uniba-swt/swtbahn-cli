@@ -114,11 +114,11 @@ module SWTbahnFull
         seg41  0x14 length 23.3cm
         seg42a 0x15 length 17.6cm
         seg51  0x16 length 23.3cm
-        seg61  0x17 length 10.4cm    # Kehrschleifen
-        seg62  0x18 length 10.4cm    # Kehrschleifen
-        seg63  0x19 length 128.5cm   # Kehrschleifen
-        seg64  0x1a length 10.5cm    # Kehrschleifen
-        seg65  0x1b length 11.2cm    # Kehrschleifen
+        seg61  0x17 length 10.4cm    # Kehrschleife: sensor only
+        seg62  0x18 length 10.4cm    # Kehrschleife: sensor, reversible polarity
+        seg63  0x19 length 128.5cm   # Kehrschleife: main, reversible polarity
+        seg64  0x1a length 10.5cm    # Kehrschleife: sensory, reversible polarity
+        seg65  0x1b length 11.2cm    # Kehrschleife: sensor only
         seg66  0x1c length 23.3cm
         seg67  0x1d length 17.2cm
         seg68  0x1e length 95.2cm
@@ -544,6 +544,10 @@ module SWTbahnFull
             overlap seg93
             main seg94a seg94b
             overlap seg95
+        block21
+            overlap seg42a main seg42b
+        block22
+            main seg50
     end
 
     platforms
@@ -609,8 +613,8 @@ module SWTbahnFull
         block8.up -- point14.straight
 
         block9.down -- point18.stem
-        block10.down -- point22.down2
-        block11.down -- point22.down1
+        block10.down -- point22.up2
+        block11.down -- point22.up1
 
         block12.up -- point24.side
         block12.down -- point23.stem
@@ -633,8 +637,14 @@ module SWTbahnFull
         block19.down -- point28.straight
         block19.up -- point29.straight
 
-        block20.down -- point24.straight
-        block20.up -- point8.up2
+        block20.down -- point8.up2
+        block20.up -- point24.straight
+        
+        block21.down -- point16.straight
+        block21.up -- point17.stem
+        
+        block22.down -- point21.stem
+        block22.up -- point20.stem
 
         # Points
         point1.straight -- point2.stem
@@ -654,31 +664,30 @@ module SWTbahnFull
         point11.down2 -- point27.stem
         point11.up2 -- point12.down1
 
-        point24.stem -- point12.down2
-        point13.stem -- point12.up2
+        point12.down2 -- point24.stem
+        point12.up2 -- point13.stem
+        
         point14.stem -- point15.straight
         point15.stem -- point16.stem
-        point16.straight -- point17.stem
         point16.side -- point21.side
         point18.side -- point19.stem
         point19.straight -- point20.straight
-        point21.stem -- point20.stem
-        point23.straight -- point22.up1
+        point23.straight -- point22.down1
         point25.stem -- point21.straight
         point28.stem -- point26.straight
         point27.side -- point29.stem
 
 
         # Crossings
-        crossing1.down1 -- point18.straight
-        crossing1.down2 -- block5.down
-        crossing1.up1 -- point17.straight
-        crossing1.up2 -- point7.side
+        crossing1.down1 -- point17.straight
+        crossing1.down2 -- point7.side
+        crossing1.up1 -- point18.straight
+        crossing1.up2 -- block5.down
 
-        crossing2.up2 -- point20.side
-        crossing2.down2 -- point19.side
-        crossing2.up1 -- point23.side
-        crossing2.down1 -- point22.up2
+        crossing2.down1 -- point23.side
+        crossing2.down2 -- point20.side
+        crossing2.up1 -- point22.down2
+        crossing2.up2 -- point19.side
 
         # Signals
         block1.down -- signal1
@@ -699,8 +708,8 @@ module SWTbahnFull
         block6.down -- signal19
         block6.up -- signal20
 
-        block7.down -- signal19
-        block7.up -- signal20
+        block7.down -- signal21
+        block7.up -- signal22
 
         block8.down -- signal23
         block8.up -- signal25
@@ -738,7 +747,7 @@ module SWTbahnFull
         block19.down -- signal49
         block19.up -- signal50
 
-        block20.down -- signal53
-        block20.up -- signal51
+        block20.down -- signal51
+        block20.up -- signal53
     end
 end
