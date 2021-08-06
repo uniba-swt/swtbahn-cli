@@ -41,11 +41,11 @@ module SWTbahnStandard
 		seg27 0x13 length 10.2cm
 		seg28 0x27 length 80.8cm
 		seg29 0x28 length 10cm
-		seg30a 0x1C length 4cm
-		seg30b 0x1D length 5cm
-		seg31 0x1E length 55.1cm
-		seg32a 0x1B length 6cm
-		seg32b 0x1F length 4cm
+		seg30a 0x1C length 4cm     # GBM16T: OFF sensor only
+		seg30b 0x1D length 5cm     # Kehrschleife: OFF sensor, reversible polarity
+		seg31 0x1E length 55.1cm   # Kehrschleife: main, reversible polarity
+		seg32a 0x1B length 6cm     # Kehrschleife: ON sensor, reversible polarity
+		seg32b 0x1F length 4cm     # GBM16T: ON sensor only
 		seg33 0x14 length 21.5cm
 		seg34 0x15 length 14.1cm
 		seg35 0x16 length 21cm
@@ -120,10 +120,7 @@ module SWTbahnStandard
 		block5 overlap seg27 main seg28 overlap seg29
 		block6 overlap seg20 main seg21 overlap seg22
 
-		# Kehrschleifenmodul actively reverses the block's orientation, but the reversal is
-		# dependent on whether train exits the block from where it entered.
-		# There is no reliable method to correctly infer the train's orientation within the
-		# reversing loop
+		# Kehrschleifenmodul: actively reverses the block's orientation.
 		block7 overlap seg30b main seg31 overlap seg32b
 
 		# buffers
