@@ -2,28 +2,32 @@ module SWTbahnFull
 
     boards
         # Long partition
-        master 0x00
-        onecontrol1 0x1
-        onecontrol2 0x2
-        lightcontrol1 0x3
-        lightcontrol2 0x4
-        lightcontrol3 0x5
-        lightcontrol4 0x6
+        master 0xDA000D6800B4F0
+            features 
+                0x03:0x14  # seckack on, 200ms
+                0x6E:0x00  # track output default off
+            end
+        onecontrol1 0x45000D8D00C1F1
+        onecontrol2 0x45000D8D006FF1
+        lightcontrol1 0x45000D6B0087EC
+        lightcontrol2 0x45000D6B00BBED
+        lightcontrol3 0x45000D6B006CEC
+        lightcontrol4 0x45000D6B0031EF
 
         # Short partition
-        slave 0x7
-        onecontrol3 0x8
-        onecontrol4 0x9
-        lightcontrol5 0xa
-        lightcontrol6 0xb
-        lightcontrol7 0xc
-        lightcontrol8 0xd
+        slave 0x42000D6700EAEB
+        onecontrol3 0x45000D8D00BDF1
+        onecontrol4 0x45000D750003F2
+        lightcontrol5 0x45000D6B002AEF
+        lightcontrol6 0x45000D6B002BEF
+        lightcontrol7 0x45000D6B0063EC
+        lightcontrol8 0x45000D6B001DEF
     end
 
     segments master
         # Long partition
 
-        # 16T
+        # 16T (A)
         seg1   0x00 length 15cm
         seg2   0x01 length 187.1cm
         seg3   0x02 length 18.1cm
@@ -41,7 +45,7 @@ module SWTbahnFull
         seg23  0x0e length 17.5cm
         seg24  0x0f length 23.3cm
 
-        # 16T
+        # 16T (B)
         seg25  0x10 length 23.3cm
         seg26  0x11 length 10cm
         seg27  0x12 length 55cm
@@ -59,7 +63,7 @@ module SWTbahnFull
         seg49  0x1e length 23.3cm
         seg50  0x1f length 56cm
 
-        # 16T
+        # 16T (C)
         seg52  0x20 length 23.3cm
         seg53  0x21 length 23.3cm
         seg54  0x22 length 15cm
@@ -77,18 +81,23 @@ module SWTbahnFull
         seg85  0x2e length 23.3cm
         seg86  0x2f length 15cm
 
-        # 16T
+        # 16T (D) with Kehrschleifenmodul
         seg87a 0x30 length 78.5cm
         seg90  0x31 length 19cm
         seg91a 0x32 length 76cm
         seg93  0x33 length 15cm
         seg94a 0x34 length 140.7cm
+        seg61  0x17 length 10.4cm    # GBM16T: OFF sensor only
+        seg62  0x18 length 10.4cm    # Kehrschleife: OFF sensor, reversible polarity
+        seg63  0x19 length 128.5cm   # Kehrschleife: main, reversible polarity
+        seg64  0x1a length 10.5cm    # Kehrschleife: ON sensor, reversible polarity
+        seg65  0x1b length 11.2cm    # GBM16T: ON sensor only
     end
 
     segments slave
         # Short partition
 
-        # 16T
+        # 16T (E)
         seg7b  0x00 length 77.3cm
         seg8   0x01 length 15cm
         seg9   0x02 length 23.3cm
@@ -106,7 +115,7 @@ module SWTbahnFull
         seg35  0x0e length 23.3cm
         seg36  0x0f length 17.2cm
 
-        # 16T with Kehrschleifenmodul
+        # 16T (F) 
         seg37  0x10 length 115.2cm
         seg38  0x11 length 15cm
         seg39  0x12 length 13cm
@@ -114,17 +123,12 @@ module SWTbahnFull
         seg41  0x14 length 23.3cm
         seg42a 0x15 length 17.6cm
         seg51  0x16 length 23.3cm
-        seg61  0x17 length 10.4cm    # GBM16T: OFF sensor only
-        seg62  0x18 length 10.4cm    # Kehrschleife: OFF sensor, reversible polarity
-        seg63  0x19 length 128.5cm   # Kehrschleife: main, reversible polarity
-        seg64  0x1a length 10.5cm    # Kehrschleife: ON sensor, reversible polarity
-        seg65  0x1b length 11.2cm    # GBM16T: ON sensor only
         seg66  0x1c length 23.3cm
         seg67  0x1d length 17.2cm
         seg68  0x1e length 95.2cm
         seg69  0x1f length 15cm
 
-        # 16T
+        # 16T (G)
         seg70  0x20 length 23.3cm
         seg71  0x21 length 15cm
         seg72  0x22 length 80.5cm
@@ -142,7 +146,7 @@ module SWTbahnFull
         seg89  0x2e length 23.3cm
         seg91b 0x2f length 41.6cm
 
-        # 16T
+        # 16T (H)
         seg92  0x30 length 15cm
         seg94b 0x31 length 78.4cm
         seg95  0x32 length 15cm
@@ -151,13 +155,14 @@ module SWTbahnFull
     signals lightcontrol1
         # Long partition
 
-        shunting signal20 0x00      # TODO: placeholder address, must update
-        shunting signal21 0x01      # TODO: placeholder address, must update
         halt signal27 0x02          # TODO: placeholder address, must update
         halt signal29 0x03          # TODO: placeholder address, must update
-
         halt signal31 0x04          # TODO: placeholder address, must update
-        shunting signal43 0x05      # TODO: placeholder address, must update
+
+        distant signal2 0x08
+        distant signal3 0x09
+        distant signal16 0x0C
+        distant signal17 0x0D
 
         platformlight platformlight1 0x06   # TODO: placeholder address, must update
         platformlight platformlight2 0x07   # TODO: placeholder address, must update
@@ -166,26 +171,13 @@ module SWTbahnFull
     signals lightcontrol2
         # Long partition
 
-        distant signal2 0x08
-        distant signal3 0x09
-        distant signal6 0x0A
-        distant signal13 0x0B
-
-        distant signal16 0x0C
-        distant signal17 0x0D
-        distant signal52 0x0E
-    end
-
-    signals lightcontrol3
-        # Long partition
-
         # Composite signals
         distant signal4A 0x0F
         distant signal18A 0x10
 
         entry signal4B 0x11
         entry signal18B 0x12
-
+        
         composite signal4
             signals
                 signal4A
@@ -197,6 +189,14 @@ module SWTbahnFull
                 signal18A
                 signal18B
             end
+
+        distant signal6 0x0A
+        distant signal13 0x0B
+        distant signal52 0x0E
+    end
+
+    signals lightcontrol3
+        # Long partition
 
         block signal1 0x13
         block signal5 0x14
@@ -217,19 +217,30 @@ module SWTbahnFull
         exit signal28 0x1D
         exit signal30 0x1E
         entry signal32 0x1F
+
+        shunting signal20 0x00      # TODO: placeholder address, must update
+        shunting signal21 0x01      # TODO: placeholder address, must update
+        shunting signal43 0x05      # TODO: placeholder address, must update
     end
 
     signals lightcontrol5
         # Short partition
 
-        shunting signal39 0x20
         halt signal40 0x21
-        shunting signal41 0x22
         halt signal42 0x23
 
-        distant signal9 0x24
+        entry signal9 0x3B
+        entry signal24 0x3D
+        entry signal37 0x3F
+
+        distant signal10 0x24
+        distant signal25 0x26
+        distant signal38 0x2A
+                
+        shunting signal39 0x20
+        shunting signal41 0x22
+        
         distant signal12 0x25
-        distant signal24 0x26
         distant signal33 0x27
 
         platformlight platformlight3 0x28
@@ -240,7 +251,6 @@ module SWTbahnFull
 
         halt signal44 0x28
         distant signal34 0x29
-        distant signal37 0x2A
         block signal11 0x2B
 
         # Composite signal
@@ -316,12 +326,8 @@ module SWTbahnFull
             end
 
         entry signal8 0x3A
-
-        entry signal10 0x3B
         entry signal23 0x3C
-        entry signal25 0x3D
         entry signal36 0x3E
-        entry signal38 0x3F
     end
 
     points onecontrol1
@@ -518,7 +524,7 @@ module SWTbahnFull
             main seg94a seg94b
             overlap seg95
         block21
-            overlap seg42a main seg42b
+            main seg42a seg42b
         block22
             main seg50
     end
@@ -528,11 +534,13 @@ module SWTbahnFull
             overlap seg71 
             main seg72 
             overlap seg73
+            reversed
 
         block15 
             overlap seg74 
             main seg75 
             overlap seg76
+            reversed
 
         block9
             overlap seg45
