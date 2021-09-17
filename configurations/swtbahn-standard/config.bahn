@@ -46,7 +46,7 @@ module SWTbahnStandard
 		seg31 0x1E length 55.1cm   # Kehrschleife: main, reversible polarity
 		seg32a 0x1B length 6cm     # Kehrschleife: ON sensor, reversible polarity
 		seg32b 0x1F length 4cm     # GBM16T: ON sensor only
-		seg33 0x14 length 21.5cm
+		seg33 0x14 length 20.9cm
 		seg34 0x15 length 14.1cm
 		seg35 0x16 length 21cm
 		seg36 0x17 length 11.2cm
