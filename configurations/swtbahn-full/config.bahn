@@ -172,12 +172,12 @@ module SWTbahnFull
         # Long partition
 
         # Composite signals
-        distant signal4A 0x0F
-        distant signal18A 0x10
-
-        entry signal4B 0x11
-        entry signal18B 0x12
+        entry signal4A 0x11
+        entry signal18A 0x12
         
+        distant signal4B 0x0F
+        distant signal18B 0x10
+
         composite signal4
             signals
                 signal4A
@@ -254,8 +254,8 @@ module SWTbahnFull
         block signal11 0x2B
 
         # Composite signal
-        distant signal22A 0x2C
-        exit signal22B 0x2D
+        exit signal22A 0x2D
+        distant signal22B 0x2C
 
         composite signal22
             signals
@@ -268,11 +268,11 @@ module SWTbahnFull
         # Short partition
 
         # Composite signals
-        distant signal7A 0x2E
-        distant signal35A 0x2F
+        block signal7A 0x30
+        block signal35A 0x31
 
-        block signal7B 0x30
-        block signal35B 0x31
+        distant signal7B 0x2E
+        distant signal35B 0x2F
 
         composite signal7
             signals
@@ -286,11 +286,11 @@ module SWTbahnFull
             end
 
         # Composite signals
-        distant signal46A 0x32
-        distant signal48A 0x33
+        block signal46A 0x34
+        block signal48A 0x35
 
-        block signal46B 0x34
-        block signal48B 0x35
+        distant signal46B 0x32
+        distant signal48B 0x33
 
         composite signal46
             signals
@@ -308,11 +308,11 @@ module SWTbahnFull
         # Short partition
 
         # Composite signals
-        distant signal50A 0x36
-        distant signal53A 0x37
+        block signal50A 0x38
+        block signal53A 0x39
 
-        block signal50B 0x38
-        block signal53B 0x39
+        distant signal50B 0x36
+        distant signal53B 0x37
 
         composite signal50
             signals
