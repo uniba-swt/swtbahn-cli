@@ -42,7 +42,7 @@ dynlib_status dynlib_compile_scchart(const char filepath[], const char output_di
 		return DYNLIB_COMPILE_SCCHARTS_C_ERR;
 	}
 
-	// Compile the C file into a dynamic library
+	// Compile the C file into a shared library
 	sprintf(command, "%s -o %s/lib%s.so %s/%s.c", 
 			c_compiler_command, 
 			output_dir, filename, 
@@ -63,7 +63,7 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	strncpy(filepath_copy, filepath, PATH_MAX + NAME_MAX);
 	const char *filename = basename(filepath_copy);
 	
-	// Compile the BahnDSL model to a dynamic library
+	// Compile the BahnDSL model to a shared library
 	char command1[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
 	sprintf(command1, bahndsl_compiler_command, output_dir);
 	
