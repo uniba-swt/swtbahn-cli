@@ -185,7 +185,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
-		if (name == NULL && engine_is_unremovable(name)) {
+		if (name == NULL || engine_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Remove engine - engine name is invalid or engine is unremovable", 
 						  name);
@@ -277,7 +277,7 @@ bool remove_interlocker_files(const char library_name[]) {
 }
 
 bool interlocker_is_unremovable(const char name[]) {
-	bool result = strcmp(name, "interlocker_deafault (unremovable)") == 0;
+	bool result = strcmp(name, "interlocker_default (unremovable)") == 0;
 	return result;
 }
 
@@ -365,7 +365,7 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
-		if (name == NULL && interlocker_is_unremovable(name)) {
+		if (name == NULL || interlocker_is_unremovable(name)) {
 			syslog_server(LOG_ERR, "Request: Remove interlocker - interlocker name is invalid or interlocker is unremovable", name);
 			
 			onion_response_printf(res, "Interlocker name is invalid or interlocker is unremovable");
