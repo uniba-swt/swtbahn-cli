@@ -37,7 +37,7 @@
 #include "server.h"
 #include "dynlib.h"
 #include "dyn_containers_interface.h"
-
+#include "mongoose.h"
 
 static const char engine_dir[] = "engines";
 static const char engine_extensions[][5] = { "c", "h", "sctx" };
@@ -47,6 +47,7 @@ static const char interlocker_dir[] = "interlockers";
 static const char interlocker_extensions[][5] = { "bahn" };
 static const int interlocker_extensions_count = 1;
 
+static const char verifier_url[] = "ws://localhost:8080/engineverification/";
 
 extern pthread_mutex_t dyn_containers_mutex;
 
@@ -101,6 +102,77 @@ bool engine_is_unremovable(const char name[]) {
 	return result;
 }
 
+struct ws_verif_data {
+	bool finished;
+	bool success;
+	GString* file_path;
+	//Can also pass the verifier return message/logs over this struct in the future
+};
+
+
+// Print websocket response and signal that we're done
+static void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
+	if (ev == MG_EV_ERROR) {
+		// On error, log error message
+		syslog_server(LOG_ERR, "Request: Upload - Websocket callback: %s", (char *) ev_data);
+	} else if (ev == MG_EV_WS_OPEN) {
+		// Read sctx model from file and send that as the message.
+		//https://stackoverflow.com/a/174743
+		char* buffer = NULL;
+		size_t length;
+		FILE* fp = fopen((*(struct ws_verif_data *) fn_data).file_path->str, "r");
+		if(fp){
+			ssize_t bytes_read_count = getdelim( &buffer, &length, '\0', fp);
+			if (bytes_read_count != -1){
+				//- Create escaped version of the GString that represents the model file
+				//- Create message in the (json)syntax that the verification server wants
+				gchar* g_c_escaped = g_strescape(buffer, NULL);
+				GString* g_fullmsg = g_string_new("");
+				g_string_append_printf(g_fullmsg, "{\"sctx\":\"%s\"}", g_c_escaped);
+				free(g_c_escaped);
+				
+				//Send verification request
+				if(g_fullmsg != NULL){
+					mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
+				} else {
+					syslog_server(LOG_ERR, "Request: Upload - Websocket msg payload setup has gone wrong");
+				}
+				g_string_free(g_fullmsg, true);
+				free(buffer);
+			} else {
+				syslog_server(LOG_ERR, "Request: Upload - Websocket callback could not load the model file");
+			}
+		}
+		
+	} else if (ev == MG_EV_WS_MSG) {
+		// Got Response
+		struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
+		
+		//Check if the response contains that status field -> if yes, it's the verification result
+		char* isResult = strstr(wm->data.ptr, "\"status\":");
+		
+		if (isResult){	
+			//Check how the verification went
+			char* ret = strstr(wm->data.ptr, "\"status\":true");
+			
+			if(ret){
+				syslog_server(LOG_INFO, "Request: Upload - Verification successful (result positive)");
+				(*(struct ws_verif_data *) fn_data).success = true;
+			} else {
+				syslog_server(LOG_INFO, "Request: Upload - Verification not successful (result negative)");
+				(*(struct ws_verif_data *) fn_data).success = false;
+			}
+			(*(struct ws_verif_data *) fn_data).finished = true;
+		}
+	}
+	if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE){
+		//If an error is encountered, or if the websocket is closed before verification can finish, 
+		// the verification can't be completed -> success false; finished true.
+		(*(struct ws_verif_data *) fn_data).success = false;
+		(*(struct ws_verif_data *) fn_data).finished = true;
+	}
+}
+
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res) {
 	build_response_header(res);
@@ -129,6 +201,43 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Upload - copied engine SCCharts file from %s to %s", 
 					  temp_filepath, final_filepath);
 
+		//BLuedtke: Now try to contact verification server and verify engine before proceeding
+		// Should we try to compile the model first? -> discuss
+		// Has to be done over websocket connection.
+		struct mg_mgr mgr;
+		struct ws_verif_data signals;
+		signals.file_path = g_string_new(final_filepath);
+		// Client connection
+		struct mg_connection *c;
+		// Initialise event manager
+		mg_mgr_init(&mgr);
+		// Create client
+		c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &signals, NULL);
+		while (c && signals.finished == false) {
+			mg_mgr_poll(&mgr, 1000); // Wait for reply
+		}
+		if(c && !c->is_closing){
+			//If connection is not yet closing, send close. 
+			//After that, one more event poll has to be performed,
+			// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
+			mg_ws_send(c, "0", 1, 1000);
+			mg_mgr_poll(&mgr, 1000);
+		}
+		mg_mgr_free(&mgr); // Deallocate resources
+		
+		//Free string allocated for loading model file
+		g_string_free(signals.file_path, true);
+		
+		//Stop upload if verification did not succeed
+		if(!signals.success){
+			pthread_mutex_unlock(&dyn_containers_mutex);
+			syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
+			
+			onion_response_printf(res, "Engine verification failed");
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			return OCS_PROCESSED;
+		}
+										
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
 		const dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
