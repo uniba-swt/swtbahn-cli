@@ -74,6 +74,7 @@ bool string_equals(const char *str1, const char *str2) {
     return strcmp(str1, str2) == 0;
 }
 
+// Needed to temporarily store new strings created by config_get_... 
 GArray *cached_allocated_str;
 
 void bahn_data_util_init_cached_track_state() {

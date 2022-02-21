@@ -117,38 +117,47 @@ void free_all_interlockers(void) {
 	
 	selected_interlocker_instance = -1;
 }
-
+#include <stdio.h>
 const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {
 		syslog_server(LOG_ERR, "Grant route: No interlocker has been set");
 		return "no_interlocker";
 	}
-	
+printf("-- 1\n");
 	pthread_mutex_lock(&interlocker_mutex);
+printf("-- 2\n");
 
 	bahn_data_util_init_cached_track_state();
-	
+printf("-- 3\n");
+
 	// Ask the interlocker to grant requested route.
 	// May take multiple ticks to process the request.
 	dyn_containers_set_interlocker_instance_inputs(&interlocker_instances[selected_interlocker_instance], 
                                                    source_id, destination_id, 
                                                    train_id);
+printf("-- 4\n");
 
 	struct t_interlocker_instance_io interlocker_instance_io;	
 	do {
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
+printf("-- 5\n");
 	} while (!interlocker_instance_io.output_has_reset);
+printf("-- 6\n");
 
 	dyn_containers_set_interlocker_instance_reset(&interlocker_instances[selected_interlocker_instance], 
 	                                              false);
 	
+printf("-- 7\n");
 	do {
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
+printf("-- 8\n");
 	} while (!interlocker_instance_io.output_terminated);
-	
+printf("-- 9\n");
+
 	bahn_data_util_free_cached_track_state();
+printf("-- 10\n");
 
 	// Return the result
 	const char *route_id = interlocker_instance_io.output_route_id;
