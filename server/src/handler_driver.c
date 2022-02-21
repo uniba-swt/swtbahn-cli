@@ -145,17 +145,19 @@ static bool drive_route(const int grab_id, const int route_id) {
 	// Wait until the destination has been reached
 	const int path_count = route->path->len;
 	const char *destination = g_array_index(route->path, char *, path_count - 1);
-	while (!train_position_is_at(train_id, destination)) {
+	while (running && !train_position_is_at(train_id, destination)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	
 	// Driving stops
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
-	
-	// Controller releases the route
-	release_route(route_id);
+	if (running) {
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		
+		// Controller releases the route
+		release_route(route_id);
+	}
 	return true;
 }
 
