@@ -158,6 +158,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 		// Controller releases the route
 		release_route(route_id);
 	}
+	
 	return true;
 }
 
