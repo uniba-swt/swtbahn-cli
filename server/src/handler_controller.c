@@ -183,8 +183,9 @@ void release_route(const int route_id) {
 		}
 		bidib_flush();
 		
-        free(route->train);
-        route->train = NULL;
+		free(route->train);
+		route->train = NULL;
+		syslog_server(LOG_NOTICE, "Release route: route %d released", route_id);
     }
 
 	pthread_mutex_unlock(&interlocker_mutex);
