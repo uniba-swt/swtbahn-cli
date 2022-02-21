@@ -118,7 +118,7 @@ void dyn_containers_reset_interface(
 // Execute the outputs of the train engines and interlockers via the BiDiB library
 static void *dyn_containers_actuate(void *_) {
 	while (!running) {
-		// Empty
+		// Busy wait
 	}
 	
 	do {

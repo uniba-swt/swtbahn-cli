@@ -138,9 +138,9 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	                                          OR_METHODS) == OR_POST)) {
 		session_id = 0;
 		syslog_server(LOG_NOTICE, "Request: Stop");
-		running = false;
 		free_all_grabbed_trains();
 		free_all_interlockers();
+		running = false;
 		dyn_containers_stop();
 		bahn_data_util_free_config();
 		pthread_join(poll_bidib_messages_thread, NULL);
