@@ -1,4 +1,4 @@
-# SWTbahn client-server command line interface
+# SWTbahn Client-Server Command Line Interface
 
 This is a client-server command line interface for the SWTbahn. The server is
 connected to the BiDiB interface and provides a REST API. The client side
@@ -15,12 +15,13 @@ libbidib project.
 * Libraries: [onion](https://github.com/uniba-swt/onion), libpam, libgnutls,
 libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
+* ForeC command line compiler: [forec](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
 
 #### Client
 * python3
-* Libraries: click, requests, pyaml (`pip3 install click requests pyaml`)
+* Python libraries: click, requests, pyaml (`pip3 install click requests pyaml`)
 
 
 ## Build
@@ -171,4 +172,3 @@ When is a grab-id reset?
 is not the same as the one at the server
 * If the user issues `swtbahn admin shutdown` and the system was running
 * If the user issues `swtbahn config`
-
