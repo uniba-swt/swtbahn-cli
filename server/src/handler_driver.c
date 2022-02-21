@@ -202,6 +202,7 @@ static bool free_train(int grab_id) {
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
 		syslog_server(LOG_NOTICE, "Train %s released", grabbed_trains[grab_id].name->str);
 		g_string_free(grabbed_trains[grab_id].name, TRUE);
+		grabbed_trains[grab_id].name = NULL;
 		success = true;
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
