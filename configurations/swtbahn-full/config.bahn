@@ -473,6 +473,22 @@ module SWTbahnFull
             initial normal
     end
 
+    peripherals onecontrol1
+        onebit sync1 0x06 port 0x0023
+    end
+
+    peripherals onecontrol2
+        onebit sync2 0x08 port 0x0022
+    end
+
+    peripherals onecontrol3
+        onebit sync3 0x08 port 0x0023
+    end
+
+    peripherals onecontrol4
+        onebit sync4 0x06 port 0x0023
+    end
+
     blocks
         block1
             overlap seg1
