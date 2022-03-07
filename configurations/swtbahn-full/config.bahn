@@ -1,6 +1,7 @@
 module SWTbahnFull
 
     boards
+        # Bord adresses still need to be checked! 2022-03-07T1646
         # Long partition
         master 0xDA000D6800B4F0
             features 
@@ -17,7 +18,7 @@ module SWTbahnFull
         # Short partition
         slave 0x42000D6700EAEB
         onecontrol3 0x45000D8D00BDF1
-        onecontrol4 0x45000D750003F2
+        onecontrol4 0x45000D8D0003F2
         lightcontrol5 0x45000D6B002AEF
         lightcontrol6 0x45000D6B002BEF
         lightcontrol7 0x45000D6B0063EC
@@ -28,18 +29,17 @@ module SWTbahnFull
         # Long partition
 
         # 16T (A)
-        # Segments addresses need to be configured too
-        seg2   0x00 length 187.1cm
-        seg3   0x01 length 18.1cm
-        seg4   0x02 length 23.3cm
-        seg5   0x03 length 23.3cm
-        seg6   0x04 length 15cm
-        seg22  0x05 length 173.5cm
-        seg23  0x06 length 17.5cm
-        seg24  0x07 length 23.3cm
-        seg47  0x08 length 15cm
-        seg56  0x09 length 15.5cm
-        seg59  0x0a length 15cm
+        seg2   0x10 length 187.1cm
+        seg3   0x11 length 18.1cm
+        seg4   0x12 length 23.3cm
+        seg5   0x13 length 23.3cm
+        seg6   0x14 length 15cm
+        seg22  0x15 length 173.5cm
+        seg23  0x16 length 17.5cm
+        seg24  0x17 length 23.3cm
+        seg47  0x18 length 15cm
+        seg56  0x19 length 15.5cm
+        seg59  0x1a length 15cm
 
         # 16T (B)
         seg21a 0x00 length 35.0cm
@@ -59,41 +59,23 @@ module SWTbahnFull
         seg90  0x0e length 19cm
         seg93  0x0f length 15cm
 
-        # 16T (C)
-        seg1   0x00 length 15cm
-        seg16b 0x01 length 47.8cm
-        seg17  0x02 length 15cm
-        seg18  0x03 length 11.3cm
-        seg19  0x04 length 11.3cm
-        seg20  0x05 length 24.7cm
-        seg42b 0x06 length 46.3cm
-        seg43  0x07 length 23.3cm
-        seg48  0x08 length 23.3cm
-        seg49  0x09 length 23.3cm
-        seg50  0x0a length 56cm
-        seg52  0x0b length 23.3cm
-        seg53  0x0c length 23.3cm
-        seg57  0x0d length 15cm
-        seg60  0x0e length 23.3cm
-        seg94a 0x0f length 140.7cm
-
         # 16T (D) with Kehrschleifenmodul
-        seg7a  0x00 length 130.5cm
-        seg27  0x01 length 55cm
-        seg28  0x02 length 10cm
-        seg29  0x03 length 23.3cm
-        seg30  0x04 length 15cm
-        seg31a 0x05 length 31.7cm
-        seg61  0x06 length 10.4cm    # GBM16T: OFF sensor only
-        seg62  0x07 length 10.4cm    # Kehrschleife: OFF sensor, reversible polarity
-        seg63  0x08 length 128.5cm   # Kehrschleife: main, reversible polarity
-        seg64  0x09 length 10.5cm    # Kehrschleife: ON sensor, reversible polarity
-        seg65  0x0a length 11.2cm    # GBM16T: ON sensor only
-        seg77  0x0b length 10.4cm
-        seg78a 0x0c length 36.9cm
-        seg82a 0x0d length 100.2cm        
-        seg87a 0x0e length 78.5cm
-        seg91a 0x0f length 76cm
+        seg7a  0x20 length 130.5cm
+        seg27  0x21 length 55cm
+        seg28  0x22 length 10cm
+        seg29  0x23 length 23.3cm
+        seg30  0x24 length 15cm
+        seg31a 0x25 length 31.7cm
+        seg61  0x26 length 10.4cm    # GBM16T: OFF sensor only
+        seg62  0x27 length 10.4cm    # Kehrschleife: OFF sensor, reversible polarity
+        seg63  0x28 length 128.5cm   # Kehrschleife: main, reversible polarity
+        seg64  0x29 length 10.5cm    # Kehrschleife: ON sensor, reversible polarity
+        seg65  0x2a length 11.2cm    # GBM16T: ON sensor only
+        seg77  0x2b length 10.4cm
+        seg78a 0x2c length 36.9cm
+        seg82a 0x2d length 100.2cm        
+        seg87a 0x2e length 78.5cm
+        seg91a 0x2f length 76cm
     end
 
     segments slave
@@ -114,6 +96,58 @@ module SWTbahnFull
         seg84  0x0b length 23.3cm
         seg95  0x0c length 15cm
 
+        # 16T (G)
+        seg12  0x10 length 127cm
+        seg13  0x11 length 15cm
+        seg37  0x12 length 115.2cm
+        seg38  0x13 length 15cm
+        seg68  0x14 length 95.2cm
+        seg69  0x15 length 15cm
+        seg72  0x16 length 80.5cm
+        seg73  0x17 length 15cm
+        seg75  0x18 length 80cm
+        seg76  0x19 length 15cm
+
+        # 16T (H)
+        seg14  0x10 length 23.3cm
+        seg15  0x11 length 15cm
+        seg16a 0x12 length 42.2cm
+        seg39  0x13 length 13cm
+        seg40  0x14 length 23.3cm
+        seg41  0x15 length 23.3cm
+        seg42a 0x16 length 17.6cm
+        seg51  0x17 length 23.3cm
+        seg70  0x18 length 23.3cm
+        seg71  0x19 length 15cm
+        seg74  0x1a length 15cm
+        seg94b 0x1b length 78.4cm
+    end
+
+    segments onecontrol2
+        # Long partition
+
+        # 16T (C)
+        seg1   0x00 length 15cm
+        seg16b 0x01 length 47.8cm
+        seg17  0x02 length 15cm
+        seg18  0x03 length 11.3cm
+        seg19  0x04 length 11.3cm
+        seg20  0x05 length 24.7cm
+        seg42b 0x06 length 46.3cm
+        seg43  0x07 length 23.3cm
+        seg48  0x08 length 23.3cm
+        seg49  0x09 length 23.3cm
+        seg50  0x0a length 56cm
+        seg52  0x0b length 23.3cm
+        seg53  0x0c length 23.3cm
+        seg57  0x0d length 15cm
+        seg60  0x0e length 23.3cm
+        seg94a 0x0f length 140.7cm
+    end
+
+    segments onecontrol3
+        # Short partition
+
         # 16T (F) 
         seg7b  0x00 length 77.3cm
         seg31b 0x01 length 64.7cm
@@ -126,32 +160,6 @@ module SWTbahnFull
         seg89  0x08 length 23.3cm
         seg91b 0x09 length 41.6cm
         seg92  0x0a length 15cm
-
-        # 16T (G)
-        seg12  0x00 length 127cm
-        seg13  0x01 length 15cm
-        seg37  0x02 length 115.2cm
-        seg38  0x03 length 15cm
-        seg68  0x04 length 95.2cm
-        seg69  0x05 length 15cm
-        seg72  0x06 length 80.5cm
-        seg73  0x07 length 15cm
-        seg75  0x08 length 80cm
-        seg76  0x09 length 15cm
-
-        # 16T (H)
-        seg14  0x07 length 23.3cm
-        seg15  0x08 length 15cm
-        seg16a 0x09 length 42.2cm
-        seg39  0x12 length 13cm
-        seg40  0x13 length 23.3cm
-        seg41  0x14 length 23.3cm
-        seg42a 0x15 length 17.6cm
-        seg51  0x16 length 23.3cm
-        seg70  0x20 length 23.3cm
-        seg71  0x21 length 15cm
-        seg74  0x24 length 15cm
-        seg94b 0x31 length 78.4cm
     end
 
     signals lightcontrol1
