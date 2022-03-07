@@ -28,6 +28,7 @@ module SWTbahnFull
         # Long partition
 
         # 16T (A)
+        # Segments addresses need to be configured too
         seg2   0x00 length 187.1cm
         seg3   0x01 length 18.1cm
         seg4   0x02 length 23.3cm
@@ -156,28 +157,28 @@ module SWTbahnFull
     signals lightcontrol1
         # Long partition
 
-        halt signal27 0x02          # TODO: placeholder address, must update
-        halt signal29 0x03          # TODO: placeholder address, must update
-        halt signal31 0x04          # TODO: placeholder address, must update
+        halt signal27 0x00
+        halt signal29 0x01
+        halt signal31 0x02
 
-        distant signal2 0x08
-        distant signal3 0x09
-        distant signal16 0x0C
-        distant signal17 0x0D
+        distant signal2 0x03
+        distant signal3 0x04
+        distant signal16 0x05
+        distant signal17 0x06
 
-        platformlight platformlight1 0x06
-        platformlight platformlight2 0x07
+        platformlight platformlight1 0x16
+        platformlight platformlight2 0x17
     end
 
     signals lightcontrol2
         # Long partition
 
         # Composite signals
-        entry signal4a 0x11
-        entry signal18a 0x12
+        entry signal4a 0x00
+        entry signal18a 0x02
         
-        distant signal4b 0x0F
-        distant signal18b 0x10
+        distant signal4b 0x01
+        distant signal18b 0x03
 
         composite signal4
             signals
@@ -191,74 +192,72 @@ module SWTbahnFull
                 signal18b
             end
 
-        exit signal19 0x1A
+        exit signal19 0x04
         
-        block signal5 0x14
-        block signal15 0x15
-        block signal51 0x19
+        block signal5 0x05
+        block signal15 0x06
+        block signal51 0x07
     end
 
     signals lightcontrol3
         # Long partition
 
-        exit signal26 0x1B
-        exit signal28 0x1D
-        exit signal30 0x1E
+        exit signal26 0x00
+        exit signal28 0x01
+        exit signal30 0x02
     end
 
     signals lightcontrol4
         # Long partition
 
-        distant signal6 0x0A
-        distant signal13 0x0B
-        distant signal52 0x0E
+        distant signal6 0x00
+        distant signal13 0x01
+        distant signal52 0x02
 
-        shunting signal21 0x01
-        shunting signal43 0x05
+        shunting signal21 0x03
+        shunting signal43 0x04
 
-        entry signal14 0x1C
-        entry signal32 0x1F
+        entry signal14 0x05
+        entry signal32 0x06
 
-        shunting signal20 0x00
+        shunting signal20 0x07
 
-        block signal1 0x13
-        block signal45 0x16
-        block signal47 0x17
-        block signal49 0x18
+        block signal1 0x08
+        block signal45 0x09
+        block signal47 0x0A
+        block signal49 0x0B
     end
 
     signals lightcontrol5
         # Short partition
 
-        halt signal40 0x21
-        halt signal42 0x23
+        halt signal40 0x00
+        halt signal42 0x01
 
-        entry signal9 0x3B
-        entry signal24 0x3D
-        entry signal37 0x3F
+        entry signal9 0x02
+        entry signal24 0x03
+        entry signal37 0x04
 
-        distant signal10 0x24
-        distant signal25 0x26
-        distant signal38 0x2A
-        
-        platformlight platformlight3 0x28
+        distant signal10 0x05
+        distant signal25 0x06
+        distant signal38 0x07
     end
 
     signals lightcontrol6
         # Short partition
 
-        entry signal8 0x3A
-        entry signal23 0x3C
-        entry signal36 0x3E
+        entry signal8 0x00
+        entry signal23 0x01
+        entry signal36 0x02
 
         # Composite signals
-        block signal7a 0x30
-        block signal35a 0x31
-        block signal53a 0x39
+        block signal7a 0x03
+        block signal35a 0x05
+        block signal53a 0x07
 
-        distant signal7b 0x2E
-        distant signal35b 0x2F
-        distant signal53b 0x37
+        distant signal7b 0x04
+        distant signal35b 0x06
+        distant signal53b 0x08
 
         composite signal7
             signals
@@ -283,15 +282,15 @@ module SWTbahnFull
         # Short partition
 
         # Composite signals
-        exit signal22a 0x2D
-        block signal46a 0x34
-        block signal48a 0x35
-        block signal50a 0x38
+        exit signal22a 0x00
+        block signal46a 0x02
+        block signal48a 0x04
+        block signal50a 0x06
 
-        distant signal22b 0x2C
-        distant signal46b 0x32
-        distant signal48b 0x33
-        distant signal50b 0x36
+        distant signal22b 0x01
+        distant signal46b 0x03
+        distant signal48b 0x05
+        distant signal50b 0x07
 
         composite signal22
             signals
@@ -316,20 +315,22 @@ module SWTbahnFull
                 signal50b
             end
 
-        halt signal44 0x28
+        halt signal44 0x08
     end
 
     signals lightcontrol8
         # Short partition
 
-        distant signal12 0x25
-        distant signal33 0x27
-        distant signal34 0x29
+        distant signal12 0x00
+        distant signal33 0x01
+        distant signal34 0x02
 
-        block signal11 0x2B
+        block signal11 0x03
 
-        shunting signal39 0x20
-        shunting signal41 0x22
+        shunting signal39 0x04
+        shunting signal41 0x05
+
+        platformlight platformlight4 0x17
     end
 
     points onecontrol1
