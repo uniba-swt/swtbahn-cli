@@ -100,6 +100,7 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 }
 
 static bool drive_route(const int grab_id, const int route_id) {
+	//Lock needs to go here
 	const char *train_id = grabbed_trains[grab_id].name->str;
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train == NULL) {
@@ -108,7 +109,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 		return false;
 	}
 
-	pthread_mutex_lock(&interlocker_mutex);
+	pthread_mutex_lock(&interlocker_mutex);	// this needs to be removed/moved to 103
     if (strcmp(train_id, route->train) != 0) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
@@ -119,7 +120,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 	// Driving starts
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	const int requested_speed = 20;
+	const int requested_speed = 20; //this still up to date? -> define as a constant
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
 	                                        && train_position_query.orientation_is_left)
@@ -163,6 +164,7 @@ static int grab_train(const char *train, const char *engine) {
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			//TODO: insert log here
 			return -1;
 		}
 	}
@@ -233,6 +235,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 				bidib_free_train_state_query(train_state);
 				int grab_id = grab_train(data_train, data_engine);
 				if (grab_id == -1) {
+					//TODO more precise error msg if all slots are taken
 					syslog_server(LOG_ERR, "Request: Grab train - train already grabbed or engine not found");
 					return OCS_NOT_IMPLEMENTED;
 				} else {
