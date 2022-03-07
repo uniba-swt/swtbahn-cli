@@ -33,8 +33,6 @@
 #include <onion/onion.h>
 
 extern volatile time_t session_id;
-extern volatile bool starting;
-extern volatile bool stopping;
 extern volatile bool running;
 extern char serial_device[128];
 extern char config_directory[128];

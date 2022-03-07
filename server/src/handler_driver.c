@@ -126,6 +126,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 	                                        && train_position_query.orientation_is_left)
 	                                || (strcmp(route->orientation, "anticlockwise") == 0 
 	                                        && !train_position_query.orientation_is_left);
+	bidib_free_train_position_query(train_position_query);
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
 	                                                requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -145,17 +146,20 @@ static bool drive_route(const int grab_id, const int route_id) {
 	// Wait until the destination has been reached
 	const int path_count = route->path->len;
 	const char *destination = g_array_index(route->path, char *, path_count - 1);
-	while (!train_position_is_at(train_id, destination)) {
+	while (running && !train_position_is_at(train_id, destination)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	
 	// Driving stops
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
+	if (running) {
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		
+		// Controller releases the route
+		release_route(route_id);
+	}
 	
-	// Controller releases the route
-	release_route(route_id);
 	return true;
 }
 
@@ -203,6 +207,7 @@ static bool free_train(int grab_id) {
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
 		syslog_server(LOG_NOTICE, "Train %s released", grabbed_trains[grab_id].name->str);
 		g_string_free(grabbed_trains[grab_id].name, TRUE);
+		grabbed_trains[grab_id].name = NULL;
 		success = true;
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -225,14 +230,14 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Grab train - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			t_bidib_train_state_query train_state =
+			t_bidib_train_state_query train_state_query =
 				bidib_get_train_state(data_train);
-			if (!train_state.known) {
-				bidib_free_train_state_query(train_state);
+			if (!train_state_query.known) {
+				bidib_free_train_state_query(train_state_query);
 				syslog_server(LOG_ERR, "Request: Grab train - train not known");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				bidib_free_train_state_query(train_state);
+				bidib_free_train_state_query(train_state_query);
 				int grab_id = grab_train(data_train, data_engine);
 				if (grab_id == -1) {
 					//TODO more precise error msg if all slots are taken
@@ -267,16 +272,19 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		t_bidib_train_state_query train_state = 
+		t_bidib_train_state_query train_state_query = 
 			bidib_get_train_state(grabbed_trains[grab_id].name->str);
 
-		if (train_state.data.set_speed_step != 0) {
+		if (train_state_query.data.set_speed_step != 0) {
+			bidib_free_train_state_query(train_state_query);
 			syslog_server(LOG_ERR, "Request: Release train - train still moving");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !free_train(grab_id)) {
+			bidib_free_train_state_query(train_state_query);
 			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			bidib_free_train_state_query(train_state_query);
 			syslog_server(LOG_NOTICE, "Request: Release train");
 			return OCS_PROCESSED;
 		}

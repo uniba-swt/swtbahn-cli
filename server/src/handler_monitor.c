@@ -67,30 +67,44 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
-			syslog_server(LOG_ERR, "Request: Get train train state - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get train state - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			t_bidib_train_state_query train_state =
+			t_bidib_train_state_query train_state_query =
 				bidib_get_train_state(data_train);
-			if (train_state.known) {
+			t_bidib_train_position_query train_position_query = 
+				bidib_get_train_position(data_train);
+			if (train_state_query.known) {
+				GString *seg_string = g_string_new("No segments");
+				if (train_position_query.length > 0) {
+					g_string_printf(seg_string, "%s", train_position_query.segments[0]);
+					for (size_t i = 1; i < train_position_query.length; i++) {
+						g_string_append_printf(seg_string, ", %s", train_position_query.segments[i]);
+					}
+				}
+				bidib_free_train_position_query(train_position_query);
+			
 				GString *ret_string = g_string_new("");
 				g_string_append_printf(ret_string, "on track: %s - orientation: %s"
 				                       " - speed step: %d - detected speed: %d km/h",
-				                       train_state.data.on_track ? "yes" : "no",
-				                       (train_state.data.orientation ==
+				                       train_state_query.data.on_track ? seg_string->str : "no",
+				                       (train_state_query.data.orientation ==
 				                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
 				                       "left" : "right",
-				                       train_state.data.set_speed_step,
-				                       train_state.data.detected_kmh_speed);
-				bidib_free_train_state_query(train_state);
+				                       train_state_query.data.set_speed_step,
+				                       train_state_query.data.detected_kmh_speed);
+				bidib_free_train_state_query(train_state_query);
 				char response[ret_string->len + 1];
 				strcpy(response, ret_string->str);
+				g_string_free(seg_string, true);
 				g_string_free(ret_string, true);
 				onion_response_printf(res, "%s", response);
 				syslog_server(LOG_NOTICE, "Request: Get train state");
 				return OCS_PROCESSED;
 			} else {
-				syslog_server(LOG_ERR, "Request: Get train train state - invalid train");
+				bidib_free_train_position_query(train_position_query);
+				bidib_free_train_state_query(train_state_query);
+				syslog_server(LOG_ERR, "Request: Get train state - invalid train");
 				return OCS_NOT_IMPLEMENTED;
 			}
 		}

@@ -7,19 +7,19 @@
 #include "dynlib.h"
 #include "server.h"
 
-const char dynlib_symbol_train_engine_reset[] = "reset";
-const char dynlib_symbol_train_engine_tick[] = "tick";
+static const char dynlib_symbol_train_engine_reset[] = "reset";
+static const char dynlib_symbol_train_engine_tick[] = "tick";
 
-const char dynlib_symbol_interlocker_reset[] = "request_route_reset";
-const char dynlib_symbol_interlocker_tick[] = "request_route_tick";
+static const char dynlib_symbol_interlocker_reset[] = "request_route_reset";
+static const char dynlib_symbol_interlocker_tick[] = "request_route_tick";
 
-const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
-const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
+static const char dynlib_symbol_drive_route_reset[] = "drive_route_reset";
+static const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 
-const char sccharts_compiler_command[] = "java -jar \"$KIELER_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.priority";
-const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
+static const char sccharts_compiler_c_command[] = "java -jar \"$KIELER_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.priority";
+static const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
-const char bahndsl_compiler_command[] = "bahnc -o %s -m library";
+static const char bahndsl_compiler_command[] = "bahnc -o %s -m library";
 
 dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);
 dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library);
@@ -35,14 +35,14 @@ dynlib_status dynlib_compile_scchart(const char filepath[], const char output_di
 	
 	// Compile the SCCharts model to a C file
 	char command[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command, "%s -o %s %s.sctx", sccharts_compiler_command, output_dir, filepath);
+	sprintf(command, "%s -o %s %s.sctx", sccharts_compiler_c_command, output_dir, filepath);
 
 	int ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
 		return DYNLIB_COMPILE_SCCHARTS_C_ERR;
 	}
 
-	// Compile the C file into a dynamic library
+	// Compile the C file into a shared library
 	sprintf(command, "%s -o %s/lib%s.so %s/%s.c", 
 			c_compiler_command, 
 			output_dir, filename, 
@@ -63,7 +63,7 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	strncpy(filepath_copy, filepath, PATH_MAX + NAME_MAX);
 	const char *filename = basename(filepath_copy);
 	
-	// Compile the BahnDSL model to a dynamic library
+	// Compile the BahnDSL model to a shared library
 	char command1[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
 	sprintf(command1, bahndsl_compiler_command, output_dir);
 	

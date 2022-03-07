@@ -83,6 +83,7 @@ const int unset_interlocker(const char *interlocker_name) {
 		dyn_containers_free_interlocker_instance(&interlocker_instances[selected_interlocker_instance]);
 		interlocker_instances[selected_interlocker_instance].is_valid = false;
 		g_string_free(selected_interlocker_name, true);
+		selected_interlocker_name = NULL;
 		selected_interlocker_instance = -1;
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -102,6 +103,7 @@ const int load_default_interlocker_instance() {
 void free_all_interlockers(void) {
 	if (selected_interlocker_name != NULL) {
 		g_string_free(selected_interlocker_name, true);
+		selected_interlocker_name = NULL;
 	}
 
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
@@ -183,8 +185,9 @@ void release_route(const int route_id) {
 		}
 		bidib_flush();
 		
-        free(route->train);
-        route->train = NULL;
+		free(route->train);
+		route->train = NULL;
+		syslog_server(LOG_NOTICE, "Release route: route %d released", route_id);
     }
 
 	pthread_mutex_unlock(&interlocker_mutex);

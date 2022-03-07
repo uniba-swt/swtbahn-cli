@@ -39,13 +39,13 @@
 #include "dyn_containers_interface.h"
 
 
-const static char engine_dir[] = "engines";
-const static char engine_extensions[][5] = { "c", "h", "sctx" };
-const static int engine_extensions_count = 3;
+static const char engine_dir[] = "engines";
+static const char engine_extensions[][5] = { "c", "h", "sctx" };
+static const int engine_extensions_count = 3;
 
-const static char interlocker_dir[] = "interlockers";
-const static char interlocker_extensions[][5] = { "bahn" };
-const static int interlocker_extensions_count = 1;
+static const char interlocker_dir[] = "interlockers";
+static const char interlocker_extensions[][5] = { "bahn" };
+static const int interlocker_extensions_count = 1;
 
 
 extern pthread_mutex_t dyn_containers_mutex;
@@ -131,11 +131,13 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
-		dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
+		const dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
 		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
-			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled", filepath);
+			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled "
+                                   "into a C file and then to a shared library", filepath);
 			
-			onion_response_printf(res, "Engine file %s could not be compiled", filepath);
+			onion_response_printf(res, "Engine file %s could not be compiled into a C file "
+                                       "and then a shared library", filepath);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
@@ -185,7 +187,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
-		if (name == NULL && engine_is_unremovable(name)) {
+		if (name == NULL || engine_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Remove engine - engine name is invalid or engine is unremovable", 
 						  name);
@@ -277,7 +279,7 @@ bool remove_interlocker_files(const char library_name[]) {
 }
 
 bool interlocker_is_unremovable(const char name[]) {
-	bool result = strcmp(name, "interlocker_deafault (unremovable)") == 0;
+	bool result = strcmp(name, "interlocker_default (unremovable)") == 0;
 	return result;
 }
 
@@ -311,7 +313,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".bahn");
-		dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
+		const dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
 		if (status == DYNLIB_COMPILE_SHARED_BAHNDSL_ERR) {
 			syslog_server(LOG_ERR, "Request: Upload - interlocker file %s could not be compiled", filepath);
 			
@@ -365,7 +367,7 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
-		if (name == NULL && interlocker_is_unremovable(name)) {
+		if (name == NULL || interlocker_is_unremovable(name)) {
 			syslog_server(LOG_ERR, "Request: Remove interlocker - interlocker name is invalid or interlocker is unremovable", name);
 			
 			onion_response_printf(res, "Interlocker name is invalid or interlocker is unremovable");
