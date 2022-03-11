@@ -351,11 +351,11 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point8 0x02 segment seg24 # TODO UPDATE: 4-way-point
+        point8 0x02 segment seg24 # 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
-        point9 0x03 segment seg25 # TODO UPDATE: 4-way-point
+        point9 0x03 segment seg25 # 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -392,7 +392,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point18b 0x03 segment seg44  # TODO UPDATE: 4-way-point
+        point18b 0x03 segment seg44  # 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -404,7 +404,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point22 0x06 segment seg53  # TODO UPDATE: 4-way-point
+        point22 0x06 segment seg53  # 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -425,11 +425,11 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point11 0x02 segment seg33 # TODO UPDATE: 4-way-point
+        point11 0x02 segment seg33 # 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
-        point12 0x03 segment seg34 # TODO UPDATE: 4-way-point
+        point12 0x03 segment seg34 # 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -613,8 +613,8 @@ module SWTbahnFull
         block6.down -- point9.up1
         block6.up -- point10.stem
 
-        block7.down -- point10.straight
-        block7.up -- point11.down1
+        platform4.down -- point10.straight
+        platform4.up -- point11.down1
 
         block8.down -- point13.straight
         block8.up -- point14.straight
@@ -725,9 +725,62 @@ module SWTbahnFull
         point27.side -- point29.stem
 
         #point28 - already defined
-        #point29 - already defined
+        #point29 -   ""      ""
 
-        
+        # signals
+        signal1 -- block1.down
+        signal2 -- block1.up
+        signal3 -- block1.down
+        signal4 -- block1.up
+        signal5 -- block2.down
+        signal6 -- block2.down
+        signal7 -- block2.up
+        signal8 -- block3.down
+        signal9 -- block3.up
+        signal10 -- block3.down
+        signal11 -- block4.down
+        signal12 -- block4.up
+        signal13 -- block4.down
+        signal14 -- block4.up
+        signal15 -- block5.down
+        signal16 -- block5.up
+        signal17 -- block5.down
+        signal18 -- block5.up
+        signal19 -- block6.down
+        signal20 -- block6.up
+        signal21 -- platform4.down
+        signal22 -- platform4.up
+        signal23 -- block8.down
+        signal24 -- block8.up
+        signal25 -- block8.down
+        signal26 -- platform3.down
+        signal27 -- platform3.up
+        signal28 -- platform2.down
+        signal29 -- platform2.up
+        signal30 -- platform1.down
+        signal31 -- platform1.up
+        signal32 -- block14.down
+        signal33 -- block14.up
+        signal34 -- block14.down
+        signal35 -- block14.up
+        signal36 -- block15.down
+        signal37 -- block15.up
+        signal38 -- block15.down
+        signal39 -- platform7.up
+        signal40 -- platform7.down
+        signal41 -- platform6.up
+        signal42 -- platform6.down
+        signal43 -- platform5.down
+        signal44 -- platform5.up
+        signal45 -- block19.down
+        signal46 -- block19.up
+        signal47 -- block20.down
+        signal48 -- block20.up
+        signal49 -- block21.down
+        signal50 -- block21.up
+        signal51 -- block22.down
+        signal52 -- block22.down
+        signal53 -- block22.up
     end
 
     trains
