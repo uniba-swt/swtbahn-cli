@@ -364,7 +364,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point18a 0x05 segment seg21A
+        point18a 0x05 segment seg21a
             normal 0x01
             reverse 0x00
             initial normal
@@ -595,167 +595,18 @@ module SWTbahnFull
     end
 
     layout
-        # Blocks
+        #blocks
         block1.down -- point7.straight
         block1.up -- point1.stem
-
+        
         block2.down -- point2.straight
         block2.up -- point3.straight
-
+        
         block3.down -- point4.stem
         block3.up -- point5.stem
-
+        
         block4.down -- point5.straight
         block4.up -- point6.straight
-        
-        block5.up -- point8.down2
-
-        block6.down -- point9.up1
-        block6.up -- point10.stem
-
-        block7.down -- point10.straight
-        block7.up -- point11.down1
-
-        block8.down -- point13.straight
-        block8.up -- point14.straight
-
-        block9.down -- point18.stem
-        block10.down -- point22.up2
-        block11.down -- point22.up1
-
-        block12.up -- point24.side
-        block12.down -- point23.stem
-
-        block13.down -- point13.side
-        block13.up -- point14.side
-
-        block14.down -- point25.straight
-
-        block15.down -- point25.side
-
-        block16.down -- point10.side
-
-        block17.down -- point26.side
-        block17.up -- point27.straight
-
-        block18.down -- point28.side
-        block18.up -- point29.side
-
-        block19.down -- point28.straight
-        block19.up -- point29.straight
-
-        block20.down -- point8.up2
-        block20.up -- point24.straight
-        
-        block21.down -- point16.straight
-        block21.up -- point17.stem
-        
-        block22.down -- point21.stem
-        block22.up -- point20.stem
-
-        # Points
-        point1.straight -- point2.stem
-        point3.stem -- point4.straight
-        point4.side -- point12.up1
-        point5.side -- point15.side
-        point6.stem -- point7.stem
-        point6.side -- point17.side
-
-        point8.up1 -- point9.down2
-        point8.down1 -- point1.side
-
-        point9.down1 -- point2.side
-        point9.up2 -- point26.stem
-
-        point11.up1 -- point3.side
-        point11.down2 -- point27.stem
-        point11.up2 -- point12.down1
-
-        point12.down2 -- point24.stem
-        point12.up2 -- point13.stem
-        
-        point14.stem -- point15.straight
-        point15.stem -- point16.stem
-        point16.side -- point21.side
-        point18.side -- point19.stem
-        point19.straight -- point20.straight
-        point23.straight -- point22.down1
-        point25.stem -- point21.straight
-        point28.stem -- point26.straight
-        point27.side -- point29.stem
-
-
-        # Crossings
-        crossing1.down1 -- point17.straight
-        crossing1.down2 -- point7.side
-        crossing1.up1 -- point18.straight
-        crossing1.up2 -- block5.down
-
-        crossing2.down1 -- point23.side
-        crossing2.down2 -- point20.side
-        crossing2.up1 -- point22.down2
-        crossing2.up2 -- point19.side
-
-        # Signals
-        block1.down -- signal1
-        block1.up -- signal4
-
-        block2.down -- signal5
-        block2.up -- signal7
-
-        block3.down -- signal8
-        block3.up -- signal10
-
-        block4.down -- signal12
-        block4.up -- signal14
-
-        block5.down -- signal15
-        block5.up -- signal18
-
-        block6.down -- signal19
-        block6.up -- signal20
-
-        block7.down -- signal21
-        block7.up -- signal22
-
-        block8.down -- signal23
-        block8.up -- signal25
-
-        block9.down -- signal26
-        block9.up -- signal27
-
-        block10.down -- signal28
-        block10.up -- signal29
-
-        block11.down -- signal30
-        block11.up -- signal31
-
-        block12.down -- signal32
-        block12.up -- signal35
-
-        block13.down -- signal36
-        block13.up -- signal38
-
-        block14.down -- signal39
-        block14.up -- signal40
-
-        block15.down -- signal41
-        block15.up -- signal42
-        
-        block16.down -- signal43
-        block16.up -- signal44
-
-        block17.down -- signal45
-        block17.up -- signal46
-
-        block18.down -- signal47
-        block18.up -- signal48
-
-        block19.down -- signal49
-        block19.up -- signal50
-
-        block20.down -- signal51
-        block20.up -- signal53
     end
 
 	trains
