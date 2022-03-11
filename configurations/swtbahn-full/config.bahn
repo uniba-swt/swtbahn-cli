@@ -351,11 +351,11 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point8 0x02 segment seg24
+        point8 0x02 segment seg24 # TODO UPDATE: 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
-        point9 0x03 segment seg25
+        point9 0x03 segment seg25 # TODO UPDATE: 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -392,7 +392,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point18b 0x03 segment seg44
+        point18b 0x03 segment seg44  # TODO UPDATE: 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -404,7 +404,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point22 0x06 segment seg53
+        point22 0x06 segment seg53  # TODO UPDATE: 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -425,11 +425,11 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point11 0x02 segment seg33
+        point11 0x02 segment seg33 # TODO UPDATE: 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
-        point12 0x03 segment seg34
+        point12 0x03 segment seg34 # TODO UPDATE: 4-way-point
             normal 0x01
             reverse 0x00
             initial normal
@@ -606,6 +606,128 @@ module SWTbahnFull
         
         block4.down -- point5.straight
         block4.up -- point6.straight
+
+        block5.down -- point18a.stem
+        block5.up -- point8.down2
+
+        block6.down -- point9.up1
+        block6.up -- point10.stem
+
+        block7.down -- point10.straight
+        block7.up -- point11.down1
+
+        block8.down -- point13.straight
+        block8.up -- point14.straight
+
+        block9.down -- point16.straight
+        block9.up -- point17.stem
+
+        block10.down -- point21.stem
+        block10.up -- point20.stem
+
+        platform3.down -- point18b.up1
+        
+        platform2.down -- point22.up2
+
+        platform1.down -- point22.up1
+
+        block14.down -- point23.stem
+        block14.up -- point24.side
+
+        block15.down -- point13.side
+        block15.up -- point14.side
+
+        platform7.up -- point25.straight
+
+        platform6.up -- point25.side
+
+        platform5.down -- point10.side
+
+        block19.down -- point26.side
+        block19.up -- point27.straight
+
+        block20.down -- point28.side
+        block20.up -- point29.side
+
+        block21.down -- point28.straight
+        block21.up -- point29.straight
+
+        block22.down -- point8.up2
+        block22.up -- point24.straight
+
+        # crossings
+        crossing1.down1 -- point17.straight
+        crossing1.down2 -- point7.side
+        crossing1.up1 -- point18b.down2
+        crossing1.up2 -- point18a.straight
+
+        crossing2.down1 -- point23.side
+        crossing2.down2 -- point20.side
+        crossing2.up1 -- point22.down2
+        crossing2.up2 -- point19.side
+
+        # points
+        point1.straight -- point2.stem
+        point1.side -- point8.down1
+
+        point2.side -- point9.down1
+
+        point3.side -- point11.up1
+        point3.stem -- point4.straight
+
+        point4.side -- point12.up1
+
+        point5.side -- point15.side
+
+        point6.side -- point17.side
+        point6.stem -- point7.stem
+
+        #point7.side -- crossing1.down2  # already defined in 'crossings'
+
+        point8.up1 -- point9.down2
+
+        point9.up2 -- point26.stem
+
+        point11.down2 -- point27.stem
+        point11.up2 -- point12.down1
+
+        point12.down2 -- point24.stem
+        point12.up2 -- point13.stem
+
+        #point13 - already defined
+
+        point14.stem -- point15.straight
+
+        point15.stem -- point16.stem
+
+        point16.side -- point21.side
+
+        #point17.straight -- crossing1.down1  # already defined in 'crossings'
+
+        point18a.side -- point18b.up2
+
+        point18b.down1 -- point19.stem
+
+        point19.straight -- point20.straight
+
+        #point20 - already defined
+
+        point21.straight -- point25.stem
+
+        point22.down1 -- point23.straight
+
+        #point23 - already defined
+        #point24 -   ""      ""
+        #point25 -   ""      ""
+
+        point26.straight -- point28.stem
+
+        point27.side -- point29.stem
+
+        #point28 - already defined
+        #point29 - already defined
+
+        
     end
 
     trains
