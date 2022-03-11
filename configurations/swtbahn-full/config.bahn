@@ -1,7 +1,6 @@
 module SWTbahnFull
 
     boards
-        # Bord adresses still need to be checked! 2022-03-07T1646
         # Long partition
         master 0xDA000D6800B4F0
             features 
@@ -176,7 +175,7 @@ module SWTbahnFull
 
         platformlight platformlight1 0x17
         platformlight platformlight2 0x16
-        platformlight platformlight4 0x15
+        platformlight platformlight4a 0x15
     end
 
     signals lightcontrol2
@@ -338,6 +337,8 @@ module SWTbahnFull
 
         shunting signal39 0x04
         shunting signal41 0x05
+        
+        platformlight platformlight4b 0x17
     end
 
     points onecontrol1
@@ -351,11 +352,11 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point8 0x02 segment seg24 # 4-way-point
+        point8 0x02 segment seg24     # Double-slip point
             normal 0x01
             reverse 0x00
             initial normal
-        point9 0x03 segment seg25 # 4-way-point
+        point9 0x03 segment seg25     # Double-slip point
             normal 0x01
             reverse 0x00
             initial normal
@@ -392,7 +393,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point18b 0x03 segment seg44  # 4-way-point
+        point18b 0x03 segment seg44   # Double-slip point
             normal 0x01
             reverse 0x00
             initial normal
@@ -404,7 +405,7 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point22 0x06 segment seg53  # 4-way-point
+        point22 0x06 segment seg53    # Double-slip point
             normal 0x01
             reverse 0x00
             initial normal
@@ -425,11 +426,11 @@ module SWTbahnFull
             normal 0x01
             reverse 0x00
             initial normal
-        point11 0x02 segment seg33 # 4-way-point
+        point11 0x02 segment seg33    # Double-slip point
             normal 0x01
             reverse 0x00
             initial normal
-        point12 0x03 segment seg34 # 4-way-point
+        point12 0x03 segment seg34    # Double-slip point
             normal 0x01
             reverse 0x00
             initial normal
@@ -481,18 +482,22 @@ module SWTbahnFull
     end
 
     peripherals onecontrol1
-        onebit sync1 0x08 port 0x0023
+        # Synchronisation pulse for dimming and brightening the lanterns
+        onebit sync1 0x08 port 0x001a    # Exact port address is not essential for output-only behaviour
     end
 
     peripherals onecontrol2
+        # Synchronisation pulse for dimming and brightening the lanterns
         onebit sync2 0x08 port 0x0022
     end
 
     peripherals onecontrol3
+        # Synchronisation pulse for dimming and brightening the lanterns
         onebit sync3 0x08 port 0x0023
     end
 
     peripherals onecontrol4
+        # Synchronisation pulse for dimming and brightening the lanterns
         onebit sync4 0x06 port 0x0023
     end
 
@@ -594,7 +599,7 @@ module SWTbahnFull
     end
 
     layout
-        #blocks
+        # Blocks
         block1.down -- point7.straight
         block1.up -- point1.stem
         
@@ -655,7 +660,7 @@ module SWTbahnFull
         block22.down -- point8.up2
         block22.up -- point24.straight
 
-        # crossings
+        # Crossings
         crossing1.down1 -- point17.straight
         crossing1.down2 -- point7.side
         crossing1.up1 -- point18b.down2
@@ -666,7 +671,7 @@ module SWTbahnFull
         crossing2.up1 -- point22.down2
         crossing2.up2 -- point19.side
 
-        # points
+        # Points
         point1.straight -- point2.stem
         point1.side -- point8.down1
 
@@ -682,7 +687,7 @@ module SWTbahnFull
         point6.side -- point17.side
         point6.stem -- point7.stem
 
-        #point7.side -- crossing1.down2  # already defined in 'crossings'
+      # point7.side -- crossing1.down2  # already defined in 'crossings'
 
         point8.up1 -- point9.down2
 
@@ -694,7 +699,7 @@ module SWTbahnFull
         point12.down2 -- point24.stem
         point12.up2 -- point13.stem
 
-        #point13 - already defined
+      # point13 - already defined
 
         point14.stem -- point15.straight
 
@@ -702,7 +707,7 @@ module SWTbahnFull
 
         point16.side -- point21.side
 
-        #point17.straight -- crossing1.down1  # already defined in 'crossings'
+      # point17.straight -- crossing1.down1  # already defined in 'crossings'
 
         point18a.side -- point18b.up2
 
@@ -710,41 +715,41 @@ module SWTbahnFull
 
         point19.straight -- point20.straight
 
-        #point20 - already defined
+      # point20 - already defined
 
         point21.straight -- point25.stem
 
         point22.down1 -- point23.straight
 
-        #point23 - already defined
-        #point24 -   ""      ""
-        #point25 -   ""      ""
+      # point23 - already defined
+      # point24 -   ""      ""
+      # point25 -   ""      ""
 
         point26.straight -- point28.stem
 
         point27.side -- point29.stem
 
-        #point28 - already defined
-        #point29 -   ""      ""
+      # point28 - already defined
+      # point29 -   ""      ""
 
-        # signals
+        # Signals
         signal1 -- block1.down
-        signal2 -- block1.up
-        signal3 -- block1.down
+        signal2 -- block1.up      # TODO: Distant signal only
+        signal3 -- block1.down    # TODO: Distant signal only
         signal4 -- block1.up
         signal5 -- block2.down
-        signal6 -- block2.down
+        signal6 -- block2.down    # TODO: Distant signal only
         signal7 -- block2.up
         signal8 -- block3.down
         signal9 -- block3.up
-        signal10 -- block3.down
+        signal10 -- block3.down   # TODO: Distant signal only
         signal11 -- block4.down
-        signal12 -- block4.up
-        signal13 -- block4.down
+        signal12 -- block4.up     # TODO: Distant signal only
+        signal13 -- block4.down   # TODO: Distant signal only
         signal14 -- block4.up
         signal15 -- block5.down
-        signal16 -- block5.up
-        signal17 -- block5.down
+        signal16 -- block5.up     # TODO: Distant signal only
+        signal17 -- block5.down   # TODO: Distant signal only
         signal18 -- block5.up
         signal19 -- block6.down
         signal20 -- block6.up
@@ -752,7 +757,7 @@ module SWTbahnFull
         signal22 -- platform4.up
         signal23 -- block8.down
         signal24 -- block8.up
-        signal25 -- block8.down
+        signal25 -- block8.down   # TODO: Distant signal only
         signal26 -- platform3.down
         signal27 -- platform3.up
         signal28 -- platform2.down
@@ -760,12 +765,12 @@ module SWTbahnFull
         signal30 -- platform1.down
         signal31 -- platform1.up
         signal32 -- block14.down
-        signal33 -- block14.up
-        signal34 -- block14.down
+        signal33 -- block14.up    # TODO: Distant signal only
+        signal34 -- block14.down  # TODO: Distant signal only
         signal35 -- block14.up
         signal36 -- block15.down
         signal37 -- block15.up
-        signal38 -- block15.down
+        signal38 -- block15.down  # TODO: Distant signal only
         signal39 -- platform7.up
         signal40 -- platform7.down
         signal41 -- platform6.up
@@ -779,7 +784,7 @@ module SWTbahnFull
         signal49 -- block21.down
         signal50 -- block21.up
         signal51 -- block22.down
-        signal52 -- block22.down
+        signal52 -- block22.down  # TODO: Distant signal only
         signal53 -- block22.up
     end
 
