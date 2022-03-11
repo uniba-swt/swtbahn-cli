@@ -556,36 +556,36 @@ module SWTbahnFull
     end
 
     platforms
-        platform1           # block11
-            overlap seg45
-            main seg46
-            overlap seg47
+        platform1           # block13
+            overlap seg57
+            main seg58
+            overlap seg59
         platform2           # block12
             overlap seg54
             main seg55
             overlap seg56
-        platform3           # block13
-            overlap seg57
-            main seg58
-            overlap seg59
-        platform4           # block16
-            overlap seg71 
-            main seg72 
-            overlap seg73
-            reversed
-        platform5           # block17
+        platform3           # block11
+            overlap seg45
+            main seg46
+            overlap seg47
+        platform4           # block7
+            overlap seg30
+            main seg31a seg31b
+            overlap seg32
+        platform5           # block18
+            overlap seg77
+            main seg78a seg78b
+            overlap seg79
+        platform6           # block17
             overlap seg74 
             main seg75 
             overlap seg76
             reversed
-        platform6           # block18
-            overlap seg77
-            main seg78a seg78b
-            overlap seg79
-        platform7           # block7
-            overlap seg30
-            main seg31a seg31b
-            overlap seg32
+        platform7           # block16
+            overlap seg71 
+            main seg72 
+            overlap seg73
+            reversed
     end
 
     crossings
