@@ -174,8 +174,9 @@ module SWTbahnFull
         distant signal16 0x05
         distant signal17 0x06
 
-        platformlight platformlight1 0x16
-        platformlight platformlight2 0x17
+        platformlight platformlight1 0x17
+        platformlight platformlight2 0x16
+        platformlight platformlight4 0x15
     end
 
     signals lightcontrol2
@@ -337,8 +338,6 @@ module SWTbahnFull
 
         shunting signal39 0x04
         shunting signal41 0x05
-
-        platformlight platformlight4 0x17
     end
 
     points onecontrol1
