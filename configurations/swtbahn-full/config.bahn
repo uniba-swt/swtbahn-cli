@@ -27,7 +27,7 @@ module SWTbahnFull
     segments master
         # Long partition
 
-        # 16T (A)
+        # GBM 16T 1
         seg2   0x10 length 187.1cm
         seg3   0x11 length 18.1cm
         seg4   0x12 length 23.3cm
@@ -40,7 +40,7 @@ module SWTbahnFull
         seg56  0x19 length 15.5cm
         seg59  0x1a length 15cm
 
-        # 16T (B)
+        # GBMboost Master
         seg21a 0x00 length 35.0cm
         seg21b 0x01 length 15.0cm
         seg25  0x02 length 23.3cm
@@ -58,7 +58,7 @@ module SWTbahnFull
         seg90  0x0e length 19cm
         seg93  0x0f length 15cm
 
-        # 16T (D) with Kehrschleifenmodul
+        # GBM 16T 3 with Kehrschleifenmodul
         seg7a  0x20 length 130.5cm
         seg27  0x21 length 55cm
         seg28  0x22 length 10cm
@@ -80,7 +80,7 @@ module SWTbahnFull
     segments slave
         # Short partition
 
-        # 16T (E)
+        # GBMboost Slave 
         seg8   0x00 length 15cm
         seg9   0x01 length 23.3cm
         seg10  0x02 length 23.3cm
@@ -95,7 +95,7 @@ module SWTbahnFull
         seg84  0x0b length 23.3cm
         seg95  0x0c length 15cm
 
-        # 16T (G)
+        # GBM 16T 5
         seg12  0x20 length 127cm
         seg13  0x21 length 15cm
         seg37  0x22 length 115.2cm
@@ -107,7 +107,7 @@ module SWTbahnFull
         seg75  0x28 length 80cm
         seg76  0x29 length 15cm
 
-        # 16T (H)
+        # GBM 16T 6
         seg14  0x10 length 23.3cm
         seg15  0x11 length 15cm
         seg16a 0x12 length 42.2cm
@@ -125,7 +125,7 @@ module SWTbahnFull
     segments onecontrol2
         # Long partition
 
-        # 16T (C)
+        # GBM 16T 2
         seg1   0x00 length 15cm
         seg16b 0x01 length 47.8cm
         seg17  0x02 length 15cm
@@ -147,7 +147,7 @@ module SWTbahnFull
     segments onecontrol3
         # Short partition
 
-        # 16T (F) 
+        # GBM 16T 4 
         seg7b  0x00 length 77.3cm
         seg31b 0x01 length 64.7cm
         seg78b 0x02 length 22.8cm
