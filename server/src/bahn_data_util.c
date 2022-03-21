@@ -779,7 +779,7 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
  * Convert the signalling action to raw aspect based on signal types
  * Update bidib state
  * @param id signal name
- * @param value stop, clear or caution
+ * @param value stop, go, caution, shunt
  * @return true if successful, otherwise false
  */
 bool set_signal_state(const char *id, const char *value) {
@@ -790,30 +790,24 @@ bool set_signal_state(const char *id, const char *value) {
     if (string_equals(value, "stop")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
+            || string_equals(signal->type, "distant")
             || string_equals(signal->type, "block")
-            || string_equals(signal->type, "stoplight")) {
+            || string_equals(signal->type, "shunting")
+            || string_equals(signal->type, "halt")) {
 
-            return set_signal_raw_aspect(signal, "red");
-        }
-
-        if (string_equals(signal->type, "distant")) {
-            return set_signal_raw_aspect(signal, "yellow");
+            return set_signal_raw_aspect(signal, "aspect_stop");
         }
 
         return false;
     }
 
-    if (string_equals(value, "clear")) {
+    if (string_equals(value, "go")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
-            || string_equals(signal->type, "block")
-            || string_equals(signal->type, "distant")) {
+            || string_equals(signal->type, "distant")
+            || string_equals(signal->type, "block")) {
 
-            return set_signal_raw_aspect(signal, "green");
-        }
-
-        if (string_equals(signal->type, "stoplight")) {
-            return set_signal_raw_aspect(signal, "white");
+            return set_signal_raw_aspect(signal, "aspect_go");
         }
 
         return false;
@@ -824,7 +818,17 @@ bool set_signal_state(const char *id, const char *value) {
             || string_equals(signal->type, "exit")
             || string_equals(signal->type, "distant")) {
 
-            return set_signal_raw_aspect(signal, "yellow") && set_signal_raw_aspect(signal, "green");
+            return set_signal_raw_aspect(signal, "aspect_caution");
+        }
+
+        return false;
+    }
+
+    if (string_equals(value, "shunt")) {
+        if (string_equals(signal->type, "exit")
+            || string_equals(signal->type, "shunting")) {
+
+            return set_signal_raw_aspect(signal, "aspect_shunt");
         }
 
         return false;
