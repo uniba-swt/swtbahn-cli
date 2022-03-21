@@ -697,11 +697,10 @@ e_config_type get_track_state_type(const char *id) {
 }
 
 /**
- * Get raw signal aspect from bidib state
+ * Get raw signal aspect from bidib state (stop, go, caution, shunt)
  * Convert back to signalling action based on signal type
- * caution action is not completely supported yet because it requires multiple aspects enabled
  * @param id signal name
- * @param value stop, clear or caution
+ * @param value stop, go, caution, or shunt
  * @return true of success, otherwise false
  */
 char *get_signal_state(const char *id) {
@@ -721,32 +720,35 @@ char *get_signal_state(const char *id) {
 
     // load signalling aspect based on signal type
     char *result = NULL;
-    if (string_equals(raw_state, "red")) {
+    if (string_equals(raw_state, "aspect_stop")) {
         if (string_equals(type, "entry")
             || string_equals(type, "exit")
             || string_equals(type, "block")
-            || string_equals(type, "stoplight")) {
+            || string_equals(type, "distant")
+            || string_equals(type, "shunting")
+            || string_equals(type, "halt")) {
 
             result = "stop";
         }
-    } else if (string_equals(raw_state, "green")){
+    } else if (string_equals(raw_state, "aspect_go")){
         if (string_equals(type, "entry")
             || string_equals(type, "exit")
             || string_equals(type, "block")
             || string_equals(type, "distant")) {
 
-            result = "clear";
+            result = "go";
         }
-    } else if (string_equals(raw_state, "yellow")){
-        if (string_equals(type, "distant")) {
-            result = "stop";
-        } else if (string_equals(type, "entry")
-                   || string_equals(type, "exit")) {
+    } else if (string_equals(raw_state, "aspect_caution")){
+        if (string_equals(type, "entry")
+            || string_equals(type, "exit")
+            || string_equals(type, "distant")) {
+
             result = "caution";
         }
-    } else if (string_equals(raw_state, "white")){
-        if (string_equals(type, "stoplight")) {
-            result = "clear";
+    } else if (string_equals(raw_state, "aspect_shunt")){
+        if (string_equals(type, "exit")
+            || string_equals(type, "shunting")) {
+            result = "shunt";
         }
     }
 
