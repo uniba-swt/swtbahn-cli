@@ -7,17 +7,11 @@ interlocking-table:
     path:
       # point11.normal1 -> point12.normal1 -> point13.reverse -> block15
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg67
-        type: segment
       - id: seg68
-        type: segment
       - id: seg69
-        type: segment
     sections:
       - id: block15
     length: 197.30cm
@@ -88,97 +82,13 @@ interlocking-table:
     destination: signal9
     orientation: anticlockwise
     path:
-      # point11.reverse1 -> point3.reverse -> point4.normal -> block3
-      - id: seg33
-        type: segment
-      - id: seg9
-        type: segment
-      - id: seg10
-        type: segment
-      - id: seg11
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg13
-        type: segment
-    sections:
-      - id: block3
-    length: 232.60cm
-    signals:
-      - id: signal22a
-      - id: signal9
-    points:
-      - id: point11
-        position: reverse
-      - id: point3
-        position: reverse
-      - id: point4
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 20
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 76
-      - id: 77
-      - id: 78
-      - id: 79
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 95
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 124
-      - id: 135
-      - id: 136
-      - id: 143
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 151
-  - id: 2 #route2
-    source: signal22a
-    destination: signal9
-    orientation: anticlockwise
-    path:
       # point11.normal1 -> point12.reverse1 -> point4.reverse -> block3
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 232.60cm
@@ -194,7 +104,7 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
-      - id: 1
+      - id: 2
       - id: 3
       - id: 4
       - id: 5
@@ -247,6 +157,78 @@ interlocking-table:
       - id: 149
       - id: 150
       - id: 151
+  - id: 2 #route2
+    source: signal22a
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point11.reverse1 -> point3.reverse -> point4.normal -> block3
+      - id: seg33
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: seg12
+      - id: seg13
+    sections:
+      - id: block3
+    length: 232.60cm
+    signals:
+      - id: signal22a
+      - id: signal9
+    points:
+      - id: point11
+        position: reverse
+      - id: point3
+        position: reverse
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 20
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 76
+      - id: 77
+      - id: 78
+      - id: 79
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 95
+      - id: 99
+      - id: 100
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 124
+      - id: 135
+      - id: 136
+      - id: 143
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
   - id: 3 #route3
     source: signal22a
     destination: signal24
@@ -254,17 +236,11 @@ interlocking-table:
     path:
       # point11.normal1 -> point12.normal1 -> point13.normal -> block8
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg36
-        type: segment
       - id: seg37
-        type: segment
       - id: seg38
-        type: segment
     sections:
       - id: block8
     length: 217.30cm
@@ -337,21 +313,13 @@ interlocking-table:
     path:
       # point29.normal -> point27.reverse -> point11.reverse2 -> point12.normal1 -> point13.reverse -> block15
       - id: seg89
-        type: segment
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg67
-        type: segment
       - id: seg68
-        type: segment
       - id: seg69
-        type: segment
     sections:
       - id: block15
     length: 243.90cm
@@ -426,109 +394,15 @@ interlocking-table:
     destination: signal9
     orientation: anticlockwise
     path:
-      # point29.normal -> point27.reverse -> point11.normal2 -> point3.reverse -> point4.normal -> block3
-      - id: seg89
-        type: segment
-      - id: seg84
-        type: segment
-      - id: seg33
-        type: segment
-      - id: seg9
-        type: segment
-      - id: seg10
-        type: segment
-      - id: seg11
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg13
-        type: segment
-    sections:
-      - id: block3
-    length: 279.20cm
-    signals:
-      - id: signal50a
-      - id: signal9
-    points:
-      - id: point29
-        position: normal
-      - id: point27
-        position: reverse
-      - id: point11
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point4
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 6
-      - id: 7
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 20
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 76
-      - id: 77
-      - id: 78
-      - id: 79
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 95
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 124
-      - id: 135
-      - id: 136
-      - id: 143
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 151
-  - id: 6 #route6
-    source: signal50a
-    destination: signal9
-    orientation: anticlockwise
-    path:
       # point29.normal -> point27.reverse -> point11.reverse2 -> point12.reverse1 -> point4.reverse -> block3
       - id: seg89
-        type: segment
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 279.20cm
@@ -552,7 +426,7 @@ interlocking-table:
       - id: 2
       - id: 3
       - id: 4
-      - id: 5
+      - id: 6
       - id: 7
       - id: 13
       - id: 14
@@ -601,6 +475,84 @@ interlocking-table:
       - id: 149
       - id: 150
       - id: 151
+  - id: 6 #route6
+    source: signal50a
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point29.normal -> point27.reverse -> point11.normal2 -> point3.reverse -> point4.normal -> block3
+      - id: seg89
+      - id: seg84
+      - id: seg33
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: seg12
+      - id: seg13
+    sections:
+      - id: block3
+    length: 279.20cm
+    signals:
+      - id: signal50a
+      - id: signal9
+    points:
+      - id: point29
+        position: normal
+      - id: point27
+        position: reverse
+      - id: point11
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 7
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 20
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 76
+      - id: 77
+      - id: 78
+      - id: 79
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 95
+      - id: 99
+      - id: 100
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 124
+      - id: 135
+      - id: 136
+      - id: 143
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
   - id: 7 #route7
     source: signal50a
     destination: signal24
@@ -608,21 +560,13 @@ interlocking-table:
     path:
       # point29.normal -> point27.reverse -> point11.reverse2 -> point12.normal1 -> point13.normal -> block8
       - id: seg89
-        type: segment
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg36
-        type: segment
       - id: seg37
-        type: segment
       - id: seg38
-        type: segment
     sections:
       - id: block8
     length: 263.90cm
@@ -699,21 +643,13 @@ interlocking-table:
     path:
       # point8.normal2 -> point9.reverse2 -> point26.normal -> point28.normal -> block21
       - id: seg24
-        type: segment
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg85
-        type: segment
       - id: seg90
-        type: segment
       - id: seg91a
-        type: segment
       - id: seg91b
-        type: segment
       - id: seg92
-        type: segment
     sections:
       - id: block21
     length: 244.80cm
@@ -768,19 +704,12 @@ interlocking-table:
     path:
       # point8.normal2 -> point9.reverse2 -> point26.reverse -> block19
       - id: seg24
-        type: segment
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg81
-        type: segment
       - id: seg82a
-        type: segment
       - id: seg82b
-        type: segment
       - id: seg83
-        type: segment
     sections:
       - id: block19
     length: 249.50cm
@@ -833,15 +762,10 @@ interlocking-table:
     path:
       # point8.reverse2 -> block22
       - id: seg24
-        type: segment
       - id: seg93
-        type: segment
       - id: seg94a
-        type: segment
       - id: seg94b
-        type: segment
       - id: seg95
-        type: segment
     sections:
       - id: block22
     length: 272.40cm
@@ -860,16 +784,16 @@ interlocking-table:
       - id: 54
       - id: 55
       - id: 57
-      - id: 59
+      - id: 58
       - id: 60
       - id: 62
-      - id: 63
-      - id: 65
+      - id: 64
+      - id: 66
       - id: 67
-      - id: 70
-      - id: 72
+      - id: 69
+      - id: 71
       - id: 73
-      - id: 74
+      - id: 75
       - id: 80
       - id: 81
       - id: 106
@@ -881,21 +805,13 @@ interlocking-table:
     path:
       # point8.normal2 -> point9.reverse2 -> point26.normal -> point28.reverse -> block20
       - id: seg24
-        type: segment
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg85
-        type: segment
       - id: seg86
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg88
-        type: segment
     sections:
       - id: block20
     length: 241.20cm
@@ -950,15 +866,10 @@ interlocking-table:
     path:
       # point8.normal2 -> point9.normal2 -> block6
       - id: seg24
-        type: segment
       - id: seg25
-        type: segment
       - id: seg26
-        type: segment
       - id: seg27
-        type: segment
       - id: seg28
-        type: segment
     sections:
       - id: block6
     length: 121.60cm
@@ -1007,19 +918,12 @@ interlocking-table:
     path:
       # point27.normal -> point11.reverse2 -> point12.normal1 -> point13.reverse -> block15
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg67
-        type: segment
       - id: seg68
-        type: segment
       - id: seg69
-        type: segment
     sections:
       - id: block15
     length: 220.60cm
@@ -1092,103 +996,14 @@ interlocking-table:
     destination: signal9
     orientation: anticlockwise
     path:
-      # point27.normal -> point11.normal2 -> point3.reverse -> point4.normal -> block3
-      - id: seg84
-        type: segment
-      - id: seg33
-        type: segment
-      - id: seg9
-        type: segment
-      - id: seg10
-        type: segment
-      - id: seg11
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg13
-        type: segment
-    sections:
-      - id: block3
-    length: 255.90cm
-    signals:
-      - id: signal46a
-      - id: signal9
-    points:
-      - id: point27
-        position: normal
-      - id: point11
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point4
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 13
-      - id: 15
-      - id: 16
-      - id: 20
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 76
-      - id: 77
-      - id: 78
-      - id: 79
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 95
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 124
-      - id: 135
-      - id: 136
-      - id: 143
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 151
-  - id: 15 #route15
-    source: signal46a
-    destination: signal9
-    orientation: anticlockwise
-    path:
       # point27.normal -> point11.reverse2 -> point12.reverse1 -> point4.reverse -> block3
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 255.90cm
@@ -1214,7 +1029,7 @@ interlocking-table:
       - id: 6
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 20
       - id: 39
@@ -1259,6 +1074,81 @@ interlocking-table:
       - id: 149
       - id: 150
       - id: 151
+  - id: 15 #route15
+    source: signal46a
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point27.normal -> point11.normal2 -> point3.reverse -> point4.normal -> block3
+      - id: seg84
+      - id: seg33
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: seg12
+      - id: seg13
+    sections:
+      - id: block3
+    length: 255.90cm
+    signals:
+      - id: signal46a
+      - id: signal9
+    points:
+      - id: point27
+        position: normal
+      - id: point11
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 13
+      - id: 14
+      - id: 16
+      - id: 20
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 76
+      - id: 77
+      - id: 78
+      - id: 79
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 95
+      - id: 99
+      - id: 100
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 124
+      - id: 135
+      - id: 136
+      - id: 143
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
   - id: 16 #route16
     source: signal46a
     destination: signal24
@@ -1266,19 +1156,12 @@ interlocking-table:
     path:
       # point27.normal -> point11.reverse2 -> point12.normal1 -> point13.normal -> block8
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg36
-        type: segment
       - id: seg37
-        type: segment
       - id: seg38
-        type: segment
     sections:
       - id: block8
     length: 240.60cm
@@ -1353,27 +1236,16 @@ interlocking-table:
     path:
       # point22.normal2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.reverse -> block15
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block10
       - id: block15
@@ -1479,23 +1351,14 @@ interlocking-table:
     path:
       # point22.normal2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.normal -> point25.normal -> platform7
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg73
-        type: segment
       - id: seg72
-        type: segment
       - id: seg71
-        type: segment
     sections:
       - id: block10
       - id: platform7
@@ -1522,9 +1385,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -1537,9 +1400,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -1547,7 +1410,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -1556,9 +1419,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 19 #route19
     source: signal30
@@ -1567,23 +1430,14 @@ interlocking-table:
     path:
       # point22.normal2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.normal -> point25.reverse -> platform6
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg76
-        type: segment
       - id: seg75
-        type: segment
       - id: seg74
-        type: segment
     sections:
       - id: block10
       - id: platform6
@@ -1610,9 +1464,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -1625,9 +1479,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -1635,7 +1489,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -1644,9 +1498,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 20 #route20
     source: signal30
@@ -1655,27 +1509,16 @@ interlocking-table:
     path:
       # point22.normal2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.reverse -> point16.reverse -> point15.reverse -> point5.reverse -> block3
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg14
-        type: segment
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block10
       - id: block3
@@ -1788,15 +1631,10 @@ interlocking-table:
     path:
       # point22.reverse1 -> point23.normal -> block14
       - id: seg53
-        type: segment
       - id: seg60
-        type: segment
       - id: seg62
-        type: segment
       - id: seg63
-        type: segment
       - id: seg64
-        type: segment
     sections:
       - id: block14
     length: 196.00cm
@@ -1846,27 +1684,16 @@ interlocking-table:
     path:
       # point22.normal2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.normal -> block8
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block10
       - id: block8
@@ -1972,21 +1799,13 @@ interlocking-table:
     path:
       # point23.reverse -> crossing2.line1 -> point19.reverse -> point18b.normal1 -> point18a.reverse -> block5
       - id: seg60
-        type: segment
       - id: seg52
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block5
     length: 322.20cm
@@ -2084,15 +1903,10 @@ interlocking-table:
     path:
       # point23.normal -> point22.reverse1 -> platform1
       - id: seg60
-        type: segment
       - id: seg53
-        type: segment
       - id: seg57
-        type: segment
       - id: seg58
-        type: segment
       - id: seg59
-        type: segment
     sections:
       - id: platform1
     length: 164.70cm
@@ -2139,19 +1953,12 @@ interlocking-table:
     path:
       # point23.reverse -> crossing2.line1 -> point19.reverse -> point18b.reverse1 -> platform3
       - id: seg60
-        type: segment
       - id: seg52
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: platform3
     length: 185.90cm
@@ -2176,7 +1983,7 @@ interlocking-table:
       - id: 24
       - id: 26
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 32
       - id: 33
@@ -2195,10 +2002,10 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 110
@@ -2223,8 +2030,8 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
       - id: 153
+      - id: 154
       - id: 155
       - id: 157
       - id: 158
@@ -2236,15 +2043,10 @@ interlocking-table:
     path:
       # point23.normal -> point22.normal1 -> platform2
       - id: seg60
-        type: segment
       - id: seg53
-        type: segment
       - id: seg54
-        type: segment
       - id: seg55
-        type: segment
       - id: seg56
-        type: segment
     sections:
       - id: platform2
     length: 165.70cm
@@ -2289,35 +2091,140 @@ interlocking-table:
     destination: signal18a
     orientation: anticlockwise
     path:
+      # point14.reverse -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
+      - id: seg39
+      - id: seg40
+      - id: seg41
+      - id: seg51
+      - id: seg50
+      - id: seg49
+      - id: seg48
+      - id: seg44
+      - id: seg21a
+      - id: seg21b
+      - id: seg22
+      - id: seg23
+    sections:
+      - id: block10
+      - id: block5
+    length: 437.80cm
+    signals:
+      - id: signal37
+      - id: signal18a
+    points:
+      - id: point14
+        position: reverse
+      - id: point15
+        position: normal
+      - id: point16
+        position: reverse
+      - id: point21
+        position: reverse
+      - id: point20
+        position: normal
+      - id: point19
+        position: normal
+      - id: point18b
+        position: normal
+      - id: point18a
+        position: reverse
+    conflicts:
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 57
+      - id: 60
+      - id: 73
+      - id: 80
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 122
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 141
+      - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 28 #route28
+    source: signal37
+    destination: signal18a
+    orientation: anticlockwise
+    path:
       # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block9
       - id: block5
@@ -2348,7 +2255,7 @@ interlocking-table:
       - id: 22
       - id: 23
       - id: 25
-      - id: 28
+      - id: 27
       - id: 29
       - id: 30
       - id: 31
@@ -2413,34 +2320,23 @@ interlocking-table:
       - id: 157
       - id: 158
       - id: 159
-  - id: 28 #route28
+  - id: 29 #route29
     source: signal37
     destination: signal18a
     orientation: anticlockwise
     path:
       # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg20
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block9
       - id: block5
@@ -2465,126 +2361,6 @@ interlocking-table:
       - id: 22
       - id: 23
       - id: 27
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 49
-      - id: 54
-      - id: 57
-      - id: 60
-      - id: 73
-      - id: 80
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 29 #route29
-    source: signal37
-    destination: signal18a
-    orientation: anticlockwise
-    path:
-      # point14.reverse -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
-      - id: seg39
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg51
-        type: segment
-      - id: seg50
-        type: segment
-      - id: seg49
-        type: segment
-      - id: seg48
-        type: segment
-      - id: seg44
-        type: segment
-      - id: seg21a
-        type: segment
-      - id: seg21b
-        type: segment
-      - id: seg22
-        type: segment
-      - id: seg23
-        type: segment
-    sections:
-      - id: block10
-      - id: block5
-    length: 437.80cm
-    signals:
-      - id: signal37
-      - id: signal18a
-    points:
-      - id: point14
-        position: reverse
-      - id: point15
-        position: normal
-      - id: point16
-        position: reverse
-      - id: point21
-        position: reverse
-      - id: point20
-        position: normal
-      - id: point19
-        position: normal
-      - id: point18b
-        position: normal
-      - id: point18a
-        position: reverse
-    conflicts:
-      - id: 17
-      - id: 18
-      - id: 19
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
       - id: 28
       - id: 30
       - id: 31
@@ -2592,13 +2368,7 @@ interlocking-table:
       - id: 33
       - id: 34
       - id: 35
-      - id: 36
-      - id: 37
-      - id: 38
       - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
       - id: 54
       - id: 57
       - id: 60
@@ -2632,17 +2402,12 @@ interlocking-table:
       - id: 125
       - id: 130
       - id: 131
-      - id: 132
-      - id: 133
       - id: 134
       - id: 135
       - id: 136
-      - id: 137
       - id: 138
       - id: 139
       - id: 140
-      - id: 141
-      - id: 142
       - id: 143
       - id: 145
       - id: 152
@@ -2660,27 +2425,16 @@ interlocking-table:
     path:
       # point14.reverse -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.reverse -> crossing2.line2 -> point22.normal2 -> platform1
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg57
-        type: segment
       - id: seg58
-        type: segment
       - id: seg59
-        type: segment
     sections:
       - id: block10
       - id: platform1
@@ -2780,27 +2534,16 @@ interlocking-table:
     path:
       # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.normal -> block1
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg1
-        type: segment
       - id: seg2
-        type: segment
       - id: seg3
-        type: segment
     sections:
       - id: block9
       - id: block1
@@ -2890,149 +2633,18 @@ interlocking-table:
     destination: signal27
     orientation: anticlockwise
     path:
-      # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
-      - id: seg39
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg18
-        type: segment
-      - id: seg19
-        type: segment
-      - id: seg20
-        type: segment
-      - id: seg44
-        type: segment
-      - id: seg45
-        type: segment
-      - id: seg46
-        type: segment
-      - id: seg47
-        type: segment
-    sections:
-      - id: block9
-      - id: platform3
-    length: 310.10cm
-    signals:
-      - id: signal37
-      - id: signal27
-    points:
-      - id: point14
-        position: reverse
-      - id: point15
-        position: normal
-      - id: point16
-        position: normal
-      - id: point17
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point7
-        position: reverse
-      - id: point18b
-        position: normal
-    conflicts:
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 49
-      - id: 51
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 33 #route33
-    source: signal37
-    destination: signal27
-    orientation: anticlockwise
-    path:
       # point14.reverse -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: block10
       - id: platform3
@@ -3068,7 +2680,7 @@ interlocking-table:
       - id: 29
       - id: 30
       - id: 31
-      - id: 32
+      - id: 33
       - id: 34
       - id: 35
       - id: 36
@@ -3127,6 +2739,113 @@ interlocking-table:
       - id: 157
       - id: 158
       - id: 159
+  - id: 33 #route33
+    source: signal37
+    destination: signal27
+    orientation: anticlockwise
+    path:
+      # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
+      - id: seg39
+      - id: seg40
+      - id: seg41
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: seg44
+      - id: seg45
+      - id: seg46
+      - id: seg47
+    sections:
+      - id: block9
+      - id: platform3
+    length: 310.10cm
+    signals:
+      - id: signal37
+      - id: signal27
+    points:
+      - id: point14
+        position: reverse
+      - id: point15
+        position: normal
+      - id: point16
+        position: normal
+      - id: point17
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+      - id: point18b
+        position: normal
+    conflicts:
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 49
+      - id: 51
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
   - id: 34 #route34
     source: signal37
     destination: signal29
@@ -3134,27 +2853,16 @@ interlocking-table:
     path:
       # point14.reverse -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.reverse -> crossing2.line2 -> point22.reverse2 -> platform2
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg54
-        type: segment
       - id: seg55
-        type: segment
       - id: seg56
-        type: segment
     sections:
       - id: block10
       - id: platform2
@@ -3254,25 +2962,15 @@ interlocking-table:
     path:
       # point25.normal -> point21.normal -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block10
       - id: block5
@@ -3371,23 +3069,14 @@ interlocking-table:
     path:
       # point25.normal -> point21.normal -> block10 -> point20.reverse -> crossing2.line2 -> point22.normal2 -> platform1
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg57
-        type: segment
       - id: seg58
-        type: segment
       - id: seg59
-        type: segment
     sections:
       - id: block10
       - id: platform1
@@ -3415,9 +3104,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 37
@@ -3429,9 +3118,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -3439,7 +3128,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -3448,9 +3137,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 37 #route37
     source: signal39
@@ -3459,23 +3148,14 @@ interlocking-table:
     path:
       # point25.normal -> point21.normal -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: block10
       - id: platform3
@@ -3503,7 +3183,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 32
       - id: 33
@@ -3521,10 +3201,10 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 110
@@ -3548,8 +3228,8 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 152
       - id: 153
+      - id: 154
       - id: 155
       - id: 157
       - id: 158
@@ -3561,23 +3241,14 @@ interlocking-table:
     path:
       # point25.normal -> point21.normal -> block10 -> point20.reverse -> crossing2.line2 -> point22.reverse2 -> platform2
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg54
-        type: segment
       - id: seg55
-        type: segment
       - id: seg56
-        type: segment
     sections:
       - id: block10
       - id: platform2
@@ -3605,9 +3276,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -3619,9 +3290,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -3629,7 +3300,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -3638,9 +3309,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 39 #route39
     source: signal36
@@ -3649,17 +3320,11 @@ interlocking-table:
     path:
       # point13.reverse -> point12.reverse2 -> point24.reverse -> block14
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg66
-        type: segment
       - id: seg64
-        type: segment
       - id: seg63
-        type: segment
       - id: seg62
-        type: segment
     sections:
       - id: block14
     length: 219.30cm
@@ -3675,13 +3340,13 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 21
       - id: 40
@@ -3693,11 +3358,11 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 91
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -3720,23 +3385,14 @@ interlocking-table:
     path:
       # point13.reverse -> point12.normal1 -> point11.reverse2 -> point27.reverse -> point29.normal -> block21
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg92
-        type: segment
       - id: seg91b
-        type: segment
       - id: seg91a
-        type: segment
       - id: seg90
-        type: segment
     sections:
       - id: block21
     length: 268.10cm
@@ -3808,21 +3464,13 @@ interlocking-table:
     path:
       # point13.reverse -> point12.normal1 -> point11.reverse2 -> point27.normal -> block19
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg83
-        type: segment
       - id: seg82b
-        type: segment
       - id: seg82a
-        type: segment
       - id: seg81
-        type: segment
     sections:
       - id: block19
     length: 272.80cm
@@ -3892,23 +3540,14 @@ interlocking-table:
     path:
       # point13.reverse -> point12.normal1 -> point11.reverse2 -> point27.reverse -> point29.reverse -> block20
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg88
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg86
-        type: segment
     sections:
       - id: block20
     length: 264.50cm
@@ -3980,19 +3619,12 @@ interlocking-table:
     path:
       # point13.reverse -> point12.reverse2 -> point24.normal -> block22
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg66
-        type: segment
       - id: seg95
-        type: segment
       - id: seg94b
-        type: segment
       - id: seg94a
-        type: segment
       - id: seg93
-        type: segment
     sections:
       - id: block22
     length: 319.00cm
@@ -4008,14 +3640,14 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 10
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 39
       - id: 40
@@ -4027,10 +3659,10 @@ interlocking-table:
       - id: 47
       - id: 67
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -4051,19 +3683,12 @@ interlocking-table:
     path:
       # point13.reverse -> point12.normal1 -> point11.normal1 -> platform4
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg32
-        type: segment
       - id: seg31b
-        type: segment
       - id: seg31a
-        type: segment
       - id: seg30
-        type: segment
     sections:
       - id: platform4
     length: 196.30cm
@@ -4129,17 +3754,11 @@ interlocking-table:
     path:
       # point24.normal -> point12.reverse2 -> point13.reverse -> block15
       - id: seg66
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg67
-        type: segment
       - id: seg68
-        type: segment
       - id: seg69
-        type: segment
     sections:
       - id: block15
     length: 197.30cm
@@ -4155,13 +3774,13 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 17
       - id: 39
@@ -4173,13 +3792,13 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 82
       - id: 83
       - id: 84
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -4204,17 +3823,11 @@ interlocking-table:
     path:
       # point24.normal -> point12.normal2 -> point4.reverse -> block3
       - id: seg66
-        type: segment
       - id: seg34
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 232.60cm
@@ -4290,17 +3903,11 @@ interlocking-table:
     path:
       # point24.normal -> point12.reverse2 -> point13.normal -> block8
       - id: seg66
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg36
-        type: segment
       - id: seg37
-        type: segment
       - id: seg38
-        type: segment
     sections:
       - id: block8
     length: 217.30cm
@@ -4316,13 +3923,13 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 22
       - id: 39
@@ -4334,13 +3941,13 @@ interlocking-table:
       - id: 45
       - id: 46
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 92
       - id: 93
       - id: 94
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -4365,15 +3972,10 @@ interlocking-table:
     path:
       # point3.normal -> point4.normal -> block3
       - id: seg9
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 209.30cm
@@ -4423,25 +4025,15 @@ interlocking-table:
     path:
       # point25.reverse -> point21.normal -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block10
       - id: block5
@@ -4540,23 +4132,14 @@ interlocking-table:
     path:
       # point25.reverse -> point21.normal -> block10 -> point20.reverse -> crossing2.line2 -> point22.normal2 -> platform1
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg57
-        type: segment
       - id: seg58
-        type: segment
       - id: seg59
-        type: segment
     sections:
       - id: block10
       - id: platform1
@@ -4584,9 +4167,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -4598,9 +4181,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -4608,7 +4191,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -4617,9 +4200,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 51 #route51
     source: signal41
@@ -4628,23 +4211,14 @@ interlocking-table:
     path:
       # point25.reverse -> point21.normal -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: block10
       - id: platform3
@@ -4672,7 +4246,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 32
       - id: 33
@@ -4690,10 +4264,10 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 110
@@ -4717,8 +4291,8 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 152
       - id: 153
+      - id: 154
       - id: 155
       - id: 157
       - id: 158
@@ -4730,23 +4304,14 @@ interlocking-table:
     path:
       # point25.reverse -> point21.normal -> block10 -> point20.reverse -> crossing2.line2 -> point22.reverse2 -> platform2
       - id: seg70
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg54
-        type: segment
       - id: seg55
-        type: segment
       - id: seg56
-        type: segment
     sections:
       - id: block10
       - id: platform2
@@ -4774,9 +4339,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -4788,9 +4353,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -4798,7 +4363,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -4807,9 +4372,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 53 #route53
     source: signal43
@@ -4818,13 +4383,9 @@ interlocking-table:
     path:
       # point10.reverse -> block6
       - id: seg29
-        type: segment
       - id: seg28
-        type: segment
       - id: seg27
-        type: segment
       - id: seg26
-        type: segment
     sections:
       - id: block6
     length: 98.30cm
@@ -4848,19 +4409,12 @@ interlocking-table:
     path:
       # point28.normal -> point26.normal -> point9.reverse2 -> point8.normal2 -> block5
       - id: seg85
-        type: segment
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg23
-        type: segment
       - id: seg22
-        type: segment
       - id: seg21b
-        type: segment
     sections:
       - id: block5
     length: 299.20cm
@@ -4924,21 +4478,13 @@ interlocking-table:
     path:
       # point28.normal -> point26.normal -> point9.reverse2 -> point8.reverse1 -> point1.reverse -> block1
       - id: seg85
-        type: segment
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 336.70cm
@@ -4997,21 +4543,13 @@ interlocking-table:
     path:
       # point28.normal -> point26.normal -> point9.normal1 -> point2.reverse -> point1.normal -> block1
       - id: seg85
-        type: segment
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg5
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 336.70cm
@@ -5068,17 +4606,11 @@ interlocking-table:
     path:
       # point26.reverse -> point9.reverse2 -> point8.normal2 -> block5
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg23
-        type: segment
       - id: seg22
-        type: segment
       - id: seg21b
-        type: segment
     sections:
       - id: block5
     length: 275.90cm
@@ -5138,88 +4670,14 @@ interlocking-table:
     destination: signal1
     orientation: clockwise
     path:
-      # point26.reverse -> point9.normal1 -> point2.reverse -> point1.normal -> block1
-      - id: seg80
-        type: segment
-      - id: seg25
-        type: segment
-      - id: seg5
-        type: segment
-      - id: seg4
-        type: segment
-      - id: seg3
-        type: segment
-      - id: seg2
-        type: segment
-      - id: seg1
-        type: segment
-    sections:
-      - id: block1
-    length: 313.40cm
-    signals:
-      - id: signal45
-      - id: signal1
-    points:
-      - id: point26
-        position: reverse
-      - id: point9
-        position: normal
-      - id: point2
-        position: reverse
-      - id: point1
-        position: normal
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 11
-      - id: 12
-      - id: 31
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
-      - id: 71
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 81
-      - id: 97
-      - id: 114
-      - id: 129
-      - id: 156
-  - id: 59 #route59
-    source: signal45
-    destination: signal1
-    orientation: clockwise
-    path:
       # point26.reverse -> point9.reverse2 -> point8.reverse1 -> point1.reverse -> block1
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 313.40cm
@@ -5246,7 +4704,7 @@ interlocking-table:
       - id: 55
       - id: 56
       - id: 57
-      - id: 58
+      - id: 59
       - id: 60
       - id: 61
       - id: 62
@@ -5269,6 +4727,66 @@ interlocking-table:
       - id: 114
       - id: 129
       - id: 156
+  - id: 59 #route59
+    source: signal45
+    destination: signal1
+    orientation: clockwise
+    path:
+      # point26.reverse -> point9.normal1 -> point2.reverse -> point1.normal -> block1
+      - id: seg80
+      - id: seg25
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block1
+    length: 313.40cm
+    signals:
+      - id: signal45
+      - id: signal1
+    points:
+      - id: point26
+        position: reverse
+      - id: point9
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 31
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
+      - id: 81
+      - id: 97
+      - id: 114
+      - id: 129
+      - id: 156
   - id: 60 #route60
     source: signal47
     destination: signal15
@@ -5276,19 +4794,12 @@ interlocking-table:
     path:
       # point28.reverse -> point26.normal -> point9.reverse2 -> point8.normal2 -> block5
       - id: seg85
-        type: segment
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg23
-        type: segment
       - id: seg22
-        type: segment
       - id: seg21b
-        type: segment
     sections:
       - id: block5
     length: 299.20cm
@@ -5352,21 +4863,13 @@ interlocking-table:
     path:
       # point28.reverse -> point26.normal -> point9.normal1 -> point2.reverse -> point1.normal -> block1
       - id: seg85
-        type: segment
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg5
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 336.70cm
@@ -5423,21 +4926,13 @@ interlocking-table:
     path:
       # point28.reverse -> point26.normal -> point9.reverse2 -> point8.reverse1 -> point1.reverse -> block1
       - id: seg85
-        type: segment
       - id: seg80
-        type: segment
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 336.70cm
@@ -5494,25 +4989,16 @@ interlocking-table:
     destination: signal50a
     orientation: anticlockwise
     path:
-      # point1.reverse -> point8.reverse1 -> point9.reverse2 -> point26.normal -> point28.normal -> block21
+      # point1.normal -> point2.reverse -> point9.normal1 -> point26.normal -> point28.normal -> block21
       - id: seg4
-        type: segment
-      - id: seg24
-        type: segment
+      - id: seg5
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg85
-        type: segment
       - id: seg90
-        type: segment
       - id: seg91a
-        type: segment
       - id: seg91b
-        type: segment
       - id: seg92
-        type: segment
     sections:
       - id: block21
     length: 268.10cm
@@ -5521,11 +5007,11 @@ interlocking-table:
       - id: signal50a
     points:
       - id: point1
-        position: reverse
-      - id: point8
+        position: normal
+      - id: point2
         position: reverse
       - id: point9
-        position: reverse
+        position: normal
       - id: point26
         position: normal
       - id: point28
@@ -5533,7 +5019,6 @@ interlocking-table:
     conflicts:
       - id: 8
       - id: 9
-      - id: 10
       - id: 11
       - id: 12
       - id: 40
@@ -5558,7 +5043,6 @@ interlocking-table:
       - id: 73
       - id: 74
       - id: 75
-      - id: 80
       - id: 81
       - id: 100
       - id: 101
@@ -5569,25 +5053,16 @@ interlocking-table:
     destination: signal50a
     orientation: anticlockwise
     path:
-      # point1.normal -> point2.reverse -> point9.normal1 -> point26.normal -> point28.normal -> block21
+      # point1.reverse -> point8.reverse1 -> point9.reverse2 -> point26.normal -> point28.normal -> block21
       - id: seg4
-        type: segment
-      - id: seg5
-        type: segment
+      - id: seg24
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg85
-        type: segment
       - id: seg90
-        type: segment
       - id: seg91a
-        type: segment
       - id: seg91b
-        type: segment
       - id: seg92
-        type: segment
     sections:
       - id: block21
     length: 268.10cm
@@ -5596,11 +5071,11 @@ interlocking-table:
       - id: signal50a
     points:
       - id: point1
-        position: normal
-      - id: point2
+        position: reverse
+      - id: point8
         position: reverse
       - id: point9
-        position: normal
+        position: reverse
       - id: point26
         position: normal
       - id: point28
@@ -5608,6 +5083,7 @@ interlocking-table:
     conflicts:
       - id: 8
       - id: 9
+      - id: 10
       - id: 11
       - id: 12
       - id: 40
@@ -5632,6 +5108,7 @@ interlocking-table:
       - id: 73
       - id: 74
       - id: 75
+      - id: 80
       - id: 81
       - id: 100
       - id: 101
@@ -5642,23 +5119,76 @@ interlocking-table:
     destination: signal46a
     orientation: anticlockwise
     path:
+      # point1.normal -> point2.reverse -> point9.normal1 -> point26.reverse -> block19
+      - id: seg4
+      - id: seg5
+      - id: seg25
+      - id: seg80
+      - id: seg81
+      - id: seg82a
+      - id: seg82b
+      - id: seg83
+    sections:
+      - id: block19
+    length: 272.80cm
+    signals:
+      - id: signal4a
+      - id: signal46a
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point9
+        position: normal
+      - id: point26
+        position: reverse
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 41
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
+      - id: 81
+      - id: 102
+      - id: 103
+      - id: 129
+      - id: 148
+  - id: 66 #route66
+    source: signal4a
+    destination: signal46a
+    orientation: anticlockwise
+    path:
       # point1.reverse -> point8.reverse1 -> point9.reverse2 -> point26.reverse -> block19
       - id: seg4
-        type: segment
       - id: seg24
-        type: segment
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg81
-        type: segment
       - id: seg82a
-        type: segment
       - id: seg82b
-        type: segment
       - id: seg83
-        type: segment
     sections:
       - id: block19
     length: 272.80cm
@@ -5692,76 +5222,6 @@ interlocking-table:
       - id: 62
       - id: 63
       - id: 64
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
-      - id: 71
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 80
-      - id: 81
-      - id: 102
-      - id: 103
-      - id: 129
-      - id: 148
-  - id: 66 #route66
-    source: signal4a
-    destination: signal46a
-    orientation: anticlockwise
-    path:
-      # point1.normal -> point2.reverse -> point9.normal1 -> point26.reverse -> block19
-      - id: seg4
-        type: segment
-      - id: seg5
-        type: segment
-      - id: seg25
-        type: segment
-      - id: seg80
-        type: segment
-      - id: seg81
-        type: segment
-      - id: seg82a
-        type: segment
-      - id: seg82b
-        type: segment
-      - id: seg83
-        type: segment
-    sections:
-      - id: block19
-    length: 272.80cm
-    signals:
-      - id: signal4a
-      - id: signal46a
-    points:
-      - id: point1
-        position: normal
-      - id: point2
-        position: reverse
-      - id: point9
-        position: normal
-      - id: point26
-        position: reverse
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 11
-      - id: 12
-      - id: 41
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
       - id: 65
       - id: 67
       - id: 68
@@ -5772,6 +5232,7 @@ interlocking-table:
       - id: 73
       - id: 74
       - id: 75
+      - id: 80
       - id: 81
       - id: 102
       - id: 103
@@ -5784,17 +5245,11 @@ interlocking-table:
     path:
       # point1.reverse -> point8.normal1 -> block22
       - id: seg4
-        type: segment
       - id: seg24
-        type: segment
       - id: seg93
-        type: segment
       - id: seg94a
-        type: segment
       - id: seg94b
-        type: segment
       - id: seg95
-        type: segment
     sections:
       - id: block22
     length: 295.70cm
@@ -5846,17 +5301,11 @@ interlocking-table:
     path:
       # point1.normal -> point2.normal -> block2
       - id: seg4
-        type: segment
       - id: seg5
-        type: segment
       - id: seg6
-        type: segment
       - id: seg7a
-        type: segment
       - id: seg7b
-        type: segment
       - id: seg8
-        type: segment
     sections:
       - id: block2
     length: 284.40cm
@@ -5894,25 +5343,16 @@ interlocking-table:
     destination: signal48a
     orientation: anticlockwise
     path:
-      # point1.normal -> point2.reverse -> point9.normal1 -> point26.normal -> point28.reverse -> block20
+      # point1.reverse -> point8.reverse1 -> point9.reverse2 -> point26.normal -> point28.reverse -> block20
       - id: seg4
-        type: segment
-      - id: seg5
-        type: segment
+      - id: seg24
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg85
-        type: segment
       - id: seg86
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg88
-        type: segment
     sections:
       - id: block20
     length: 264.50cm
@@ -5921,11 +5361,11 @@ interlocking-table:
       - id: signal48a
     points:
       - id: point1
-        position: normal
-      - id: point2
+        position: reverse
+      - id: point8
         position: reverse
       - id: point9
-        position: normal
+        position: reverse
       - id: point26
         position: normal
       - id: point28
@@ -5933,6 +5373,7 @@ interlocking-table:
     conflicts:
       - id: 8
       - id: 9
+      - id: 10
       - id: 11
       - id: 12
       - id: 42
@@ -5957,6 +5398,7 @@ interlocking-table:
       - id: 73
       - id: 74
       - id: 75
+      - id: 80
       - id: 81
       - id: 104
       - id: 105
@@ -5967,25 +5409,16 @@ interlocking-table:
     destination: signal48a
     orientation: anticlockwise
     path:
-      # point1.reverse -> point8.reverse1 -> point9.reverse2 -> point26.normal -> point28.reverse -> block20
+      # point1.normal -> point2.reverse -> point9.normal1 -> point26.normal -> point28.reverse -> block20
       - id: seg4
-        type: segment
-      - id: seg24
-        type: segment
+      - id: seg5
       - id: seg25
-        type: segment
       - id: seg80
-        type: segment
       - id: seg85
-        type: segment
       - id: seg86
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg88
-        type: segment
     sections:
       - id: block20
     length: 264.50cm
@@ -5994,11 +5427,11 @@ interlocking-table:
       - id: signal48a
     points:
       - id: point1
-        position: reverse
-      - id: point8
+        position: normal
+      - id: point2
         position: reverse
       - id: point9
-        position: reverse
+        position: normal
       - id: point26
         position: normal
       - id: point28
@@ -6006,7 +5439,6 @@ interlocking-table:
     conflicts:
       - id: 8
       - id: 9
-      - id: 10
       - id: 11
       - id: 12
       - id: 42
@@ -6031,7 +5463,6 @@ interlocking-table:
       - id: 73
       - id: 74
       - id: 75
-      - id: 80
       - id: 81
       - id: 104
       - id: 105
@@ -6042,19 +5473,70 @@ interlocking-table:
     destination: signal20
     orientation: anticlockwise
     path:
+      # point1.reverse -> point8.reverse1 -> point9.normal2 -> block6
+      - id: seg4
+      - id: seg24
+      - id: seg25
+      - id: seg26
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block6
+    length: 144.90cm
+    signals:
+      - id: signal4a
+      - id: signal20
+    points:
+      - id: point1
+        position: reverse
+      - id: point8
+        position: reverse
+      - id: point9
+        position: normal
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
+      - id: 80
+      - id: 81
+      - id: 128
+      - id: 129
+  - id: 72 #route72
+    source: signal4a
+    destination: signal20
+    orientation: anticlockwise
+    path:
       # point1.normal -> point2.reverse -> point9.reverse1 -> block6
       - id: seg4
-        type: segment
       - id: seg5
-        type: segment
       - id: seg25
-        type: segment
       - id: seg26
-        type: segment
       - id: seg27
-        type: segment
       - id: seg28
-        type: segment
     sections:
       - id: block6
     length: 144.90cm
@@ -6091,73 +5573,10 @@ interlocking-table:
       - id: 68
       - id: 69
       - id: 70
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 81
-      - id: 128
-      - id: 129
-  - id: 72 #route72
-    source: signal4a
-    destination: signal20
-    orientation: anticlockwise
-    path:
-      # point1.reverse -> point8.reverse1 -> point9.normal2 -> block6
-      - id: seg4
-        type: segment
-      - id: seg24
-        type: segment
-      - id: seg25
-        type: segment
-      - id: seg26
-        type: segment
-      - id: seg27
-        type: segment
-      - id: seg28
-        type: segment
-    sections:
-      - id: block6
-    length: 144.90cm
-    signals:
-      - id: signal4a
-      - id: signal20
-    points:
-      - id: point1
-        position: reverse
-      - id: point8
-        position: reverse
-      - id: point9
-        position: normal
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 10
-      - id: 11
-      - id: 12
-      - id: 53
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
       - id: 71
       - id: 73
       - id: 74
       - id: 75
-      - id: 80
       - id: 81
       - id: 128
       - id: 129
@@ -6168,15 +5587,10 @@ interlocking-table:
     path:
       # point9.normal2 -> point8.normal2 -> block5
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg23
-        type: segment
       - id: seg22
-        type: segment
       - id: seg21b
-        type: segment
     sections:
       - id: block5
     length: 252.60cm
@@ -6234,19 +5648,70 @@ interlocking-table:
     destination: signal1
     orientation: clockwise
     path:
+      # point9.reverse1 -> point2.reverse -> point1.normal -> block1
+      - id: seg25
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block1
+    length: 290.10cm
+    signals:
+      - id: signal19
+      - id: signal1
+    points:
+      - id: point9
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 31
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 75
+      - id: 81
+      - id: 97
+      - id: 114
+      - id: 129
+      - id: 156
+  - id: 75 #route75
+    source: signal19
+    destination: signal1
+    orientation: clockwise
+    path:
       # point9.normal2 -> point8.reverse1 -> point1.reverse -> block1
       - id: seg25
-        type: segment
       - id: seg24
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 290.10cm
@@ -6287,71 +5752,8 @@ interlocking-table:
       - id: 71
       - id: 72
       - id: 73
-      - id: 75
-      - id: 80
-      - id: 81
-      - id: 97
-      - id: 114
-      - id: 129
-      - id: 156
-  - id: 75 #route75
-    source: signal19
-    destination: signal1
-    orientation: clockwise
-    path:
-      # point9.reverse1 -> point2.reverse -> point1.normal -> block1
-      - id: seg25
-        type: segment
-      - id: seg5
-        type: segment
-      - id: seg4
-        type: segment
-      - id: seg3
-        type: segment
-      - id: seg2
-        type: segment
-      - id: seg1
-        type: segment
-    sections:
-      - id: block1
-    length: 290.10cm
-    signals:
-      - id: signal19
-      - id: signal1
-    points:
-      - id: point9
-        position: reverse
-      - id: point2
-        position: reverse
-      - id: point1
-        position: normal
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 11
-      - id: 12
-      - id: 31
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
-      - id: 71
-      - id: 72
-      - id: 73
       - id: 74
+      - id: 80
       - id: 81
       - id: 97
       - id: 114
@@ -6364,21 +5766,13 @@ interlocking-table:
     path:
       # point29.reverse -> point27.reverse -> point11.reverse2 -> point12.normal1 -> point13.reverse -> block15
       - id: seg89
-        type: segment
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg67
-        type: segment
       - id: seg68
-        type: segment
       - id: seg69
-        type: segment
     sections:
       - id: block15
     length: 243.90cm
@@ -6453,23 +5847,93 @@ interlocking-table:
     destination: signal9
     orientation: anticlockwise
     path:
+      # point29.reverse -> point27.reverse -> point11.normal2 -> point3.reverse -> point4.normal -> block3
+      - id: seg89
+      - id: seg84
+      - id: seg33
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: seg12
+      - id: seg13
+    sections:
+      - id: block3
+    length: 279.20cm
+    signals:
+      - id: signal48a
+      - id: signal9
+    points:
+      - id: point29
+        position: reverse
+      - id: point27
+        position: reverse
+      - id: point11
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 20
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 76
+      - id: 78
+      - id: 79
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 95
+      - id: 99
+      - id: 100
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 124
+      - id: 135
+      - id: 136
+      - id: 143
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
+  - id: 78 #route78
+    source: signal48a
+    destination: signal9
+    orientation: anticlockwise
+    path:
       # point29.reverse -> point27.reverse -> point11.reverse2 -> point12.reverse1 -> point4.reverse -> block3
       - id: seg89
-        type: segment
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 279.20cm
@@ -6512,7 +5976,7 @@ interlocking-table:
       - id: 47
       - id: 48
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 88
       - id: 89
@@ -6542,92 +6006,6 @@ interlocking-table:
       - id: 149
       - id: 150
       - id: 151
-  - id: 78 #route78
-    source: signal48a
-    destination: signal9
-    orientation: anticlockwise
-    path:
-      # point29.reverse -> point27.reverse -> point11.normal2 -> point3.reverse -> point4.normal -> block3
-      - id: seg89
-        type: segment
-      - id: seg84
-        type: segment
-      - id: seg33
-        type: segment
-      - id: seg9
-        type: segment
-      - id: seg10
-        type: segment
-      - id: seg11
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg13
-        type: segment
-    sections:
-      - id: block3
-    length: 279.20cm
-    signals:
-      - id: signal48a
-      - id: signal9
-    points:
-      - id: point29
-        position: reverse
-      - id: point27
-        position: reverse
-      - id: point11
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point4
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 20
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 76
-      - id: 77
-      - id: 79
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 95
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 124
-      - id: 135
-      - id: 136
-      - id: 143
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 151
   - id: 79 #route79
     source: signal48a
     destination: signal24
@@ -6635,21 +6013,13 @@ interlocking-table:
     path:
       # point29.reverse -> point27.reverse -> point11.reverse2 -> point12.normal1 -> point13.normal -> block8
       - id: seg89
-        type: segment
       - id: seg84
-        type: segment
       - id: seg33
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg36
-        type: segment
       - id: seg37
-        type: segment
       - id: seg38
-        type: segment
     sections:
       - id: block8
     length: 263.90cm
@@ -6726,13 +6096,9 @@ interlocking-table:
     path:
       # point8.reverse2 -> block5
       - id: seg24
-        type: segment
       - id: seg23
-        type: segment
       - id: seg22
-        type: segment
       - id: seg21b
-        type: segment
     sections:
       - id: block5
     length: 229.30cm
@@ -6757,16 +6123,16 @@ interlocking-table:
       - id: 54
       - id: 55
       - id: 57
-      - id: 59
+      - id: 58
       - id: 60
       - id: 62
-      - id: 63
-      - id: 65
+      - id: 64
+      - id: 66
       - id: 67
-      - id: 70
-      - id: 72
+      - id: 69
+      - id: 71
       - id: 73
-      - id: 74
+      - id: 75
       - id: 81
       - id: 96
       - id: 110
@@ -6782,15 +6148,10 @@ interlocking-table:
     path:
       # point8.normal1 -> point1.reverse -> block1
       - id: seg24
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 266.80cm
@@ -6843,33 +6204,19 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.reverse -> block15
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block9
       - id: block15
@@ -6973,29 +6320,17 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.normal1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.reverse -> block15
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block10
       - id: block15
@@ -7105,27 +6440,16 @@ interlocking-table:
     path:
       # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.normal -> point14.reverse -> block15
       - id: seg21a
-        type: segment
       - id: seg20
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block9
       - id: block15
@@ -7215,25 +6539,15 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.normal1 -> point19.normal -> point20.normal -> block10 -> point21.normal -> point25.normal -> platform7
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg73
-        type: segment
       - id: seg72
-        type: segment
       - id: seg71
-        type: segment
     sections:
       - id: block10
       - id: platform7
@@ -7327,25 +6641,15 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.normal1 -> point19.normal -> point20.normal -> block10 -> point21.normal -> point25.reverse -> platform6
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg76
-        type: segment
       - id: seg75
-        type: segment
       - id: seg74
-        type: segment
     sections:
       - id: block10
       - id: platform6
@@ -7439,23 +6743,14 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.normal -> block4
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg17
-        type: segment
       - id: seg16b
-        type: segment
       - id: seg16a
-        type: segment
       - id: seg15
-        type: segment
     sections:
       - id: block4
     length: 213.60cm
@@ -7531,31 +6826,248 @@ interlocking-table:
     destination: signal8
     orientation: clockwise
     path:
+      # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
+      - id: seg21a
+      - id: seg44
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg14
+      - id: seg13
+      - id: seg12
+      - id: seg11
+    sections:
+      - id: block9
+      - id: block3
+    length: 413.40cm
+    signals:
+      - id: signal15
+      - id: signal8
+    points:
+      - id: point18a
+        position: reverse
+      - id: point18b
+        position: reverse
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point17
+        position: reverse
+      - id: point16
+        position: normal
+      - id: point15
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 1
+      - id: 2
+      - id: 5
+      - id: 6
+      - id: 14
+      - id: 15
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 46
+      - id: 48
+      - id: 49
+      - id: 51
+      - id: 77
+      - id: 78
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 95
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 115
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 120
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 89 #route89
+    source: signal15
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
+      - id: seg21a
+      - id: seg20
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg14
+      - id: seg13
+      - id: seg12
+      - id: seg11
+    sections:
+      - id: block9
+      - id: block3
+    length: 379.50cm
+    signals:
+      - id: signal15
+      - id: signal8
+    points:
+      - id: point18a
+        position: normal
+      - id: point17
+        position: normal
+      - id: point16
+        position: normal
+      - id: point15
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 1
+      - id: 2
+      - id: 5
+      - id: 6
+      - id: 14
+      - id: 15
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 46
+      - id: 48
+      - id: 49
+      - id: 77
+      - id: 78
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 95
+      - id: 96
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 115
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 120
+      - id: 122
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 90 #route90
+    source: signal15
+    destination: signal8
+    orientation: clockwise
+    path:
       # point18a.reverse -> point18b.normal1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.reverse -> point5.reverse -> block3
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg14
-        type: segment
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block10
       - id: block3
@@ -7620,8 +7132,8 @@ interlocking-table:
       - id: 85
       - id: 86
       - id: 87
+      - id: 88
       - id: 89
-      - id: 90
       - id: 91
       - id: 92
       - id: 93
@@ -7665,260 +7177,6 @@ interlocking-table:
       - id: 157
       - id: 158
       - id: 159
-  - id: 89 #route89
-    source: signal15
-    destination: signal8
-    orientation: clockwise
-    path:
-      # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
-      - id: seg21a
-        type: segment
-      - id: seg44
-        type: segment
-      - id: seg20
-        type: segment
-      - id: seg19
-        type: segment
-      - id: seg18
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg14
-        type: segment
-      - id: seg13
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg11
-        type: segment
-    sections:
-      - id: block9
-      - id: block3
-    length: 413.40cm
-    signals:
-      - id: signal15
-      - id: signal8
-    points:
-      - id: point18a
-        position: reverse
-      - id: point18b
-        position: reverse
-      - id: point7
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point17
-        position: reverse
-      - id: point16
-        position: normal
-      - id: point15
-        position: reverse
-      - id: point5
-        position: reverse
-    conflicts:
-      - id: 1
-      - id: 2
-      - id: 5
-      - id: 6
-      - id: 14
-      - id: 15
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 46
-      - id: 48
-      - id: 49
-      - id: 51
-      - id: 77
-      - id: 78
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 95
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 115
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 120
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 90 #route90
-    source: signal15
-    destination: signal8
-    orientation: clockwise
-    path:
-      # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
-      - id: seg21a
-        type: segment
-      - id: seg20
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg14
-        type: segment
-      - id: seg13
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg11
-        type: segment
-    sections:
-      - id: block9
-      - id: block3
-    length: 379.50cm
-    signals:
-      - id: signal15
-      - id: signal8
-    points:
-      - id: point18a
-        position: normal
-      - id: point17
-        position: normal
-      - id: point16
-        position: normal
-      - id: point15
-        position: reverse
-      - id: point5
-        position: reverse
-    conflicts:
-      - id: 1
-      - id: 2
-      - id: 5
-      - id: 6
-      - id: 14
-      - id: 15
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 46
-      - id: 48
-      - id: 49
-      - id: 77
-      - id: 78
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 95
-      - id: 96
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 115
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 120
-      - id: 122
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
   - id: 91 #route91
     source: signal15
     destination: signal35a
@@ -7926,21 +7184,13 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.normal1 -> point19.reverse -> crossing2.line1 -> point23.reverse -> block14
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg52
-        type: segment
       - id: seg60
-        type: segment
       - id: seg62
-        type: segment
       - id: seg63
-        type: segment
       - id: seg64
-        type: segment
     sections:
       - id: block14
     length: 265.60cm
@@ -8036,33 +7286,19 @@ interlocking-table:
     path:
       # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block9
       - id: block8
@@ -8164,31 +7400,118 @@ interlocking-table:
     destination: signal23
     orientation: clockwise
     path:
+      # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
+      - id: seg21a
+      - id: seg20
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg39
+      - id: seg38
+      - id: seg37
+      - id: seg36
+    sections:
+      - id: block9
+      - id: block8
+    length: 353.90cm
+    signals:
+      - id: signal15
+      - id: signal23
+    points:
+      - id: point18a
+        position: normal
+      - id: point17
+        position: normal
+      - id: point16
+        position: normal
+      - id: point15
+        position: normal
+      - id: point14
+        position: normal
+    conflicts:
+      - id: 3
+      - id: 7
+      - id: 16
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 47
+      - id: 49
+      - id: 79
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 94
+      - id: 96
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 121
+      - id: 122
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 94 #route94
+    source: signal15
+    destination: signal23
+    orientation: clockwise
+    path:
       # point18a.reverse -> point18b.normal1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.normal -> block8
       - id: seg21a
-        type: segment
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block10
       - id: block8
@@ -8253,7 +7576,7 @@ interlocking-table:
       - id: 90
       - id: 91
       - id: 92
-      - id: 94
+      - id: 93
       - id: 96
       - id: 98
       - id: 110
@@ -8291,116 +7614,6 @@ interlocking-table:
       - id: 157
       - id: 158
       - id: 159
-  - id: 94 #route94
-    source: signal15
-    destination: signal23
-    orientation: clockwise
-    path:
-      # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
-      - id: seg21a
-        type: segment
-      - id: seg20
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg39
-        type: segment
-      - id: seg38
-        type: segment
-      - id: seg37
-        type: segment
-      - id: seg36
-        type: segment
-    sections:
-      - id: block9
-      - id: block8
-    length: 353.90cm
-    signals:
-      - id: signal15
-      - id: signal23
-    points:
-      - id: point18a
-        position: normal
-      - id: point17
-        position: normal
-      - id: point16
-        position: normal
-      - id: point15
-        position: normal
-      - id: point14
-        position: normal
-    conflicts:
-      - id: 3
-      - id: 7
-      - id: 16
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 47
-      - id: 49
-      - id: 79
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 96
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 121
-      - id: 122
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
   - id: 95 #route95
     source: signal11
     destination: signal8
@@ -8408,13 +7621,9 @@ interlocking-table:
     path:
       # point5.normal -> block3
       - id: seg14
-        type: segment
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block3
     length: 186.00cm
@@ -8460,21 +7669,13 @@ interlocking-table:
     path:
       # point6.normal -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block5
     length: 299.60cm
@@ -8556,15 +7757,10 @@ interlocking-table:
     path:
       # point6.normal -> point7.normal -> block1
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg1
-        type: segment
       - id: seg2
-        type: segment
       - id: seg3
-        type: segment
     sections:
       - id: block1
     length: 242.80cm
@@ -8577,9 +7773,9 @@ interlocking-table:
       - id: point7
         position: normal
     conflicts:
-      - id: 27
+      - id: 28
       - id: 31
-      - id: 32
+      - id: 33
       - id: 55
       - id: 56
       - id: 58
@@ -8591,7 +7787,7 @@ interlocking-table:
       - id: 81
       - id: 82
       - id: 87
-      - id: 89
+      - id: 88
       - id: 92
       - id: 96
       - id: 98
@@ -8605,11 +7801,11 @@ interlocking-table:
       - id: 129
       - id: 130
       - id: 134
-      - id: 135
+      - id: 136
       - id: 138
       - id: 153
       - id: 156
-      - id: 157
+      - id: 158
   - id: 98 #route98
     source: signal14
     destination: signal27
@@ -8617,19 +7813,12 @@ interlocking-table:
     path:
       # point6.normal -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: platform3
     length: 163.30cm
@@ -8704,17 +7893,11 @@ interlocking-table:
     path:
       # point4.reverse -> point12.normal2 -> point24.reverse -> block14
       - id: seg10
-        type: segment
       - id: seg34
-        type: segment
       - id: seg66
-        type: segment
       - id: seg64
-        type: segment
       - id: seg63
-        type: segment
       - id: seg62
-        type: segment
     sections:
       - id: block14
     length: 219.30cm
@@ -8783,107 +7966,16 @@ interlocking-table:
     destination: signal49
     orientation: clockwise
     path:
-      # point4.normal -> point3.reverse -> point11.normal2 -> point27.reverse -> point29.normal -> block21
-      - id: seg10
-        type: segment
-      - id: seg9
-        type: segment
-      - id: seg33
-        type: segment
-      - id: seg84
-        type: segment
-      - id: seg89
-        type: segment
-      - id: seg92
-        type: segment
-      - id: seg91b
-        type: segment
-      - id: seg91a
-        type: segment
-      - id: seg90
-        type: segment
-    sections:
-      - id: block21
-    length: 268.10cm
-    signals:
-      - id: signal8
-      - id: signal49
-    points:
-      - id: point4
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point11
-        position: normal
-      - id: point27
-        position: reverse
-      - id: point29
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 8
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 63
-      - id: 64
-      - id: 76
-      - id: 77
-      - id: 78
-      - id: 79
-      - id: 99
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 151
-  - id: 101 #route101
-    source: signal8
-    destination: signal49
-    orientation: clockwise
-    path:
       # point4.reverse -> point12.reverse1 -> point11.reverse2 -> point27.reverse -> point29.normal -> block21
       - id: seg10
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg92
-        type: segment
       - id: seg91b
-        type: segment
       - id: seg91a
-        type: segment
       - id: seg90
-        type: segment
     sections:
       - id: block21
     length: 268.10cm
@@ -8932,7 +8024,7 @@ interlocking-table:
       - id: 78
       - id: 79
       - id: 99
-      - id: 100
+      - id: 101
       - id: 102
       - id: 103
       - id: 104
@@ -8950,6 +8042,79 @@ interlocking-table:
       - id: 149
       - id: 150
       - id: 151
+  - id: 101 #route101
+    source: signal8
+    destination: signal49
+    orientation: clockwise
+    path:
+      # point4.normal -> point3.reverse -> point11.normal2 -> point27.reverse -> point29.normal -> block21
+      - id: seg10
+      - id: seg9
+      - id: seg33
+      - id: seg84
+      - id: seg89
+      - id: seg92
+      - id: seg91b
+      - id: seg91a
+      - id: seg90
+    sections:
+      - id: block21
+    length: 268.10cm
+    signals:
+      - id: signal8
+      - id: signal49
+    points:
+      - id: point4
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point11
+        position: normal
+      - id: point27
+        position: reverse
+      - id: point29
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 63
+      - id: 64
+      - id: 76
+      - id: 77
+      - id: 78
+      - id: 79
+      - id: 99
+      - id: 100
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
   - id: 102 #route102
     source: signal8
     destination: signal45
@@ -8957,21 +8122,13 @@ interlocking-table:
     path:
       # point4.reverse -> point12.reverse1 -> point11.reverse2 -> point27.normal -> block19
       - id: seg10
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg83
-        type: segment
       - id: seg82b
-        type: segment
       - id: seg82a
-        type: segment
       - id: seg81
-        type: segment
     sections:
       - id: block19
     length: 272.80cm
@@ -9043,21 +8200,13 @@ interlocking-table:
     path:
       # point4.normal -> point3.reverse -> point11.normal2 -> point27.normal -> block19
       - id: seg10
-        type: segment
       - id: seg9
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg83
-        type: segment
       - id: seg82b
-        type: segment
       - id: seg82a
-        type: segment
       - id: seg81
-        type: segment
     sections:
       - id: block19
     length: 272.80cm
@@ -9121,23 +8270,14 @@ interlocking-table:
     path:
       # point4.normal -> point3.reverse -> point11.normal2 -> point27.reverse -> point29.reverse -> block20
       - id: seg10
-        type: segment
       - id: seg9
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg88
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg86
-        type: segment
     sections:
       - id: block20
     length: 264.50cm
@@ -9203,23 +8343,14 @@ interlocking-table:
     path:
       # point4.reverse -> point12.reverse1 -> point11.reverse2 -> point27.reverse -> point29.reverse -> block20
       - id: seg10
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg88
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg86
-        type: segment
     sections:
       - id: block20
     length: 264.50cm
@@ -9293,19 +8424,12 @@ interlocking-table:
     path:
       # point4.reverse -> point12.normal2 -> point24.normal -> block22
       - id: seg10
-        type: segment
       - id: seg34
-        type: segment
       - id: seg66
-        type: segment
       - id: seg95
-        type: segment
       - id: seg94b
-        type: segment
       - id: seg94a
-        type: segment
       - id: seg93
-        type: segment
     sections:
       - id: block22
     length: 319.00cm
@@ -9374,19 +8498,12 @@ interlocking-table:
     path:
       # point4.normal -> point3.reverse -> point11.reverse1 -> platform4
       - id: seg10
-        type: segment
       - id: seg9
-        type: segment
       - id: seg33
-        type: segment
       - id: seg32
-        type: segment
       - id: seg31b
-        type: segment
       - id: seg31a
-        type: segment
       - id: seg30
-        type: segment
     sections:
       - id: platform4
     length: 196.30cm
@@ -9446,19 +8563,12 @@ interlocking-table:
     path:
       # point4.reverse -> point12.reverse1 -> point11.normal1 -> platform4
       - id: seg10
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg32
-        type: segment
       - id: seg31b
-        type: segment
       - id: seg31a
-        type: segment
       - id: seg30
-        type: segment
     sections:
       - id: platform4
     length: 196.30cm
@@ -9526,17 +8636,11 @@ interlocking-table:
     path:
       # point4.normal -> point3.normal -> block2
       - id: seg10
-        type: segment
       - id: seg9
-        type: segment
       - id: seg8
-        type: segment
       - id: seg7b
-        type: segment
       - id: seg7a
-        type: segment
       - id: seg6
-        type: segment
     sections:
       - id: block2
     length: 284.40cm
@@ -9578,29 +8682,17 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block10
       - id: block5
@@ -9711,27 +8803,16 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg20
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block9
       - id: block5
@@ -9822,33 +8903,19 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block9
       - id: block5
@@ -9953,27 +9020,16 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.reverse -> crossing2.line2 -> point22.normal2 -> platform1
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg57
-        type: segment
       - id: seg58
-        type: segment
       - id: seg59
-        type: segment
     sections:
       - id: block10
       - id: platform1
@@ -10075,27 +9131,16 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.normal -> block1
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg1
-        type: segment
       - id: seg2
-        type: segment
       - id: seg3
-        type: segment
     sections:
       - id: block9
       - id: block1
@@ -10189,15 +9234,10 @@ interlocking-table:
     path:
       # point5.normal -> block4
       - id: seg14
-        type: segment
       - id: seg15
-        type: segment
       - id: seg16a
-        type: segment
       - id: seg16b
-        type: segment
       - id: seg17
-        type: segment
     sections:
       - id: block4
     length: 143.30cm
@@ -10235,31 +9275,18 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: block9
       - id: platform3
@@ -10357,27 +9384,16 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: block10
       - id: platform3
@@ -10481,27 +9497,16 @@ interlocking-table:
     path:
       # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.reverse -> crossing2.line2 -> point22.reverse2 -> platform2
       - id: seg14
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg54
-        type: segment
       - id: seg55
-        type: segment
       - id: seg56
-        type: segment
     sections:
       - id: block10
       - id: platform2
@@ -10603,17 +9608,11 @@ interlocking-table:
     path:
       # point24.reverse -> point12.reverse2 -> point13.reverse -> block15
       - id: seg66
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg67
-        type: segment
       - id: seg68
-        type: segment
       - id: seg69
-        type: segment
     sections:
       - id: block15
     length: 197.30cm
@@ -10629,13 +9628,13 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 17
       - id: 39
@@ -10648,13 +9647,13 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 82
       - id: 83
       - id: 84
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -10678,17 +9677,11 @@ interlocking-table:
     path:
       # point24.reverse -> point12.normal2 -> point4.reverse -> block3
       - id: seg66
-        type: segment
       - id: seg34
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
     sections:
       - id: block3
     length: 232.60cm
@@ -10764,17 +9757,11 @@ interlocking-table:
     path:
       # point24.reverse -> point12.reverse2 -> point13.normal -> block8
       - id: seg66
-        type: segment
       - id: seg34
-        type: segment
       - id: seg35
-        type: segment
       - id: seg36
-        type: segment
       - id: seg37
-        type: segment
       - id: seg38
-        type: segment
     sections:
       - id: block8
     length: 217.30cm
@@ -10790,13 +9777,13 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 22
       - id: 39
@@ -10809,13 +9796,13 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 92
       - id: 93
       - id: 94
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -10839,27 +9826,16 @@ interlocking-table:
     path:
       # point7.normal -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.reverse -> block15
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block9
       - id: block15
@@ -10947,17 +9923,11 @@ interlocking-table:
     path:
       # point7.normal -> point6.normal -> block4
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg17
-        type: segment
       - id: seg16b
-        type: segment
       - id: seg16a
-        type: segment
       - id: seg15
-        type: segment
     sections:
       - id: block4
     length: 142.60cm
@@ -10970,12 +9940,12 @@ interlocking-table:
       - id: point6
         position: normal
     conflicts:
-      - id: 27
+      - id: 28
       - id: 31
-      - id: 32
+      - id: 33
       - id: 82
       - id: 87
-      - id: 89
+      - id: 88
       - id: 92
       - id: 96
       - id: 97
@@ -10989,11 +9959,11 @@ interlocking-table:
       - id: 125
       - id: 130
       - id: 134
-      - id: 135
+      - id: 136
       - id: 138
       - id: 153
       - id: 156
-      - id: 157
+      - id: 158
   - id: 124 #route124
     source: signal1
     destination: signal8
@@ -11001,27 +9971,16 @@ interlocking-table:
     path:
       # point7.normal -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg14
-        type: segment
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block9
       - id: block3
@@ -11116,27 +10075,16 @@ interlocking-table:
     path:
       # point7.normal -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block9
       - id: block8
@@ -11224,15 +10172,10 @@ interlocking-table:
     path:
       # point10.normal -> platform4
       - id: seg29
-        type: segment
       - id: seg30
-        type: segment
       - id: seg31a
-        type: segment
       - id: seg31b
-        type: segment
       - id: seg32
-        type: segment
     sections:
       - id: platform4
     length: 149.70cm
@@ -11257,15 +10200,10 @@ interlocking-table:
     path:
       # point10.reverse -> platform5
       - id: seg29
-        type: segment
       - id: seg77
-        type: segment
       - id: seg78a
-        type: segment
       - id: seg78b
-        type: segment
       - id: seg79
-        type: segment
     sections:
       - id: platform5
     length: 116.70cm
@@ -11286,13 +10224,9 @@ interlocking-table:
     path:
       # point10.normal -> block6
       - id: seg29
-        type: segment
       - id: seg28
-        type: segment
       - id: seg27
-        type: segment
       - id: seg26
-        type: segment
     sections:
       - id: block6
     length: 98.30cm
@@ -11316,15 +10250,10 @@ interlocking-table:
     path:
       # point2.normal -> point1.normal -> block1
       - id: seg5
-        type: segment
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block1
     length: 266.80cm
@@ -11367,31 +10296,18 @@ interlocking-table:
     path:
       # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.reverse -> block15
       - id: seg44
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block9
       - id: block15
@@ -11493,27 +10409,16 @@ interlocking-table:
     path:
       # point18b.reverse1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.reverse -> block15
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block10
       - id: block15
@@ -11621,23 +10526,14 @@ interlocking-table:
     path:
       # point18b.reverse1 -> point19.normal -> point20.normal -> block10 -> point21.normal -> point25.normal -> platform7
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg73
-        type: segment
       - id: seg72
-        type: segment
       - id: seg71
-        type: segment
     sections:
       - id: block10
       - id: platform7
@@ -11665,7 +10561,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 32
       - id: 33
@@ -11684,10 +10580,10 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 110
@@ -11710,8 +10606,8 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 152
       - id: 153
+      - id: 154
       - id: 155
       - id: 157
       - id: 158
@@ -11723,23 +10619,14 @@ interlocking-table:
     path:
       # point18b.reverse1 -> point19.normal -> point20.normal -> block10 -> point21.normal -> point25.reverse -> platform6
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg76
-        type: segment
       - id: seg75
-        type: segment
       - id: seg74
-        type: segment
     sections:
       - id: block10
       - id: platform6
@@ -11767,7 +10654,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 32
       - id: 33
@@ -11786,10 +10673,10 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 110
@@ -11812,8 +10699,8 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 152
       - id: 153
+      - id: 154
       - id: 155
       - id: 157
       - id: 158
@@ -11825,21 +10712,13 @@ interlocking-table:
     path:
       # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.normal -> block4
       - id: seg44
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg17
-        type: segment
       - id: seg16b
-        type: segment
       - id: seg16a
-        type: segment
       - id: seg15
-        type: segment
     sections:
       - id: block4
     length: 178.60cm
@@ -11913,162 +10792,18 @@ interlocking-table:
     destination: signal8
     orientation: clockwise
     path:
-      # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
-      - id: seg44
-        type: segment
-      - id: seg20
-        type: segment
-      - id: seg19
-        type: segment
-      - id: seg18
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg14
-        type: segment
-      - id: seg13
-        type: segment
-      - id: seg12
-        type: segment
-      - id: seg11
-        type: segment
-    sections:
-      - id: block9
-      - id: block3
-    length: 378.40cm
-    signals:
-      - id: signal26
-      - id: signal8
-    points:
-      - id: point18b
-        position: normal
-      - id: point7
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point17
-        position: reverse
-      - id: point16
-        position: normal
-      - id: point15
-        position: reverse
-      - id: point5
-        position: reverse
-    conflicts:
-      - id: 1
-      - id: 2
-      - id: 5
-      - id: 6
-      - id: 14
-      - id: 15
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 46
-      - id: 48
-      - id: 49
-      - id: 51
-      - id: 77
-      - id: 78
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 95
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 115
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 120
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 136 #route136
-    source: signal26
-    destination: signal8
-    orientation: clockwise
-    path:
       # point18b.reverse1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.reverse -> point5.reverse -> block3
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg14
-        type: segment
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block10
       - id: block3
@@ -12159,13 +10894,133 @@ interlocking-table:
       - id: 132
       - id: 133
       - id: 134
-      - id: 135
+      - id: 136
       - id: 137
       - id: 138
       - id: 139
       - id: 140
       - id: 141
       - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 136 #route136
+    source: signal26
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
+      - id: seg44
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg14
+      - id: seg13
+      - id: seg12
+      - id: seg11
+    sections:
+      - id: block9
+      - id: block3
+    length: 378.40cm
+    signals:
+      - id: signal26
+      - id: signal8
+    points:
+      - id: point18b
+        position: normal
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point17
+        position: reverse
+      - id: point16
+        position: normal
+      - id: point15
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 1
+      - id: 2
+      - id: 5
+      - id: 6
+      - id: 14
+      - id: 15
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 46
+      - id: 48
+      - id: 49
+      - id: 51
+      - id: 77
+      - id: 78
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 95
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 115
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 120
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
       - id: 143
       - id: 145
       - id: 152
@@ -12183,19 +11038,12 @@ interlocking-table:
     path:
       # point18b.reverse1 -> point19.reverse -> crossing2.line1 -> point23.reverse -> block14
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg52
-        type: segment
       - id: seg60
-        type: segment
       - id: seg62
-        type: segment
       - id: seg63
-        type: segment
       - id: seg64
-        type: segment
     sections:
       - id: block14
     length: 230.60cm
@@ -12221,7 +11069,7 @@ interlocking-table:
       - id: 25
       - id: 26
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 32
       - id: 33
@@ -12241,10 +11089,10 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 99
@@ -12270,8 +11118,8 @@ interlocking-table:
       - id: 144
       - id: 145
       - id: 146
-      - id: 152
       - id: 153
+      - id: 154
       - id: 155
       - id: 157
       - id: 158
@@ -12283,31 +11131,18 @@ interlocking-table:
     path:
       # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
       - id: seg44
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
       - id: seg43
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block9
       - id: block8
@@ -12409,27 +11244,16 @@ interlocking-table:
     path:
       # point18b.reverse1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.normal -> block8
       - id: seg44
-        type: segment
       - id: seg48
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block10
       - id: block8
@@ -12537,27 +11361,16 @@ interlocking-table:
     path:
       # point22.reverse2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.reverse -> block15
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg69
-        type: segment
       - id: seg68
-        type: segment
       - id: seg67
-        type: segment
     sections:
       - id: block10
       - id: block15
@@ -12663,23 +11476,14 @@ interlocking-table:
     path:
       # point22.reverse2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.normal -> point25.normal -> platform7
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg73
-        type: segment
       - id: seg72
-        type: segment
       - id: seg71
-        type: segment
     sections:
       - id: block10
       - id: platform7
@@ -12707,9 +11511,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -12722,9 +11526,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -12732,7 +11536,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -12740,9 +11544,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 142 #route142
     source: signal28
@@ -12751,23 +11555,14 @@ interlocking-table:
     path:
       # point22.reverse2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.normal -> point25.reverse -> platform6
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg70
-        type: segment
       - id: seg76
-        type: segment
       - id: seg75
-        type: segment
       - id: seg74
-        type: segment
     sections:
       - id: block10
       - id: platform6
@@ -12795,9 +11590,9 @@ interlocking-table:
       - id: 24
       - id: 25
       - id: 26
-      - id: 29
+      - id: 27
       - id: 30
-      - id: 33
+      - id: 32
       - id: 34
       - id: 35
       - id: 36
@@ -12810,9 +11605,9 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 88
+      - id: 90
       - id: 91
-      - id: 93
+      - id: 94
       - id: 110
       - id: 113
       - id: 117
@@ -12820,7 +11615,7 @@ interlocking-table:
       - id: 131
       - id: 132
       - id: 133
-      - id: 136
+      - id: 135
       - id: 137
       - id: 139
       - id: 140
@@ -12828,9 +11623,9 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 152
+      - id: 154
       - id: 155
-      - id: 158
+      - id: 157
       - id: 159
   - id: 143 #route143
     source: signal28
@@ -12839,27 +11634,16 @@ interlocking-table:
     path:
       # point22.reverse2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.reverse -> point16.reverse -> point15.reverse -> point5.reverse -> block3
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg14
-        type: segment
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block10
       - id: block3
@@ -12972,15 +11756,10 @@ interlocking-table:
     path:
       # point22.normal1 -> point23.normal -> block14
       - id: seg53
-        type: segment
       - id: seg60
-        type: segment
       - id: seg62
-        type: segment
       - id: seg63
-        type: segment
       - id: seg64
-        type: segment
     sections:
       - id: block14
     length: 196.00cm
@@ -13030,27 +11809,16 @@ interlocking-table:
     path:
       # point22.reverse2 -> crossing2.line2 -> point20.reverse -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.normal -> block8
       - id: seg53
-        type: segment
       - id: seg52
-        type: segment
       - id: seg49
-        type: segment
       - id: seg50
-        type: segment
       - id: seg51
-        type: segment
       - id: seg41
-        type: segment
       - id: seg40
-        type: segment
       - id: seg39
-        type: segment
       - id: seg38
-        type: segment
       - id: seg37
-        type: segment
       - id: seg36
-        type: segment
     sections:
       - id: block10
       - id: block8
@@ -13156,17 +11924,11 @@ interlocking-table:
     path:
       # point13.normal -> point12.reverse2 -> point24.reverse -> block14
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg66
-        type: segment
       - id: seg64
-        type: segment
       - id: seg63
-        type: segment
       - id: seg62
-        type: segment
     sections:
       - id: block14
     length: 219.30cm
@@ -13182,13 +11944,13 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 21
       - id: 39
@@ -13201,11 +11963,11 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 91
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -13227,23 +11989,14 @@ interlocking-table:
     path:
       # point13.normal -> point12.normal1 -> point11.reverse2 -> point27.reverse -> point29.normal -> block21
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg92
-        type: segment
       - id: seg91b
-        type: segment
       - id: seg91a
-        type: segment
       - id: seg90
-        type: segment
     sections:
       - id: block21
     length: 268.10cm
@@ -13315,21 +12068,13 @@ interlocking-table:
     path:
       # point13.normal -> point12.normal1 -> point11.reverse2 -> point27.normal -> block19
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg83
-        type: segment
       - id: seg82b
-        type: segment
       - id: seg82a
-        type: segment
       - id: seg81
-        type: segment
     sections:
       - id: block19
     length: 272.80cm
@@ -13399,23 +12144,14 @@ interlocking-table:
     path:
       # point13.normal -> point12.normal1 -> point11.reverse2 -> point27.reverse -> point29.reverse -> block20
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg84
-        type: segment
       - id: seg89
-        type: segment
       - id: seg88
-        type: segment
       - id: seg87b
-        type: segment
       - id: seg87a
-        type: segment
       - id: seg86
-        type: segment
     sections:
       - id: block20
     length: 264.50cm
@@ -13487,19 +12223,12 @@ interlocking-table:
     path:
       # point13.normal -> point12.reverse2 -> point24.normal -> block22
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg66
-        type: segment
       - id: seg95
-        type: segment
       - id: seg94b
-        type: segment
       - id: seg94a
-        type: segment
       - id: seg93
-        type: segment
     sections:
       - id: block22
     length: 319.00cm
@@ -13515,14 +12244,14 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 0
-      - id: 2
+      - id: 1
       - id: 3
       - id: 4
-      - id: 6
+      - id: 5
       - id: 7
       - id: 10
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 39
       - id: 40
@@ -13535,10 +12264,10 @@ interlocking-table:
       - id: 47
       - id: 67
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 105
       - id: 106
@@ -13558,19 +12287,12 @@ interlocking-table:
     path:
       # point13.normal -> point12.normal1 -> point11.normal1 -> platform4
       - id: seg35
-        type: segment
       - id: seg34
-        type: segment
       - id: seg33
-        type: segment
       - id: seg32
-        type: segment
       - id: seg31b
-        type: segment
       - id: seg31a
-        type: segment
       - id: seg30
-        type: segment
     sections:
       - id: platform4
     length: 196.30cm
@@ -13634,35 +12356,22 @@ interlocking-table:
     destination: signal18a
     orientation: anticlockwise
     path:
-      # point14.normal -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
+      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
-      - id: seg51
-        type: segment
-      - id: seg50
-        type: segment
-      - id: seg49
-        type: segment
-      - id: seg48
-        type: segment
-      - id: seg44
-        type: segment
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg20
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
-      - id: block10
+      - id: block9
       - id: block5
-    length: 437.80cm
+    length: 412.50cm
     signals:
       - id: signal24
       - id: signal18a
@@ -13672,25 +12381,16 @@ interlocking-table:
       - id: point15
         position: normal
       - id: point16
-        position: reverse
-      - id: point21
-        position: reverse
-      - id: point20
         position: normal
-      - id: point19
-        position: normal
-      - id: point18b
+      - id: point17
         position: normal
       - id: point18a
-        position: reverse
+        position: normal
     conflicts:
       - id: 17
-      - id: 18
-      - id: 19
       - id: 20
       - id: 22
       - id: 23
-      - id: 25
       - id: 27
       - id: 28
       - id: 29
@@ -13700,13 +12400,7 @@ interlocking-table:
       - id: 33
       - id: 34
       - id: 35
-      - id: 36
-      - id: 37
-      - id: 38
       - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
       - id: 54
       - id: 57
       - id: 60
@@ -13740,17 +12434,12 @@ interlocking-table:
       - id: 125
       - id: 130
       - id: 131
-      - id: 132
-      - id: 133
       - id: 134
       - id: 135
       - id: 136
-      - id: 137
       - id: 138
       - id: 139
       - id: 140
-      - id: 141
-      - id: 142
       - id: 143
       - id: 145
       - id: 153
@@ -13767,33 +12456,19 @@ interlocking-table:
     path:
       # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
       - id: seg44
-        type: segment
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
       - id: block9
       - id: block5
@@ -13894,33 +12569,23 @@ interlocking-table:
     destination: signal18a
     orientation: anticlockwise
     path:
-      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
+      # point14.normal -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg20
-        type: segment
+      - id: seg51
+      - id: seg50
+      - id: seg49
+      - id: seg48
+      - id: seg44
       - id: seg21a
-        type: segment
       - id: seg21b
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
     sections:
-      - id: block9
+      - id: block10
       - id: block5
-    length: 412.50cm
+    length: 437.80cm
     signals:
       - id: signal24
       - id: signal18a
@@ -13930,16 +12595,25 @@ interlocking-table:
       - id: point15
         position: normal
       - id: point16
+        position: reverse
+      - id: point21
+        position: reverse
+      - id: point20
         position: normal
-      - id: point17
+      - id: point19
+        position: normal
+      - id: point18b
         position: normal
       - id: point18a
-        position: normal
+        position: reverse
     conflicts:
       - id: 17
+      - id: 18
+      - id: 19
       - id: 20
       - id: 22
       - id: 23
+      - id: 25
       - id: 27
       - id: 28
       - id: 29
@@ -13949,7 +12623,13 @@ interlocking-table:
       - id: 33
       - id: 34
       - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
       - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
       - id: 54
       - id: 57
       - id: 60
@@ -13983,12 +12663,17 @@ interlocking-table:
       - id: 125
       - id: 130
       - id: 131
+      - id: 132
+      - id: 133
       - id: 134
       - id: 135
       - id: 136
+      - id: 137
       - id: 138
       - id: 139
       - id: 140
+      - id: 141
+      - id: 142
       - id: 143
       - id: 145
       - id: 152
@@ -14005,27 +12690,16 @@ interlocking-table:
     path:
       # point14.normal -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.reverse -> crossing2.line2 -> point22.normal2 -> platform1
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg57
-        type: segment
       - id: seg58
-        type: segment
       - id: seg59
-        type: segment
     sections:
       - id: block10
       - id: platform1
@@ -14125,27 +12799,16 @@ interlocking-table:
     path:
       # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.normal -> block1
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg42a
-        type: segment
       - id: seg42b
-        type: segment
       - id: seg43
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg1
-        type: segment
       - id: seg2
-        type: segment
       - id: seg3
-        type: segment
     sections:
       - id: block9
       - id: block1
@@ -14235,149 +12898,18 @@ interlocking-table:
     destination: signal27
     orientation: anticlockwise
     path:
-      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
-      - id: seg39
-        type: segment
-      - id: seg40
-        type: segment
-      - id: seg41
-        type: segment
-      - id: seg42a
-        type: segment
-      - id: seg42b
-        type: segment
-      - id: seg43
-        type: segment
-      - id: seg18
-        type: segment
-      - id: seg19
-        type: segment
-      - id: seg20
-        type: segment
-      - id: seg44
-        type: segment
-      - id: seg45
-        type: segment
-      - id: seg46
-        type: segment
-      - id: seg47
-        type: segment
-    sections:
-      - id: block9
-      - id: platform3
-    length: 310.10cm
-    signals:
-      - id: signal24
-      - id: signal27
-    points:
-      - id: point14
-        position: normal
-      - id: point15
-        position: normal
-      - id: point16
-        position: normal
-      - id: point17
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point7
-        position: reverse
-      - id: point18b
-        position: normal
-    conflicts:
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 49
-      - id: 51
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 158
-      - id: 159
-  - id: 158 #route158
-    source: signal24
-    destination: signal27
-    orientation: anticlockwise
-    path:
       # point14.normal -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg48
-        type: segment
       - id: seg44
-        type: segment
       - id: seg45
-        type: segment
       - id: seg46
-        type: segment
       - id: seg47
-        type: segment
     sections:
       - id: block10
       - id: platform3
@@ -14470,6 +13002,113 @@ interlocking-table:
       - id: 154
       - id: 155
       - id: 156
+      - id: 158
+      - id: 159
+  - id: 158 #route158
+    source: signal24
+    destination: signal27
+    orientation: anticlockwise
+    path:
+      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
+      - id: seg39
+      - id: seg40
+      - id: seg41
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: seg44
+      - id: seg45
+      - id: seg46
+      - id: seg47
+    sections:
+      - id: block9
+      - id: platform3
+    length: 310.10cm
+    signals:
+      - id: signal24
+      - id: signal27
+    points:
+      - id: point14
+        position: normal
+      - id: point15
+        position: normal
+      - id: point16
+        position: normal
+      - id: point17
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+      - id: point18b
+        position: normal
+    conflicts:
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 49
+      - id: 51
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
       - id: 157
       - id: 159
   - id: 159 #route159
@@ -14479,27 +13118,16 @@ interlocking-table:
     path:
       # point14.normal -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.reverse -> crossing2.line2 -> point22.reverse2 -> platform2
       - id: seg39
-        type: segment
       - id: seg40
-        type: segment
       - id: seg41
-        type: segment
       - id: seg51
-        type: segment
       - id: seg50
-        type: segment
       - id: seg49
-        type: segment
       - id: seg52
-        type: segment
       - id: seg53
-        type: segment
       - id: seg54
-        type: segment
       - id: seg55
-        type: segment
       - id: seg56
-        type: segment
     sections:
       - id: block10
       - id: platform2

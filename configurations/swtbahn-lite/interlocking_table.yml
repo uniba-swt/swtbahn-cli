@@ -2,18 +2,214 @@
 interlocking-table:
   - id: 0 #route0
     source: signal8
+    destination: signal2
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block2 -> point2.normal -> block5 -> point3.normal -> block3
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: signal6
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+    sections:
+      - id: block2
+      - id: block5
+      - id: block3
+    length: 300.70cm
+    signals:
+      - id: signal8
+      - id: signal4
+      - id: signal6
+      - id: signal2
+    points:
+      - id: point1
+        position: reverse
+      - id: point2
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 1 #route1
+    source: signal8
+    destination: signal10
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+    sections:
+      - id: block2
+      - id: block1
+    length: 197.85cm
+    signals:
+      - id: signal8
+      - id: signal4
+      - id: signal10
+    points:
+      - id: point1
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 2 #route2
+    source: signal8
     destination: signal4
     orientation: anticlockwise
     path:
       # point1.reverse -> block2
       - id: seg4
-        type: segment
       - id: seg5
-        type: segment
       - id: seg6
-        type: segment
       - id: seg7
-        type: segment
     sections:
       - id: block2
     length: 102.35cm
@@ -24,27 +220,371 @@ interlocking-table:
       - id: point1
         position: reverse
     conflicts:
+      - id: 0
       - id: 1
+      - id: 3
       - id: 4
       - id: 5
       - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
       - id: 11
-  - id: 1 #route1
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 3 #route3
+    source: signal8
+    destination: signal6
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block2 -> point2.normal -> block5
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+    sections:
+      - id: block2
+      - id: block5
+    length: 209.95cm
+    signals:
+      - id: signal8
+      - id: signal4
+      - id: signal6
+    points:
+      - id: point1
+        position: reverse
+      - id: point2
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 4 #route4
+    source: signal8
+    destination: signal12
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg22
+      - id: seg23
+      - id: seg24
+    sections:
+      - id: block2
+      - id: block1
+      - id: platform2
+    length: 275.05cm
+    signals:
+      - id: signal8
+      - id: signal4
+      - id: signal10
+      - id: signal12
+    points:
+      - id: point1
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 5 #route5
+    source: signal9
+    destination: signal1
+    orientation: anticlockwise
+    path:
+      # point5.reverse -> point2.reverse -> block2 -> point1.normal -> block3
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block2
+      - id: block3
+    length: 206.10cm
+    signals:
+      - id: signal9
+      - id: signal3
+      - id: signal1
+    points:
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 6 #route6
     source: signal9
     destination: signal3
     orientation: anticlockwise
     path:
       # point5.reverse -> point2.reverse -> block2
       - id: seg17
-        type: segment
       - id: seg8
-        type: segment
       - id: seg7
-        type: segment
       - id: seg6
-        type: segment
       - id: seg5
-        type: segment
     sections:
       - id: block2
     length: 107.65cm
@@ -58,24 +598,398 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
+      - id: 1
       - id: 2
+      - id: 3
       - id: 4
+      - id: 5
+      - id: 7
+      - id: 8
       - id: 9
       - id: 10
       - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
       - id: 18
-  - id: 2 #route2
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 7 #route7
+    source: signal9
+    destination: signal5
+    orientation: anticlockwise
+    path:
+      # point5.reverse -> point2.reverse -> block2 -> point1.normal -> block3 -> point3.normal -> block5
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+      - id: signal1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block2
+      - id: block3
+      - id: block5
+    length: 312.00cm
+    signals:
+      - id: signal9
+      - id: signal3
+      - id: signal1
+      - id: signal5
+    points:
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 8 #route8
+    source: signal9
+    destination: signal5
+    orientation: anticlockwise
+    path:
+      # point5.reverse -> point2.reverse -> block2 -> point1.reverse -> block4 -> point4.reverse -> point3.reverse -> block5
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block2
+      - id: block4
+      - id: block5
+    length: 315.60cm
+    signals:
+      - id: signal9
+      - id: signal3
+      - id: signal7
+      - id: signal5
+    points:
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: reverse
+      - id: point4
+        position: reverse
+      - id: point3
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 9 #route9
+    source: signal9
+    destination: signal7
+    orientation: anticlockwise
+    path:
+      # point5.reverse -> point2.reverse -> block2 -> point1.reverse -> block4
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+    sections:
+      - id: block2
+      - id: block4
+    length: 198.80cm
+    signals:
+      - id: signal9
+      - id: signal3
+      - id: signal7
+    points:
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 10 #route10
     source: signal9
     destination: signal15
     orientation: anticlockwise
     path:
       # point5.normal -> platform1
       - id: seg17
-        type: segment
       - id: seg27
-        type: segment
       - id: seg28
-        type: segment
     sections:
       - id: platform1
     length: 71.30cm
@@ -87,22 +1001,262 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 1
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
       - id: 9
+      - id: 15
+      - id: 17
       - id: 18
-  - id: 3 #route3
+      - id: 21
+      - id: 27
+      - id: 33
+      - id: 36
+      - id: 38
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 56
+      - id: 58
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 11 #route11
+    source: signal1
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point3.normal -> block5 -> point2.normal -> block2 -> point1.reverse -> block4 -> point4.normal -> point6.normal -> block1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: signal5
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+    sections:
+      - id: block5
+      - id: block2
+      - id: block4
+      - id: block1
+    length: 386.40cm
+    signals:
+      - id: signal1
+      - id: signal5
+      - id: signal3
+      - id: signal7
+      - id: signal9
+    points:
+      - id: point3
+        position: normal
+      - id: point2
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 12 #route12
+    source: signal1
+    destination: signal3
+    orientation: anticlockwise
+    path:
+      # point3.normal -> block5 -> point2.normal -> block2
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: signal5
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+    sections:
+      - id: block5
+      - id: block2
+    length: 202.25cm
+    signals:
+      - id: signal1
+      - id: signal5
+      - id: signal3
+    points:
+      - id: point3
+        position: normal
+      - id: point2
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 24
+      - id: 25
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 13 #route13
     source: signal1
     destination: signal5
     orientation: anticlockwise
     path:
       # point3.normal -> block5
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
       - id: seg10
-        type: segment
       - id: seg9
-        type: segment
     sections:
       - id: block5
     length: 105.90cm
@@ -113,24 +1267,606 @@ interlocking-table:
       - id: point3
         position: normal
     conflicts:
-      - id: 10
+      - id: 0
+      - id: 3
+      - id: 7
+      - id: 8
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 20
+      - id: 24
+      - id: 25
+      - id: 29
+      - id: 31
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 55
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 64
+      - id: 65
+      - id: 70
+      - id: 73
+  - id: 14 #route14
+    source: signal1
+    destination: signal7
+    orientation: anticlockwise
+    path:
+      # point3.normal -> block5 -> point2.normal -> block2 -> point1.reverse -> block4
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: signal5
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+    sections:
+      - id: block5
+      - id: block2
+      - id: block4
+    length: 293.40cm
+    signals:
+      - id: signal1
+      - id: signal5
+      - id: signal3
+      - id: signal7
+    points:
+      - id: point3
+        position: normal
+      - id: point2
+        position: normal
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
       - id: 12
       - id: 13
       - id: 15
-  - id: 4 #route4
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 15 #route15
+    source: signal1
+    destination: signal15
+    orientation: anticlockwise
+    path:
+      # point3.normal -> block5 -> point2.normal -> block2 -> point1.reverse -> block4 -> point4.normal -> point6.normal -> block1 -> point5.normal -> platform1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: signal5
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block5
+      - id: block2
+      - id: block4
+      - id: block1
+      - id: platform1
+    length: 457.70cm
+    signals:
+      - id: signal1
+      - id: signal5
+      - id: signal3
+      - id: signal7
+      - id: signal9
+      - id: signal15
+    points:
+      - id: point3
+        position: normal
+      - id: point2
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 16 #route16
+    source: signal2
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point1.normal -> block2 -> point2.normal -> block5 -> point3.reverse -> point4.reverse -> block4
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: signal6
+      - id: seg12
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block2
+      - id: block5
+      - id: block4
+    length: 304.30cm
+    signals:
+      - id: signal2
+      - id: signal4
+      - id: signal6
+      - id: signal8
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 17 #route17
+    source: signal2
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.normal -> point4.normal -> block4
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block2
+      - id: block1
+      - id: block4
+    length: 291.80cm
+    signals:
+      - id: signal2
+      - id: signal4
+      - id: signal10
+      - id: signal8
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 18 #route18
+    source: signal2
+    destination: signal10
+    orientation: clockwise
+    path:
+      # point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+    sections:
+      - id: block2
+      - id: block1
+    length: 197.85cm
+    signals:
+      - id: signal2
+      - id: signal4
+      - id: signal10
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 19 #route19
     source: signal2
     destination: signal4
     orientation: clockwise
     path:
       # point1.normal -> block2
       - id: seg4
-        type: segment
       - id: seg5
-        type: segment
       - id: seg6
-        type: segment
       - id: seg7
-        type: segment
     sections:
       - id: block2
     length: 102.35cm
@@ -143,23 +1879,367 @@ interlocking-table:
     conflicts:
       - id: 0
       - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
       - id: 5
       - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
       - id: 11
-  - id: 5 #route5
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 20 #route20
+    source: signal2
+    destination: signal6
+    orientation: clockwise
+    path:
+      # point1.normal -> block2 -> point2.normal -> block5
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+    sections:
+      - id: block2
+      - id: block5
+    length: 209.95cm
+    signals:
+      - id: signal2
+      - id: signal4
+      - id: signal6
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 21 #route21
+    source: signal2
+    destination: signal12
+    orientation: clockwise
+    path:
+      # point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg22
+      - id: seg23
+      - id: seg24
+    sections:
+      - id: block2
+      - id: block1
+      - id: platform2
+    length: 275.05cm
+    signals:
+      - id: signal2
+      - id: signal4
+      - id: signal10
+      - id: signal12
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 22 #route22
+    source: signal3
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block4 -> point4.normal -> point6.normal -> block1
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+    sections:
+      - id: block4
+      - id: block1
+    length: 184.15cm
+    signals:
+      - id: signal3
+      - id: signal7
+      - id: signal9
+    points:
+      - id: point1
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 23 #route23
     source: signal3
     destination: signal1
     orientation: anticlockwise
     path:
       # point1.normal -> block3
       - id: seg4
-        type: segment
       - id: seg3
-        type: segment
       - id: seg2
-        type: segment
       - id: seg1
-        type: segment
     sections:
       - id: block3
     length: 98.45cm
@@ -171,23 +2251,243 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
       - id: 4
-      - id: 6
+      - id: 5
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 35
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 58
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 24 #route24
+    source: signal3
+    destination: signal5
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block4 -> point4.reverse -> point3.reverse -> block5
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block4
+      - id: block5
+    length: 207.95cm
+    signals:
+      - id: signal3
+      - id: signal7
+      - id: signal5
+    points:
+      - id: point1
+        position: reverse
+      - id: point4
+        position: reverse
+      - id: point3
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
       - id: 13
-  - id: 6 #route6
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 25 #route25
+    source: signal3
+    destination: signal5
+    orientation: anticlockwise
+    path:
+      # point1.normal -> block3 -> point3.normal -> block5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+      - id: signal1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block3
+      - id: block5
+    length: 204.35cm
+    signals:
+      - id: signal3
+      - id: signal1
+      - id: signal5
+    points:
+      - id: point1
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 26 #route26
     source: signal3
     destination: signal7
     orientation: anticlockwise
     path:
       # point1.reverse -> block4
       - id: seg4
-        type: segment
       - id: seg14
-        type: segment
       - id: seg15
-        type: segment
       - id: seg16
-        type: segment
     sections:
       - id: block4
     length: 91.15cm
@@ -199,26 +2499,175 @@ interlocking-table:
         position: reverse
     conflicts:
       - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
       - id: 4
       - id: 5
       - id: 7
-      - id: 12
-  - id: 7 #route7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 58
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 27 #route27
+    source: signal3
+    destination: signal15
+    orientation: anticlockwise
+    path:
+      # point1.reverse -> block4 -> point4.normal -> point6.normal -> block1 -> point5.normal -> platform1
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block4
+      - id: block1
+      - id: platform1
+    length: 255.45cm
+    signals:
+      - id: signal3
+      - id: signal7
+      - id: signal9
+      - id: signal15
+    points:
+      - id: point1
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 28 #route28
     source: signal10
     destination: signal8
     orientation: clockwise
     path:
       # point6.normal -> point4.normal -> block4
       - id: seg21
-        type: segment
       - id: seg13
-        type: segment
       - id: seg16
-        type: segment
       - id: seg15
-        type: segment
       - id: seg14
-        type: segment
     sections:
       - id: block4
     length: 93.95cm
@@ -231,26 +2680,395 @@ interlocking-table:
       - id: point4
         position: normal
     conflicts:
-      - id: 6
+      - id: 4
       - id: 8
+      - id: 9
+      - id: 11
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 38
+      - id: 39
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 48
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 29 #route29
+    source: signal10
+    destination: signal2
+    orientation: clockwise
+    path:
+      # point6.normal -> point4.normal -> block4 -> point1.reverse -> block2 -> point2.normal -> block5 -> point3.normal -> block3
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: signal6
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+    sections:
+      - id: block4
+      - id: block2
+      - id: block5
+      - id: block3
+    length: 394.65cm
+    signals:
+      - id: signal10
+      - id: signal8
+      - id: signal4
+      - id: signal6
+      - id: signal2
+    points:
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point2
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 30 #route30
+    source: signal10
+    destination: signal4
+    orientation: clockwise
+    path:
+      # point6.normal -> point4.normal -> block4 -> point1.reverse -> block2
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+    sections:
+      - id: block4
+      - id: block2
+    length: 196.30cm
+    signals:
+      - id: signal10
+      - id: signal8
+      - id: signal4
+    points:
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
       - id: 12
       - id: 14
       - id: 15
       - id: 16
-  - id: 8 #route8
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 31 #route31
+    source: signal10
+    destination: signal6
+    orientation: clockwise
+    path:
+      # point6.normal -> point4.normal -> block4 -> point1.reverse -> block2 -> point2.normal -> block5
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+    sections:
+      - id: block4
+      - id: block2
+      - id: block5
+    length: 303.90cm
+    signals:
+      - id: signal10
+      - id: signal8
+      - id: signal4
+      - id: signal6
+    points:
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point2
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 32 #route32
     source: signal10
     destination: signal12
     orientation: clockwise
     path:
       # point6.reverse -> point7.reverse -> platform2
       - id: seg21
-        type: segment
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
       - id: seg24
-        type: segment
     sections:
       - id: platform2
     length: 77.20cm
@@ -263,26 +3081,335 @@ interlocking-table:
       - id: point7
         position: reverse
     conflicts:
+      - id: 4
+      - id: 11
+      - id: 15
+      - id: 17
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 56
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 33 #route33
+    source: signal4
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point2.reverse -> point5.reverse -> block1 -> point6.normal -> point4.normal -> block4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block1
+      - id: block4
+    length: 189.45cm
+    signals:
+      - id: signal4
+      - id: signal10
+      - id: signal8
+    points:
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
       - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
       - id: 14
+      - id: 15
       - id: 16
       - id: 17
-  - id: 9 #route9
+      - id: 18
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 34 #route34
+    source: signal4
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point2.normal -> block5 -> point3.reverse -> point4.reverse -> block4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: signal6
+      - id: seg12
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block5
+      - id: block4
+    length: 201.95cm
+    signals:
+      - id: signal4
+      - id: signal6
+      - id: signal8
+    points:
+      - id: point2
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 35 #route35
+    source: signal4
+    destination: signal2
+    orientation: clockwise
+    path:
+      # point2.normal -> block5 -> point3.normal -> block3
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: signal6
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+    sections:
+      - id: block5
+      - id: block3
+    length: 198.35cm
+    signals:
+      - id: signal4
+      - id: signal6
+      - id: signal2
+    points:
+      - id: point2
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 20
+      - id: 21
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 29
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 73
+  - id: 36 #route36
     source: signal4
     destination: signal10
     orientation: clockwise
     path:
       # point2.reverse -> point5.reverse -> block1
       - id: seg8
-        type: segment
       - id: seg17
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
     sections:
       - id: block1
     length: 95.50cm
@@ -295,27 +3422,74 @@ interlocking-table:
       - id: point5
         position: reverse
     conflicts:
+      - id: 0
       - id: 1
-      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
       - id: 10
       - id: 11
+      - id: 12
       - id: 14
+      - id: 15
       - id: 16
+      - id: 17
       - id: 18
-  - id: 10 #route10
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 29
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 37 #route37
     source: signal4
     destination: signal6
     orientation: clockwise
     path:
       # point2.normal -> block5
       - id: seg8
-        type: segment
       - id: seg9
-        type: segment
       - id: seg10
-        type: segment
       - id: seg11
-        type: segment
     sections:
       - id: block5
     length: 107.60cm
@@ -326,25 +3500,363 @@ interlocking-table:
       - id: point2
         position: normal
     conflicts:
+      - id: 0
       - id: 1
       - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
       - id: 9
       - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
       - id: 15
-  - id: 11 #route11
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 20
+      - id: 21
+      - id: 24
+      - id: 25
+      - id: 29
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 73
+  - id: 38 #route38
+    source: signal4
+    destination: signal12
+    orientation: clockwise
+    path:
+      # point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg22
+      - id: seg23
+      - id: seg24
+    sections:
+      - id: block1
+      - id: platform2
+    length: 172.70cm
+    signals:
+      - id: signal4
+      - id: signal10
+      - id: signal12
+    points:
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 39 #route39
+    source: signal5
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point2.normal -> block2 -> point1.reverse -> block4 -> point4.normal -> point6.normal -> block1
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+    sections:
+      - id: block2
+      - id: block4
+      - id: block1
+    length: 280.50cm
+    signals:
+      - id: signal5
+      - id: signal3
+      - id: signal7
+      - id: signal9
+    points:
+      - id: point2
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 40 #route40
+    source: signal5
+    destination: signal1
+    orientation: anticlockwise
+    path:
+      # point2.normal -> block2 -> point1.normal -> block3
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block2
+      - id: block3
+    length: 194.80cm
+    signals:
+      - id: signal5
+      - id: signal3
+      - id: signal1
+    points:
+      - id: point2
+        position: normal
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 41 #route41
     source: signal5
     destination: signal3
     orientation: anticlockwise
     path:
       # point2.normal -> block2
       - id: seg8
-        type: segment
       - id: seg7
-        type: segment
       - id: seg6
-        type: segment
       - id: seg5
-        type: segment
     sections:
       - id: block2
     length: 96.35cm
@@ -357,25 +3869,405 @@ interlocking-table:
     conflicts:
       - id: 0
       - id: 1
+      - id: 2
+      - id: 3
       - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 42 #route42
+    source: signal5
+    destination: signal7
+    orientation: anticlockwise
+    path:
+      # point2.normal -> block2 -> point1.reverse -> block4
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+    sections:
+      - id: block2
+      - id: block4
+    length: 187.50cm
+    signals:
+      - id: signal5
+      - id: signal3
+      - id: signal7
+    points:
+      - id: point2
+        position: normal
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 43 #route43
+    source: signal5
+    destination: signal15
+    orientation: anticlockwise
+    path:
+      # point2.normal -> block2 -> point1.reverse -> block4 -> point4.normal -> point6.normal -> block1 -> point5.normal -> platform1
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block2
+      - id: block4
+      - id: block1
+      - id: platform1
+    length: 351.80cm
+    signals:
+      - id: signal5
+      - id: signal3
+      - id: signal7
+      - id: signal9
+      - id: signal15
+    points:
+      - id: point2
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
       - id: 9
       - id: 10
-  - id: 12 #route12
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 44 #route44
+    source: signal6
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.normal -> point4.normal -> block4
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+      - id: signal2
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block3
+      - id: block2
+      - id: block1
+      - id: block4
+    length: 382.55cm
+    signals:
+      - id: signal6
+      - id: signal2
+      - id: signal4
+      - id: signal10
+      - id: signal8
+    points:
+      - id: point3
+        position: normal
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 45 #route45
     source: signal6
     destination: signal8
     orientation: clockwise
     path:
       # point3.reverse -> point4.reverse -> block4
       - id: seg12
-        type: segment
       - id: seg13
-        type: segment
       - id: seg16
-        type: segment
       - id: seg15
-        type: segment
       - id: seg14
-        type: segment
     sections:
       - id: block4
     length: 94.35cm
@@ -388,26 +4280,65 @@ interlocking-table:
       - id: point4
         position: reverse
     conflicts:
-      - id: 3
-      - id: 6
+      - id: 0
       - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
       - id: 13
       - id: 14
       - id: 15
-  - id: 13 #route13
+      - id: 16
+      - id: 17
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 39
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 46 #route46
     source: signal6
     destination: signal2
     orientation: clockwise
     path:
       # point3.normal -> block3
       - id: seg12
-        type: segment
       - id: seg1
-        type: segment
       - id: seg2
-        type: segment
       - id: seg3
-        type: segment
     sections:
       - id: block3
     length: 90.75cm
@@ -418,26 +4349,718 @@ interlocking-table:
       - id: point3
         position: normal
     conflicts:
-      - id: 3
+      - id: 0
       - id: 5
+      - id: 7
+      - id: 8
+      - id: 11
       - id: 12
+      - id: 13
+      - id: 14
       - id: 15
-  - id: 14 #route14
+      - id: 16
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 29
+      - id: 34
+      - id: 35
+      - id: 40
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 70
+  - id: 47 #route47
+    source: signal6
+    destination: signal10
+    orientation: clockwise
+    path:
+      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+      - id: signal2
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+    sections:
+      - id: block3
+      - id: block2
+      - id: block1
+    length: 288.60cm
+    signals:
+      - id: signal6
+      - id: signal2
+      - id: signal4
+      - id: signal10
+    points:
+      - id: point3
+        position: normal
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 48 #route48
+    source: signal6
+    destination: signal10
+    orientation: clockwise
+    path:
+      # point3.reverse -> point4.reverse -> block4 -> point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1
+      - id: seg12
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+    sections:
+      - id: block4
+      - id: block2
+      - id: block1
+    length: 292.20cm
+    signals:
+      - id: signal6
+      - id: signal8
+      - id: signal4
+      - id: signal10
+    points:
+      - id: point3
+        position: reverse
+      - id: point4
+        position: reverse
+      - id: point1
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 49 #route49
+    source: signal6
+    destination: signal4
+    orientation: clockwise
+    path:
+      # point3.normal -> block3 -> point1.normal -> block2
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+      - id: signal2
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+    sections:
+      - id: block3
+      - id: block2
+    length: 193.10cm
+    signals:
+      - id: signal6
+      - id: signal2
+      - id: signal4
+    points:
+      - id: point3
+        position: normal
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 34
+      - id: 35
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 50 #route50
+    source: signal6
+    destination: signal4
+    orientation: clockwise
+    path:
+      # point3.reverse -> point4.reverse -> block4 -> point1.reverse -> block2
+      - id: seg12
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+    sections:
+      - id: block4
+      - id: block2
+    length: 196.70cm
+    signals:
+      - id: signal6
+      - id: signal8
+      - id: signal4
+    points:
+      - id: point3
+        position: reverse
+      - id: point4
+        position: reverse
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 51 #route51
+    source: signal6
+    destination: signal12
+    orientation: clockwise
+    path:
+      # point3.reverse -> point4.reverse -> block4 -> point1.reverse -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      - id: seg12
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg22
+      - id: seg23
+      - id: seg24
+    sections:
+      - id: block4
+      - id: block2
+      - id: block1
+      - id: platform2
+    length: 369.40cm
+    signals:
+      - id: signal6
+      - id: signal8
+      - id: signal4
+      - id: signal10
+      - id: signal12
+    points:
+      - id: point3
+        position: reverse
+      - id: point4
+        position: reverse
+      - id: point1
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 52 #route52
+    source: signal6
+    destination: signal12
+    orientation: clockwise
+    path:
+      # point3.normal -> block3 -> point1.normal -> block2 -> point2.reverse -> point5.reverse -> block1 -> point6.reverse -> point7.reverse -> platform2
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+      - id: signal2
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg22
+      - id: seg23
+      - id: seg24
+    sections:
+      - id: block3
+      - id: block2
+      - id: block1
+      - id: platform2
+    length: 365.80cm
+    signals:
+      - id: signal6
+      - id: signal2
+      - id: signal4
+      - id: signal10
+      - id: signal12
+    points:
+      - id: point3
+        position: normal
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 53 #route53
     source: signal7
     destination: signal9
     orientation: clockwise
     path:
       # point4.normal -> point6.normal -> block1
       - id: seg13
-        type: segment
       - id: seg21
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
     sections:
       - id: block1
     length: 93.00cm
@@ -450,29 +5073,617 @@ interlocking-table:
       - id: point6
         position: normal
     conflicts:
+      - id: 1
+      - id: 4
+      - id: 8
+      - id: 11
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 54 #route54
+    source: signal7
+    destination: signal1
+    orientation: clockwise
+    path:
+      # point4.normal -> point6.normal -> block1 -> point5.reverse -> point2.reverse -> block2 -> point1.normal -> block3
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block1
+      - id: block2
+      - id: block3
+    length: 299.10cm
+    signals:
+      - id: signal7
+      - id: signal9
+      - id: signal3
+      - id: signal1
+    points:
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
       - id: 7
       - id: 8
       - id: 9
+      - id: 10
+      - id: 11
       - id: 12
+      - id: 14
       - id: 15
       - id: 16
+      - id: 17
       - id: 18
-  - id: 15 #route15
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 55 #route55
+    source: signal7
+    destination: signal1
+    orientation: clockwise
+    path:
+      # point4.reverse -> point3.reverse -> block5 -> point2.normal -> block2 -> point1.normal -> block3
+      - id: seg13
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: signal5
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block5
+      - id: block2
+      - id: block3
+    length: 311.60cm
+    signals:
+      - id: signal7
+      - id: signal5
+      - id: signal3
+      - id: signal1
+    points:
+      - id: point4
+        position: reverse
+      - id: point3
+        position: reverse
+      - id: point2
+        position: normal
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 56 #route56
+    source: signal7
+    destination: signal3
+    orientation: clockwise
+    path:
+      # point4.normal -> point6.normal -> block1 -> point5.reverse -> point2.reverse -> block2
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+    sections:
+      - id: block1
+      - id: block2
+    length: 200.65cm
+    signals:
+      - id: signal7
+      - id: signal9
+      - id: signal3
+    points:
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 57 #route57
+    source: signal7
+    destination: signal3
+    orientation: clockwise
+    path:
+      # point4.reverse -> point3.reverse -> block5 -> point2.normal -> block2
+      - id: seg13
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+      - id: signal5
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+    sections:
+      - id: block5
+      - id: block2
+    length: 213.15cm
+    signals:
+      - id: signal7
+      - id: signal5
+      - id: signal3
+    points:
+      - id: point4
+        position: reverse
+      - id: point3
+        position: reverse
+      - id: point2
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 58 #route58
+    source: signal7
+    destination: signal5
+    orientation: clockwise
+    path:
+      # point4.normal -> point6.normal -> block1 -> point5.reverse -> point2.reverse -> block2 -> point1.normal -> block3 -> point3.normal -> block5
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+      - id: signal1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block1
+      - id: block2
+      - id: block3
+      - id: block5
+    length: 405.00cm
+    signals:
+      - id: signal7
+      - id: signal9
+      - id: signal3
+      - id: signal1
+      - id: signal5
+    points:
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 59 #route59
     source: signal7
     destination: signal5
     orientation: clockwise
     path:
       # point4.reverse -> point3.reverse -> block5
       - id: seg13
-        type: segment
       - id: seg12
-        type: segment
       - id: seg11
-        type: segment
       - id: seg10
-        type: segment
       - id: seg9
-        type: segment
     sections:
       - id: block5
     length: 116.80cm
@@ -485,28 +5696,151 @@ interlocking-table:
       - id: point3
         position: reverse
     conflicts:
+      - id: 0
       - id: 3
       - id: 7
-      - id: 10
+      - id: 8
+      - id: 11
       - id: 12
       - id: 13
       - id: 14
-  - id: 16 #route16
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 24
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 64
+      - id: 65
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+  - id: 60 #route60
+    source: signal7
+    destination: signal15
+    orientation: clockwise
+    path:
+      # point4.normal -> point6.normal -> block1 -> point5.normal -> platform1
+      - id: seg13
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block1
+      - id: platform1
+    length: 164.30cm
+    signals:
+      - id: signal7
+      - id: signal9
+      - id: signal15
+    points:
+      - id: point4
+        position: normal
+      - id: point6
+        position: normal
+      - id: point5
+        position: normal
+    conflicts:
+      - id: 1
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 61 #route61
     source: signal11
     destination: signal9
     orientation: clockwise
     path:
       # point7.reverse -> point6.reverse -> block1
       - id: seg22
-        type: segment
       - id: seg21
-        type: segment
       - id: seg20
-        type: segment
       - id: seg19
-        type: segment
       - id: seg18
-        type: segment
     sections:
       - id: block1
     length: 93.40cm
@@ -519,24 +5853,724 @@ interlocking-table:
       - id: point6
         position: reverse
     conflicts:
+      - id: 1
+      - id: 4
+      - id: 11
+      - id: 15
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 56
+      - id: 58
+      - id: 60
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 62 #route62
+    source: signal11
+    destination: signal1
+    orientation: clockwise
+    path:
+      # point7.reverse -> point6.reverse -> block1 -> point5.reverse -> point2.reverse -> block2 -> point1.normal -> block3
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block1
+      - id: block2
+      - id: block3
+    length: 299.50cm
+    signals:
+      - id: signal11
+      - id: signal9
+      - id: signal3
+      - id: signal1
+    points:
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
       - id: 7
       - id: 8
       - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
       - id: 14
+      - id: 15
+      - id: 16
       - id: 17
       - id: 18
-  - id: 17 #route17
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 63 #route63
+    source: signal11
+    destination: signal3
+    orientation: clockwise
+    path:
+      # point7.reverse -> point6.reverse -> block1 -> point5.reverse -> point2.reverse -> block2
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+    sections:
+      - id: block1
+      - id: block2
+    length: 201.05cm
+    signals:
+      - id: signal11
+      - id: signal9
+      - id: signal3
+    points:
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 64 #route64
+    source: signal11
+    destination: signal5
+    orientation: clockwise
+    path:
+      # point7.reverse -> point6.reverse -> block1 -> point5.reverse -> point2.reverse -> block2 -> point1.normal -> block3 -> point3.normal -> block5
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+      - id: signal1
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block1
+      - id: block2
+      - id: block3
+      - id: block5
+    length: 405.40cm
+    signals:
+      - id: signal11
+      - id: signal9
+      - id: signal3
+      - id: signal1
+      - id: signal5
+    points:
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 65 #route65
+    source: signal11
+    destination: signal5
+    orientation: clockwise
+    path:
+      # point7.reverse -> point6.reverse -> block1 -> point5.reverse -> point2.reverse -> block2 -> point1.reverse -> block4 -> point4.reverse -> point3.reverse -> block5
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+      - id: signal7
+      - id: seg13
+      - id: seg12
+      - id: seg11
+      - id: seg10
+      - id: seg9
+    sections:
+      - id: block1
+      - id: block2
+      - id: block4
+      - id: block5
+    length: 409.00cm
+    signals:
+      - id: signal11
+      - id: signal9
+      - id: signal3
+      - id: signal7
+      - id: signal5
+    points:
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: reverse
+      - id: point4
+        position: reverse
+      - id: point3
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 66 #route66
+    source: signal11
+    destination: signal7
+    orientation: clockwise
+    path:
+      # point7.reverse -> point6.reverse -> block1 -> point5.reverse -> point2.reverse -> block2 -> point1.reverse -> block4
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg8
+      - id: seg7
+      - id: seg6
+      - id: seg5
+      - id: signal3
+      - id: seg4
+      - id: seg14
+      - id: seg15
+      - id: seg16
+    sections:
+      - id: block1
+      - id: block2
+      - id: block4
+    length: 292.20cm
+    signals:
+      - id: signal11
+      - id: signal9
+      - id: signal3
+      - id: signal7
+    points:
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point5
+        position: reverse
+      - id: point2
+        position: reverse
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 67 #route67
+    source: signal11
+    destination: signal15
+    orientation: clockwise
+    path:
+      # point7.reverse -> point6.reverse -> block1 -> point5.normal -> platform1
+      - id: seg22
+      - id: seg21
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: signal9
+      - id: seg17
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block1
+      - id: platform1
+    length: 164.70cm
+    signals:
+      - id: signal11
+      - id: signal9
+      - id: signal15
+    points:
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point5
+        position: normal
+    conflicts:
+      - id: 1
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 15
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 56
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 68 #route68
     source: signal13
     destination: signal12
     orientation: clockwise
     path:
       # point7.normal -> platform2
       - id: seg22
-        type: segment
       - id: seg23
-        type: segment
       - id: seg24
-        type: segment
     sections:
       - id: platform2
     length: 66.30cm
@@ -547,22 +6581,252 @@ interlocking-table:
       - id: point7
         position: normal
     conflicts:
+      - id: 4
+      - id: 21
+      - id: 32
+      - id: 38
+      - id: 51
+      - id: 52
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 74
+  - id: 69 #route69
+    source: signal14
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point5.normal -> block1 -> point6.normal -> point4.normal -> block4
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+    sections:
+      - id: block1
+      - id: block4
+    length: 176.45cm
+    signals:
+      - id: signal14
+      - id: signal10
+      - id: signal8
+    points:
+      - id: point5
+        position: normal
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 1
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
       - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 14
+      - id: 15
       - id: 16
-  - id: 18 #route18
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 24
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 70 #route70
+    source: signal14
+    destination: signal2
+    orientation: clockwise
+    path:
+      # point5.normal -> block1 -> point6.normal -> point4.normal -> block4 -> point1.reverse -> block2 -> point2.normal -> block5 -> point3.normal -> block3
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: signal6
+      - id: seg12
+      - id: seg1
+      - id: seg2
+      - id: seg3
+    sections:
+      - id: block1
+      - id: block4
+      - id: block2
+      - id: block5
+      - id: block3
+    length: 477.15cm
+    signals:
+      - id: signal14
+      - id: signal10
+      - id: signal8
+      - id: signal4
+      - id: signal6
+      - id: signal2
+    points:
+      - id: point5
+        position: normal
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point2
+        position: normal
+      - id: point3
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 46
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 71 #route71
     source: signal14
     destination: signal10
     orientation: clockwise
     path:
       # point5.normal -> block1
       - id: seg17
-        type: segment
       - id: seg18
-        type: segment
       - id: seg19
-        type: segment
       - id: seg20
-        type: segment
     sections:
       - id: block1
     length: 82.50cm
@@ -574,7 +6838,355 @@ interlocking-table:
         position: normal
     conflicts:
       - id: 1
-      - id: 2
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
       - id: 9
+      - id: 10
+      - id: 11
+      - id: 15
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 33
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 56
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+  - id: 72 #route72
+    source: signal14
+    destination: signal4
+    orientation: clockwise
+    path:
+      # point5.normal -> block1 -> point6.normal -> point4.normal -> block4 -> point1.reverse -> block2
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+    sections:
+      - id: block1
+      - id: block4
+      - id: block2
+    length: 278.80cm
+    signals:
+      - id: signal14
+      - id: signal10
+      - id: signal8
+      - id: signal4
+    points:
+      - id: point5
+        position: normal
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+      - id: point1
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
       - id: 14
+      - id: 15
       - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 73
+      - id: 74
+  - id: 73 #route73
+    source: signal14
+    destination: signal6
+    orientation: clockwise
+    path:
+      # point5.normal -> block1 -> point6.normal -> point4.normal -> block4 -> point1.reverse -> block2 -> point2.normal -> block5
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg13
+      - id: seg16
+      - id: seg15
+      - id: seg14
+      - id: signal8
+      - id: seg4
+      - id: seg5
+      - id: seg6
+      - id: seg7
+      - id: signal4
+      - id: seg8
+      - id: seg9
+      - id: seg10
+      - id: seg11
+    sections:
+      - id: block1
+      - id: block4
+      - id: block2
+      - id: block5
+    length: 386.40cm
+    signals:
+      - id: signal14
+      - id: signal10
+      - id: signal8
+      - id: signal4
+      - id: signal6
+    points:
+      - id: point5
+        position: normal
+      - id: point6
+        position: normal
+      - id: point4
+        position: normal
+      - id: point1
+        position: reverse
+      - id: point2
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 12
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 17
+      - id: 18
+      - id: 19
+      - id: 20
+      - id: 21
+      - id: 22
+      - id: 23
+      - id: 24
+      - id: 25
+      - id: 26
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 36
+      - id: 37
+      - id: 38
+      - id: 39
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 43
+      - id: 44
+      - id: 45
+      - id: 47
+      - id: 48
+      - id: 49
+      - id: 50
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 74
+  - id: 74 #route74
+    source: signal14
+    destination: signal12
+    orientation: clockwise
+    path:
+      # point5.normal -> block1 -> point6.reverse -> point7.reverse -> platform2
+      - id: seg17
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: signal10
+      - id: seg21
+      - id: seg22
+      - id: seg23
+      - id: seg24
+    sections:
+      - id: block1
+      - id: platform2
+    length: 159.70cm
+    signals:
+      - id: signal14
+      - id: signal10
+      - id: signal12
+    points:
+      - id: point5
+        position: normal
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+    conflicts:
+      - id: 1
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 9
+      - id: 10
+      - id: 11
+      - id: 15
+      - id: 17
+      - id: 18
+      - id: 21
+      - id: 22
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 36
+      - id: 38
+      - id: 39
+      - id: 43
+      - id: 44
+      - id: 47
+      - id: 48
+      - id: 51
+      - id: 52
+      - id: 53
+      - id: 54
+      - id: 56
+      - id: 58
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73

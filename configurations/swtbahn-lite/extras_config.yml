@@ -104,6 +104,53 @@ platforms:
       - signal11
       - signal12
 crossings:
+segments:
+  - seg1
+  - seg2
+  - seg3
+  - seg4
+  - seg5
+  - seg6
+  - seg7
+  - seg8
+  - seg9
+  - seg10
+  - seg11
+  - seg12
+  - seg13
+  - seg14
+  - seg15
+  - seg16
+  - seg17
+  - seg18
+  - seg19
+  - seg20
+  - seg21
+  - seg22
+  - seg23
+  - seg24
+  - seg25
+  - seg26
+  - seg27
+  - seg28
+  - seg29
+signals:
+  - signal1
+  - signal2
+  - signal3
+  - signal4
+  - signal5
+  - signal6
+  - signal7
+  - signal8
+  - signal9
+  - signal10
+  - signal11
+  - signal12
+  - signal13
+  - signal14
+  - signal15
+  - signalends
 signaltypes:
   - id: entry
     aspects:

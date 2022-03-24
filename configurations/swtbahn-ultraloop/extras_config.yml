@@ -49,6 +49,32 @@ platforms:
 crossings:
   - id: crossing1
     segment: seg32
+segments:
+  - seg1
+  - seg2
+  - seg3
+  - seg4
+  - seg5
+  - seg6
+  - seg7
+  - seg8
+  - seg17
+  - seg18
+  - seg19
+  - seg28
+  - seg29
+  - seg30
+  - seg31
+  - seg32
+signals:
+  - signal1
+  - signal2
+  - signal3a
+  - signal3b
+  - signal4
+  - signal5
+  - signal6
+  - signal7
 signaltypes:
   - id: entry
     aspects:
