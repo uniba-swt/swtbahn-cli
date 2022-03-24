@@ -1,256 +1,5 @@
 # Track configuration: SWTbahnStandard
 boards:
-  - id: onecontrol2
-    points-board:
-      - id: point1
-        number: 0x00
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg2
-      - id: point6
-        number: 0x01
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg14
-      - id: point9
-        number: 0x02
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg25
-      - id: point10
-        number: 0x03
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg26
-      - id: point11
-        number: 0x04
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg33
-      - id: point12
-        number: 0x05
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg34
-    peripherals:
-      - id: sync2
-        number: 0x06
-        port: 0x0027
-        aspects:
-          - id: high
-            value: 0x01
-          - id: low
-            value: 0x00
-        initial: high
-        type: onebit
-      - id: lanterns2
-        number: 0x07
-        port: 0x0018
-        aspects:
-          - id: high
-            value: 0x01
-          - id: low
-            value: 0x00
-        initial: high
-        type: onebit
-  - id: onecontrol1
-    points-board:
-      - id: point2
-        number: 0x00
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg6
-      - id: point3
-        number: 0x01
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg10
-      - id: point4
-        number: 0x02
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg23
-      - id: point5
-        number: 0x03
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg24
-      - id: point7
-        number: 0x04
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg19
-      - id: point8
-        number: 0x05
-        aspects:
-          - id: normal
-            value: 0x01
-          - id: reverse
-            value: 0x00
-        initial: normal
-        segment: seg18
-    peripherals:
-      - id: sync1
-        number: 0x06
-        port: 0x0027
-        aspects:
-          - id: high
-            value: 0x01
-          - id: low
-            value: 0x00
-        initial: high
-        type: onebit
-      - id: lanterns1
-        number: 0x07
-        port: 0x0018
-        aspects:
-          - id: high
-            value: 0x01
-          - id: low
-            value: 0x00
-        initial: high
-        type: onebit
-  - id: lightcontrol2
-    signals-board:
-      - id: signal1
-        number: 0x00
-        aspects:
-          - id: red
-            value: 0x00
-        initial: red
-        type: halt
-      - id: signal2
-        number: 0x01
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal8
-        number: 0x02
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal9
-        number: 0x03
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal10
-        number: 0x04
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal14
-        number: 0x05
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal15
-        number: 0x06
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal16
-        number: 0x07
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
-      - id: signal18
-        number: 0x08
-        aspects:
-          - id: yellow
-            value: 0x02
-          - id: green
-            value: 0x01
-          - id: red
-            value: 0x00
-        initial: red
-        type: entry
   - id: master
     segments:
       - id: seg1
@@ -357,7 +106,7 @@ boards:
         length: 4.0cm
       - id: seg33
         address: 0x14
-        length: 21.5cm
+        length: 20.9cm
       - id: seg34
         address: 0x15
         length: 14.1cm
@@ -387,104 +136,104 @@ boards:
       - id: signal3
         number: 0x00
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal4
         number: 0x01
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal5
         number: 0x02
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal6
         number: 0x03
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal7
         number: 0x04
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal11
         number: 0x05
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal12
         number: 0x06
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal13
         number: 0x07
         aspects:
-          - id: yellow
+          - id: aspect_caution
             value: 0x02
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: entry
       - id: signal17
         number: 0x08
         aspects:
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: halt
       - id: signal19
         number: 0x09
         aspects:
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: halt
       - id: platformlights
         number: 0x0A
@@ -495,3 +244,254 @@ boards:
             value: 0x01
         initial: high
         type: platformlight
+  - id: lightcontrol2
+    signals-board:
+      - id: signal1
+        number: 0x00
+        aspects:
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: halt
+      - id: signal2
+        number: 0x01
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal8
+        number: 0x02
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal9
+        number: 0x03
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal10
+        number: 0x04
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal14
+        number: 0x05
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal15
+        number: 0x06
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal16
+        number: 0x07
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+      - id: signal18
+        number: 0x08
+        aspects:
+          - id: aspect_caution
+            value: 0x02
+          - id: aspect_go
+            value: 0x01
+          - id: aspect_stop
+            value: 0x00
+        initial: aspect_stop
+        type: entry
+  - id: onecontrol1
+    points-board:
+      - id: point2
+        number: 0x00
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg6
+      - id: point3
+        number: 0x01
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg10
+      - id: point4
+        number: 0x02
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg23
+      - id: point5
+        number: 0x03
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg24
+      - id: point7
+        number: 0x04
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg19
+      - id: point8
+        number: 0x05
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg18
+    peripherals:
+      - id: sync1
+        number: 0x06
+        port: 0x0027
+        aspects:
+          - id: high
+            value: 0x01
+          - id: low
+            value: 0x00
+        initial: high
+        type: onebit
+      - id: lanterns1
+        number: 0x07
+        port: 0x0018
+        aspects:
+          - id: high
+            value: 0x01
+          - id: low
+            value: 0x00
+        initial: high
+        type: onebit
+  - id: onecontrol2
+    points-board:
+      - id: point1
+        number: 0x00
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg2
+      - id: point6
+        number: 0x01
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg14
+      - id: point9
+        number: 0x02
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg25
+      - id: point10
+        number: 0x03
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg26
+      - id: point11
+        number: 0x04
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg33
+      - id: point12
+        number: 0x05
+        aspects:
+          - id: normal
+            value: 0x01
+          - id: reverse
+            value: 0x00
+        initial: normal
+        segment: seg34
+    peripherals:
+      - id: sync2
+        number: 0x06
+        port: 0x0027
+        aspects:
+          - id: high
+            value: 0x01
+          - id: low
+            value: 0x00
+        initial: high
+        type: onebit
+      - id: lanterns2
+        number: 0x07
+        port: 0x0018
+        aspects:
+          - id: high
+            value: 0x01
+          - id: low
+            value: 0x00
+        initial: high
+        type: onebit

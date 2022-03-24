@@ -7,10 +7,15 @@ interlocking-table:
     path:
       # point4.reverse -> block1
       - id: seg29
+        type: segment
       - id: seg30
+        type: segment
     sections:
       - id: block1
     length: 0.00cm
+    signals:
+      - id: signal5
+      - id: signal4
     points:
       - id: point4
         position: reverse
@@ -23,12 +28,19 @@ interlocking-table:
     path:
       # point4.reverse -> block3
       - id: seg29
+        type: segment
       - id: seg17
+        type: segment
       - id: seg18
+        type: segment
       - id: seg19
+        type: segment
     sections:
       - id: block3
     length: 0.00cm
+    signals:
+      - id: signal6
+      - id: signal7
     points:
       - id: point4
         position: reverse
