@@ -131,22 +131,45 @@ static bool drive_route(const int grab_id, const char *route_id) {
 	                                                requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
-	// Set entry signal to the stop aspect
-	const char *signal_id = route->source;
-	const char *signal_aspect = "aspect_stop";
-	if (bidib_set_signal(signal_id, signal_aspect)) {
-		syslog_server(LOG_ERR, "Drive route: Unable to set entry signal to aspect %s", signal_aspect);
-		return false;
-	} else {
-		syslog_server(LOG_NOTICE, "Drive route: Set signal - signal: %s state: %s",
-		              signal_id, signal_aspect);
-		bidib_flush();
-	}
-		
-	// Wait until the destination has been reached
+	// Set the signals along the route to Stop as the train drives past them
+	const char *signal_stop_aspect = "aspect_stop";
+	const char *next_signal = route->source;
+	bool set_signal_stop = true;
 	const int path_count = route->path->len;
-	const char *destination = g_array_index(route->path, char *, path_count - 1);
-	while (running && !train_position_is_at(train_id, destination)) {
+	for (int path_item_index = 0; path_item_index < path_count; path_item_index++) {
+		// Get path item (segment or signal)
+		const char *path_item = g_array_index(route->path, char *, path_item_index);
+		
+		if (is_type_signal(path_item)) {
+			// Train will encounter a signal when it exits the current segment
+			next_signal = path_item;
+			set_signal_stop = true;
+		}
+		
+		if (set_signal_stop && is_type_segment(path_item)) {
+			// Signal that the train has just passed will be set to the Stop aspect 
+			// when it enters the next segment
+
+			// Wait until the next segment is entered
+			while (running && !train_position_is_at(train_id, path_item)) {
+				usleep(TRAIN_DRIVE_TIME_STEP);
+			}
+			
+			// Set signal to the Stop aspect
+			set_signal_stop = false;
+			if (bidib_set_signal(next_signal, signal_stop_aspect)) {
+				syslog_server(LOG_ERR, "Drive route: Unable to set route signal %s to aspect %s", next_signal, signal_stop_aspect);
+				return false;
+			} else {
+				syslog_server(LOG_NOTICE, "Drive route: Set signal - signal: %s state: %s",
+							  next_signal, signal_stop_aspect);
+				bidib_flush();
+			}
+		}
+	}
+	
+	const char *dest_segment = g_array_index(route->path, char *, path_count - 1);
+	while (running && !train_position_is_at(train_id, dest_segment)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	

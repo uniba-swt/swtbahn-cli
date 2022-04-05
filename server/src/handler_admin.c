@@ -32,6 +32,7 @@
 #include <stdio.h>
 
 #include "server.h"
+#include "handler_upload.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "interlocking.h"
@@ -77,6 +78,12 @@ static bool start_bidib(void) {
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
 		syslog_server(LOG_ERR, "Request: Start - Could not start BiDiB serial connection");
+		return false;
+	}
+	
+	const int succ_clear_dir = clear_engine_dir() + clear_interlocker_dir();
+	if (!succ_clear_dir) {
+		syslog_server(LOG_ERR, "Request: Start - Could not clear the engine and interlocker directories");
 		return false;
 	}
 
