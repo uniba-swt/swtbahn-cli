@@ -552,37 +552,6 @@ $(document).ready(
 			}
 		});
 
-		points = [
-			'point1',
-			'point2',
-			'point3',
-			'point4',
-			'point5',
-			'point6',
-			'point7',
-			'point8',
-			'point9',
-			'point10',
-			'point11',
-			'point12',
-		]
-
-		$('#pointMinus').click(function () {
-			point = $('#pointId').val();
-			position = points.indexOf(point);
-			if (position > 0) {
-				$('#pointId:text').val(points[position - 1]);
-			}
-		});
-
-		$('#pointPlus').click(function () {
-			point = $('#pointId').val();
-			position = points.indexOf(point);
-			if (position < points.length - 1) {
-				$('#pointId:text').val(points[position + 1]);
-			}
-		});
-
 		$('#setPointButton').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
@@ -656,77 +625,6 @@ $(document).ready(
 					$('#setPointResponse').parent().addClass('alert-danger');
 				}
 			});
-		});
-
-		signals = [
-			'signal1',
-			'signal2',
-			'signal3',
-			'signal4',
-			'signal5',
-			'signal6',
-			'signal7',
-			'signal8',
-			'signal9',
-			'signal10',
-			'signal11',
-			'signal12',
-			'signal13',
-			'signal14',
-			'signal15',
-			'signal16',
-			'signal17',
-			'signal18',
-			'signal19',
-			'platformlights'
-		]
-
-		$('#signalMinusFrom').click(function () {
-			signal = $('#signalIdFrom').val();
-			position = signals.indexOf(signal);
-			if (position > 0) {
-				$('#signalIdFrom:text').val(signals[position - 1]);
-			}
-		});
-
-		$('#signalMinusTo').click(function () {
-			signal = $('#signalIdTo').val();
-			position = signals.indexOf(signal);
-			if (position > 0) {
-				$('#signalIdTo:text').val(signals[position - 1]);
-			}
-		});
-
-		$('#signalPlusFrom').click(function () {
-			signal = $('#signalIdFrom').val();
-			position = signals.indexOf(signal);
-			if (position < signals.length - 1) {
-				$('#signalIdFrom:text').val(signals[position + 1]);
-			}
-		});
-
-		$('#signalPlusTo').click(function () {
-			signal = $('#signalIdTo').val();
-			position = signals.indexOf(signal);
-			if (position < signals.length - 1) {
-				$('#signalIdTo:text').val(signals[position + 1]);
-			}
-		});
-
-		$('#signalMinus').click(function () {
-			signal = $('#signalId').val();
-			position = signals.indexOf(signal);
-			if (position > 0) {
-				$('#signalId:text').val(signals[position - 1]);
-			}
-		});
-
-		$('#signalPlus').click(function () {
-			signal = $('#signalId').val();
-			position = signals.indexOf(signal);
-			if (position < signals.length - 1) {
-				$('#signalId:text').val(signals[position + 1]);
-			}
 		});
 
 		$('#setSignalButton').click(function () {
