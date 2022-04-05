@@ -782,16 +782,16 @@ interlocking-table:
       - id: 12
       - id: 43
       - id: 54
-      - id: 55
+      - id: 56
       - id: 57
       - id: 58
       - id: 60
-      - id: 62
+      - id: 61
       - id: 64
       - id: 66
       - id: 67
       - id: 69
-      - id: 71
+      - id: 72
       - id: 73
       - id: 75
       - id: 80
@@ -996,6 +996,81 @@ interlocking-table:
     destination: signal9
     orientation: anticlockwise
     path:
+      # point27.normal -> point11.normal2 -> point3.reverse -> point4.normal -> block3
+      - id: seg84
+      - id: seg33
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: seg12
+      - id: seg13
+    sections:
+      - id: block3
+    length: 255.90cm
+    signals:
+      - id: signal46a
+      - id: signal9
+    points:
+      - id: point27
+        position: normal
+      - id: point11
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 13
+      - id: 15
+      - id: 16
+      - id: 20
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 76
+      - id: 77
+      - id: 78
+      - id: 79
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 95
+      - id: 99
+      - id: 100
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 124
+      - id: 135
+      - id: 136
+      - id: 143
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
+  - id: 15 #route15
+    source: signal46a
+    destination: signal9
+    orientation: anticlockwise
+    path:
       # point27.normal -> point11.reverse2 -> point12.reverse1 -> point4.reverse -> block3
       - id: seg84
       - id: seg33
@@ -1029,7 +1104,7 @@ interlocking-table:
       - id: 6
       - id: 7
       - id: 13
-      - id: 15
+      - id: 14
       - id: 16
       - id: 20
       - id: 39
@@ -1073,81 +1148,6 @@ interlocking-table:
       - id: 148
       - id: 149
       - id: 150
-      - id: 151
-  - id: 15 #route15
-    source: signal46a
-    destination: signal9
-    orientation: anticlockwise
-    path:
-      # point27.normal -> point11.normal2 -> point3.reverse -> point4.normal -> block3
-      - id: seg84
-      - id: seg33
-      - id: seg9
-      - id: seg10
-      - id: seg11
-      - id: seg12
-      - id: seg13
-    sections:
-      - id: block3
-    length: 255.90cm
-    signals:
-      - id: signal46a
-      - id: signal9
-    points:
-      - id: point27
-        position: normal
-      - id: point11
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point4
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 13
-      - id: 14
-      - id: 16
-      - id: 20
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 76
-      - id: 77
-      - id: 78
-      - id: 79
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 95
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 124
-      - id: 135
-      - id: 136
-      - id: 143
-      - id: 147
-      - id: 148
-      - id: 149
       - id: 151
   - id: 16 #route16
     source: signal46a
@@ -1400,19 +1400,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 142
@@ -1421,7 +1421,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 19 #route19
     source: signal30
@@ -1479,19 +1479,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 142
@@ -1500,7 +1500,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 20 #route20
     source: signal30
@@ -1983,7 +1983,7 @@ interlocking-table:
       - id: 24
       - id: 26
       - id: 27
-      - id: 28
+      - id: 29
       - id: 30
       - id: 32
       - id: 33
@@ -2002,9 +2002,9 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -2030,7 +2030,7 @@ interlocking-table:
       - id: 143
       - id: 144
       - id: 145
-      - id: 153
+      - id: 152
       - id: 154
       - id: 155
       - id: 157
@@ -2210,6 +2210,104 @@ interlocking-table:
     destination: signal18a
     orientation: anticlockwise
     path:
+      # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
+      - id: seg39
+      - id: seg40
+      - id: seg41
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg20
+      - id: seg21a
+      - id: seg21b
+      - id: seg22
+      - id: seg23
+    sections:
+      - id: block9
+      - id: block5
+    length: 412.50cm
+    signals:
+      - id: signal37
+      - id: signal18a
+    points:
+      - id: point14
+        position: reverse
+      - id: point15
+        position: normal
+      - id: point16
+        position: normal
+      - id: point17
+        position: normal
+      - id: point18a
+        position: normal
+    conflicts:
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 27
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 49
+      - id: 54
+      - id: 57
+      - id: 60
+      - id: 73
+      - id: 80
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 122
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 29 #route29
+    source: signal37
+    destination: signal18a
+    orientation: anticlockwise
+    path:
       # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
       - id: seg39
       - id: seg40
@@ -2256,7 +2354,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 29
+      - id: 28
       - id: 30
       - id: 31
       - id: 32
@@ -2307,104 +2405,6 @@ interlocking-table:
       - id: 135
       - id: 136
       - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 29 #route29
-    source: signal37
-    destination: signal18a
-    orientation: anticlockwise
-    path:
-      # point14.reverse -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
-      - id: seg39
-      - id: seg40
-      - id: seg41
-      - id: seg42a
-      - id: seg42b
-      - id: seg43
-      - id: seg20
-      - id: seg21a
-      - id: seg21b
-      - id: seg22
-      - id: seg23
-    sections:
-      - id: block9
-      - id: block5
-    length: 412.50cm
-    signals:
-      - id: signal37
-      - id: signal18a
-    points:
-      - id: point14
-        position: reverse
-      - id: point15
-        position: normal
-      - id: point16
-        position: normal
-      - id: point17
-        position: normal
-      - id: point18a
-        position: normal
-    conflicts:
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 27
-      - id: 28
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 49
-      - id: 54
-      - id: 57
-      - id: 60
-      - id: 73
-      - id: 80
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 134
-      - id: 135
-      - id: 136
       - id: 138
       - id: 139
       - id: 140
@@ -3118,19 +3118,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 142
@@ -3139,7 +3139,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 37 #route37
     source: signal39
@@ -3183,7 +3183,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 28
+      - id: 29
       - id: 30
       - id: 32
       - id: 33
@@ -3201,9 +3201,9 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -3228,7 +3228,7 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 153
+      - id: 152
       - id: 154
       - id: 155
       - id: 157
@@ -3290,19 +3290,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 142
@@ -3311,7 +3311,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 39 #route39
     source: signal36
@@ -3346,7 +3346,7 @@ interlocking-table:
       - id: 5
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 21
       - id: 40
@@ -3358,12 +3358,12 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 91
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -3647,7 +3647,7 @@ interlocking-table:
       - id: 7
       - id: 10
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 39
       - id: 40
@@ -3659,11 +3659,11 @@ interlocking-table:
       - id: 47
       - id: 67
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -3780,7 +3780,7 @@ interlocking-table:
       - id: 5
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 17
       - id: 39
@@ -3792,14 +3792,14 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 82
       - id: 83
       - id: 84
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -3929,7 +3929,7 @@ interlocking-table:
       - id: 5
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 22
       - id: 39
@@ -3941,14 +3941,14 @@ interlocking-table:
       - id: 45
       - id: 46
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 92
       - id: 93
       - id: 94
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -4181,19 +4181,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 142
@@ -4202,7 +4202,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 51 #route51
     source: signal41
@@ -4246,7 +4246,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 28
+      - id: 29
       - id: 30
       - id: 32
       - id: 33
@@ -4264,9 +4264,9 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -4291,7 +4291,7 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 153
+      - id: 152
       - id: 154
       - id: 155
       - id: 157
@@ -4353,19 +4353,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 142
@@ -4374,7 +4374,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 53 #route53
     source: signal43
@@ -4476,6 +4476,69 @@ interlocking-table:
     destination: signal1
     orientation: clockwise
     path:
+      # point28.normal -> point26.normal -> point9.normal1 -> point2.reverse -> point1.normal -> block1
+      - id: seg85
+      - id: seg80
+      - id: seg25
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block1
+    length: 336.70cm
+    signals:
+      - id: signal49
+      - id: signal1
+    points:
+      - id: point28
+        position: normal
+      - id: point26
+        position: normal
+      - id: point9
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 31
+      - id: 54
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
+      - id: 81
+      - id: 97
+      - id: 114
+      - id: 129
+      - id: 156
+  - id: 56 #route56
+    source: signal49
+    destination: signal1
+    orientation: clockwise
+    path:
       # point28.normal -> point26.normal -> point9.reverse2 -> point8.reverse1 -> point1.reverse -> block1
       - id: seg85
       - id: seg80
@@ -4510,70 +4573,6 @@ interlocking-table:
       - id: 12
       - id: 31
       - id: 54
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
-      - id: 71
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 80
-      - id: 81
-      - id: 97
-      - id: 114
-      - id: 129
-      - id: 156
-  - id: 56 #route56
-    source: signal49
-    destination: signal1
-    orientation: clockwise
-    path:
-      # point28.normal -> point26.normal -> point9.normal1 -> point2.reverse -> point1.normal -> block1
-      - id: seg85
-      - id: seg80
-      - id: seg25
-      - id: seg5
-      - id: seg4
-      - id: seg3
-      - id: seg2
-      - id: seg1
-    sections:
-      - id: block1
-    length: 336.70cm
-    signals:
-      - id: signal49
-      - id: signal1
-    points:
-      - id: point28
-        position: normal
-      - id: point26
-        position: normal
-      - id: point9
-        position: normal
-      - id: point2
-        position: reverse
-      - id: point1
-        position: normal
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 11
-      - id: 12
-      - id: 31
-      - id: 54
       - id: 55
       - id: 57
       - id: 58
@@ -4594,6 +4593,7 @@ interlocking-table:
       - id: 73
       - id: 74
       - id: 75
+      - id: 80
       - id: 81
       - id: 97
       - id: 114
@@ -4861,69 +4861,6 @@ interlocking-table:
     destination: signal1
     orientation: clockwise
     path:
-      # point28.reverse -> point26.normal -> point9.normal1 -> point2.reverse -> point1.normal -> block1
-      - id: seg85
-      - id: seg80
-      - id: seg25
-      - id: seg5
-      - id: seg4
-      - id: seg3
-      - id: seg2
-      - id: seg1
-    sections:
-      - id: block1
-    length: 336.70cm
-    signals:
-      - id: signal47
-      - id: signal1
-    points:
-      - id: point28
-        position: reverse
-      - id: point26
-        position: normal
-      - id: point9
-        position: normal
-      - id: point2
-        position: reverse
-      - id: point1
-        position: normal
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 11
-      - id: 12
-      - id: 31
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
-      - id: 71
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 81
-      - id: 97
-      - id: 114
-      - id: 129
-      - id: 156
-  - id: 62 #route62
-    source: signal47
-    destination: signal1
-    orientation: clockwise
-    path:
       # point28.reverse -> point26.normal -> point9.reverse2 -> point8.reverse1 -> point1.reverse -> block1
       - id: seg85
       - id: seg80
@@ -4964,7 +4901,7 @@ interlocking-table:
       - id: 58
       - id: 59
       - id: 60
-      - id: 61
+      - id: 62
       - id: 63
       - id: 64
       - id: 65
@@ -4979,6 +4916,69 @@ interlocking-table:
       - id: 74
       - id: 75
       - id: 80
+      - id: 81
+      - id: 97
+      - id: 114
+      - id: 129
+      - id: 156
+  - id: 62 #route62
+    source: signal47
+    destination: signal1
+    orientation: clockwise
+    path:
+      # point28.reverse -> point26.normal -> point9.normal1 -> point2.reverse -> point1.normal -> block1
+      - id: seg85
+      - id: seg80
+      - id: seg25
+      - id: seg5
+      - id: seg4
+      - id: seg3
+      - id: seg2
+      - id: seg1
+    sections:
+      - id: block1
+    length: 336.70cm
+    signals:
+      - id: signal47
+      - id: signal1
+    points:
+      - id: point28
+        position: reverse
+      - id: point26
+        position: normal
+      - id: point9
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point1
+        position: normal
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 31
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 71
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
       - id: 81
       - id: 97
       - id: 114
@@ -5473,6 +5473,61 @@ interlocking-table:
     destination: signal20
     orientation: anticlockwise
     path:
+      # point1.normal -> point2.reverse -> point9.reverse1 -> block6
+      - id: seg4
+      - id: seg5
+      - id: seg25
+      - id: seg26
+      - id: seg27
+      - id: seg28
+    sections:
+      - id: block6
+    length: 144.90cm
+    signals:
+      - id: signal4a
+      - id: signal20
+    points:
+      - id: point1
+        position: normal
+      - id: point2
+        position: reverse
+      - id: point9
+        position: reverse
+    conflicts:
+      - id: 8
+      - id: 9
+      - id: 11
+      - id: 12
+      - id: 53
+      - id: 54
+      - id: 55
+      - id: 56
+      - id: 57
+      - id: 58
+      - id: 59
+      - id: 60
+      - id: 61
+      - id: 62
+      - id: 63
+      - id: 64
+      - id: 65
+      - id: 66
+      - id: 67
+      - id: 68
+      - id: 69
+      - id: 70
+      - id: 72
+      - id: 73
+      - id: 74
+      - id: 75
+      - id: 81
+      - id: 128
+      - id: 129
+  - id: 72 #route72
+    source: signal4a
+    destination: signal20
+    orientation: anticlockwise
+    path:
       # point1.reverse -> point8.reverse1 -> point9.normal2 -> block6
       - id: seg4
       - id: seg24
@@ -5517,66 +5572,11 @@ interlocking-table:
       - id: 68
       - id: 69
       - id: 70
-      - id: 72
-      - id: 73
-      - id: 74
-      - id: 75
-      - id: 80
-      - id: 81
-      - id: 128
-      - id: 129
-  - id: 72 #route72
-    source: signal4a
-    destination: signal20
-    orientation: anticlockwise
-    path:
-      # point1.normal -> point2.reverse -> point9.reverse1 -> block6
-      - id: seg4
-      - id: seg5
-      - id: seg25
-      - id: seg26
-      - id: seg27
-      - id: seg28
-    sections:
-      - id: block6
-    length: 144.90cm
-    signals:
-      - id: signal4a
-      - id: signal20
-    points:
-      - id: point1
-        position: normal
-      - id: point2
-        position: reverse
-      - id: point9
-        position: reverse
-    conflicts:
-      - id: 8
-      - id: 9
-      - id: 11
-      - id: 12
-      - id: 53
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
-      - id: 67
-      - id: 68
-      - id: 69
-      - id: 70
       - id: 71
       - id: 73
       - id: 74
       - id: 75
+      - id: 80
       - id: 81
       - id: 128
       - id: 129
@@ -5847,84 +5847,6 @@ interlocking-table:
     destination: signal9
     orientation: anticlockwise
     path:
-      # point29.reverse -> point27.reverse -> point11.normal2 -> point3.reverse -> point4.normal -> block3
-      - id: seg89
-      - id: seg84
-      - id: seg33
-      - id: seg9
-      - id: seg10
-      - id: seg11
-      - id: seg12
-      - id: seg13
-    sections:
-      - id: block3
-    length: 279.20cm
-    signals:
-      - id: signal48a
-      - id: signal9
-    points:
-      - id: point29
-        position: reverse
-      - id: point27
-        position: reverse
-      - id: point11
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point4
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 20
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 76
-      - id: 78
-      - id: 79
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 95
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 103
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 124
-      - id: 135
-      - id: 136
-      - id: 143
-      - id: 147
-      - id: 148
-      - id: 149
-      - id: 151
-  - id: 78 #route78
-    source: signal48a
-    destination: signal9
-    orientation: anticlockwise
-    path:
       # point29.reverse -> point27.reverse -> point11.reverse2 -> point12.reverse1 -> point4.reverse -> block3
       - id: seg89
       - id: seg84
@@ -5976,7 +5898,7 @@ interlocking-table:
       - id: 47
       - id: 48
       - id: 76
-      - id: 77
+      - id: 78
       - id: 79
       - id: 88
       - id: 89
@@ -6005,6 +5927,84 @@ interlocking-table:
       - id: 148
       - id: 149
       - id: 150
+      - id: 151
+  - id: 78 #route78
+    source: signal48a
+    destination: signal9
+    orientation: anticlockwise
+    path:
+      # point29.reverse -> point27.reverse -> point11.normal2 -> point3.reverse -> point4.normal -> block3
+      - id: seg89
+      - id: seg84
+      - id: seg33
+      - id: seg9
+      - id: seg10
+      - id: seg11
+      - id: seg12
+      - id: seg13
+    sections:
+      - id: block3
+    length: 279.20cm
+    signals:
+      - id: signal48a
+      - id: signal9
+    points:
+      - id: point29
+        position: reverse
+      - id: point27
+        position: reverse
+      - id: point11
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point4
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 20
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 76
+      - id: 77
+      - id: 79
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 95
+      - id: 99
+      - id: 100
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 124
+      - id: 135
+      - id: 136
+      - id: 143
+      - id: 147
+      - id: 148
+      - id: 149
       - id: 151
   - id: 79 #route79
     source: signal48a
@@ -6121,16 +6121,16 @@ interlocking-table:
       - id: 35
       - id: 49
       - id: 54
-      - id: 55
+      - id: 56
       - id: 57
       - id: 58
       - id: 60
-      - id: 62
+      - id: 61
       - id: 64
       - id: 66
       - id: 67
       - id: 69
-      - id: 71
+      - id: 72
       - id: 73
       - id: 75
       - id: 81
@@ -6949,112 +6949,6 @@ interlocking-table:
     destination: signal8
     orientation: clockwise
     path:
-      # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
-      - id: seg21a
-      - id: seg20
-      - id: seg43
-      - id: seg42b
-      - id: seg42a
-      - id: seg41
-      - id: seg40
-      - id: seg14
-      - id: seg13
-      - id: seg12
-      - id: seg11
-    sections:
-      - id: block9
-      - id: block3
-    length: 379.50cm
-    signals:
-      - id: signal15
-      - id: signal8
-    points:
-      - id: point18a
-        position: normal
-      - id: point17
-        position: normal
-      - id: point16
-        position: normal
-      - id: point15
-        position: reverse
-      - id: point5
-        position: reverse
-    conflicts:
-      - id: 1
-      - id: 2
-      - id: 5
-      - id: 6
-      - id: 14
-      - id: 15
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 46
-      - id: 48
-      - id: 49
-      - id: 77
-      - id: 78
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 95
-      - id: 96
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 115
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 120
-      - id: 122
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 90 #route90
-    source: signal15
-    destination: signal8
-    orientation: clockwise
-    path:
       # point18a.reverse -> point18b.normal1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.reverse -> point5.reverse -> block3
       - id: seg21a
       - id: seg44
@@ -7133,7 +7027,7 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 89
+      - id: 90
       - id: 91
       - id: 92
       - id: 93
@@ -7167,6 +7061,112 @@ interlocking-table:
       - id: 140
       - id: 141
       - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 90 #route90
+    source: signal15
+    destination: signal8
+    orientation: clockwise
+    path:
+      # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.reverse -> point5.reverse -> block3
+      - id: seg21a
+      - id: seg20
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg14
+      - id: seg13
+      - id: seg12
+      - id: seg11
+    sections:
+      - id: block9
+      - id: block3
+    length: 379.50cm
+    signals:
+      - id: signal15
+      - id: signal8
+    points:
+      - id: point18a
+        position: normal
+      - id: point17
+        position: normal
+      - id: point16
+        position: normal
+      - id: point15
+        position: reverse
+      - id: point5
+        position: reverse
+    conflicts:
+      - id: 1
+      - id: 2
+      - id: 5
+      - id: 6
+      - id: 14
+      - id: 15
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 46
+      - id: 48
+      - id: 49
+      - id: 77
+      - id: 78
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 95
+      - id: 96
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 115
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 120
+      - id: 122
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 138
+      - id: 139
+      - id: 140
       - id: 143
       - id: 145
       - id: 152
@@ -7284,122 +7284,6 @@ interlocking-table:
     destination: signal23
     orientation: clockwise
     path:
-      # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
-      - id: seg21a
-      - id: seg44
-      - id: seg20
-      - id: seg19
-      - id: seg18
-      - id: seg43
-      - id: seg42b
-      - id: seg42a
-      - id: seg41
-      - id: seg40
-      - id: seg39
-      - id: seg38
-      - id: seg37
-      - id: seg36
-    sections:
-      - id: block9
-      - id: block8
-    length: 387.80cm
-    signals:
-      - id: signal15
-      - id: signal23
-    points:
-      - id: point18a
-        position: reverse
-      - id: point18b
-        position: reverse
-      - id: point7
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point17
-        position: reverse
-      - id: point16
-        position: normal
-      - id: point15
-        position: normal
-      - id: point14
-        position: normal
-    conflicts:
-      - id: 3
-      - id: 7
-      - id: 16
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 47
-      - id: 49
-      - id: 51
-      - id: 79
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 121
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 93 #route93
-    source: signal15
-    destination: signal23
-    orientation: clockwise
-    path:
       # point18a.normal -> crossing1.line1 -> point17.normal -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
       - id: seg21a
       - id: seg20
@@ -7460,7 +7344,7 @@ interlocking-table:
       - id: 89
       - id: 90
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -7494,7 +7378,7 @@ interlocking-table:
       - id: 157
       - id: 158
       - id: 159
-  - id: 94 #route94
+  - id: 93 #route93
     source: signal15
     destination: signal23
     orientation: clockwise
@@ -7576,7 +7460,7 @@ interlocking-table:
       - id: 90
       - id: 91
       - id: 92
-      - id: 93
+      - id: 94
       - id: 96
       - id: 98
       - id: 110
@@ -7604,6 +7488,122 @@ interlocking-table:
       - id: 140
       - id: 141
       - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 94 #route94
+    source: signal15
+    destination: signal23
+    orientation: clockwise
+    path:
+      # point18a.reverse -> point18b.reverse2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
+      - id: seg21a
+      - id: seg44
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg39
+      - id: seg38
+      - id: seg37
+      - id: seg36
+    sections:
+      - id: block9
+      - id: block8
+    length: 387.80cm
+    signals:
+      - id: signal15
+      - id: signal23
+    points:
+      - id: point18a
+        position: reverse
+      - id: point18b
+        position: reverse
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point17
+        position: reverse
+      - id: point16
+        position: normal
+      - id: point15
+        position: normal
+      - id: point14
+        position: normal
+    conflicts:
+      - id: 3
+      - id: 7
+      - id: 16
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 47
+      - id: 49
+      - id: 51
+      - id: 79
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 121
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
       - id: 143
       - id: 145
       - id: 152
@@ -7773,7 +7773,7 @@ interlocking-table:
       - id: point7
         position: normal
     conflicts:
-      - id: 28
+      - id: 29
       - id: 31
       - id: 33
       - id: 55
@@ -7788,24 +7788,24 @@ interlocking-table:
       - id: 82
       - id: 87
       - id: 88
-      - id: 92
+      - id: 94
       - id: 96
       - id: 98
-      - id: 112
+      - id: 110
       - id: 114
-      - id: 116
+      - id: 117
       - id: 122
       - id: 123
       - id: 124
       - id: 125
       - id: 129
-      - id: 130
+      - id: 131
       - id: 134
       - id: 136
-      - id: 138
-      - id: 153
+      - id: 139
+      - id: 152
       - id: 156
-      - id: 158
+      - id: 157
   - id: 98 #route98
     source: signal14
     destination: signal27
@@ -7966,6 +7966,79 @@ interlocking-table:
     destination: signal49
     orientation: clockwise
     path:
+      # point4.normal -> point3.reverse -> point11.normal2 -> point27.reverse -> point29.normal -> block21
+      - id: seg10
+      - id: seg9
+      - id: seg33
+      - id: seg84
+      - id: seg89
+      - id: seg92
+      - id: seg91b
+      - id: seg91a
+      - id: seg90
+    sections:
+      - id: block21
+    length: 268.10cm
+    signals:
+      - id: signal8
+      - id: signal49
+    points:
+      - id: point4
+        position: normal
+      - id: point3
+        position: reverse
+      - id: point11
+        position: normal
+      - id: point27
+        position: reverse
+      - id: point29
+        position: normal
+    conflicts:
+      - id: 0
+      - id: 1
+      - id: 2
+      - id: 3
+      - id: 4
+      - id: 5
+      - id: 6
+      - id: 7
+      - id: 8
+      - id: 13
+      - id: 14
+      - id: 15
+      - id: 16
+      - id: 40
+      - id: 41
+      - id: 42
+      - id: 44
+      - id: 46
+      - id: 48
+      - id: 63
+      - id: 64
+      - id: 76
+      - id: 77
+      - id: 78
+      - id: 79
+      - id: 99
+      - id: 101
+      - id: 102
+      - id: 103
+      - id: 104
+      - id: 105
+      - id: 106
+      - id: 107
+      - id: 108
+      - id: 109
+      - id: 120
+      - id: 147
+      - id: 148
+      - id: 149
+      - id: 151
+  - id: 101 #route101
+    source: signal8
+    destination: signal49
+    orientation: clockwise
+    path:
       # point4.reverse -> point12.reverse1 -> point11.reverse2 -> point27.reverse -> point29.normal -> block21
       - id: seg10
       - id: seg34
@@ -8024,7 +8097,7 @@ interlocking-table:
       - id: 78
       - id: 79
       - id: 99
-      - id: 101
+      - id: 100
       - id: 102
       - id: 103
       - id: 104
@@ -8042,27 +8115,26 @@ interlocking-table:
       - id: 149
       - id: 150
       - id: 151
-  - id: 101 #route101
+  - id: 102 #route102
     source: signal8
-    destination: signal49
+    destination: signal45
     orientation: clockwise
     path:
-      # point4.normal -> point3.reverse -> point11.normal2 -> point27.reverse -> point29.normal -> block21
+      # point4.normal -> point3.reverse -> point11.normal2 -> point27.normal -> block19
       - id: seg10
       - id: seg9
       - id: seg33
       - id: seg84
-      - id: seg89
-      - id: seg92
-      - id: seg91b
-      - id: seg91a
-      - id: seg90
+      - id: seg83
+      - id: seg82b
+      - id: seg82a
+      - id: seg81
     sections:
-      - id: block21
-    length: 268.10cm
+      - id: block19
+    length: 272.80cm
     signals:
       - id: signal8
-      - id: signal49
+      - id: signal45
     points:
       - id: point4
         position: normal
@@ -8071,8 +8143,6 @@ interlocking-table:
       - id: point11
         position: normal
       - id: point27
-        position: reverse
-      - id: point29
         position: normal
     conflicts:
       - id: 0
@@ -8083,7 +8153,7 @@ interlocking-table:
       - id: 5
       - id: 6
       - id: 7
-      - id: 8
+      - id: 9
       - id: 13
       - id: 14
       - id: 15
@@ -8094,15 +8164,15 @@ interlocking-table:
       - id: 44
       - id: 46
       - id: 48
-      - id: 63
-      - id: 64
+      - id: 65
+      - id: 66
       - id: 76
       - id: 77
       - id: 78
       - id: 79
       - id: 99
       - id: 100
-      - id: 102
+      - id: 101
       - id: 103
       - id: 104
       - id: 105
@@ -8115,7 +8185,7 @@ interlocking-table:
       - id: 148
       - id: 149
       - id: 151
-  - id: 102 #route102
+  - id: 103 #route103
     source: signal8
     destination: signal45
     orientation: clockwise
@@ -8177,7 +8247,7 @@ interlocking-table:
       - id: 99
       - id: 100
       - id: 101
-      - id: 103
+      - id: 102
       - id: 104
       - id: 105
       - id: 106
@@ -8192,76 +8262,6 @@ interlocking-table:
       - id: 148
       - id: 149
       - id: 150
-      - id: 151
-  - id: 103 #route103
-    source: signal8
-    destination: signal45
-    orientation: clockwise
-    path:
-      # point4.normal -> point3.reverse -> point11.normal2 -> point27.normal -> block19
-      - id: seg10
-      - id: seg9
-      - id: seg33
-      - id: seg84
-      - id: seg83
-      - id: seg82b
-      - id: seg82a
-      - id: seg81
-    sections:
-      - id: block19
-    length: 272.80cm
-    signals:
-      - id: signal8
-      - id: signal45
-    points:
-      - id: point4
-        position: normal
-      - id: point3
-        position: reverse
-      - id: point11
-        position: normal
-      - id: point27
-        position: normal
-    conflicts:
-      - id: 0
-      - id: 1
-      - id: 2
-      - id: 3
-      - id: 4
-      - id: 5
-      - id: 6
-      - id: 7
-      - id: 9
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 44
-      - id: 46
-      - id: 48
-      - id: 65
-      - id: 66
-      - id: 76
-      - id: 77
-      - id: 78
-      - id: 79
-      - id: 99
-      - id: 100
-      - id: 101
-      - id: 102
-      - id: 104
-      - id: 105
-      - id: 106
-      - id: 107
-      - id: 108
-      - id: 109
-      - id: 120
-      - id: 147
-      - id: 148
-      - id: 149
       - id: 151
   - id: 104 #route104
     source: signal8
@@ -8680,23 +8680,25 @@ interlocking-table:
     destination: signal18a
     orientation: anticlockwise
     path:
-      # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
+      # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
       - id: seg14
       - id: seg40
       - id: seg41
-      - id: seg51
-      - id: seg50
-      - id: seg49
-      - id: seg48
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg18
+      - id: seg19
+      - id: seg20
       - id: seg44
       - id: seg21a
       - id: seg21b
       - id: seg22
       - id: seg23
     sections:
-      - id: block10
+      - id: block9
       - id: block5
-    length: 448.10cm
+    length: 456.70cm
     signals:
       - id: signal9
       - id: signal18a
@@ -8706,21 +8708,19 @@ interlocking-table:
       - id: point15
         position: reverse
       - id: point16
-        position: reverse
-      - id: point21
-        position: reverse
-      - id: point20
         position: normal
-      - id: point19
-        position: normal
+      - id: point17
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
       - id: point18b
-        position: normal
+        position: reverse
       - id: point18a
         position: reverse
     conflicts:
       - id: 17
-      - id: 18
-      - id: 19
       - id: 20
       - id: 22
       - id: 23
@@ -8734,13 +8734,9 @@ interlocking-table:
       - id: 33
       - id: 34
       - id: 35
-      - id: 36
       - id: 37
-      - id: 38
       - id: 49
-      - id: 50
       - id: 51
-      - id: 52
       - id: 54
       - id: 57
       - id: 60
@@ -8761,6 +8757,7 @@ interlocking-table:
       - id: 94
       - id: 95
       - id: 96
+      - id: 97
       - id: 98
       - id: 111
       - id: 112
@@ -8771,6 +8768,7 @@ interlocking-table:
       - id: 117
       - id: 118
       - id: 122
+      - id: 123
       - id: 124
       - id: 125
       - id: 130
@@ -8784,8 +8782,6 @@ interlocking-table:
       - id: 138
       - id: 139
       - id: 140
-      - id: 141
-      - id: 142
       - id: 143
       - id: 145
       - id: 152
@@ -8901,25 +8897,23 @@ interlocking-table:
     destination: signal18a
     orientation: anticlockwise
     path:
-      # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.reverse2 -> point18a.reverse -> block5
+      # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.normal1 -> point18a.reverse -> block5
       - id: seg14
       - id: seg40
       - id: seg41
-      - id: seg42a
-      - id: seg42b
-      - id: seg43
-      - id: seg18
-      - id: seg19
-      - id: seg20
+      - id: seg51
+      - id: seg50
+      - id: seg49
+      - id: seg48
       - id: seg44
       - id: seg21a
       - id: seg21b
       - id: seg22
       - id: seg23
     sections:
-      - id: block9
+      - id: block10
       - id: block5
-    length: 456.70cm
+    length: 448.10cm
     signals:
       - id: signal9
       - id: signal18a
@@ -8929,19 +8923,21 @@ interlocking-table:
       - id: point15
         position: reverse
       - id: point16
+        position: reverse
+      - id: point21
+        position: reverse
+      - id: point20
         position: normal
-      - id: point17
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point7
-        position: reverse
+      - id: point19
+        position: normal
       - id: point18b
-        position: reverse
+        position: normal
       - id: point18a
         position: reverse
     conflicts:
       - id: 17
+      - id: 18
+      - id: 19
       - id: 20
       - id: 22
       - id: 23
@@ -8955,9 +8951,13 @@ interlocking-table:
       - id: 33
       - id: 34
       - id: 35
+      - id: 36
       - id: 37
+      - id: 38
       - id: 49
+      - id: 50
       - id: 51
+      - id: 52
       - id: 54
       - id: 57
       - id: 60
@@ -8978,7 +8978,6 @@ interlocking-table:
       - id: 94
       - id: 95
       - id: 96
-      - id: 97
       - id: 98
       - id: 110
       - id: 111
@@ -8989,7 +8988,6 @@ interlocking-table:
       - id: 117
       - id: 118
       - id: 122
-      - id: 123
       - id: 124
       - id: 125
       - id: 130
@@ -9003,6 +9001,8 @@ interlocking-table:
       - id: 138
       - id: 139
       - id: 140
+      - id: 141
+      - id: 142
       - id: 143
       - id: 145
       - id: 152
@@ -9273,115 +9273,6 @@ interlocking-table:
     destination: signal27
     orientation: anticlockwise
     path:
-      # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
-      - id: seg14
-      - id: seg40
-      - id: seg41
-      - id: seg42a
-      - id: seg42b
-      - id: seg43
-      - id: seg18
-      - id: seg19
-      - id: seg20
-      - id: seg44
-      - id: seg45
-      - id: seg46
-      - id: seg47
-    sections:
-      - id: block9
-      - id: platform3
-    length: 320.40cm
-    signals:
-      - id: signal9
-      - id: signal27
-    points:
-      - id: point5
-        position: reverse
-      - id: point15
-        position: reverse
-      - id: point16
-        position: normal
-      - id: point17
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point7
-        position: reverse
-      - id: point18b
-        position: normal
-    conflicts:
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 49
-      - id: 51
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 95
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 115
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 117 #route117
-    source: signal9
-    destination: signal27
-    orientation: anticlockwise
-    path:
       # point5.reverse -> point15.reverse -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg14
       - id: seg40
@@ -9462,7 +9353,7 @@ interlocking-table:
       - id: 113
       - id: 114
       - id: 115
-      - id: 116
+      - id: 117
       - id: 118
       - id: 122
       - id: 124
@@ -9480,6 +9371,115 @@ interlocking-table:
       - id: 140
       - id: 141
       - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 117 #route117
+    source: signal9
+    destination: signal27
+    orientation: anticlockwise
+    path:
+      # point5.reverse -> point15.reverse -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
+      - id: seg14
+      - id: seg40
+      - id: seg41
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: seg44
+      - id: seg45
+      - id: seg46
+      - id: seg47
+    sections:
+      - id: block9
+      - id: platform3
+    length: 320.40cm
+    signals:
+      - id: signal9
+      - id: signal27
+    points:
+      - id: point5
+        position: reverse
+      - id: point15
+        position: reverse
+      - id: point16
+        position: normal
+      - id: point17
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+      - id: point18b
+        position: normal
+    conflicts:
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 49
+      - id: 51
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 95
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 115
+      - id: 116
+      - id: 118
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
       - id: 143
       - id: 145
       - id: 152
@@ -9634,7 +9634,7 @@ interlocking-table:
       - id: 5
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 17
       - id: 39
@@ -9647,14 +9647,14 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 82
       - id: 83
       - id: 84
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -9783,7 +9783,7 @@ interlocking-table:
       - id: 5
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 22
       - id: 39
@@ -9796,14 +9796,14 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 92
       - id: 93
       - id: 94
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -9940,30 +9940,30 @@ interlocking-table:
       - id: point6
         position: normal
     conflicts:
-      - id: 28
+      - id: 29
       - id: 31
       - id: 33
       - id: 82
       - id: 87
       - id: 88
-      - id: 92
+      - id: 94
       - id: 96
       - id: 97
       - id: 98
-      - id: 112
+      - id: 110
       - id: 114
       - id: 115
-      - id: 116
+      - id: 117
       - id: 122
       - id: 124
       - id: 125
-      - id: 130
+      - id: 131
       - id: 134
       - id: 136
-      - id: 138
-      - id: 153
+      - id: 139
+      - id: 152
       - id: 156
-      - id: 158
+      - id: 157
   - id: 124 #route124
     source: signal1
     destination: signal8
@@ -10294,119 +10294,6 @@ interlocking-table:
     destination: signal36
     orientation: clockwise
     path:
-      # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.reverse -> block15
-      - id: seg44
-      - id: seg20
-      - id: seg19
-      - id: seg18
-      - id: seg43
-      - id: seg42b
-      - id: seg42a
-      - id: seg41
-      - id: seg40
-      - id: seg39
-      - id: seg69
-      - id: seg68
-      - id: seg67
-    sections:
-      - id: block9
-      - id: block15
-    length: 332.80cm
-    signals:
-      - id: signal26
-      - id: signal36
-    points:
-      - id: point18b
-        position: normal
-      - id: point7
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point17
-        position: reverse
-      - id: point16
-        position: normal
-      - id: point15
-        position: normal
-      - id: point14
-        position: reverse
-    conflicts:
-      - id: 0
-      - id: 4
-      - id: 13
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 45
-      - id: 49
-      - id: 51
-      - id: 76
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 119
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 131 #route131
-    source: signal26
-    destination: signal36
-    orientation: clockwise
-    path:
       # point18b.reverse1 -> point19.normal -> point20.normal -> block10 -> point21.reverse -> point16.reverse -> point15.normal -> point14.reverse -> block15
       - id: seg44
       - id: seg48
@@ -10497,7 +10384,7 @@ interlocking-table:
       - id: 122
       - id: 124
       - id: 125
-      - id: 130
+      - id: 131
       - id: 132
       - id: 133
       - id: 134
@@ -10509,6 +10396,119 @@ interlocking-table:
       - id: 140
       - id: 141
       - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 131 #route131
+    source: signal26
+    destination: signal36
+    orientation: clockwise
+    path:
+      # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.reverse -> block15
+      - id: seg44
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg39
+      - id: seg69
+      - id: seg68
+      - id: seg67
+    sections:
+      - id: block9
+      - id: block15
+    length: 332.80cm
+    signals:
+      - id: signal26
+      - id: signal36
+    points:
+      - id: point18b
+        position: normal
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point17
+        position: reverse
+      - id: point16
+        position: normal
+      - id: point15
+        position: normal
+      - id: point14
+        position: reverse
+    conflicts:
+      - id: 0
+      - id: 4
+      - id: 13
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 45
+      - id: 49
+      - id: 51
+      - id: 76
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 119
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
       - id: 143
       - id: 145
       - id: 152
@@ -10561,7 +10561,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 28
+      - id: 29
       - id: 30
       - id: 32
       - id: 33
@@ -10580,9 +10580,9 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -10606,7 +10606,7 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 153
+      - id: 152
       - id: 154
       - id: 155
       - id: 157
@@ -10654,7 +10654,7 @@ interlocking-table:
       - id: 23
       - id: 25
       - id: 27
-      - id: 28
+      - id: 29
       - id: 30
       - id: 32
       - id: 33
@@ -10673,9 +10673,9 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -10699,7 +10699,7 @@ interlocking-table:
       - id: 142
       - id: 143
       - id: 145
-      - id: 153
+      - id: 152
       - id: 154
       - id: 155
       - id: 157
@@ -11069,7 +11069,7 @@ interlocking-table:
       - id: 25
       - id: 26
       - id: 27
-      - id: 28
+      - id: 29
       - id: 30
       - id: 32
       - id: 33
@@ -11089,9 +11089,9 @@ interlocking-table:
       - id: 86
       - id: 87
       - id: 88
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 92
+      - id: 93
       - id: 94
       - id: 96
       - id: 98
@@ -11118,126 +11118,13 @@ interlocking-table:
       - id: 144
       - id: 145
       - id: 146
-      - id: 153
+      - id: 152
       - id: 154
       - id: 155
       - id: 157
       - id: 158
       - id: 159
   - id: 138 #route138
-    source: signal26
-    destination: signal23
-    orientation: clockwise
-    path:
-      # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
-      - id: seg44
-      - id: seg20
-      - id: seg19
-      - id: seg18
-      - id: seg43
-      - id: seg42b
-      - id: seg42a
-      - id: seg41
-      - id: seg40
-      - id: seg39
-      - id: seg38
-      - id: seg37
-      - id: seg36
-    sections:
-      - id: block9
-      - id: block8
-    length: 352.80cm
-    signals:
-      - id: signal26
-      - id: signal23
-    points:
-      - id: point18b
-        position: normal
-      - id: point7
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point17
-        position: reverse
-      - id: point16
-        position: normal
-      - id: point15
-        position: normal
-      - id: point14
-        position: normal
-    conflicts:
-      - id: 3
-      - id: 7
-      - id: 16
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 47
-      - id: 49
-      - id: 51
-      - id: 79
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 121
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 139 #route139
     source: signal26
     destination: signal23
     orientation: clockwise
@@ -11340,10 +11227,123 @@ interlocking-table:
       - id: 135
       - id: 136
       - id: 137
-      - id: 138
+      - id: 139
       - id: 140
       - id: 141
       - id: 142
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 139 #route139
+    source: signal26
+    destination: signal23
+    orientation: clockwise
+    path:
+      # point18b.normal2 -> crossing1.line2 -> point7.reverse -> point6.reverse -> point17.reverse -> block9 -> point16.normal -> point15.normal -> point14.normal -> block8
+      - id: seg44
+      - id: seg20
+      - id: seg19
+      - id: seg18
+      - id: seg43
+      - id: seg42b
+      - id: seg42a
+      - id: seg41
+      - id: seg40
+      - id: seg39
+      - id: seg38
+      - id: seg37
+      - id: seg36
+    sections:
+      - id: block9
+      - id: block8
+    length: 352.80cm
+    signals:
+      - id: signal26
+      - id: signal23
+    points:
+      - id: point18b
+        position: normal
+      - id: point7
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point17
+        position: reverse
+      - id: point16
+        position: normal
+      - id: point15
+        position: normal
+      - id: point14
+        position: normal
+    conflicts:
+      - id: 3
+      - id: 7
+      - id: 16
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 47
+      - id: 49
+      - id: 51
+      - id: 79
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 121
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 140
       - id: 143
       - id: 145
       - id: 152
@@ -11526,19 +11526,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 142
       - id: 143
@@ -11546,7 +11546,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 142 #route142
     source: signal28
@@ -11605,19 +11605,19 @@ interlocking-table:
       - id: 83
       - id: 85
       - id: 86
-      - id: 90
+      - id: 89
       - id: 91
-      - id: 94
-      - id: 110
+      - id: 93
+      - id: 112
       - id: 113
-      - id: 117
+      - id: 116
       - id: 118
-      - id: 131
+      - id: 130
       - id: 132
       - id: 133
       - id: 135
       - id: 137
-      - id: 139
+      - id: 138
       - id: 140
       - id: 141
       - id: 143
@@ -11625,7 +11625,7 @@ interlocking-table:
       - id: 145
       - id: 154
       - id: 155
-      - id: 157
+      - id: 158
       - id: 159
   - id: 143 #route143
     source: signal28
@@ -11950,7 +11950,7 @@ interlocking-table:
       - id: 5
       - id: 7
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 21
       - id: 39
@@ -11963,12 +11963,12 @@ interlocking-table:
       - id: 46
       - id: 47
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 91
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -12251,7 +12251,7 @@ interlocking-table:
       - id: 7
       - id: 10
       - id: 13
-      - id: 14
+      - id: 15
       - id: 16
       - id: 39
       - id: 40
@@ -12264,11 +12264,11 @@ interlocking-table:
       - id: 47
       - id: 67
       - id: 76
-      - id: 78
+      - id: 77
       - id: 79
       - id: 99
-      - id: 100
-      - id: 102
+      - id: 101
+      - id: 103
       - id: 105
       - id: 106
       - id: 108
@@ -12352,104 +12352,6 @@ interlocking-table:
       - id: 149
       - id: 150
   - id: 152 #route152
-    source: signal24
-    destination: signal18a
-    orientation: anticlockwise
-    path:
-      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
-      - id: seg39
-      - id: seg40
-      - id: seg41
-      - id: seg42a
-      - id: seg42b
-      - id: seg43
-      - id: seg20
-      - id: seg21a
-      - id: seg21b
-      - id: seg22
-      - id: seg23
-    sections:
-      - id: block9
-      - id: block5
-    length: 412.50cm
-    signals:
-      - id: signal24
-      - id: signal18a
-    points:
-      - id: point14
-        position: normal
-      - id: point15
-        position: normal
-      - id: point16
-        position: normal
-      - id: point17
-        position: normal
-      - id: point18a
-        position: normal
-    conflicts:
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 49
-      - id: 54
-      - id: 57
-      - id: 60
-      - id: 73
-      - id: 80
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 138
-      - id: 139
-      - id: 140
-      - id: 143
-      - id: 145
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 157
-      - id: 158
-      - id: 159
-  - id: 153 #route153
     source: signal24
     destination: signal18a
     orientation: anticlockwise
@@ -12552,6 +12454,104 @@ interlocking-table:
       - id: 135
       - id: 136
       - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 157
+      - id: 158
+      - id: 159
+  - id: 153 #route153
+    source: signal24
+    destination: signal18a
+    orientation: anticlockwise
+    path:
+      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.normal -> crossing1.line1 -> point18a.normal -> block5
+      - id: seg39
+      - id: seg40
+      - id: seg41
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg20
+      - id: seg21a
+      - id: seg21b
+      - id: seg22
+      - id: seg23
+    sections:
+      - id: block9
+      - id: block5
+    length: 412.50cm
+    signals:
+      - id: signal24
+      - id: signal18a
+    points:
+      - id: point14
+        position: normal
+      - id: point15
+        position: normal
+      - id: point16
+        position: normal
+      - id: point17
+        position: normal
+      - id: point18a
+        position: normal
+    conflicts:
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 49
+      - id: 54
+      - id: 57
+      - id: 60
+      - id: 73
+      - id: 80
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 122
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 134
+      - id: 135
+      - id: 136
       - id: 138
       - id: 139
       - id: 140
@@ -12898,6 +12898,113 @@ interlocking-table:
     destination: signal27
     orientation: anticlockwise
     path:
+      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
+      - id: seg39
+      - id: seg40
+      - id: seg41
+      - id: seg42a
+      - id: seg42b
+      - id: seg43
+      - id: seg18
+      - id: seg19
+      - id: seg20
+      - id: seg44
+      - id: seg45
+      - id: seg46
+      - id: seg47
+    sections:
+      - id: block9
+      - id: platform3
+    length: 310.10cm
+    signals:
+      - id: signal24
+      - id: signal27
+    points:
+      - id: point14
+        position: normal
+      - id: point15
+        position: normal
+      - id: point16
+        position: normal
+      - id: point17
+        position: reverse
+      - id: point6
+        position: reverse
+      - id: point7
+        position: reverse
+      - id: point18b
+        position: normal
+    conflicts:
+      - id: 17
+      - id: 20
+      - id: 22
+      - id: 23
+      - id: 25
+      - id: 27
+      - id: 28
+      - id: 29
+      - id: 30
+      - id: 31
+      - id: 32
+      - id: 33
+      - id: 34
+      - id: 35
+      - id: 37
+      - id: 49
+      - id: 51
+      - id: 82
+      - id: 83
+      - id: 84
+      - id: 85
+      - id: 86
+      - id: 87
+      - id: 88
+      - id: 89
+      - id: 90
+      - id: 91
+      - id: 92
+      - id: 93
+      - id: 94
+      - id: 96
+      - id: 97
+      - id: 98
+      - id: 110
+      - id: 111
+      - id: 112
+      - id: 113
+      - id: 114
+      - id: 116
+      - id: 117
+      - id: 118
+      - id: 122
+      - id: 123
+      - id: 124
+      - id: 125
+      - id: 130
+      - id: 131
+      - id: 132
+      - id: 133
+      - id: 134
+      - id: 135
+      - id: 136
+      - id: 137
+      - id: 138
+      - id: 139
+      - id: 140
+      - id: 143
+      - id: 145
+      - id: 152
+      - id: 153
+      - id: 154
+      - id: 155
+      - id: 156
+      - id: 158
+      - id: 159
+  - id: 158 #route158
+    source: signal24
+    destination: signal27
+    orientation: anticlockwise
+    path:
       # point14.normal -> point15.normal -> point16.reverse -> point21.reverse -> block10 -> point20.normal -> point19.normal -> point18b.reverse1 -> platform3
       - id: seg39
       - id: seg40
@@ -12995,113 +13102,6 @@ interlocking-table:
       - id: 140
       - id: 141
       - id: 142
-      - id: 143
-      - id: 145
-      - id: 152
-      - id: 153
-      - id: 154
-      - id: 155
-      - id: 156
-      - id: 158
-      - id: 159
-  - id: 158 #route158
-    source: signal24
-    destination: signal27
-    orientation: anticlockwise
-    path:
-      # point14.normal -> point15.normal -> point16.normal -> block9 -> point17.reverse -> point6.reverse -> point7.reverse -> crossing1.line2 -> point18b.normal2 -> platform3
-      - id: seg39
-      - id: seg40
-      - id: seg41
-      - id: seg42a
-      - id: seg42b
-      - id: seg43
-      - id: seg18
-      - id: seg19
-      - id: seg20
-      - id: seg44
-      - id: seg45
-      - id: seg46
-      - id: seg47
-    sections:
-      - id: block9
-      - id: platform3
-    length: 310.10cm
-    signals:
-      - id: signal24
-      - id: signal27
-    points:
-      - id: point14
-        position: normal
-      - id: point15
-        position: normal
-      - id: point16
-        position: normal
-      - id: point17
-        position: reverse
-      - id: point6
-        position: reverse
-      - id: point7
-        position: reverse
-      - id: point18b
-        position: normal
-    conflicts:
-      - id: 17
-      - id: 20
-      - id: 22
-      - id: 23
-      - id: 25
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 37
-      - id: 49
-      - id: 51
-      - id: 82
-      - id: 83
-      - id: 84
-      - id: 85
-      - id: 86
-      - id: 87
-      - id: 88
-      - id: 89
-      - id: 90
-      - id: 91
-      - id: 92
-      - id: 93
-      - id: 94
-      - id: 96
-      - id: 97
-      - id: 98
-      - id: 110
-      - id: 111
-      - id: 112
-      - id: 113
-      - id: 114
-      - id: 116
-      - id: 117
-      - id: 118
-      - id: 122
-      - id: 123
-      - id: 124
-      - id: 125
-      - id: 130
-      - id: 131
-      - id: 132
-      - id: 133
-      - id: 134
-      - id: 135
-      - id: 136
-      - id: 137
-      - id: 138
-      - id: 139
-      - id: 140
       - id: 143
       - id: 145
       - id: 152

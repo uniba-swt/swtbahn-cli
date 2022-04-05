@@ -757,7 +757,7 @@ $(document).ready(
 		$('#setSignalButtonRed').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
-			var signalAspect = 'red';
+			var signalAspect = 'aspect_stop';
 			$.ajax({
 				type: 'POST',
 				url: '/controller/set-signal',
@@ -781,7 +781,7 @@ $(document).ready(
 		$('#setSignalButtonYellow').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
-			var signalAspect = 'yellow';
+			var signalAspect = 'aspect_caution';
 			$.ajax({
 				type: 'POST',
 				url: '/controller/set-signal',
@@ -805,7 +805,7 @@ $(document).ready(
 		$('#setSignalButtonGreen').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
-			var signalAspect = 'green';
+			var signalAspect = 'aspect_go';
 			$.ajax({
 				type: 'POST',
 				url: '/controller/set-signal',

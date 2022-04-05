@@ -239,55 +239,6 @@ boards:
         address: 0x1b
         length: 78.4cm
   - id: onecontrol2
-    segments:
-      - id: seg1
-        address: 0x00
-        length: 15.0cm
-      - id: seg16b
-        address: 0x01
-        length: 47.8cm
-      - id: seg17
-        address: 0x02
-        length: 15.0cm
-      - id: seg18
-        address: 0x03
-        length: 11.3cm
-      - id: seg19
-        address: 0x04
-        length: 11.3cm
-      - id: seg20
-        address: 0x05
-        length: 24.7cm
-      - id: seg42b
-        address: 0x06
-        length: 46.3cm
-      - id: seg43
-        address: 0x07
-        length: 23.3cm
-      - id: seg48
-        address: 0x08
-        length: 23.3cm
-      - id: seg49
-        address: 0x09
-        length: 23.3cm
-      - id: seg50
-        address: 0x0a
-        length: 56.0cm
-      - id: seg52
-        address: 0x0b
-        length: 23.3cm
-      - id: seg53
-        address: 0x0c
-        length: 23.3cm
-      - id: seg57
-        address: 0x0d
-        length: 15.0cm
-      - id: seg60
-        address: 0x0e
-        length: 23.3cm
-      - id: seg94a
-        address: 0x0f
-        length: 140.7cm
     points-board:
       - id: point6
         number: 0x00
@@ -372,41 +323,56 @@ boards:
             value: 0x00
         initial: high
         type: onebit
-  - id: onecontrol3
     segments:
-      - id: seg7b
+      - id: seg1
         address: 0x00
-        length: 77.3cm
-      - id: seg31b
-        address: 0x01
-        length: 64.7cm
-      - id: seg78b
-        address: 0x02
-        length: 22.8cm
-      - id: seg79
-        address: 0x03
-        length: 23.3cm
-      - id: seg82b
-        address: 0x04
-        length: 46.3cm
-      - id: seg83
-        address: 0x05
-        length: 18.1cm
-      - id: seg87b
-        address: 0x06
-        length: 39.5cm
-      - id: seg88
-        address: 0x07
         length: 15.0cm
-      - id: seg89
+      - id: seg16b
+        address: 0x01
+        length: 47.8cm
+      - id: seg17
+        address: 0x02
+        length: 15.0cm
+      - id: seg18
+        address: 0x03
+        length: 11.3cm
+      - id: seg19
+        address: 0x04
+        length: 11.3cm
+      - id: seg20
+        address: 0x05
+        length: 24.7cm
+      - id: seg42b
+        address: 0x06
+        length: 46.3cm
+      - id: seg43
+        address: 0x07
+        length: 23.3cm
+      - id: seg48
         address: 0x08
         length: 23.3cm
-      - id: seg91b
+      - id: seg49
         address: 0x09
-        length: 41.6cm
-      - id: seg92
+        length: 23.3cm
+      - id: seg50
         address: 0x0a
+        length: 56.0cm
+      - id: seg52
+        address: 0x0b
+        length: 23.3cm
+      - id: seg53
+        address: 0x0c
+        length: 23.3cm
+      - id: seg57
+        address: 0x0d
         length: 15.0cm
+      - id: seg60
+        address: 0x0e
+        length: 23.3cm
+      - id: seg94a
+        address: 0x0f
+        length: 140.7cm
+  - id: onecontrol3
     points-board:
       - id: point3
         number: 0x00
@@ -491,6 +457,40 @@ boards:
             value: 0x00
         initial: high
         type: onebit
+    segments:
+      - id: seg7b
+        address: 0x00
+        length: 77.3cm
+      - id: seg31b
+        address: 0x01
+        length: 64.7cm
+      - id: seg78b
+        address: 0x02
+        length: 22.8cm
+      - id: seg79
+        address: 0x03
+        length: 23.3cm
+      - id: seg82b
+        address: 0x04
+        length: 46.3cm
+      - id: seg83
+        address: 0x05
+        length: 18.1cm
+      - id: seg87b
+        address: 0x06
+        length: 39.5cm
+      - id: seg88
+        address: 0x07
+        length: 15.0cm
+      - id: seg89
+        address: 0x08
+        length: 23.3cm
+      - id: seg91b
+        address: 0x09
+        length: 41.6cm
+      - id: seg92
+        address: 0x0a
+        length: 15.0cm
   - id: lightcontrol1
     signals-board:
       - id: signal27

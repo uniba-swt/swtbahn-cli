@@ -132,6 +132,10 @@ e_config_type get_config_type(const char *type) {
     if (string_equals(type, "crossing")) {
         return TYPE_CROSSING;
     }
+    
+	if (string_equals(type, "composition")) {
+        return TYPE_COMPOSITE_SIGNAL;
+    }
 
     if (string_equals(type, "signaltype")) {
         return TYPE_SIGNAL_TYPE;
@@ -148,7 +152,7 @@ void *get_object(e_config_type config_type, const char *id) {
     GHashTable *tb = NULL;
     switch (config_type) {
         case TYPE_ROUTE:
-            return get_route((int)strtol(id, NULL, 10));
+            return get_route(id);
         case TYPE_SEGMENT:
             tb = config_data.table_segments;
             break;
@@ -224,7 +228,7 @@ int get_route_array_string_value(t_interlocking_route *route, const char *prop_n
         }
     }
 
-    if (string_equals(prop_name, "point_positions")) {
+    if (string_equals(prop_name, "route_points")) {
         if (route->points != NULL) {
             for (int i = 0; i < route->points->len; ++i) {
                 data[i] = (&g_array_index(route->points, t_interlocking_point, i))->id;
@@ -411,6 +415,11 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                     break;
                 }
 
+                if (string_equals(prop_name, "initial")) {
+                    result = ((t_config_signal_type *) obj)->initial;
+                    break;
+                }
+
                 break;
 
             case TYPE_COMPOSITE_SIGNAL:
@@ -447,6 +456,11 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                     break;
                 }
 
+                if (string_equals(prop_name, "initial")) {
+                    result = ((t_config_peripheral_type *) obj)->initial;
+                    break;
+                }
+
                 break;
                 
             default:
@@ -455,21 +469,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
     }
 
     result = result != NULL ? result : new_empty_str();
-    syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => %s", type, id, prop_name, result);
-    return result;
-}
-
-int config_get_scalar_int_value(const char *type, const char *id, const char *prop_name) {
-    e_config_type config_type = get_config_type(type);
-    void *obj = get_object(config_type, id);
-    int result = 0;
-    if (obj != NULL && config_type == TYPE_BLOCK) {
-        if (string_equals(prop_name, "limit")) {
-            result = ((t_config_block *) obj)->limit_speed;
-        }
-    }
-
-    syslog_server(LOG_DEBUG, "Get scalar int: %s %s.%s => %.2f", type, id, prop_name, result);
+    syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => \"%s\"", type, id, prop_name, result);
     return result;
 }
 
@@ -490,6 +490,10 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
                     result = ((t_config_block *) obj)->length;
                     break;
                 }
+                
+				if (string_equals(prop_name, "limit")) {
+					result = ((t_config_block *) obj)->limit_speed;
+				}
                 break;
 
             case TYPE_SEGMENT:
@@ -951,6 +955,20 @@ bool is_segment_occupied(const char *id) {
     }
 
     syslog_server(LOG_DEBUG, "Is segment occupied: %s => %s", id, result ? "true" : "false");
+    return result;
+}
+
+bool is_type_segment(const char *id) {
+    bool result = g_hash_table_contains(config_data.table_segments, id);
+
+    syslog_server(LOG_DEBUG, "Is %s a segment: %s", id, result ? "true" : "false");
+    return result;
+}
+
+bool is_type_signal(const char *id) {
+    bool result = g_hash_table_contains(config_data.table_signals, id);
+
+    syslog_server(LOG_DEBUG, "Is %s a signal: %s", id, result ? "true" : "false");
     return result;
 }
 

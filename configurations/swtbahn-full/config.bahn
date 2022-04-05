@@ -506,6 +506,11 @@ module SWTbahnFull
             overlap seg1
             main seg2
             overlap seg3
+            limit 300km/h 
+            trains 
+                cargo 
+                passenger 
+            end
         block2
             overlap seg6
             main seg7a seg7b
