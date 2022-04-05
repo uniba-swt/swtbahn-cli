@@ -30,6 +30,10 @@
 #define SWTSERVER_HANDLER_UPLOAD_H
 
 
+bool clear_engine_dir(void);
+
+bool clear_interlocker_dir(void);
+
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res);
 
