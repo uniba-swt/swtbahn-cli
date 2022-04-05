@@ -83,7 +83,7 @@ typedef struct {
 typedef struct {
     char *id;
     float length;
-    size_t limit_speed;
+    float limit_speed;
     GArray *train_types;
     GArray *signals;
     char *main_segment;
@@ -99,6 +99,7 @@ typedef struct {
 
 typedef struct {
     char *id;
+    char *initial;
     GArray *aspects;
 } t_config_signal_type;
 
@@ -112,6 +113,7 @@ typedef struct {
 
 typedef struct {
     char *id;
+    char *initial;
     GArray *aspects;
 } t_config_peripheral_type;
 

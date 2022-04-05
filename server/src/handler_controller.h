@@ -60,7 +60,7 @@ const int load_default_interlocker_instance();
   */ 
 const char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
 
-void release_route(const int route_id);
+void release_route(const char *route_id);
 
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                               onion_response *res);

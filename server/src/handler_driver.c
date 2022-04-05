@@ -44,6 +44,7 @@
 
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static unsigned int DRIVING_SPEED_SLOW = 20;
 static unsigned int next_grab_id = 0;
 
 t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
@@ -99,20 +100,19 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	return false;
 }
 
-static bool drive_route(const int grab_id, const int route_id) {
-	//Lock needs to go here
+static bool drive_route(const int grab_id, const char *route_id) {
+	pthread_mutex_lock(&interlocker_mutex);
 	const char *train_id = grabbed_trains[grab_id].name->str;
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
+		syslog_server(LOG_ERR, "Drive route: Route %s not granted to train %s", route_id, train_id);
 		return false;
 	}
 
-	pthread_mutex_lock(&interlocker_mutex);	// this needs to be removed/moved to 103
     if (strcmp(train_id, route->train) != 0) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
+		syslog_server(LOG_ERR, "Drive route: Route %s not granted to train %s", route_id, train_id);
 		return false;
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -120,7 +120,7 @@ static bool drive_route(const int grab_id, const int route_id) {
 	// Driving starts
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	const int requested_speed = 20; //this still up to date? -> define as a constant
+	const int requested_speed = DRIVING_SPEED_SLOW;
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
 	                                        && train_position_query.orientation_is_left)
@@ -131,9 +131,9 @@ static bool drive_route(const int grab_id, const int route_id) {
 	                                                requested_speed, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
-	// Set entry signal to red (stop aspect)
+	// Set entry signal to the stop aspect
 	const char *signal_id = route->source;
-	const char *signal_aspect = "red";
+	const char *signal_aspect = "aspect_stop";
 	if (bidib_set_signal(signal_id, signal_aspect)) {
 		syslog_server(LOG_ERR, "Drive route: Unable to set entry signal to aspect %s", signal_aspect);
 		return false;
@@ -168,7 +168,7 @@ static int grab_train(const char *train, const char *engine) {
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
-			//TODO: insert log here
+			syslog_server(LOG_ERR, "Train %s already grabbed", train);
 			return -1;
 		}
 	}
@@ -362,19 +362,19 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const int client_session_id = params_check_session_id(data_session_id);
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
-		const int route_id = params_check_route_id(data_route_id);
+		const char *route_id = params_check_route_id(data_route_id);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Drive route - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog_server(LOG_ERR, "Request: Drive route - bad grab id");
 			return OCS_NOT_IMPLEMENTED;
-		} else if (route_id == -1) {
+		} else if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, "Request: Drive route - invalid parameter");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			if (drive_route(grab_id, route_id)) {
-				onion_response_printf(res, "Route %d driving completed", route_id);
+				onion_response_printf(res, "Route %s driving completed", route_id);
 				return OCS_PROCESSED;
 			} else {
 				return OCS_NOT_IMPLEMENTED;

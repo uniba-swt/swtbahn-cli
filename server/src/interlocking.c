@@ -128,12 +128,9 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
     return -1;
 }
 
-t_interlocking_route *get_route(int route_id) {
-    char route_id_str[8];
-    sprintf(route_id_str, "%d", route_id);
-    
-    if (g_hash_table_contains(route_hash_table, route_id_str)) {
-        return g_hash_table_lookup(route_hash_table, route_id_str);
+t_interlocking_route *get_route(const char *route_id) {
+    if (g_hash_table_contains(route_hash_table, route_id)) {
+        return g_hash_table_lookup(route_hash_table, route_id);
     }
 
     return NULL;
