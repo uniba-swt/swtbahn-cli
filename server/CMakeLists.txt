@@ -80,3 +80,16 @@ target_link_libraries(${FOREC_MAIN}_static bidib_static onion_static)
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion pam gnutls gcrypt pthread
 	glib-2.0 yaml bidib ${FOREC_MAIN} ${CMAKE_DL_LIBS})
+
+
+# Unit tests
+
+enable_testing()
+
+set(UNIT_TESTS server_parser_tests server_bahn_util_tests)
+
+foreach(UNIT_TEST ${UNIT_TESTS})
+	add_executable(${UNIT_TEST} test src/bahn_data_util.c src/parsers/ test/unit/${UNIT_TEST}.c)
+	target_link_libraries(${UNIT_TEST} glib-2.0 cmocka pthread yaml onion bidib ${FOREC_MAIN})
+	add_test(${UNIT_TEST} ${UNIT_TEST})
+endforeach()
