@@ -29,12 +29,12 @@ module SWTbahnStandard
 		seg15 0x0E length 23.9cm
 		seg16 0x0F length 77.6cm
 		seg17 0x20 length 10.3cm
-		seg18 0x21 length 20.4cm
+		seg18 0x26 length 20.4cm
 		seg19 0x22 length 12cm
 		seg20 0x23 length 17.1cm
 		seg21 0x24 length 84.1cm
 		seg22 0x25 length 31.35cm
-		seg23 0x26 length 21.3cm
+		seg23 0x21 length 21.3cm
 		seg24 0x10 length 40.5cm
 		seg25 0x11 length 51.4cm
 		seg26 0x12 length 30.7cm
