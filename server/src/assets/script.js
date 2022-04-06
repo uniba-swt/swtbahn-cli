@@ -551,177 +551,103 @@ $(document).ready(
 				});
 			}
 		});
+		
+		function setPointAjax(pointId, pointPosition) {
+			$.ajax({
+				type: 'POST',
+				url: '/controller/set-point',
+				crossDomain: true,
+				data: { 'point': pointId, 'state': pointPosition },
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					$('#setPointResponse')
+						.text('Point ' + pointId + ' set to ' + pointPosition);
+					$('#setPointResponse').parent().removeClass('alert-danger');
+					$('#setPointResponse').parent().addClass('alert-success');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#setPointResponse').text('System not running or invalid position!');
+					$('#setPointResponse').parent().removeClass('alert-success');
+					$('#setPointResponse').parent().addClass('alert-danger');
+				}
+			});
+		}
 
 		$('#setPointButton').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = $("#pointPosition option:selected").text();
-
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-point',
-				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
-				}
-			});
+			setPointAjax(pointId, pointPosition);
 		});
-
+		
 		$('#setPointButtonNormal').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = 'normal';
-
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-point',
-				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
-				}
-			});
+			setPointAjax(pointId, pointPosition);
 		});
 
 		$('#setPointButtonReverse').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = 'reverse';
+			setPointAjax(pointId, pointPosition);
+		});
 
+		function setSignalAjax(signalId, signalAspect) {
 			$.ajax({
 				type: 'POST',
-				url: '/controller/set-point',
+				url: '/controller/set-signal',
 				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
+				data: { 'signal': signalId, 'state': signalAspect },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
+					$('#setSignalResponse')
+						.text('Signal ' + signalId + ' set to ' + signalAspect);
+					$('#setSignalResponse').parent().removeClass('alert-danger');
+					$('#setSignalResponse').parent().addClass('alert-success');
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
+					$('#setSignalResponse').text('System not running or invalid aspect!');
+					$('#setSignalResponse').parent().removeClass('alert-success');
+					$('#setSignalResponse').parent().addClass('alert-danger');
 				}
 			});
-		});
+		}
 
 		$('#setSignalButton').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = $("#signalAspect option:selected").text();
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
 		});
-
 
 		$('#setSignalButtonRed').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_stop';
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonYellow').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_caution';
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonGreen').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_go';
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
+		});
+
+		$('#setSignalButtonWhite').click(function () {
+			$('#setSignalResponse').text('Waiting');
+			var signalId = $('#signalId').val();
+			var signalAspect = 'aspect_shunt';
+			setSignalAjax(signalId, signalAspect);
 		});
 		
 		$('#setPeripheralStateButton').click(function () {
@@ -918,11 +844,4 @@ $(document).ready(
 
 	}
 );
-
-
-
-
-
-
-
 
