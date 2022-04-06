@@ -10,3 +10,7 @@ swtbahn-config.yml
 **/cmake-build-debug/
 
 server/src/.vscode/
+
+**/.vscode
+**/.cache
+**.project

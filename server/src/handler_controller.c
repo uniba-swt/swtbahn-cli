@@ -83,6 +83,7 @@ const int unset_interlocker(const char *interlocker_name) {
 		dyn_containers_free_interlocker_instance(&interlocker_instances[selected_interlocker_instance]);
 		interlocker_instances[selected_interlocker_instance].is_valid = false;
 		g_string_free(selected_interlocker_name, true);
+		selected_interlocker_name = NULL;
 		selected_interlocker_instance = -1;
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -102,6 +103,7 @@ const int load_default_interlocker_instance() {
 void free_all_interlockers(void) {
 	if (selected_interlocker_name != NULL) {
 		g_string_free(selected_interlocker_name, true);
+		selected_interlocker_name = NULL;
 	}
 
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
@@ -172,19 +174,26 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 	return route_id;
 }
 
-void release_route(const int route_id) {
+void release_route(const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train != NULL) {
-		const char *signal_id = route->source;
-		const char *signal_aspect = "red";
-		if (bidib_set_signal(signal_id, signal_aspect)) {
-			syslog_server(LOG_ERR, "Release route: Unable to set entry signal to aspect %s", signal_aspect);
+		const char *signal_aspect = "aspect_stop";
+
+		const int signal_count = route->signals->len;
+		for (int signal_index = 0; signal_index < signal_count; signal_index++) {
+			// Get each signal along the route
+			const char *signal_id = g_array_index(route->signals, char *, signal_index);
+		
+			if (bidib_set_signal(signal_id, signal_aspect)) {
+				syslog_server(LOG_ERR, "Release route: Unable to set signal to aspect %s", signal_aspect);
+			}
 		}
 		bidib_flush();
 		
-        free(route->train);
-        route->train = NULL;
+		free(route->train);
+		route->train = NULL;
+		syslog_server(LOG_NOTICE, "Release route: route %s released", route_id);
     }
 
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -195,13 +204,13 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
-		const int route_id = params_check_route_id(data_route_id);
-		if (route_id == -1) {
+		const char *route_id = params_check_route_id(data_route_id);
+		if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			release_route(route_id);
-			syslog_server(LOG_NOTICE, "Request: Release route - route: %d", route_id);
+			syslog_server(LOG_NOTICE, "Request: Release route - route: %s", route_id);
 			return OCS_PROCESSED;
 		}
 	} else {

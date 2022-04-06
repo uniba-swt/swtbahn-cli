@@ -74,6 +74,7 @@ bool string_equals(const char *str1, const char *str2) {
     return strcmp(str1, str2) == 0;
 }
 
+// Needed to temporarily store new strings created by config_get_... 
 GArray *cached_allocated_str;
 
 void bahn_data_util_init_cached_track_state() {
@@ -131,6 +132,10 @@ e_config_type get_config_type(const char *type) {
     if (string_equals(type, "crossing")) {
         return TYPE_CROSSING;
     }
+    
+	if (string_equals(type, "composition")) {
+        return TYPE_COMPOSITE_SIGNAL;
+    }
 
     if (string_equals(type, "signaltype")) {
         return TYPE_SIGNAL_TYPE;
@@ -147,7 +152,7 @@ void *get_object(e_config_type config_type, const char *id) {
     GHashTable *tb = NULL;
     switch (config_type) {
         case TYPE_ROUTE:
-            return get_route((int)strtol(id, NULL, 10));
+            return get_route(id);
         case TYPE_SEGMENT:
             tb = config_data.table_segments;
             break;
@@ -223,7 +228,7 @@ int get_route_array_string_value(t_interlocking_route *route, const char *prop_n
         }
     }
 
-    if (string_equals(prop_name, "point_positions")) {
+    if (string_equals(prop_name, "route_points")) {
         if (route->points != NULL) {
             for (int i = 0; i < route->points->len; ++i) {
                 data[i] = (&g_array_index(route->points, t_interlocking_point, i))->id;
@@ -410,6 +415,11 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                     break;
                 }
 
+                if (string_equals(prop_name, "initial")) {
+                    result = ((t_config_signal_type *) obj)->initial;
+                    break;
+                }
+
                 break;
 
             case TYPE_COMPOSITE_SIGNAL:
@@ -446,6 +456,11 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                     break;
                 }
 
+                if (string_equals(prop_name, "initial")) {
+                    result = ((t_config_peripheral_type *) obj)->initial;
+                    break;
+                }
+
                 break;
                 
             default:
@@ -454,21 +469,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
     }
 
     result = result != NULL ? result : new_empty_str();
-    syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => %s", type, id, prop_name, result);
-    return result;
-}
-
-int config_get_scalar_int_value(const char *type, const char *id, const char *prop_name) {
-    e_config_type config_type = get_config_type(type);
-    void *obj = get_object(config_type, id);
-    int result = 0;
-    if (obj != NULL && config_type == TYPE_BLOCK) {
-        if (string_equals(prop_name, "limit")) {
-            result = ((t_config_block *) obj)->limit_speed;
-        }
-    }
-
-    syslog_server(LOG_DEBUG, "Get scalar int: %s %s.%s => %.2f", type, id, prop_name, result);
+    syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => \"%s\"", type, id, prop_name, result);
     return result;
 }
 
@@ -489,6 +490,10 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
                     result = ((t_config_block *) obj)->length;
                     break;
                 }
+                
+				if (string_equals(prop_name, "limit")) {
+					result = ((t_config_block *) obj)->limit_speed;
+				}
                 break;
 
             case TYPE_SEGMENT:
@@ -696,11 +701,10 @@ e_config_type get_track_state_type(const char *id) {
 }
 
 /**
- * Get raw signal aspect from bidib state
+ * Get raw signal aspect from bidib state (stop, go, caution, shunt)
  * Convert back to signalling action based on signal type
- * caution action is not completely supported yet because it requires multiple aspects enabled
  * @param id signal name
- * @param value stop, clear or caution
+ * @param value stop, go, caution, or shunt
  * @return true of success, otherwise false
  */
 char *get_signal_state(const char *id) {
@@ -720,32 +724,35 @@ char *get_signal_state(const char *id) {
 
     // load signalling aspect based on signal type
     char *result = NULL;
-    if (string_equals(raw_state, "red")) {
+    if (string_equals(raw_state, "aspect_stop")) {
         if (string_equals(type, "entry")
             || string_equals(type, "exit")
             || string_equals(type, "block")
-            || string_equals(type, "stoplight")) {
+            || string_equals(type, "distant")
+            || string_equals(type, "shunting")
+            || string_equals(type, "halt")) {
 
             result = "stop";
         }
-    } else if (string_equals(raw_state, "green")){
+    } else if (string_equals(raw_state, "aspect_go")){
         if (string_equals(type, "entry")
             || string_equals(type, "exit")
             || string_equals(type, "block")
             || string_equals(type, "distant")) {
 
-            result = "clear";
+            result = "go";
         }
-    } else if (string_equals(raw_state, "yellow")){
-        if (string_equals(type, "distant")) {
-            result = "stop";
-        } else if (string_equals(type, "entry")
-                   || string_equals(type, "exit")) {
+    } else if (string_equals(raw_state, "aspect_caution")){
+        if (string_equals(type, "entry")
+            || string_equals(type, "exit")
+            || string_equals(type, "distant")) {
+
             result = "caution";
         }
-    } else if (string_equals(raw_state, "white")){
-        if (string_equals(type, "stoplight")) {
-            result = "clear";
+    } else if (string_equals(raw_state, "aspect_shunt")){
+        if (string_equals(type, "exit")
+            || string_equals(type, "shunting")) {
+            result = "shunt";
         }
     }
 
@@ -776,7 +783,7 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
  * Convert the signalling action to raw aspect based on signal types
  * Update bidib state
  * @param id signal name
- * @param value stop, clear or caution
+ * @param value stop, go, caution, shunt
  * @return true if successful, otherwise false
  */
 bool set_signal_state(const char *id, const char *value) {
@@ -787,30 +794,24 @@ bool set_signal_state(const char *id, const char *value) {
     if (string_equals(value, "stop")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
+            || string_equals(signal->type, "distant")
             || string_equals(signal->type, "block")
-            || string_equals(signal->type, "stoplight")) {
+            || string_equals(signal->type, "shunting")
+            || string_equals(signal->type, "halt")) {
 
-            return set_signal_raw_aspect(signal, "red");
-        }
-
-        if (string_equals(signal->type, "distant")) {
-            return set_signal_raw_aspect(signal, "yellow");
+            return set_signal_raw_aspect(signal, "aspect_stop");
         }
 
         return false;
     }
 
-    if (string_equals(value, "clear")) {
+    if (string_equals(value, "go")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
-            || string_equals(signal->type, "block")
-            || string_equals(signal->type, "distant")) {
+            || string_equals(signal->type, "distant")
+            || string_equals(signal->type, "block")) {
 
-            return set_signal_raw_aspect(signal, "green");
-        }
-
-        if (string_equals(signal->type, "stoplight")) {
-            return set_signal_raw_aspect(signal, "white");
+            return set_signal_raw_aspect(signal, "aspect_go");
         }
 
         return false;
@@ -821,7 +822,17 @@ bool set_signal_state(const char *id, const char *value) {
             || string_equals(signal->type, "exit")
             || string_equals(signal->type, "distant")) {
 
-            return set_signal_raw_aspect(signal, "yellow") && set_signal_raw_aspect(signal, "green");
+            return set_signal_raw_aspect(signal, "aspect_caution");
+        }
+
+        return false;
+    }
+
+    if (string_equals(value, "shunt")) {
+        if (string_equals(signal->type, "exit")
+            || string_equals(signal->type, "shunting")) {
+
+            return set_signal_raw_aspect(signal, "aspect_shunt");
         }
 
         return false;
@@ -944,6 +955,20 @@ bool is_segment_occupied(const char *id) {
     }
 
     syslog_server(LOG_DEBUG, "Is segment occupied: %s => %s", id, result ? "true" : "false");
+    return result;
+}
+
+bool is_type_segment(const char *id) {
+    bool result = g_hash_table_contains(config_data.table_segments, id);
+
+    syslog_server(LOG_DEBUG, "Is %s a segment: %s", id, result ? "true" : "false");
+    return result;
+}
+
+bool is_type_signal(const char *id) {
+    bool result = g_hash_table_contains(config_data.table_signals, id);
+
+    syslog_server(LOG_DEBUG, "Is %s a signal: %s", id, result ? "true" : "false");
     return result;
 }
 
