@@ -178,10 +178,16 @@ void release_route(const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train != NULL) {
-		const char *signal_id = route->source;
 		const char *signal_aspect = "aspect_stop";
-		if (bidib_set_signal(signal_id, signal_aspect)) {
-			syslog_server(LOG_ERR, "Release route: Unable to set entry signal to aspect %s", signal_aspect);
+
+		const int signal_count = route->signals->len;
+		for (int signal_index = 0; signal_index < signal_count; signal_index++) {
+			// Get each signal along the route
+			const char *signal_id = g_array_index(route->signals, char *, signal_index);
+		
+			if (bidib_set_signal(signal_id, signal_aspect)) {
+				syslog_server(LOG_ERR, "Release route: Unable to set signal to aspect %s", signal_aspect);
+			}
 		}
 		bidib_flush();
 		
