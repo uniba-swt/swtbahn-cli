@@ -67,7 +67,9 @@ bool clear_dir(const char dir[]) {
 			continue;
 		}
 		
-		result += remove(dir_entry->d_name);
+		char filepath[PATH_MAX + NAME_MAX];
+		sprintf(filepath, "%s/%s", dir, dir_entry->d_name);
+		result += remove(filepath);
 	}
 	
 	closedir(dir_handle);
@@ -345,7 +347,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		}
 
 		char filename_noextension[NAME_MAX];
-		remove_file_extension(filename_noextension, filename, ".sctx");
+		remove_file_extension(filename_noextension, filename, ".bahn");
 		char libname[sizeof(filename_noextension)];
 		snprintf(libname, sizeof(libname), "libinterlocker_%s", filename_noextension);
 
