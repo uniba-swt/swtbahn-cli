@@ -122,6 +122,9 @@ def set_points(string route_id)
             set state point_id to reverse
         end
     end
+    
+    # TODO: Wait 1 sec for the points to physically move
+    # into position
 end
 
 
