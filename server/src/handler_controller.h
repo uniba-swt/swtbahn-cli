@@ -58,7 +58,9 @@ const int load_default_interlocker_instance();
   * @param name of the destination signal
   * @return ID of the route if it has been granted, otherwise an error string
   */ 
-const char *grant_route(const char *train_id, const char *source_id, const char *destination_id);
+GString *grant_route(const char *train_id, 
+                     const char *source_id, 
+                     const char *destination_id);
 
 void release_route(const char *route_id);
 

@@ -118,10 +118,10 @@ void free_all_interlockers(void) {
 	selected_interlocker_instance = -1;
 }
 
-const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
+GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {
 		syslog_server(LOG_ERR, "Grant route: No interlocker has been set");
-		return "no_interlocker";
+		return g_string_new("no_interlocker");
 	}
 	
 	pthread_mutex_lock(&interlocker_mutex);
@@ -155,7 +155,7 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 	if (route_id != NULL && params_check_is_number(route_id)) {
 		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
 		
-		syslog_server(LOG_NOTICE, "Request: Set points and signals for route id \"%s\" - interlocker type %d",
+		syslog_server(LOG_NOTICE, "Grant route: Set points and signals for route id \"%s\" - interlocker type %d",
 		              interlocker_instance_io.output_route_id,
 		              interlocker_instance_io.output_interlocker_type);
 	} else {
@@ -171,7 +171,8 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 	}
 
 	pthread_mutex_unlock(&interlocker_mutex);
-	return route_id;
+	GString *route_id_copy = g_string_new(route_id);
+	return route_id_copy;
 }
 
 void release_route(const char *route_id) {
