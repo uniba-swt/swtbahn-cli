@@ -148,8 +148,6 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_terminated);
 	
-	bahn_data_util_free_cached_track_state();
-
 	// Return the result
 	const char *route_id = interlocker_instance_io.output_route_id;
 	if (route_id != NULL && params_check_is_number(route_id)) {
@@ -169,9 +167,10 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 			syslog_server(LOG_ERR, "Grant route: Route could not be granted (%s)", route_id);
 		}
 	}
+	GString *route_id_copy = g_string_new(route_id);
+	bahn_data_util_free_cached_track_state();
 
 	pthread_mutex_unlock(&interlocker_mutex);
-	GString *route_id_copy = g_string_new(route_id);
 	return route_id_copy;
 }
 
