@@ -310,7 +310,7 @@ void main(int argc, char **argv) {
 	syslog_server(LOG_NOTICE, "ForeC: Starting dynamic library containers");
 	
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
-	                         &dyn_containers_interface);
+	                          &dyn_containers_interface);
 
 	resetInternalInputs();
 	resetInternalOutputs();

@@ -117,18 +117,17 @@ static bool drive_route(const int grab_id, const char *route_id) {
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	// Driving starts
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	const int requested_speed = DRIVING_SPEED_SLOW;
+	pthread_mutex_lock(&grabbed_trains_mutex);	
+	// Driving starts: Driving direction is computed from the route orientation
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
 	                                        && train_position_query.orientation_is_left)
 	                                || (strcmp(route->orientation, "anticlockwise") == 0 
 	                                        && !train_position_query.orientation_is_left);
 	bidib_free_train_position_query(train_position_query);
+	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
-	                                                requested_speed, requested_forwards);
+	                                                DRIVING_SPEED_SLOW, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set the signals along the route to Stop as the train drives past them
