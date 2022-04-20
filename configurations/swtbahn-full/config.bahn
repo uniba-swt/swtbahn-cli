@@ -502,6 +502,8 @@ module SWTbahnFull
     end
 
     blocks
+        # Anti-clockwise reading direction    
+    
         block1
             overlap seg1
             main seg2
@@ -566,6 +568,8 @@ module SWTbahnFull
     end
 
     platforms
+        # Anti-clockwise reading direction
+
         platform1           # block13
             overlap seg57
             main seg58
@@ -604,6 +608,8 @@ module SWTbahnFull
     end
 
     layout
+        # Anti-clockwise reading direction
+
         # Blocks
         block1.down -- point7.straight
         block1.up -- point1.stem

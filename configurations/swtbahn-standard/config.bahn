@@ -112,6 +112,8 @@ module SWTbahnStandard
 	end
 
 	blocks
+		# Anti-clockwise reading direction
+		
 		# blocks
 		block1 overlap seg3 main seg4 overlap seg5 limit 300km/h trains cargo passenger end
 		block2 overlap seg7 main seg8 overlap seg9 limit 350km/h
@@ -137,6 +139,8 @@ module SWTbahnStandard
 	end
 
 	layout
+		# Anti-clockwise reading direction
+
 		# blocks
 		block1.down -- point1.stem
 		block1.up -- point2.straight
