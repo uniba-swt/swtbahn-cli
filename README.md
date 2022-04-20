@@ -33,6 +33,10 @@ dependencies
 5. Execute `make`
 
 
+## Test
+To run the unit tests, execute `make test` from within the build directory. Each unit test can be executed to display more detailed test results, e.g., `./server_bahn_util_tests`.
+
+
 ## Usage
 
 #### Server
