@@ -109,6 +109,8 @@ $(document).ready(
 				});
 			} else {
 				$('#grabTrainResponse').text('You can only grab one train!');
+				$('#grabTrainResponse').parent().addClass('alert-danger');
+				$('#grabTrainResponse').parent().removeClass('alert-success');
 			}
 		});
 
