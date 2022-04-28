@@ -249,7 +249,7 @@ platforms:
     overlaps:
       - seg74
       - seg76
-    is_reversed: true
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal41
@@ -261,7 +261,7 @@ platforms:
     overlaps:
       - seg71
       - seg73
-    is_reversed: true
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal39

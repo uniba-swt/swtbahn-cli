@@ -594,12 +594,10 @@ module SWTbahnFull
             overlap seg74 
             main seg75 
             overlap seg76
-            reversed
         platform7           # block16
             overlap seg71 
             main seg72 
             overlap seg73
-            reversed
     end
 
     crossings
