@@ -5,8 +5,8 @@ blocks:
     main:
       - seg19
     overlaps:
-      - seg20
       - seg18
+      - seg20
     is_reversed: false
     direction: bidirectional
     signals:
@@ -17,8 +17,8 @@ blocks:
     main:
       - seg6
     overlaps:
-      - seg7
       - seg5
+      - seg7
     is_reversed: false
     direction: bidirectional
     signals:
@@ -29,8 +29,8 @@ blocks:
     main:
       - seg2
     overlaps:
-      - seg3
       - seg1
+      - seg3
     is_reversed: false
     direction: bidirectional
     signals:
@@ -41,38 +41,26 @@ blocks:
     main:
       - seg15
     overlaps:
-      - seg16
       - seg14
+      - seg16
     is_reversed: false
     direction: bidirectional
     signals:
-      - signal7
       - signal8
+      - signal7
   - id: block5
     length: 94.60cm
     main:
       - seg10
     overlaps:
-      - seg11
       - seg9
+      - seg11
     is_reversed: false
     direction: bidirectional
     signals:
       - signal6
       - signal5
-  - id: buffer1
-    length: 10.00cm
-    main:
-      - seg29
-    is_reversed: false
-    direction: bidirectional
-  - id: buffer2
-    length: 8.00cm
-    main:
-      - seg25
-    is_reversed: false
-    direction: bidirectional
-  - id: buffer3
+  - id: buffer
     length: 17.30cm
     main:
       - seg26
@@ -82,10 +70,11 @@ blocks:
       - signal13
 platforms:
   - id: platform1
-    length: 60.00cm
+    length: 70.00cm
     main:
       - seg28
     overlaps:
+      - seg29
       - seg27
     is_reversed: false
     direction: bidirectional
@@ -93,11 +82,12 @@ platforms:
       - signal14
       - signal15
   - id: platform2
-    length: 55.00cm
+    length: 63.00cm
     main:
       - seg24
     overlaps:
       - seg23
+      - seg25
     is_reversed: false
     direction: bidirectional
     signals:
