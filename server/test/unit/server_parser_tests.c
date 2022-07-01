@@ -3,7 +3,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 #include <cmocka.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 
 #include "../../src/bahn_data_util.h"
 

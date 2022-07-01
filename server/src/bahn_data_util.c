@@ -25,7 +25,7 @@
  *
  */
 
-#include <bidib.h>
+#include <bidib/bidib.h>
 #include <string.h>
 
 #include "server.h"
