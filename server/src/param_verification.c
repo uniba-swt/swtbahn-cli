@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "param_verification.h"
 
@@ -102,5 +103,27 @@ bool params_check_is_number(const char *string) {
 	strtod(string, &p);
 	
 	return (*p == '\0');
+}
+
+bool params_check_is_bool_string(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)){
+		return false;
+	} else if (strcmp("false",string) || strcmp("False",string) || strcmp("FALSE",string)
+		|| strcmp("true",string) || strcmp("True",string) || strcmp("TRUE",string)){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool params_check_verification_state(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)){
+		return false;
+	} else if (strcmp("false",string) || strcmp("False",string) || strcmp("FALSE",string)){
+		return false;
+	} else if (strcmp("true",string) || strcmp("True",string) || strcmp("TRUE",string)){
+		return true;
+	}
+	return false;
 }
 

@@ -167,7 +167,7 @@ static void websock_verification_callback(struct mg_connection *c, int ev, void 
 				
 				//Send verification request
 				if(g_fullmsg != NULL){
-					printf("Sending verification request\n");
+					//printf("Sending verification request\n");
 					syslog_server(LOG_INFO, "Request: Upload - Now sending verification request to swtbahn-verifier");
 					mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
 				} else {
@@ -253,37 +253,39 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		// Should we try to compile the model first? -> discuss
 		// Has to be done over websocket connection.
 		printf("5 - handler_upload_engine\n");
-		struct mg_mgr mgr;
-		struct ws_verif_data ws_verifData;
-		ws_verifData.file_path = g_string_new(final_filepath);
-		// Client connection
-		struct mg_connection *c;
-		// Initialise event manager
-		mg_mgr_init(&mgr);
-		// Create client
-		c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
-		while (c && ws_verifData.finished == false) {
-			mg_mgr_poll(&mgr, 1000); // Wait for reply
-		}
-		if(c && !c->is_closing){
-			//If connection is not yet closing, send close. After that, one more event poll has to be performed,
-			// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
-			mg_ws_send(c, "0", 1, 1000);
-			mg_mgr_poll(&mgr, 1000);
-		}
-		mg_mgr_free(&mgr); // Deallocate resources
-		
-		//Free string allocated for loading model file
-		g_string_free(ws_verifData.file_path, true);
-		printf("6 - handler_upload_engine\n");
-		//Stop upload if verification did not succeed
-		if(!ws_verifData.success){
-			pthread_mutex_unlock(&dyn_containers_mutex);
-			syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
+		if(verification_enabled){
+			struct mg_mgr mgr;
+			struct ws_verif_data ws_verifData;
+			ws_verifData.file_path = g_string_new(final_filepath);
+			// Client connection
+			struct mg_connection *c;
+			// Initialise event manager
+			mg_mgr_init(&mgr);
+			// Create client
+			c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
+			while (c && ws_verifData.finished == false) {
+				mg_mgr_poll(&mgr, 1000); // Wait for reply
+			}
+			if(c && !c->is_closing){
+				//If connection is not yet closing, send close. After that, one more event poll has to be performed,
+				// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
+				mg_ws_send(c, "0", 1, 1000);
+				mg_mgr_poll(&mgr, 1000);
+			}
+			mg_mgr_free(&mgr); // Deallocate resources
 			
-			onion_response_printf(res, "Engine verification failed");
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			return OCS_PROCESSED;
+			//Free string allocated for loading model file
+			g_string_free(ws_verifData.file_path, true);
+			printf("6 - handler_upload_engine\n");
+			//Stop upload if verification did not succeed
+			if(!ws_verifData.success){
+				pthread_mutex_unlock(&dyn_containers_mutex);
+				syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
+				
+				onion_response_printf(res, "Engine verification failed");
+				onion_response_set_code(res, HTTP_BAD_REQUEST);
+				return OCS_PROCESSED;
+			}
 		}
 		printf("7 - handler_upload_engine\n");
 		
