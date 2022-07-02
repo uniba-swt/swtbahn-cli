@@ -29,6 +29,8 @@
 #ifndef SWTSERVER_HANDLER_UPLOAD_H
 #define SWTSERVER_HANDLER_UPLOAD_H
 
+#include <onion/types.h>
+#include <stdbool.h>
 
 bool clear_engine_dir(void);
 

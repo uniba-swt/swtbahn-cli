@@ -29,6 +29,11 @@
 #ifndef SWTSERVER_HANDLER_CONTROLLER_H
 #define SWTSERVER_HANDLER_CONTROLLER_H
 
+#include <onion/types.h>
+#include <stdbool.h>
+#include <glib.h>
+
+
 #define INTERLOCKER_COUNT_MAX           4
 #define INTERLOCKER_INSTANCE_COUNT_MAX  4
 

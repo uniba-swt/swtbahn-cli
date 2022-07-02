@@ -8,6 +8,8 @@
 #ifndef TICK_DATA_H
 #define TICK_DATA_H
 
+#include <stdbool.h>
+
 typedef struct {
   int requested_speed;      // Input
   char requested_forwards;  // Input
