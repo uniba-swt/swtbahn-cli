@@ -30,7 +30,7 @@
 #include <onion/log.h>
 #include <onion/low.h>
 #include <signal.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
@@ -50,6 +50,7 @@
 
 volatile time_t session_id = 0;
 volatile bool running = false;
+volatile bool verification_enabled = true;
 char serial_device[INPUT_MAX_LEN];
 char config_directory[INPUT_MAX_LEN];
 

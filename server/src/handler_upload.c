@@ -53,6 +53,39 @@ static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/"
 extern pthread_mutex_t dyn_containers_mutex;
 
 
+bool clear_dir(const char dir[]) {
+	int result = 0;
+	
+	DIR *dir_handle = opendir(dir);
+	if (dir_handle == NULL) {
+		closedir(dir_handle);
+		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", dir);
+		return false;
+	}
+	
+	struct dirent *dir_entry = NULL;
+	while ((dir_entry = readdir(dir_handle)) != NULL) {
+		if (strcmp(dir_entry->d_name, ".") == 0 || strcmp(dir_entry->d_name, "..") == 0) {
+			continue;
+		}
+		
+		char filepath[PATH_MAX + NAME_MAX];
+		sprintf(filepath, "%s/%s", dir, dir_entry->d_name);
+		result += remove(filepath);
+	}
+	
+	closedir(dir_handle);
+	return (result == 0);
+}
+
+bool clear_engine_dir(void) {
+	return clear_dir(engine_dir);
+}
+
+bool clear_interlocker_dir(void) {
+	return clear_dir(interlocker_dir);
+}
+
 void remove_file_extension(char filepath_destination[], 
                            const char filepath_source[], const char extension[]) {
 	strcpy(filepath_destination, filepath_source);
@@ -134,7 +167,7 @@ static void websock_verification_callback(struct mg_connection *c, int ev, void 
 				
 				//Send verification request
 				if(g_fullmsg != NULL){
-					printf("Sending verification request\n");
+					//printf("Sending verification request\n");
 					syslog_server(LOG_INFO, "Request: Upload - Now sending verification request to swtbahn-verifier");
 					mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
 				} else {
@@ -204,6 +237,12 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}  
 		printf("4 - handler_upload_engine\n");
+		
+		char filename_noextension[NAME_MAX];
+		remove_file_extension(filename_noextension, filename, ".sctx");
+		char libname[sizeof(filename_noextension)];
+		snprintf(libname, sizeof(libname), "lib%s", filename_noextension);
+
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", engine_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
@@ -214,37 +253,39 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		// Should we try to compile the model first? -> discuss
 		// Has to be done over websocket connection.
 		printf("5 - handler_upload_engine\n");
-		struct mg_mgr mgr;
-		struct ws_verif_data ws_verifData;
-		ws_verifData.file_path = g_string_new(final_filepath);
-		// Client connection
-		struct mg_connection *c;
-		// Initialise event manager
-		mg_mgr_init(&mgr);
-		// Create client
-		c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
-		while (c && ws_verifData.finished == false) {
-			mg_mgr_poll(&mgr, 1000); // Wait for reply
-		}
-		if(c && !c->is_closing){
-			//If connection is not yet closing, send close. After that, one more event poll has to be performed,
-			// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
-			mg_ws_send(c, "0", 1, 1000);
-			mg_mgr_poll(&mgr, 1000);
-		}
-		mg_mgr_free(&mgr); // Deallocate resources
-		
-		//Free string allocated for loading model file
-		g_string_free(ws_verifData.file_path, true);
-		printf("6 - handler_upload_engine\n");
-		//Stop upload if verification did not succeed
-		if(!ws_verifData.success){
-			pthread_mutex_unlock(&dyn_containers_mutex);
-			syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
+		if(verification_enabled){
+			struct mg_mgr mgr;
+			struct ws_verif_data ws_verifData;
+			ws_verifData.file_path = g_string_new(final_filepath);
+			// Client connection
+			struct mg_connection *c;
+			// Initialise event manager
+			mg_mgr_init(&mgr);
+			// Create client
+			c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
+			while (c && ws_verifData.finished == false) {
+				mg_mgr_poll(&mgr, 1000); // Wait for reply
+			}
+			if(c && !c->is_closing){
+				//If connection is not yet closing, send close. After that, one more event poll has to be performed,
+				// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
+				mg_ws_send(c, "0", 1, 1000);
+				mg_mgr_poll(&mgr, 1000);
+			}
+			mg_mgr_free(&mgr); // Deallocate resources
 			
-			onion_response_printf(res, "Engine verification failed");
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			return OCS_PROCESSED;
+			//Free string allocated for loading model file
+			g_string_free(ws_verifData.file_path, true);
+			printf("6 - handler_upload_engine\n");
+			//Stop upload if verification did not succeed
+			if(!ws_verifData.success){
+				pthread_mutex_unlock(&dyn_containers_mutex);
+				syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
+				
+				onion_response_printf(res, "Engine verification failed");
+				onion_response_set_code(res, HTTP_BAD_REQUEST);
+				return OCS_PROCESSED;
+			}
 		}
 		printf("7 - handler_upload_engine\n");
 		
@@ -252,6 +293,8 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		remove_file_extension(filepath, final_filepath, ".sctx");
 		const dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
 		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
+			remove_engine_files(libname);
+
 			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled "
                                    "into a C file and then to a shared library", filepath);
 			
@@ -266,6 +309,8 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		const int engine_slot = dyn_containers_get_free_engine_slot();
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
+			remove_engine_files(libname);
+		
 			syslog_server(LOG_ERR, "Request: Upload - no available engine slot");
 			
 			onion_response_printf(res, "No available engine slot");
@@ -273,8 +318,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 		
-		snprintf(final_filepath, sizeof(final_filepath), "%s/lib%s", engine_dir, filename);
-		remove_file_extension(filepath, final_filepath, ".sctx");
+		snprintf(filepath, sizeof(filepath), "%s/%s", engine_dir, libname);
 		dyn_containers_set_engine(engine_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		return OCS_PROCESSED;			
@@ -424,6 +468,11 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 
+		char filename_noextension[NAME_MAX];
+		remove_file_extension(filename_noextension, filename, ".bahn");
+		char libname[sizeof(filename_noextension)];
+		snprintf(libname, sizeof(libname), "libinterlocker_%s", filename_noextension);
+
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", interlocker_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
@@ -434,6 +483,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		remove_file_extension(filepath, final_filepath, ".bahn");
 		const dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
 		if (status == DYNLIB_COMPILE_SHARED_BAHNDSL_ERR) {
+			remove_interlocker_files(libname);
+		
 			syslog_server(LOG_ERR, "Request: Upload - interlocker file %s could not be compiled", filepath);
 			
 			onion_response_printf(res, "Interlocker file %s could not be compiled", filepath);
@@ -446,6 +497,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		const int interlocker_slot = dyn_containers_get_free_interlocker_slot();
 		if (interlocker_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
+			remove_interlocker_files(libname);
+
 			syslog_server(LOG_ERR, "Request: Upload - no available interlocker slot");
 			
 			onion_response_printf(res, "No available interlocker slot");
@@ -453,8 +506,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 
-		snprintf(final_filepath, sizeof(final_filepath), "%s/libinterlocker_%s", interlocker_dir, filename);
-		remove_file_extension(filepath, final_filepath, ".bahn");
+		snprintf(filepath, sizeof(filepath), "%s/%s", interlocker_dir, libname);
 		dyn_containers_set_interlocker(interlocker_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		return OCS_PROCESSED;

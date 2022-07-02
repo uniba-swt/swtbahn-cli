@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "param_verification.h"
 
@@ -83,14 +84,14 @@ int params_check_state(const char *data_state) {
 	return state;
 }
 
-int params_check_route_id(const char *data_route_id) {
+const char *params_check_route_id(const char *data_route_id) {
 	int route_id;
 	char *end_route_id;
 	if (data_route_id == NULL || (route_id = strtol(data_route_id, &end_route_id, 10)) < 0 ||
 	    *end_route_id != '\0') {
-		return -1;
+		return "";
 	}
-	return route_id;
+	return data_route_id;
 }
 
 bool params_check_is_number(const char *string) {
@@ -102,5 +103,27 @@ bool params_check_is_number(const char *string) {
 	strtod(string, &p);
 	
 	return (*p == '\0');
+}
+
+bool params_check_is_bool_string(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)){
+		return false;
+	} else if (strcmp("false",string) || strcmp("False",string) || strcmp("FALSE",string)
+		|| strcmp("true",string) || strcmp("True",string) || strcmp("TRUE",string)){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool params_check_verification_state(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)){
+		return false;
+	} else if (strcmp("false",string) || strcmp("False",string) || strcmp("FALSE",string)){
+		return false;
+	} else if (strcmp("true",string) || strcmp("True",string) || strcmp("TRUE",string)){
+		return true;
+	}
+	return false;
 }
 

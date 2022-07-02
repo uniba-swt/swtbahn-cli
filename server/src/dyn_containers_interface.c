@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <glib.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 
 #include "dyn_containers_interface.h"
 #include "handler_admin.h"
@@ -118,7 +118,7 @@ void dyn_containers_reset_interface(
 // Execute the outputs of the train engines and interlockers via the BiDiB library
 static void *dyn_containers_actuate(void *_) {
 	while (!running) {
-		// Empty
+		// Busy wait
 	}
 	
 	do {
@@ -376,8 +376,7 @@ int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train,
 	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		struct t_train_engine_instance_io * const train_engine_instance_io = 
 		    &dyn_containers_interface->train_engine_instances_io[i];
-		int instance_in_use = train_engine_instance_io->output_in_use; 
-		if (!instance_in_use) {
+		if (!train_engine_instance_io->output_in_use) {
 			train_engine_instance_io->input_grab = true;
 			train_engine_instance_io->input_train_engine_type = train_engine_type;
 			train_engine_instance_io->input_requested_speed = 0;
@@ -386,8 +385,7 @@ int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train,
 
 			do {
 				usleep(let_period_us);
-				instance_in_use = train_engine_instance_io->output_in_use;
-			} while (!instance_in_use);
+			} while (!train_engine_instance_io->output_in_use);
 			
 			pthread_mutex_lock(&dyn_containers_mutex);
 			train_engine_instance_io->input_grab = false;
@@ -416,11 +414,9 @@ void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_i
 	train_engine_instance_io->input_release = true;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 
-	int instance_in_use = true;
 	do {
 		usleep(let_period_us);
-		instance_in_use = train_engine_instance_io->output_in_use;
-	} while (instance_in_use);
+	} while (train_engine_instance_io->output_in_use);
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	train_engine_instance_io->input_release = false;
@@ -569,8 +565,7 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlock
 	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		struct t_interlocker_instance_io * const interlocker_instance_io = 
 		    &dyn_containers_interface->interlocker_instances_io[i];
-		int instance_in_use = interlocker_instance_io->output_in_use; 
-		if (!instance_in_use) {
+		if (!interlocker_instance_io->output_in_use) {
 			interlocker_instance_io->input_grab = true;
 			interlocker_instance_io->input_interlocker_type = interlocker_type;
 			interlocker_instance_io->input_reset = false;
@@ -578,8 +573,7 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlock
 
 			do {
 				usleep(let_period_us);
-				instance_in_use = interlocker_instance_io->output_in_use;
-			} while (!instance_in_use);
+			} while (!interlocker_instance_io->output_in_use);
 			
 			pthread_mutex_lock(&dyn_containers_mutex);
 			interlocker_instance_io->input_grab = false;
@@ -608,11 +602,9 @@ void dyn_containers_free_interlocker_instance(t_interlocker_data * const interlo
 	interlocker_instance_io->input_release = true;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 
-	int instance_in_use = true;
 	do {
 		usleep(let_period_us);
-		instance_in_use = interlocker_instance_io->output_in_use;
-	} while (instance_in_use);
+	} while (interlocker_instance_io->output_in_use);
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_release = false;

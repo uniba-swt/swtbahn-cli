@@ -8,6 +8,9 @@ swtbahn-config.yml
 .DS_Store
 .idea
 **/cmake-build-debug/
-**.cache
-**.vscode
+
 server/src/.vscode/
+
+**/.vscode
+**/.cache
+**.project

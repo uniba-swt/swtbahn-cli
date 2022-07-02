@@ -41,10 +41,13 @@ int params_check_calibrated_speed(const char *data_speed);
 
 int params_check_state(const char *data_state);
 
-int params_check_route_id(const char *data_route_id);
+const char *params_check_route_id(const char *data_route_id);
 
 bool params_check_is_number(const char *string);
 
+bool params_check_is_bool_string(const char *string);
+
+bool params_check_verification_state(const char *string);
 
 #endif	// SWTSERVER_HANDLER_ADMIN_H
 

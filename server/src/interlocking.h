@@ -49,7 +49,7 @@ typedef struct {
  * source signal of the route
  * destination signal of the route
  * orientation of train at the start of the route
- * path of the route, consisting of track segments
+ * path of the route, consisting of track segments and signals
  * points within the route and their required position
  * signals within the route
  * conflicting routes
@@ -61,7 +61,7 @@ typedef struct {
     char *destination;
     char *orientation;
     float length;
-    GArray *path;       // g_array_index(route->path, char *, segment_index)
+    GArray *path;       // g_array_index(route->path, char *, item_index)
     GArray *sections;   // g_array_index(route->sections, char *, segment_index)
     GArray *points;     // g_array_index(route->points, t_interlocking_point, point_index)
     GArray *signals;    // g_array_index(route->signals, char *, signal_index)
@@ -106,7 +106,7 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
  * @param route_id route
  * @return the route pointer if it exists, otherwise NULL
  */
-t_interlocking_route *get_route(int route_id);
+t_interlocking_route *get_route(const char *route_id);
 
 #endif // INTERLOCKING_H
 

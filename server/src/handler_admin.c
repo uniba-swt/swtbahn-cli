@@ -26,16 +26,18 @@
  */
 
 #include <onion/onion.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <stdio.h>
 
 #include "server.h"
+#include "handler_upload.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "interlocking.h"
 #include "dyn_containers_interface.h"
+#include "param_verification.h"
 #include "bahn_data_util.h"
 
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -77,6 +79,12 @@ static bool start_bidib(void) {
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
 		syslog_server(LOG_ERR, "Request: Start - Could not start BiDiB serial connection");
+		return false;
+	}
+	
+	const int succ_clear_dir = clear_engine_dir() + clear_interlocker_dir();
+	if (!succ_clear_dir) {
+		syslog_server(LOG_ERR, "Request: Start - Could not clear the engine and interlocker directories");
 		return false;
 	}
 
@@ -138,9 +146,9 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	                                          OR_METHODS) == OR_POST)) {
 		session_id = 0;
 		syslog_server(LOG_NOTICE, "Request: Stop");
-		running = false;
 		free_all_grabbed_trains();
 		free_all_interlockers();
+		running = false;
 		dyn_containers_stop();
 		bahn_data_util_free_config();
 		pthread_join(poll_bidib_messages_thread, NULL);
@@ -174,6 +182,24 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Set track output - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_set_verification(void *_, onion_request *req,
+																onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)){
+		const char *data_verifier_enabled = onion_request_get_post(req, "verifier-enabled");
+		if(data_verifier_enabled == NULL || !params_check_is_bool_string(data_verifier_enabled)){
+			syslog_server(LOG_ERR, "Request: Set verification - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		syslog_server(LOG_NOTICE, "Request: Set verification: %s", data_verifier_enabled);
+		verification_enabled = params_check_verification_state(data_verifier_enabled);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Set verification - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

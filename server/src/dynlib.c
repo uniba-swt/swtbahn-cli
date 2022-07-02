@@ -19,7 +19,8 @@ static const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 static const char sccharts_compiler_c_command[] = "java -jar \"$KIELER_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.priority";
 static const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
-static const char bahndsl_compiler_command[] = "bahnc -o %s -m library";
+static const char bahndsl_compiler_command[] = "bahnc -o %s/bahnc -m library %s/%s.bahn";
+static const char bahndsl_move_command[] = "mv %s/bahnc/libinterlocker_%s.so %s/libinterlocker_%s.so";
 
 dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);
 dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library);
@@ -64,15 +65,15 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	const char *filename = basename(filepath_copy);
 	
 	// Compile the BahnDSL model to a shared library
-	char command1[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command1, bahndsl_compiler_command, output_dir);
+	char command[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
+	sprintf(command, bahndsl_compiler_command, output_dir, output_dir, filename);	
+	int ret = system(command);
+	if (ret == -1 || WEXITSTATUS(ret) != 0) {
+		return DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;
+	}
 	
-	char command2[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command2, "%s %s/%s.bahn", 
-			command1, 
-			output_dir, filename);
-	
-	const int ret = system(command2);
+	sprintf(command, bahndsl_move_command, output_dir, filename, output_dir, filename);
+	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
 		return DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;
 	}
