@@ -160,6 +160,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "admin/startup", handler_startup);
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
+	onion_url_add(urls, "admin/set-verification", handler_set_verification);
 	
 	// --- track controller functions ---
 	onion_url_add(urls, "controller/release-route", handler_release_route);

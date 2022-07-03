@@ -5,16 +5,16 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS -Wall)
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
-include(FindPkgConfig)
+find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-pkg_check_modules(libonion onion REQUIRED)
+pkg_check_modules(libonion REQUIRED onion)
 include_directories(${LIBONION_INCLUDE_DIRS})
 
 # Include bibib libraries. Relies on Bidib having been installed prior.
-pkg_check_modules(libbidib bidib REQUIRED)
-pkg_check_modules(libbidib_static bidib_static REQUIRED)
+pkg_check_modules(libbidib REQUIRED IMPORTED_TARGET bidib)
+pkg_check_modules(libbidib_static REQUIRED IMPORTED_TARGET bidib_static)
 include_directories(${LIBBIDIB_INCLUDE_DIRS})
 
 file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
@@ -54,11 +54,11 @@ add_custom_target(
 
 add_library(${FOREC_MAIN} SHARED ${SRCFILES} ${FOREC_MAIN}.c)
 target_include_directories(${FOREC_MAIN} PRIVATE SYSTEM src)
-target_link_libraries(${FOREC_MAIN} bidib onion)
+target_link_libraries(${FOREC_MAIN} PRIVATE bidib onion)
 
 add_library(${FOREC_MAIN}_static STATIC ${SRCFILES} ${FOREC_MAIN}.c)
 target_include_directories(${FOREC_MAIN}_static PRIVATE SYSTEM src)
-target_link_libraries(${FOREC_MAIN}_static bidib_static onion_static)
+target_link_libraries(${FOREC_MAIN}_static PRIVATE bidib_static onion_static)
 
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion pam gnutls gcrypt pthread

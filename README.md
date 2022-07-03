@@ -17,6 +17,7 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
 * ForeC command line compiler: [forec](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
+  * Path to the folder that contains the kico.jar has to be defined in the environment variable `KIELER_PATH`
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
 
 #### Client
@@ -26,8 +27,7 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 
 ## Build
 1. Clone the repository
-2. Adjust `server/CMakeLists.txt` according to your installations of the
-dependencies
+2. Install the necessary dependencies (remember to run `ldconfig` after `make install` for libbidib if you are on Linux)
 3. Navigate to the directory where the build files should be generated
 4. Execute `cmake <path-to-project-root>/server`
 5. Execute `make`
