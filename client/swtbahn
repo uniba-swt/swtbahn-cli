@@ -741,7 +741,7 @@ def get_peripherals():
             click.echo(e, err=True)
 
 
-# --- assign commands to goups ---
+# --- assign commands to groups ---
 
 cli.add_command(config)
 cli.add_command(admin)
