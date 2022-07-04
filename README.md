@@ -15,7 +15,7 @@ libbidib project.
 * Libraries: [onion](https://github.com/uniba-swt/onion), libpam, libgnutls,
 libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
-* ForeC command line compiler: [forec](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
+* ForeC command line compiler: [forecc](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
 
