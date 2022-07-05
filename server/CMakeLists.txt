@@ -39,6 +39,8 @@ IF (APPLE)
 	set(LIBRARY_DIR /Users/eugeneyip/Documents/SWTbahn/Software)
 	include_directories(${LIBRARY_DIR}/onion/src)
 	link_directories(${LIBRARY_DIR}/onion/bin/src/onion)
+ELSE ()
+	set(LIBRARY_DIR /home/pi/SWTbahn)
 ENDIF (APPLE)
 
 file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
