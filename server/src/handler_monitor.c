@@ -113,7 +113,6 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
-
 }
 
 onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
@@ -253,7 +252,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get points - system not running or wrong "
-			          "request type");
+		              "request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -283,7 +282,7 @@ onion_connection_status handler_get_signals(void *_, onion_request *req,
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get signals - system not running or wrong "
-			          "request type");
+		              "request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -383,7 +382,7 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 						                       j != 0 ? ", " : "", id_query.id);
 					} else {
 						g_string_append_printf(segments, "%s%s",
-						                       j != 0 ? ", " : "", "unkown");
+						                       j != 0 ? ", " : "", "unknown");
 					}
 					bidib_free_id_query(id_query);
 				}
