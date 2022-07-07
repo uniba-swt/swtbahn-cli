@@ -25,6 +25,7 @@
  * - Eugene Yip <https://github.com/eyip002>
  *
  */
+ 
 
 #include <onion/onion.h>
 #include <onion/shortcuts.h>
@@ -35,10 +36,10 @@
 #include <limits.h>
 #include <dirent.h>
 
+#include "handler_upload.h"
 #include "server.h"
 #include "dynlib.h"
 #include "dyn_containers_interface.h"
-#include "mongoose.h"
 
 static const char engine_dir[] = "engines";
 static const char engine_extensions[][5] = { "c", "h", "sctx" };
@@ -136,132 +137,174 @@ bool engine_is_unremovable(const char name[]) {
 	return result;
 }
 
-struct ws_verif_data {
-	bool started;
-	bool finished;
-	bool success;
-	GString* file_path;
-	//Can also pass the verifier return message/logs over this struct in the future
-};
-
-
-// Print websocket response and signal that we're done
-static void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
-	//syslog_server(LOG_INFO, "Websock Callback");
-	if (ev == MG_EV_ERROR) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_ERROR");
-		// On error, log error message
-		syslog_server(LOG_ERR, "Request: Upload - Websocket callback encountered error: %s", (char *) ev_data);
-	} else if (ev == MG_EV_WS_OPEN) {
-		// Debug Log
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_OPEN");
-		// Read sctx model from file and send that as the message.
-		//https://stackoverflow.com/a/174743
-		char* buffer = NULL;
-		size_t length;
-		FILE* fp = fopen((*(struct ws_verif_data *) fn_data).file_path->str, "r");
-		if(fp){
-			ssize_t bytes_read_count = getdelim( &buffer, &length, '\0', fp);
-			if (bytes_read_count != -1){
-				//- Create escaped version of the GString that represents the model file
-				//- Create message in the (json)syntax that the verification server wants
-				gchar* g_c_escaped = g_strescape(buffer, NULL);
-				GString* g_fullmsg = g_string_new("");
-				g_string_append_printf(g_fullmsg, "{\"sctx\":\"%s\"}", g_c_escaped);
-				free(g_c_escaped);
-				
-				//Send verification request
-				if(g_fullmsg != NULL){
-					syslog_server(LOG_INFO, "Request: Upload - Now sending verification request to swtbahn-verifier");
-					mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
-				} else {
-					syslog_server(LOG_ERR, "Request: Upload - Websocket msg payload setup has gone wrong");
-				}
-				g_string_free(g_fullmsg, true);
-				free(buffer);
-			} else {
-				syslog_server(LOG_ERR, "Request: Upload - Websocket callback could not load the model file");
-			}
+void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr) {
+	// Read sctx model from file and send that as the message. https://stackoverflow.com/a/174743
+	char* buffer = NULL;
+	size_t length;
+	FILE* fp = fopen((*ws_data_ptr).file_path->str, "r");
+	GString* g_fullmsg = g_string_new("");
+	if (fp) {
+		ssize_t bytes_read_count = getdelim(&buffer, &length, '\0', fp);
+		if (bytes_read_count != -1) {
+			//- Create escaped version of the GString that represents the model file
+			//- Create message in the (json)syntax that the verification server wants
+			gchar* g_c_escaped = g_strescape(buffer, NULL);
+			g_string_append_printf(g_fullmsg, "{\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_START\",");
+			g_string_append_printf(g_fullmsg, "\"sctx\":\"%s\"}", g_c_escaped);
+			free(g_c_escaped);
+			free(buffer);
 		} else {
-			syslog_server(LOG_ERR, "Request: Upload - Unable to open engine model file to be uploaded");
+			syslog_server(LOG_ERR, "Request: Upload - Websocket callback could not load the model file");
+			ws_data_ptr->finished = true;
+			ws_data_ptr->success = false;
 		}
-	} else if (ev == MG_EV_WS_MSG) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_MSG - 1");
-		// Got Response
-		struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_MSG - 2");
-		
-		//Check if the response contains that status field -> if yes, it's the verification result
-		char* isResult = strstr(wm->data.ptr, "\"status\":");
-		char* isStartMsg = strstr(wm->data.ptr, "\"requestState\":\"starting\"");
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_MSG - 3");
-		syslog_server(LOG_INFO,"Received: %s\n", wm->data.ptr);
-		if (isResult){	
-			syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_MSG - 3.A");
-			//Check how the verification went by searching for the occurence of "status":true 
-			char* ret = strstr(wm->data.ptr, "\"status\":true");
-			syslog_server(LOG_INFO,"%s",wm->data.ptr);
-			if(ret){
-				syslog_server(LOG_INFO, "Request: Upload - Verification successful (result positive)");
-				(*(struct ws_verif_data *) fn_data).success = true;
-			} else {
-				syslog_server(LOG_INFO, "Request: Upload - Verification not successful (result negative)");
-				(*(struct ws_verif_data *) fn_data).success = false;
-			}
-			(*(struct ws_verif_data *) fn_data).finished = true;
-		} else if (isStartMsg) {
-			syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_MSG - 3.B");
-			syslog_server(LOG_INFO, "Websock Callback - Verification Started");
-			(*(struct ws_verif_data *) fn_data).started = true;
-		} else {
-			syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_MSG - 3.C");
-		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Upload - Unable to open engine model file to be uploaded");
+		ws_data_ptr->finished = true;
+		ws_data_ptr->success = false;
 	}
-	if (ev == MG_EV_ERROR){
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_ERROR");
-		//If an error is encountered, the verification can't be completed -> success false; finished true.
-		(*(struct ws_verif_data *) fn_data).success = false;
-		(*(struct ws_verif_data *) fn_data).finished = true;
-	} else if (ev == MG_EV_CLOSE) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_CLOSE");
-		syslog_server(LOG_INFO, "Request: Upload - Now closing websocket connection to swtbahn-verifier");
-		(*(struct ws_verif_data *) fn_data).finished = true;
-	} else if (ev == MG_EV_OPEN) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_CLOSE");
-	} else if (ev == MG_EV_POLL) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_POLL");
-	} else if (ev == MG_EV_RESOLVE) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_RESOLVE");
-	} else if (ev == MG_EV_CONNECT) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_CONNECT");
-	} else if (ev == MG_EV_ACCEPT) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_ACCEPT");
-	} else if (ev == MG_EV_READ) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_READ");
-	} else if (ev == MG_EV_WRITE) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_WRITE");
-	} else if (ev == MG_EV_HTTP_MSG) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_HTTP_MSG");
-	} else if (ev == MG_EV_HTTP_CHUNK) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_HTTP_CHUNK");
-	} else if (ev == MG_EV_WS_CTL) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_WS_CTL");
-	} else if (ev == MG_EV_SNTP_TIME) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_SNTP_TIME");
-	} else if (ev == MG_EV_USER) {
-		syslog_server(LOG_INFO, "Websock Callback - MG_EV_USER");
+	//Send verification request
+	if(g_fullmsg != NULL && g_fullmsg->len > 0){
+		syslog_server(LOG_INFO, "Request: Upload - Now sending verification request to swtbahn-verifier");
+		mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
+	} else {
+		syslog_server(LOG_ERR, "Request: Upload - Websocket msg payload setup has gone wrong");
+		ws_data_ptr->finished = true;
+		ws_data_ptr->success = false;
+	}
+	g_string_free(g_fullmsg, true);
+}
+
+void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, ws_verif_data* ws_data_ptr) {
+	//Parses mg_ws_message, which is expected to contain a message from the verification server.
+	//Then adjusts ws_data_ptr struct according to server's message.
+	
+	char* msg_type_is_defined = strstr(wm->data.ptr, "__MESSAGE_TYPE__");
+	if (!msg_type_is_defined) {
+		//Message type field not specified, stop.
+		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown format");
+		return;
+	}
+	
+	char* type_verif_req_rec = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RECEIVED\"");
+	char* type_verif_req_result = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RESULT\"");
+	
+	if (type_verif_req_rec) {
+		syslog_server(LOG_WARNING, "Request: Upload - Verification Server started verification");
+		ws_data_ptr->started = true;
+	} else if (type_verif_req_result) {
+		//Parse result
+		char* verif_success = strstr(wm->data.ptr, "\"status\":true");
+		if (verif_success) {
+			syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
+												" verification success");
+			ws_data_ptr->success = true;
+			ws_data_ptr->finished = true;
+		}
+		char* verif_fail = strstr(wm->data.ptr, "\"status\":false");
+		ws_data_ptr->success = false;
+		ws_data_ptr->finished = true;
+		if (!verif_fail){
+			//No 'status' field in answer. Stop with fail
+			syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
+												" verification status not specified");
+			return;
+		}
+		//Save server's reply (to forward to client lateron)
+		syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished, verification fail");
+		ws_data_ptr->srv_result_full_msg  = g_string_new("");
+		g_string_append_printf(ws_data_ptr->srv_result_full_msg,"%s",wm->data.ptr);
+	} else {
+		//Unknown message type specified by the server.
+		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown msg type");
 	}
 }
 
-onion_connection_status handler_upload_engine(void *_, onion_request *req,
-                                              onion_response *res) {
+
+// Print websocket response and signal that we're done
+void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
+	//syslog_server(LOG_INFO, "Websock Callback");
+	ws_verif_data* ws_data_ptr = fn_data;
+	
+	if (ev == MG_EV_ERROR) {
+		syslog_server(LOG_ERR, "Request: Upload - Websocket callback encountered error: %s", (char *) ev_data);
+		//If an error is encountered, the verification can't be completed -> success false; finished true.
+		(*ws_data_ptr).success = false;
+		(*ws_data_ptr).finished = true;
+	} else if (ev == MG_EV_WS_OPEN) {
+		send_verif_req_message(c, ws_data_ptr);
+	} else if (ev == MG_EV_WS_MSG) {
+		struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
+		process_verif_server_reply(c, wm, ws_data_ptr);
+	}
+	if (ev == MG_EV_ERROR){
+
+	} else if (ev == MG_EV_CLOSE) {
+		syslog_server(LOG_INFO, "Request: Upload - Now closing websocket connection to swtbahn-verifier");
+		(*ws_data_ptr).finished = true;
+	}
+}
+
+bool verify_engine_model(const char* f_filepath) {
+	struct mg_mgr mgr;
+	ws_verif_data ws_verifData;
+	ws_verifData.started 	= false;
+	ws_verifData.finished 	= false;
+	ws_verifData.success 	= false;
+	ws_verifData.file_path 	= g_string_new(f_filepath);
+	ws_verifData.srv_result_full_msg = NULL;
+	
+	// Client connection
+	struct mg_connection *c;
+	
+	// Initialise event manager
+	mg_mgr_init(&mgr);
+	
+	// Create client
+	c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
+	
+	const unsigned int single_poll_length = 250;
+	const unsigned int max_polls = 60;
+	unsigned int poll_counter = 0;
+	
+	// Wait for Verification to end
+	while (c && ws_verifData.finished == false) {
+		mg_mgr_poll(&mgr, single_poll_length); // Wait for reply
+		
+		// Check if verification has started yet
+		if (++poll_counter > max_polls && !ws_verifData.started){ 
+			//poll_counter *  milliseconds passed without verification start
+			ws_verifData.finished = true;
+			ws_verifData.success = false;
+			syslog_server(LOG_WARNING, 
+							"Request: Upload - engine verification - Verification did not start within %d ms, abort", 
+							(poll_counter * single_poll_length));
+		}
+	}
+	
+	if(c && !c->is_closing){
+		//If connection is not yet closing, send close. After that, one more event poll has to be performed,
+		// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
+		mg_ws_send(c, "0", 1, 1000);
+		mg_mgr_poll(&mgr, 1000);
+	}
+	mg_mgr_free(&mgr); // Deallocate resources
+
+	//Free string allocated for loading model file and srv result message (the latter is situational)
+	g_string_free(ws_verifData.file_path, true);
+	if(ws_verifData.srv_result_full_msg != NULL){
+		g_string_free(ws_verifData.srv_result_full_msg, true);
+	}
+	return ws_verifData.success;
+}
+
+onion_connection_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	printf("1 - handler_upload_engine\n");
-	//if (/*running &&*/ ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
-		printf("2 - handler_upload_engine\n");
+		
 		if (filename == NULL || temp_filepath == NULL) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file is invalid");
 			
@@ -269,7 +312,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
-		printf("3 - handler_upload_engine\n");
+		
  		if (engine_file_exists(filename)) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file already exists");
 			
@@ -277,7 +320,6 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}  
-		printf("4 - handler_upload_engine\n");
 		
 		char filename_noextension[NAME_MAX];
 		remove_file_extension(filename_noextension, filename, ".sctx");
@@ -290,73 +332,19 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Upload - copied engine SCCharts file from %s to %s", 
 					  temp_filepath, final_filepath);
 
-		//BLuedtke: Now try to contact verification server and verify engine before proceeding
-		// Should we try to compile the model first? -> discuss
-		// Has to be done over websocket connection.
-		printf("5 - handler_upload_engine\n");
 		if(verification_enabled){
-			printf("5.1 - handler_upload_engine - Verification\n");
-			struct mg_mgr mgr;
-			struct ws_verif_data ws_verifData;
-			ws_verifData.started = false;
-			ws_verifData.finished = false;
-			ws_verifData.success = false;
-			ws_verifData.file_path = g_string_new(final_filepath);
-			// Client connection
-			struct mg_connection *c;
-			// Initialise event manager
-			mg_mgr_init(&mgr);
-			
-			printf("5.2 - handler_upload_engine - Verification\n");
-			// Create client
-			c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
-			unsigned int poll_counter = 0;
-			unsigned int single_poll_length = 1000;
-			unsigned int max_polls = 15;
-			while (c && ws_verifData.finished == false) {
-				mg_mgr_poll(&mgr, single_poll_length); // Wait for reply
-				///TODO: Add timeout here for when the Socket is never opened
-				//			- different than the timeout managed by the verification server
-				++poll_counter;
-				if(poll_counter > max_polls && !ws_verifData.started){ 
-					//poll_counter *  milliseconds passed without verification start
-					//Force stop
-					ws_verifData.finished = true;
-					ws_verifData.success = false; //or bypass verification alltogether?
-					syslog_server(LOG_ERR, 
-									"Request: Upload - engine verification - Verification did not start within %d ms, abort", 
-									(poll_counter * single_poll_length));
-				}
-			}
-			printf("5.3 - handler_upload_engine - Verification\n");
-			if(c && !c->is_closing){
-				//If connection is not yet closing, send close. After that, one more event poll has to be performed,
-				// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
-				mg_ws_send(c, "0", 1, 1000);
-				mg_mgr_poll(&mgr, 1000);
-			}
-			mg_mgr_free(&mgr); // Deallocate resources
-			printf("5.4 - handler_upload_engine - Verification\n");
-			//Free string allocated for loading model file
-			g_string_free(ws_verifData.file_path, true);
-			printf("5.5 - handler_upload_engine\n");
-			//Stop upload if verification did not succeed
-			if(!ws_verifData.success){
-				pthread_mutex_unlock(&dyn_containers_mutex);
+			if(!verify_engine_model(final_filepath)){
+				//Stop upload if verification did not succeed
 				syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
-				
 				onion_response_printf(res, "Engine verification failed");
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
 				return OCS_PROCESSED;
 			}
-			printf("5.6 - handler_upload_engine - Verification\n");
 		}
-		printf("6 - handler_upload_engine\n");
 		
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
 		const dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
-		printf("7 - handler_upload_engine\n");
 		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
 			remove_engine_files(libname);
 
@@ -368,30 +356,24 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
+		
 		syslog_server(LOG_NOTICE, "Request: Upload - engine %s compiled", filename);
-		printf("8 - handler_upload_engine\n");
 		pthread_mutex_lock(&dyn_containers_mutex);
-		printf("9 - handler_upload_engine\n");
 		const int engine_slot = dyn_containers_get_free_engine_slot();
-		printf("10 - handler_upload_engine\n");
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			remove_engine_files(libname);
-		
-			syslog_server(LOG_ERR, "Request: Upload - no available engine slot");
 			
+			syslog_server(LOG_ERR, "Request: Upload - no available engine slot");
 			onion_response_printf(res, "No available engine slot");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
-		printf("11 - handler_upload_engine\n");
+		
 		snprintf(filepath, sizeof(filepath), "%s/%s", engine_dir, libname);
-		printf("12 - handler_upload_engine\n");
 		dyn_containers_set_engine(engine_slot, filepath);
-		printf("13 - handler_upload_engine\n");
 		pthread_mutex_unlock(&dyn_containers_mutex);
-		printf("14 - handler_upload_engine\n");
-		return OCS_PROCESSED;			
+		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Upload - system not running or wrong request type");
 		

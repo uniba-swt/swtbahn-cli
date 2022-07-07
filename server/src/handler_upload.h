@@ -31,10 +31,26 @@
 
 #include <onion/types.h>
 #include <stdbool.h>
+#include <glib.h>
+#include "mongoose.h"
+
+typedef struct {
+	bool started;
+	bool finished;
+	bool success;
+	GString* file_path;
+	GString* srv_result_full_msg;
+} ws_verif_data;
 
 bool clear_engine_dir(void);
 
 bool clear_interlocker_dir(void);
+
+void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, ws_verif_data* ws_data_ptr);
+
+void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr);
+
+void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
 
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res);
