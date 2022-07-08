@@ -305,7 +305,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 onion_connection_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	
-	if (/*running &&*/ ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
 		
