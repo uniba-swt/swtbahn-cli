@@ -51,6 +51,9 @@ static const int interlocker_extensions_count = 1;
 
 static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/";
 
+static const unsigned int websocket_single_poll_length_ms = 250;
+static const unsigned int websocket_max_polls_before_start = 60;
+
 extern pthread_mutex_t dyn_containers_mutex;
 
 
@@ -263,22 +266,20 @@ bool verify_engine_model(const char* f_filepath) {
 	// Create client
 	c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
 	
-	const unsigned int single_poll_length = 250;
-	const unsigned int max_polls = 60;
 	unsigned int poll_counter = 0;
 	
 	// Wait for Verification to end
 	while (c && ws_verifData.finished == false) {
-		mg_mgr_poll(&mgr, single_poll_length); // Wait for reply
+		mg_mgr_poll(&mgr, websocket_single_poll_length_ms); // Wait for reply
 		
 		// Check if verification has started yet
-		if (++poll_counter > max_polls && !ws_verifData.started){ 
+		if (++poll_counter > websocket_max_polls_before_start && !ws_verifData.started){ 
 			//poll_counter *  milliseconds passed without verification start
 			ws_verifData.finished = true;
 			ws_verifData.success = false;
 			syslog_server(LOG_WARNING, 
 							"Request: Upload - engine verification - Verification did not start within %d ms, abort", 
-							(poll_counter * single_poll_length));
+							(poll_counter * websocket_single_poll_length_ms));
 		}
 	}
 	
@@ -591,7 +592,8 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
 		if (name == NULL || interlocker_is_unremovable(name)) {
-			syslog_server(LOG_ERR, "Request: Remove interlocker - interlocker name is invalid or interlocker is unremovable", name);
+			syslog_server(LOG_ERR, "Request: Remove interlocker - interlocker name "
+											"is invalid or interlocker is unremovable", name);
 			
 			onion_response_printf(res, "Interlocker name is invalid or interlocker is unremovable");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
