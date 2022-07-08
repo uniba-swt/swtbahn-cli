@@ -401,6 +401,9 @@ $(document).ready(
 				cache: false,
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
+					console.log("Upload Success:");
+					console.log(responseData);
+					console.log(textStatus);
 					refreshEnginesList();
 					$('#uploadResponse').parent().removeClass('alert-danger');
 					$('#uploadResponse').parent().addClass('alert-success');
@@ -408,9 +411,26 @@ $(document).ready(
 						.text('Engine ' + file.name + ' ready for use');
 				},
 				error: function (responseData, textStatus, errorThrown) {
+					console.log("Upload Error/Fail");
+					console.log(textStatus);
+					try {
+						var resJson = JSON.parse(responseData.responseText.toString(),null,2);
+						var msg = "Server Message: " + resJson["message"];
+						msg += "\nList of Properties:"
+						console.log("Resp Msg Type: " + resJson["__MESSAGE_TYPE__"]);
+						console.log("verifProps: " + resJson["verifiedproperties"]);
+						resJson["verifiedproperties"].forEach(element => {
+							msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
+						});
+						
+						$('#uploadResponse').text(msg);
+					} catch (e) {
+						console.log(e)
+						$('#uploadResponse').text("Engine Verification failed.");
+					}
 					$('#uploadResponse').parent().removeClass('alert-success');
 					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#uploadResponse').text(responseData.responseText);
+					
 				}
 			});
 		});

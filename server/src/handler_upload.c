@@ -28,6 +28,7 @@
  
 
 #include <onion/onion.h>
+#include <onion/response.h>
 #include <onion/shortcuts.h>
 #include <pthread.h>
 #include <sys/syslog.h>
@@ -248,7 +249,7 @@ void websock_verification_callback(struct mg_connection *c, int ev, void *ev_dat
 	}
 }
 
-bool verify_engine_model(const char* f_filepath) {
+verif_result verify_engine_model(const char* f_filepath) {
 	struct mg_mgr mgr;
 	ws_verif_data ws_verifData;
 	ws_verifData.started 	= false;
@@ -290,35 +291,37 @@ bool verify_engine_model(const char* f_filepath) {
 		mg_mgr_poll(&mgr, 1000);
 	}
 	mg_mgr_free(&mgr); // Deallocate resources
-
-	//Free string allocated for loading model file and srv result message (the latter is situational)
+	verif_result result_data;
+	result_data.success = ws_verifData.success;
+	result_data.srv_result_full_msg = ws_verifData.srv_result_full_msg;
+	//Free string allocated for loading model file
 	g_string_free(ws_verifData.file_path, true);
-	if(ws_verifData.srv_result_full_msg != NULL){
-		g_string_free(ws_verifData.srv_result_full_msg, true);
-	}
-	return ws_verifData.success;
+	//if(ws_verifData.srv_result_full_msg != NULL){
+	//	g_string_free(ws_verifData.srv_result_full_msg, true);
+	//}
+	return result_data;
 }
 
 onion_connection_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	if (/*running &&*/ ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
 		
 		if (filename == NULL || temp_filepath == NULL) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file is invalid");
 			
-			onion_response_printf(res, "Engine file is invalid");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine file is invalid");
 			return OCS_PROCESSED;
 		}
 		
  		if (engine_file_exists(filename)) {
 			syslog_server(LOG_ERR, "Request: Upload - engine file already exists");
 			
-			onion_response_printf(res, "Engine file already exists");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine file already exists");
 			return OCS_PROCESSED;
 		}  
 		
@@ -334,11 +337,17 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 					  temp_filepath, final_filepath);
 
 		if(verification_enabled){
-			if(!verify_engine_model(final_filepath)){
+			verif_result v_result = verify_engine_model(final_filepath);
+			if(!v_result.success){
 				//Stop upload if verification did not succeed
-				syslog_server(LOG_ERR, "Request: Upload - engine verification failed");
-				onion_response_printf(res, "Engine verification failed");
+				syslog_server(LOG_ERR, "Request: Upload - Engine verification failed");
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
+				if (v_result.srv_result_full_msg != NULL) {
+					onion_response_printf(res, "%s", v_result.srv_result_full_msg->str);
+					g_string_free(v_result.srv_result_full_msg, true);
+				} else {
+					onion_response_printf(res, "Engine Verification failed due to unknown reason.");
+				}
 				return OCS_PROCESSED;
 			}
 		}
@@ -352,9 +361,9 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled "
                                    "into a C file and then to a shared library", filepath);
 			
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine file %s could not be compiled into a C file "
                                        "and then a shared library", filepath);
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
 		
@@ -366,8 +375,8 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 			remove_engine_files(libname);
 			
 			syslog_server(LOG_ERR, "Request: Upload - no available engine slot");
-			onion_response_printf(res, "No available engine slot");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "No available engine slot");
 			return OCS_PROCESSED;
 		}
 		
@@ -378,8 +387,8 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 	} else {
 		syslog_server(LOG_ERR, "Request: Upload - system not running or wrong request type");
 		
-		onion_response_printf(res, "System not running or wrong request type");
 		onion_response_set_code(res, HTTP_BAD_REQUEST);
+		onion_response_printf(res, "System not running or wrong request type");
 		return OCS_PROCESSED;
 	}
 }

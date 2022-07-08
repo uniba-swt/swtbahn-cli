@@ -42,6 +42,11 @@ typedef struct {
 	GString* srv_result_full_msg;
 } ws_verif_data;
 
+typedef struct {
+   bool success;
+   GString* srv_result_full_msg;
+} verif_result;
+
 bool clear_engine_dir(void);
 
 bool clear_interlocker_dir(void);
@@ -51,6 +56,8 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr);
 
 void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
+
+verif_result verify_engine_model(const char* f_filepath);
 
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res);
