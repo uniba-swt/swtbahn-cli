@@ -9,7 +9,8 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
-
+	<script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
+	
 	<link rel="stylesheet" href="style.css" />
 
 	<script src="script.js"></script>
@@ -79,7 +80,9 @@
 					<br />
 
 					<div class="alert alert-info" role="alert">
-						<span id="uploadResponse"></span>
+						<pre id="uploadResponse"></pre>
+						<button id=verificationLogDownload type="button" class="btn btn-outline-secondary">Download Logs</button>
+						<button id=clearVerificationMsg type="button" class="btn btn-outline-secondary">Clear Message</button>
 					</div>
 				</div>
 

@@ -190,18 +190,14 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 onion_connection_status handler_set_verification(void *_, onion_request *req,
 																onion_response *res) {
 	build_response_header(res);
-	//if (/*running &&*/ ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)){
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)){
-		const char *data_verifier_enabled = onion_request_get_post(req, "verifier-enabled");
-		if(data_verifier_enabled == NULL || !params_check_is_bool_string(data_verifier_enabled)){
+		const char *data_verification_enabled = onion_request_get_post(req, "verification-enabled");
+		if(data_verification_enabled == NULL || !params_check_is_bool_string(data_verification_enabled)){
 			syslog_server(LOG_ERR, "Request: Set verification - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		}
-		if(params_check_is_bool_string(data_verifier_enabled)){
-			syslog_server(LOG_NOTICE, "data_verifier_enabled Param is a bool-like string");
-		}
-		syslog_server(LOG_NOTICE, "Request: Set verification: %s", data_verifier_enabled);
-		verification_enabled = params_check_verification_state(data_verifier_enabled);
+		syslog_server(LOG_NOTICE, "Request: Set verification: %s", data_verification_enabled);
+		verification_enabled = params_check_verification_state(data_verification_enabled);
 		if(verification_enabled) {
 			syslog_server(LOG_NOTICE, "Verification is enabled");
 		} else {

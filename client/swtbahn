@@ -186,18 +186,18 @@ def set_track_output(state):
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
-@click.command(help="Set the verifier to be enabled or disabled")
-@click.argument('verifier-enabled', type=click.Choice(['true', 'false']))
-def set_verification(verifier_enabled):
+@click.command(help="Set the verification to be enabled or disabled")
+@click.argument('verification-enabled', type=click.Choice(['true', 'false']))
+def set_verification(verification_enabled):
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/admin/set-verification",
-                                     data = {'verifier-enabled': verifier_enabled})
+                                     data = {'verification-enabled': verification_enabled})
             if (response.status_code == requests.codes.ok):
-                click.echo("Verifier set to " + verifier_enabled + "\n")
+                click.echo("verification set to " + verification_enabled + "\n")
             else:
                 click.echo("System not running!\n", err=True)
         except requests.exceptions.RequestException as e:
@@ -756,6 +756,23 @@ def get_peripherals():
             click.echo(e, err=True)
 
 
+@click.command(help="Get the status of the verification module")
+def get_verification():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.get(server + "/monitor/verification")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+
 # --- assign commands to goups ---
 
 cli.add_command(config)
@@ -796,6 +813,7 @@ monitor.add_command(get_point_aspects)
 monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
 monitor.add_command(get_peripherals)
+monitor.add_command(get_verification)
 
 
 

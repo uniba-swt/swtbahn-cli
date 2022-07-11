@@ -203,7 +203,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects);
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
 	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
-
+	onion_url_add(urls, "monitor/verification", handler_get_verification);
+	
 	onion_listen(o);
 	onion_free(o);
 	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");

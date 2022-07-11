@@ -51,6 +51,7 @@ static const char interlocker_extensions[][5] = { "bahn" };
 static const int interlocker_extensions_count = 1;
 
 static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/";
+//static const char verifier_url[] = "ws://127.0.0.1:8080/engineverification/"; //For development, local verification server.
 
 static const unsigned int websocket_single_poll_length_ms = 250;
 static const unsigned int websocket_max_polls_before_start = 60;
@@ -296,9 +297,6 @@ verif_result verify_engine_model(const char* f_filepath) {
 	result_data.srv_result_full_msg = ws_verifData.srv_result_full_msg;
 	//Free string allocated for loading model file
 	g_string_free(ws_verifData.file_path, true);
-	//if(ws_verifData.srv_result_full_msg != NULL){
-	//	g_string_free(ws_verifData.srv_result_full_msg, true);
-	//}
 	return result_data;
 }
 
@@ -341,6 +339,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 			if(!v_result.success){
 				//Stop upload if verification did not succeed
 				syslog_server(LOG_ERR, "Request: Upload - Engine verification failed");
+				remove_engine_files(libname);
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
 				if (v_result.srv_result_full_msg != NULL) {
 					onion_response_printf(res, "%s", v_result.srv_result_full_msg->str);

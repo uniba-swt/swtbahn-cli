@@ -3,11 +3,14 @@ var sessionId = 0;
 var grabId = -1;
 var trainId = '';
 var trainEngine = '';
+var verificationObj = {};
+var toggleInit = false;
 
 $(document).ready(
 	function () {
 		trackOutput = 'master';
-
+		$('#verificationLogDownload').hide();
+		$('#clearVerificationMsg').hide();
 		// Configuration
 		$('#pingButton').click(function () {
 			$('#pingResponse').text('Waiting');
@@ -338,6 +341,17 @@ $(document).ready(
 			});
 		} */
 
+		//From https://github.com/eligrey/FileSaver.js/wiki/FileSaver.js-Example
+		function SaveAsFile(t,f,m) {
+			try {
+				var b = new Blob([t],{type:m});
+				saveAs(b, f);
+			} catch (e) {
+				//window.open("data:"+m+"," + encodeURIComponent(t), '_blank','');
+				console.log("SaveAsFile Fail: " + e);
+			}
+	  	}
+		
 		$('#driveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
 			var routeId = $('#routeId').text();
@@ -375,7 +389,27 @@ $(document).ready(
 				$('#routeResponse').text('You must have a grabbed train!');
 			}
 		});
-
+		
+		$('#clearVerificationMsg').click(function () {
+			$('#verificationLogDownload').hide();
+			$('#clearVerificationMsg').hide();
+			$('#uploadResponse').text('');
+			$('#uploadResponse').parent().removeClass('alert-danger');
+		});
+		
+		$('#verificationLogDownload').click(function () {
+			//Create zip file that contains the logs
+			//then trigger download of that file.
+			try {
+				logList = "";
+				verificationObj["verifiedproperties"].forEach(element => {
+					logList += atob(element["verificationlog"]) + "\n\n";
+				});
+				SaveAsFile(logList, "verificationLogs.txt", "text/plain;charset=utf-8");
+			} catch (e) {
+				console.log(e);
+			}
+		});
 
 		// Custom Engines
 		$('#uploadEngineButton').click(function () {
@@ -401,39 +435,38 @@ $(document).ready(
 				cache: false,
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
-					console.log("Upload Success:");
-					console.log(responseData);
-					console.log(textStatus);
+					console.log("Upload Success");
 					refreshEnginesList();
 					$('#uploadResponse').parent().removeClass('alert-danger');
 					$('#uploadResponse').parent().addClass('alert-success');
-					$('#uploadResponse')
-						.text('Engine ' + file.name + ' ready for use');
+					$('#uploadResponse').text('Engine ' + file.name + ' ready for use');
+					$('#verificationLogDownload').hide();
+					$('#clearVerificationMsg').hide();
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					console.log("Upload Error/Fail");
-					console.log(textStatus);
+					console.log("Upload Failed");
 					try {
 						var resJson = JSON.parse(responseData.responseText.toString(),null,2);
 						var msg = "Server Message: " + resJson["message"];
 						msg += "\nList of Properties:"
-						console.log("Resp Msg Type: " + resJson["__MESSAGE_TYPE__"]);
-						console.log("verifProps: " + resJson["verifiedproperties"]);
 						resJson["verifiedproperties"].forEach(element => {
 							msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
 						});
-						
+						verificationObj = resJson;
 						$('#uploadResponse').text(msg);
+						$('#verificationLogDownload').show();
 					} catch (e) {
-						console.log(e)
-						$('#uploadResponse').text("Engine Verification failed.");
+						console.log("Perhaps Expected: " + e);
+						$('#uploadResponse').text(responseData.responseText.toString());
 					}
 					$('#uploadResponse').parent().removeClass('alert-success');
 					$('#uploadResponse').parent().addClass('alert-danger');
-					
+					$('#clearVerificationMsg').show();
 				}
 			});
 		});
+		
+		
 
 		function refreshEnginesList() {
 			$.ajax({
@@ -935,7 +968,70 @@ $(document).ready(
 			$('#uploadResponse').parent().removeClass('alert-danger');
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
-
+		
+		
+		// Admin
+		
+		// Initialize Toggle: Check if Verification is enabled and update toggle accordingly
+		$.ajax({
+			type: 'GET',
+			url: '/monitor/verification',
+			crossDomain: true,
+			dataType: 'text',
+			success: function (responseData, textStatus, jqXHR) {
+				try {
+					if (typeof responseData === 'string') {
+						if (responseData === "verification-enabled: true") {
+							//First option for Gecko/Firefox default; 
+							// second bootstrap setter is needed for some Chromium browsers
+							$('#verificationToggle').prop('checked',true);
+							$('#verificationToggle').bootstrapToggle('on');
+						} else if (responseData === "verification-enabled: false") {
+							$('#verificationToggle').prop('checked',false);
+							$('#verificationToggle').bootstrapToggle('off');
+						}
+					}
+					// Mark toggle initialized
+					toggleInit = true;
+				} catch (error) {
+					console.log("Get Verification encountered error: " + error);
+				}
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				// Mark as initialized on error as well, as else nothing about the toggle will work
+				toggleInit = true;
+				console.log("ERROR GET Verification: " + responseData);
+			}
+		});
+		
+		
+		// User changes toggle
+		$('#verificationToggle').change(function () {
+			if (!toggleInit) { //if not yet initialized, skip
+				return;
+			}
+			var toggleState = $('#verificationToggle').prop('checked');
+			// Send request to server to set verification accordingly.
+			$.ajax({
+				type: 'POST',
+				url: '/admin/set-verification',
+				crossDomain: true,
+				data: { 'verification-enabled': toggleState},
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					console.log((toggleState ? "Enabled" : "Disabled") + " verification.");
+					$('#verificationSettingResponse').parent().removeClass('alert-danger');
+					$('#verificationSettingResponse').parent().addClass('alert-success');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					console.log("Failed to " + (toggleState ? "enable" : "disable") + " verification.");
+					$('#verificationSettingResponse').parent().removeClass('alert-success');
+					$('#verificationSettingResponse').parent().addClass('alert-danger');
+				}
+			});
+		});
+		
+		
 	}
 );
 

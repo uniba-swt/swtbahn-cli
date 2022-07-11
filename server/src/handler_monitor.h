@@ -60,5 +60,8 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 onion_connection_status handler_get_peripherals(void *_, onion_request *req,
                                                 onion_response *res);
 
+onion_connection_status handler_get_verification(void *_, onion_request *req,
+                                                onion_response *res);
+
 #endif
 

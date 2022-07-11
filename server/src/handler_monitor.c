@@ -432,3 +432,19 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req,
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
+
+
+onion_connection_status handler_get_verification(void *_, onion_request *req,
+                                                onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
+		onion_response_printf(res, "verification-enabled: %s", 
+		                      verification_enabled ? "true" : "false");
+		syslog_server(LOG_NOTICE, "Request: Get verification");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get Verification Status - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
