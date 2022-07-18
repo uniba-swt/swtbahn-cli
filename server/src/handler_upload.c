@@ -195,30 +195,34 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 	char* type_verif_req_result = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RESULT\"");
 	
 	if (type_verif_req_rec) {
-		syslog_server(LOG_WARNING, "Request: Upload - Verification Server started verification");
+		syslog_server(LOG_NOTICE, "Request: Upload - Verification Server started verification");
 		ws_data_ptr->started = true;
 	} else if (type_verif_req_result) {
 		//Parse result
 		char* verif_success = strstr(wm->data.ptr, "\"status\":true");
 		if (verif_success) {
-			syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
-												" verification success");
+			syslog_server(LOG_NOTICE, "Request: Upload - Verification Server finished,"
+			                          " verification success");
 			ws_data_ptr->success = true;
 			ws_data_ptr->finished = true;
+		} else {
+			// Verification failed/unsuccessful
+			ws_data_ptr->success = false;
+			ws_data_ptr->finished = true;
+			//Differentiate between status:false and unspecified failure
+			char* verif_fail = strstr(wm->data.ptr, "\"status\":false");
+			if (!verif_fail){
+				//No 'status' field in answer. Stop with fail
+				syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
+													" verification status not specified");
+			} else {
+				// Ordinary failure
+				//Save server's reply (to forward to client lateron)
+				syslog_server(LOG_NOTICE, "Request: Upload - Verification Server finished, verification fail");
+				ws_data_ptr->srv_result_full_msg  = g_string_new("");
+				g_string_append_printf(ws_data_ptr->srv_result_full_msg,"%s",wm->data.ptr);
+			}
 		}
-		char* verif_fail = strstr(wm->data.ptr, "\"status\":false");
-		ws_data_ptr->success = false;
-		ws_data_ptr->finished = true;
-		if (!verif_fail){
-			//No 'status' field in answer. Stop with fail
-			syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
-												" verification status not specified");
-			return;
-		}
-		//Save server's reply (to forward to client lateron)
-		syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished, verification fail");
-		ws_data_ptr->srv_result_full_msg  = g_string_new("");
-		g_string_append_printf(ws_data_ptr->srv_result_full_msg,"%s",wm->data.ptr);
 	} else {
 		//Unknown message type specified by the server.
 		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown msg type");
@@ -226,9 +230,7 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 }
 
 
-// Print websocket response and signal that we're done
 void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
-	//syslog_server(LOG_INFO, "Websock Callback");
 	ws_verif_data* ws_data_ptr = fn_data;
 	
 	if (ev == MG_EV_ERROR) {
@@ -241,9 +243,6 @@ void websock_verification_callback(struct mg_connection *c, int ev, void *ev_dat
 	} else if (ev == MG_EV_WS_MSG) {
 		struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
 		process_verif_server_reply(c, wm, ws_data_ptr);
-	}
-	if (ev == MG_EV_ERROR){
-
 	} else if (ev == MG_EV_CLOSE) {
 		syslog_server(LOG_INFO, "Request: Upload - Now closing websocket connection to swtbahn-verifier");
 		(*ws_data_ptr).finished = true;
