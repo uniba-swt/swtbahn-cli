@@ -4,34 +4,49 @@ boards:
     segments:
       - id: seg1
         address: 0x01
+        length: 0.0cm
       - id: seg2
         address: 0x02
+        length: 0.0cm
       - id: seg3
         address: 0x03
+        length: 0.0cm
       - id: seg4
         address: 0x04
+        length: 0.0cm
       - id: seg5
         address: 0x05
+        length: 0.0cm
       - id: seg6
         address: 0x06
+        length: 0.0cm
       - id: seg7
         address: 0x07
+        length: 0.0cm
       - id: seg8
         address: 0x08
+        length: 0.0cm
       - id: seg9
         address: 0x09
+        length: 0.0cm
       - id: seg10
         address: 0x0A
+        length: 0.0cm
       - id: seg11
         address: 0x0B
+        length: 0.0cm
       - id: seg12
         address: 0x0C
+        length: 0.0cm
       - id: seg13
         address: 0x0D
+        length: 0.0cm
       - id: seg14
         address: 0x0E
+        length: 0.0cm
       - id: seg15
         address: 0x0F
+        length: 0.0cm
 
   - id: lightcontrol
     signals-board:
