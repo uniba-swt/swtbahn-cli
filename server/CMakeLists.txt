@@ -114,7 +114,7 @@ target_link_libraries(${FOREC_MAIN}_static bidib_static onion_static glib-2.0 ya
 
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion pam gnutls gcrypt pthread
-	glib-2.0 yaml bidib ${LINK_EV} ${FOREC_MAIN})
+	glib-2.0 yaml bidib ${LINK_EV} ${FOREC_MAIN} ${CMAKE_DL_LIBS})
 
 
 # Unit tests
