@@ -15,6 +15,44 @@ const allDestinationChoices = [
 	'destination3'
 ];
 
+var allPossibleDestinations = null;
+
+const allPossibleDestinationsSwtbahnUltraloop = {
+	'signal4': {
+		'destination2': 'signal1'
+	},
+	'signal5': {
+		'destination1': 'signal4'
+	},
+	'signal6': {
+		'destination1': 'signal7'
+	}
+};
+
+const allPossibleDestinationsSwtbahnStandard = {
+	'signal4': {
+		'destination2': 'signal1'
+	},
+	'signal5': {
+		'destination1': 'signal4'
+	},
+	'signal6': {
+		'destination1': 'signal7'
+	}
+};
+
+const allPossibleDestinationsSwtbahnFull = {
+	'signal4': {
+		'destination2': 'signal1'
+	},
+	'signal5': {
+		'destination1': 'signal4'
+	},
+	'signal6': {
+		'destination1': 'signal7'
+	}
+};
+
 const disabledButtonStyle = 'btn-outline-secondary';
 const destinationButtonStyle = {
 	'destination1': 'btn-dark',
@@ -22,24 +60,9 @@ const destinationButtonStyle = {
 	'destination3': 'btn-info'
 };
 
-
-var allPossibleDestinations = null;
-
-const allPossibleDestinationsSwtbahnUltraloop = {
-	'signal1': {
-		'destination1': 'signal2a',
-		'destination3': 'signal2b'
-	},
-	'signal2': {
-		'destination1': 'signal3'
-	},
-	'signal3': {
-		'destination1': 'signal1'
-	}
-};
-
 function disableAllDestinations() {
 	allDestinationChoices.forEach(choice => {
+		$(`#${choice}`).val("");
 		$(`#${choice}`).prop('disabled', true);
 		$(`#${choice}`).removeClass(destinationButtonStyle[choice]);
 		$(`#${choice}`).addClass(disabledButtonStyle);
@@ -226,9 +249,7 @@ function initialise() {
 	grabId = -1;
 	userId = 'Bob Jones';
 	trainId = 'cargo_db';
-	trainEngine = 'libtrain_engine_default (unremovable)';
-	
-	sourceSignal = 'signal1';
+	trainEngine = 'libtrain_engine_default (unremovable)';	
 
 	// Display the train name and user name.
 	$('#userDetails').html(`${userId} <br /> is driving ${trainId}`);
@@ -241,8 +262,16 @@ function initialise() {
 	$('#serverResponse').parent().hide();
 	
 	// Display the possible starting routes.
-	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
+	sourceSignal = 'signal5';
+	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 	updatePossibleRoutes();
+	
+	// Initialise the click handler of each destination button.
+	allDestinationChoices.forEach(choice => {
+		$(`#${choice}`).click(function () {
+			driveToDestination(`#${choice}`);
+		});
+	});
 }
 
 $(document).ready(
@@ -281,18 +310,6 @@ $(document).ready(
 			stopTrain().catch()
 				.then(releaseTrain).catch()
 				.then(releaseRoute);
-		});
-
-		$('#destination1').click(function () {
-			driveToDestination('#destination1');
-		});
-		
-		$('#destination2').click(function () {
-			driveToDestination('#destination2');
-		});
-		
-		$('#destination3').click(function () {
-			driveToDestination('#destination3');
 		});
 
 	}	
