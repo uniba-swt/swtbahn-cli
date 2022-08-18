@@ -1,0 +1,36 @@
+body {
+  font-family: UB Scala Sans, sans-serif;
+  margin: 20px;
+}
+
+#swtLogo {
+  background-image: url("swtbahn-logo.png");
+  background-repeat: no-repeat;
+  background-position: right;
+  background-size: auto 100px;
+  line-height: 100px;
+  color: #054479;
+  height: 100px;
+  width: 100%;
+}
+
+#userDetails {
+  font-size: 29pt;
+  font-weight: bold;
+  color: #054479;
+  height: 100px;
+}
+
+#routePreview img {
+  width: 200px;
+  height: 200px;
+  background: url("swtbahn-logo.png") 0 0;
+}
+
+#routePreview img:hover {
+  background: url("swtbahn-logo.png") 0 -200px;
+}
+
+#serverAlertBox {
+	height: 70px;
+}
