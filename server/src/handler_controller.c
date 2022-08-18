@@ -26,6 +26,7 @@
  *
  */
 
+#include <unistd.h>
 #include <onion/onion.h>
 #include <bidib.h>
 #include <pthread.h>
@@ -38,6 +39,9 @@
 #include "bahn_data_util.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+#define MICROSECOND 1
+static const int let_period_us = 100000 * MICROSECOND;	// 0.1 seconds
 
 static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] = {
 	{ .is_valid = false, .dyn_containers_interlocker_instance = -1 }
@@ -136,6 +140,7 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 
 	struct t_interlocker_instance_io interlocker_instance_io;	
 	do {
+		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_has_reset);
@@ -144,6 +149,7 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	                                              false);
 	
 	do {
+		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_terminated);
