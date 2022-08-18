@@ -105,10 +105,12 @@ static void route_information(void **state) {
 }
 
 static void point_position(void **state) {
-	char *position = config_get_point_position("0", "point11");
+	char *route_id_0 = "0"; 
+	char *position = config_get_point_position(route_id_0, "point11");
 	assert_string_equal(position, "normal");
 	
-	position = config_get_point_position("1", "point4");
+	char *route_id_1 = "1";
+	position = config_get_point_position(route_id_1, "point11");
 	assert_string_equal(position, "reverse");
 }
 
