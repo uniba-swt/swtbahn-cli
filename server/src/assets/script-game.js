@@ -256,8 +256,7 @@ function initialise() {
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
 	
-	// Set the initial source signal and possible destinations for the SWTbahn platform.
-	sourceSignal = 'signal3';
+	// Set the possible destinations for the SWTbahn platform.
 	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 	disableAllDestinations();
 	
@@ -267,6 +266,11 @@ function initialise() {
 			driveToDestination(`#${choice}`);
 		});
 	});
+}
+
+function resetSourceSignal() {
+	// Set the source signal for the train's starting position.
+	sourceSignal = 'signal3';
 }
 
 $(document).ready(
@@ -289,6 +293,8 @@ $(document).ready(
 			
 			setResponseSuccess('#serverResponse', 'Waiting ⏳');
 			
+			resetSourceSignal();
+			
 			grabTrain()
 				.then(updatePossibleRoutes);
 		});
@@ -305,7 +311,8 @@ $(document).ready(
 			
 			stopTrain().catch()
 				.then(releaseTrain).catch()
-				.then(releaseRoute);
+				.then(releaseRoute).catch()
+				.then(updatePossibleRoutes);
 		});
 
 	}	
