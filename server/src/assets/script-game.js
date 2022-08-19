@@ -17,41 +17,29 @@ const allDestinationChoices = [
 
 var allPossibleDestinations = null;
 
-const allPossibleDestinationsSwtbahnUltraloop = {
-	'signal4': {
-		'destination2': 'signal1'
-	},
-	'signal5': {
-		'destination1': 'signal4'
-	},
-	'signal6': {
-		'destination1': 'signal7'
-	}
-};
+const allPossibleDestinationsSwtbahnStandard = [
+	{ source: 'signal3', destinations: { 'destination1': 'signal6' } },
+	{ source: 'signal6', destinations: { 'destination2': 'signal14' } },
+	{ source: 'signal14', destinations: { 'destination3': 'signal19' } }
+];
 
-const allPossibleDestinationsSwtbahnStandard = {
-	'signal4': {
-		'destination2': 'signal1'
-	},
-	'signal5': {
-		'destination1': 'signal4'
-	},
-	'signal6': {
-		'destination1': 'signal7'
-	}
-};
+const allPossibleDestinationsSwtbahnFull = [
+	// Empty.
+];
 
-const allPossibleDestinationsSwtbahnFull = {
-	'signal4': {
-		'destination2': 'signal1'
-	},
-	'signal5': {
-		'destination1': 'signal4'
-	},
-	'signal6': {
-		'destination1': 'signal7'
+function getRoutes(sourceSignal) {
+	if (allPossibleDestinations == null) {
+		return { index: null, destinations: null };
 	}
-};
+	
+	const index = allPossibleDestinations.findIndex(element => (element.source == sourceSignal));
+	if (index == -1) {
+		return { index: null, destinations: null };
+	}
+		
+	const destinations = allPossibleDestinations.at(index).destinations;
+	return { index: index, destinations: destinations };
+}
 
 const disabledButtonStyle = 'btn-outline-secondary';
 const destinationButtonStyle = {
@@ -158,14 +146,21 @@ function releaseTrain() {
 
 function updatePossibleRoutes() {
 	disableAllDestinations();
-
-	const possibleDestinations = allPossibleDestinations[sourceSignal];
-	Object.keys(possibleDestinations).forEach(choice => {
-		$(`#${choice}`).val(possibleDestinations[choice]);
+	
+	const routes = getRoutes(sourceSignal);
+	if (routes.index == null) {
+		$('#routePreview').css('background-position', 'top -46% right');
+		return;
+	}
+	
+	Object.keys(routes.destinations).forEach(choice => {
+		$(`#${choice}`).val(routes.destinations[choice]);
 		$(`#${choice}`).prop('disabled', false);
 		$(`#${choice}`).addClass(destinationButtonStyle[choice]);
 		$(`#${choice}`).removeClass(disabledButtonStyle);
 	});
+	
+	$('#routePreview').css('background-position', `top ${46 * routes.index}% right`);
 }
 
 function requestRoute() {
@@ -261,10 +256,10 @@ function initialise() {
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
 	
-	// Display the possible starting routes.
-	sourceSignal = 'signal5';
+	// Set the initial source signal and possible destinations for the SWTbahn platform.
+	sourceSignal = 'signal3';
 	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
-	updatePossibleRoutes();
+	disableAllDestinations();
 	
 	// Initialise the click handler of each destination button.
 	allDestinationChoices.forEach(choice => {
@@ -294,7 +289,8 @@ $(document).ready(
 			
 			setResponseSuccess('#serverResponse', 'Waiting ⏳');
 			
-			grabTrain();
+			grabTrain()
+				.then(updatePossibleRoutes);
 		});
 
 		$('#endGameButton').click(function () {
