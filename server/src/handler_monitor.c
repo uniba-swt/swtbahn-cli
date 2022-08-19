@@ -86,13 +86,15 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 			
 				GString *ret_string = g_string_new("");
 				g_string_append_printf(ret_string, "on track: %s - orientation: %s"
-				                       " - speed step: %d - detected speed: %d km/h",
+				                       " - speed step: %d - detected speed: %d km/h - direction: %s",
 				                       train_state_query.data.on_track ? seg_string->str : "no",
 				                       (train_state_query.data.orientation ==
 				                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
 				                       "left" : "right",
 				                       train_state_query.data.set_speed_step,
-				                       train_state_query.data.detected_kmh_speed);
+				                       train_state_query.data.detected_kmh_speed,
+				                       train_state_query.data.set_is_forwards
+				                       ? "forwards" : "backwards");
 				bidib_free_train_state_query(train_state_query);
 				char response[ret_string->len + 1];
 				strcpy(response, ret_string->str);
