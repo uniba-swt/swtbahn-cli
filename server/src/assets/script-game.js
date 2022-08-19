@@ -119,7 +119,10 @@ function stopTrain() {
 			'speed': 0,
 			'track-output': trackOutput
 		},
-		dataType: 'text'
+		dataType: 'text',
+		error: function (responseData, textStatus, errorThrown) {
+			setResponseDanger('#serverResponse', 'There was a problem stopping your train 😢');
+		}
 	});
 }
 
@@ -225,13 +228,11 @@ function driveToDestination(destination) {
 	
 	setResponseSuccess('#serverResponse', 'Driving your train to your chosen destination ⏳');
 
-	disableAllDestinations();
 	destinationSignal = $(destination).val();
+	disableAllDestinations();
 
-	requestRoute().catch()
-		.then(driveRoute).catch()
-		.then(releaseRoute).catch()
-		.then(updatePossibleRoutes);
+	requestRoute().then(driveRoute)
+		.fail(releaseRoute).always(updatePossibleRoutes);
 }
 
 
@@ -270,6 +271,11 @@ function resetSourceSignal() {
 	sourceSignal = 'signal3';
 }
 
+// Wait for a duration in milliseconds.
+function wait(duration) { 
+	return new Promise(resolve => setTimeout(resolve, duration));
+}
+
 $(document).ready(
 	function () {
 		//-----------------------------------------------------
@@ -292,8 +298,7 @@ $(document).ready(
 			
 			resetSourceSignal();
 			
-			grabTrain()
-				.then(updatePossibleRoutes);
+			grabTrain().then(updatePossibleRoutes);
 		});
 
 		$('#endGameButton').click(function () {
@@ -306,10 +311,15 @@ $(document).ready(
 			
 			setResponseSuccess('#serverResponse', 'Waiting ⏳');
 			
-			stopTrain().catch()
-				.then(releaseTrain).catch()
-				.then(releaseRoute).catch()
-				.then(updatePossibleRoutes);
+			sourceSignal = null;
+			
+			stopTrain()
+				.then(() => wait(500))
+				.then(releaseTrain)
+				.always(() => { 
+					releaseRoute(); 
+					updatePossibleRoutes(); 
+				});
 		});
 
 	}	
