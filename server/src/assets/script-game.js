@@ -177,8 +177,6 @@ function requestRoute() {
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
 			routeId = responseData;
-			
-			disableAllDestinations();
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			routeId = null;
@@ -197,9 +195,6 @@ function driveRoute() {
 		success: function (responseData, textStatus, jqXHR) {
 			routeId = null;
 			sourceSignal = destinationSignal;
-			
-			updatePossibleRoutes();
-			
 			setResponseSuccess('#serverResponse', 'Train was driven to your chosen destination 🥳');
 		},
 		error: function (responseData, textStatus, errorThrown) {
@@ -230,11 +225,13 @@ function driveToDestination(destination) {
 	
 	setResponseSuccess('#serverResponse', 'Driving your train to your chosen destination ⏳');
 
+	disableAllDestinations();
 	destinationSignal = $(destination).val();
 
-	requestRoute()
-		.then(driveRoute)
-	.fail(releaseRoute);
+	requestRoute().catch()
+		.then(driveRoute).catch()
+		.then(releaseRoute).catch()
+		.then(updatePossibleRoutes);
 }
 
 
