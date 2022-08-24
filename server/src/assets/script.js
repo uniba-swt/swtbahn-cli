@@ -4,6 +4,7 @@ var grabId = -1;
 var trainId = '';
 var trainEngine = '';
 var trainIsForwards = true;
+var lastSetSpeed = 0;
 
 function updateTrainIsForwards() {
 	$.ajax({
@@ -195,7 +196,7 @@ $(document).ready(
 		$('#swapDirection').click(function () {
 			trainIsForwards = !trainIsForwards;
 			enteredSpeed = $('#dccSpeed').val();
-			$('#dccSpeed').val(speed);
+			$('#dccSpeed').val(lastSetSpeed);
 			$('#driveTrainButton').click();
 			$('#dccSpeed').val(enteredSpeed);
 		});
@@ -220,6 +221,7 @@ $(document).ready(
 						$('#driveTrainResponse').text('DCC train speed set to ' + speed);
 						$('#driveTrainResponse').parent().removeClass('alert-danger');
 						$('#driveTrainResponse').parent().addClass('alert-success');
+						lastSetSpeed = speed;
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#driveTrainResponse')
