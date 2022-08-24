@@ -205,7 +205,7 @@ $(document).ready(
 					$('#dccSpeed').val(enteredSpeed);
 				}, 100 /* milliseconds */);
 			} else {
-				$('#dccSpeed').val(lastSetSpeed);
+				$('#dccSpeed').val(Math.abs(lastSetSpeed));
 				$('#driveTrainButton').click();
 				$('#dccSpeed').val(enteredSpeed);
 			}
