@@ -19,6 +19,11 @@ pkg_check_modules(CMOCKA cmocka REQUIRED)
 include_directories(${CMOCKA_INCLUDE_DIRS})
 link_directories(${CMOCKA_LIBRARY_DIRS})
 
+# Include bibib libraries. Relies on Bidib having been installed prior.
+pkg_check_modules(libbidib REQUIRED IMPORTED_TARGET bidib)
+pkg_check_modules(libbidib_static REQUIRED IMPORTED_TARGET bidib_static)
+include_directories(${LIBBIDIB_INCLUDE_DIRS})
+
 IF (APPLE)
 	set(LIBRARY_DIR /usr/local/Cellar)
 
@@ -39,8 +44,26 @@ IF (APPLE)
 	set(LIBRARY_DIR /Users/eugeneyip/Documents/SWTbahn/Software)
 	include_directories(${LIBRARY_DIR}/onion/src)
 	link_directories(${LIBRARY_DIR}/onion/bin/src/onion)
+
+	set(LIBONION_DIR ${LIBRARY_DIR}/onion)
+	add_library(onion_static STATIC IMPORTED)
+	set_target_properties(onion_static PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
+		${LIBONION_DIR}/src)
+	set_target_properties(onion_static PROPERTIES IMPORTED_LOCATION
+		${LIBONION_DIR}/bin/src/onion/libonion_static${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+	add_library(onion SHARED IMPORTED)
+	set_target_properties(onion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
+		${LIBONION_DIR}/src)
+	set_target_properties(onion PROPERTIES IMPORTED_LOCATION
+		${LIBONION_DIR}/bin/src/onion/libonion${CMAKE_SHARED_LIBRARY_SUFFIX})
+	
+
 ELSE ()
-	set(LIBRARY_DIR /home/pi/SWTbahn)
+	pkg_check_modules(libonion REQUIRED IMPORTED_TARGET onion)
+	pkg_check_modules(libonion_static REQUIRED IMPORTED_TARGET onion_static)
+	include_directories(${LIBONION_INCLUDE_DIRS})
+
 ENDIF (APPLE)
 
 file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
@@ -48,35 +71,6 @@ file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines;${CMAKE_CURRENT_BINARY_DIR}/interlockers")
 
 
-# - - - - - - - - - - - - -
-# ADJUSTMENT SECTION BEGIN
-# - - - - - - - - - - - - -
-
-set(LIBONION_DIR ${LIBRARY_DIR}/onion)
-add_library(onion_static STATIC IMPORTED)
-set_target_properties(onion_static PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-	${LIBONION_DIR}/src)
-set_target_properties(onion_static PROPERTIES IMPORTED_LOCATION
-	${LIBONION_DIR}/bin/src/onion/libonion_static${CMAKE_STATIC_LIBRARY_SUFFIX})
-
-add_library(onion SHARED IMPORTED)
-set_target_properties(onion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-	${LIBONION_DIR}/src)
-set_target_properties(onion PROPERTIES IMPORTED_LOCATION
-	${LIBONION_DIR}/bin/src/onion/libonion${CMAKE_SHARED_LIBRARY_SUFFIX})
-
-set(LIBBIDIB_DIR ${LIBRARY_DIR}/libbidib)
-add_library(bidib_static STATIC IMPORTED)
-set_target_properties(bidib_static PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-	${LIBBIDIB_DIR}/include)
-set_target_properties(bidib_static PROPERTIES IMPORTED_LOCATION
-	${LIBBIDIB_DIR}/bin/libbidib_static${CMAKE_STATIC_LIBRARY_SUFFIX})
-
-add_library(bidib SHARED IMPORTED)
-set_target_properties(bidib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-	${LIBBIDIB_DIR}/include)
-set_target_properties(bidib PROPERTIES IMPORTED_LOCATION
-	${LIBBIDIB_DIR}/bin/libbidib${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 set(FOREC_MAIN dyn_containers)
 set(FOREC_SRC ${CMAKE_SOURCE_DIR}/src)
