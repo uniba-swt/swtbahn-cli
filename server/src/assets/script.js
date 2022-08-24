@@ -194,7 +194,10 @@ $(document).ready(
 		
 		$('#swapDirection').click(function () {
 			trainIsForwards = !trainIsForwards;
+			enteredSpeed = $('#dccSpeed').val();
+			$('#dccSpeed').val(speed);
 			$('#driveTrainButton').click();
+			$('#dccSpeed').val(enteredSpeed);
 		});
 
 		$('#driveTrainButton').click(function () {
@@ -233,10 +236,10 @@ $(document).ready(
 		});
 
 		$('#stopTrainButton').click(function () {
-			lastSpeed = $('#dccSpeed').val();
+			enteredSpeed = $('#dccSpeed').val();
 			$('#dccSpeed').val(0);
 			$('#driveTrainButton').click();
-			$('#dccSpeed').val(lastSpeed);
+			$('#dccSpeed').val(enteredSpeed);
 		});
 
 		$('#requestRouteButton').click(function () {
