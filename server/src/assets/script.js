@@ -4,7 +4,7 @@ var grabId = -1;
 var trainId = '';
 var trainEngine = '';
 var trainIsForwards = true;
-var lastSetSpeed = 0;
+var lastSetSpeed = 0;			// Only needed when swapping train direction
 
 function updateTrainIsForwards() {
 	$.ajax({
@@ -199,10 +199,16 @@ $(document).ready(
 			if (lastSetSpeed == 0) {
 				$('#dccSpeed').val(1);
 				$('#driveTrainButton').click();
+				$('#dccSpeed').val(0);
+				setTimeout(function() {
+					$('#driveTrainButton').click();
+					$('#dccSpeed').val(enteredSpeed);
+				}, 10);
+			} else {
+				$('#dccSpeed').val(lastSetSpeed);
+				$('#driveTrainButton').click();
+				$('#dccSpeed').val(enteredSpeed);
 			}
-			$('#dccSpeed').val(lastSetSpeed);
-			$('#driveTrainButton').click();
-			$('#dccSpeed').val(enteredSpeed);
 		});
 
 		$('#driveTrainButton').click(function () {
