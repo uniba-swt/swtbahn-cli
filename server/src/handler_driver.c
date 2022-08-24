@@ -26,7 +26,7 @@
  */
 
 #include <onion/onion.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <glib.h>
