@@ -502,10 +502,17 @@ module SWTbahnFull
     end
 
     blocks
+        # Anti-clockwise reading direction    
+    
         block1
             overlap seg1
             main seg2
             overlap seg3
+            limit 300km/h 
+            trains 
+                cargo 
+                passenger 
+            end
         block2
             overlap seg6
             main seg7a seg7b
@@ -561,6 +568,8 @@ module SWTbahnFull
     end
 
     platforms
+        # Anti-clockwise reading direction
+
         platform1           # block13
             overlap seg57
             main seg58
@@ -582,15 +591,13 @@ module SWTbahnFull
             main seg78a seg78b
             overlap seg79
         platform6           # block17
-            overlap seg74 
-            main seg75 
             overlap seg76
-            reversed
+            main seg75 
+            overlap seg74
         platform7           # block16
-            overlap seg71 
-            main seg72 
             overlap seg73
-            reversed
+            main seg72 
+            overlap seg71
     end
 
     crossings
@@ -599,6 +606,8 @@ module SWTbahnFull
     end
 
     layout
+        # Anti-clockwise reading direction
+
         # Blocks
         block1.down -- point7.straight
         block1.up -- point1.stem
@@ -733,82 +742,95 @@ module SWTbahnFull
       # point29 -   ""      ""
 
         # Signals
-        signal1 -- block1.down
-        signal2 -- block1.up      # TODO: Distant signal only
-        signal3 -- block1.down    # TODO: Distant signal only
-        signal4 -- block1.up
-        signal5 -- block2.down
-        signal6 -- block2.down    # TODO: Distant signal only
-        signal7 -- block2.up
-        signal8 -- block3.down
-        signal9 -- block3.up
-        signal10 -- block3.down   # TODO: Distant signal only
-        signal11 -- block4.down
-        signal12 -- block4.up     # TODO: Distant signal only
-        signal13 -- block4.down   # TODO: Distant signal only
-        signal14 -- block4.up
-        signal15 -- block5.down
-        signal16 -- block5.up     # TODO: Distant signal only
-        signal17 -- block5.down   # TODO: Distant signal only
-        signal18 -- block5.up
-        signal19 -- block6.down
-        signal20 -- block6.up
-        signal21 -- platform4.down
-        signal22 -- platform4.up
-        signal23 -- block8.down
-        signal24 -- block8.up
-        signal25 -- block8.down   # TODO: Distant signal only
-        signal26 -- platform3.down
-        signal27 -- platform3.up
-        signal28 -- platform2.down
-        signal29 -- platform2.up
-        signal30 -- platform1.down
-        signal31 -- platform1.up
-        signal32 -- block14.down
-        signal33 -- block14.up    # TODO: Distant signal only
-        signal34 -- block14.down  # TODO: Distant signal only
-        signal35 -- block14.up
-        signal36 -- block15.down
-        signal37 -- block15.up
-        signal38 -- block15.down  # TODO: Distant signal only
-        signal39 -- platform7.up
-        signal40 -- platform7.down
-        signal41 -- platform6.up
-        signal42 -- platform6.down
-        signal43 -- platform5.down
-        signal44 -- platform5.up
-        signal45 -- block19.down
-        signal46 -- block19.up
-        signal47 -- block20.down
-        signal48 -- block20.up
-        signal49 -- block21.down
-        signal50 -- block21.up
-        signal51 -- block22.down
-        signal52 -- block22.down  # TODO: Distant signal only
-        signal53 -- block22.up
+        signal1   -- block1.down
+      # signal2   -- block1.up      # TODO: Distant signal only
+      # signal3   -- block1.down    # TODO: Distant signal only
+        signal4a  -- block1.up
+        signal5   -- block2.down
+      # signal6   -- block2.down    # TODO: Distant signal only
+        signal7a  -- block2.up
+        signal8   -- block3.down
+        signal9   -- block3.up
+      # signal10  -- block3.down    # TODO: Distant signal only
+        signal11  -- block4.down
+      # signal12  -- block4.up      # TODO: Distant signal only
+      # signal13  -- block4.down    # TODO: Distant signal only
+        signal14  -- block4.up
+        signal15  -- block5.down
+      # signal16  -- block5.up      # TODO: Distant signal only
+      # signal17  -- block5.down    # TODO: Distant signal only
+        signal18a -- block5.up
+        signal19  -- block6.down
+        signal20  -- block6.up
+        signal21  -- platform4.down
+        signal22a -- platform4.up
+        signal23  -- block8.down
+        signal24  -- block8.up
+      # signal25  -- block8.down    # TODO: Distant signal only
+        signal26  -- platform3.down
+        signal27  -- platform3.up
+        signal28  -- platform2.down
+        signal29  -- platform2.up
+        signal30  -- platform1.down
+        signal31  -- platform1.up
+        signal32  -- block14.down
+      # signal33  -- block14.up     # TODO: Distant signal only
+      # signal34  -- block14.down   # TODO: Distant signal only
+        signal35a -- block14.up
+        signal36  -- block15.down
+        signal37  -- block15.up
+      # signal38  -- block15.down   # TODO: Distant signal only
+        signal39  -- platform7.up
+        signal40  -- platform7.down
+        signal41  -- platform6.up
+        signal42  -- platform6.down
+        signal43  -- platform5.down
+        signal44  -- platform5.up
+        signal45  -- block19.down
+        signal46a -- block19.up
+        signal47  -- block20.down
+        signal48a -- block20.up
+        signal49  -- block21.down
+        signal50a -- block21.up
+        signal51  -- block22.down
+      # signal52  -- block22.down  # TODO: Distant signal only
+        signal53a -- block22.up
     end
 
     trains
-        cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        cargo_db 0x0001  # addr high | addr low
+        steps 126 
+        calibration 5 15 30 45 60 75 90 105 120 end 
+        weight 100g 
+        length 13cm 
+        type cargo
         peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
+            head_light 
+                bit 4        # a value in range 0..31
+                initial 1
+            cabin_light 
+                bit 0        # a value in range 0..31
+                initial 1
         end
+        
         regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
         peripherals
             head_light bit 4 initial 1
             cabin_light bit 0 initial 1
         end
+        
         regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
         peripherals
             head_light bit 4 initial 1
             cabin_light bit 0 initial 1
         end
+        
         cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
         peripherals
             head_light bit 4 initial 1
             cabin_light bit 0 initial 1
         end
+        
         cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
         peripherals
             head_light bit 4 initial 1

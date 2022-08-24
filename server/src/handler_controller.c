@@ -26,6 +26,7 @@
  *
  */
 
+#include <unistd.h>
 #include <onion/onion.h>
 #include <bidib.h>
 #include <pthread.h>
@@ -38,6 +39,9 @@
 #include "bahn_data_util.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+#define MICROSECOND 1
+static const int let_period_us = 100000 * MICROSECOND;	// 0.1 seconds
 
 static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] = {
 	{ .is_valid = false, .dyn_containers_interlocker_instance = -1 }
@@ -118,10 +122,10 @@ void free_all_interlockers(void) {
 	selected_interlocker_instance = -1;
 }
 
-const char *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
+GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {
 		syslog_server(LOG_ERR, "Grant route: No interlocker has been set");
-		return "no_interlocker";
+		return g_string_new("no_interlocker");
 	}
 	
 	pthread_mutex_lock(&interlocker_mutex);
@@ -136,6 +140,7 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 
 	struct t_interlocker_instance_io interlocker_instance_io;	
 	do {
+		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_has_reset);
@@ -144,18 +149,17 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 	                                              false);
 	
 	do {
+		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_terminated);
 	
-	bahn_data_util_free_cached_track_state();
-
 	// Return the result
 	const char *route_id = interlocker_instance_io.output_route_id;
 	if (route_id != NULL && params_check_is_number(route_id)) {
 		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
 		
-		syslog_server(LOG_NOTICE, "Request: Set points and signals for route id \"%s\" - interlocker type %d",
+		syslog_server(LOG_NOTICE, "Grant route: Set points and signals for route id \"%s\" - interlocker type %d",
 		              interlocker_instance_io.output_route_id,
 		              interlocker_instance_io.output_interlocker_type);
 	} else {
@@ -169,25 +173,33 @@ const char *grant_route(const char *train_id, const char *source_id, const char 
 			syslog_server(LOG_ERR, "Grant route: Route could not be granted (%s)", route_id);
 		}
 	}
+	GString *route_id_copy = g_string_new(route_id);
+	bahn_data_util_free_cached_track_state();
 
 	pthread_mutex_unlock(&interlocker_mutex);
-	return route_id;
+	return route_id_copy;
 }
 
-void release_route(const int route_id) {
+void release_route(const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train != NULL) {
-		const char *signal_id = route->source;
-		const char *signal_aspect = "red";
-		if (bidib_set_signal(signal_id, signal_aspect)) {
-			syslog_server(LOG_ERR, "Release route: Unable to set entry signal to aspect %s", signal_aspect);
+		const char *signal_aspect = "aspect_stop";
+
+		const int signal_count = route->signals->len;
+		for (int signal_index = 0; signal_index < signal_count; signal_index++) {
+			// Get each signal along the route
+			const char *signal_id = g_array_index(route->signals, char *, signal_index);
+		
+			if (bidib_set_signal(signal_id, signal_aspect)) {
+				syslog_server(LOG_ERR, "Release route: Unable to set signal to aspect %s", signal_aspect);
+			}
 		}
 		bidib_flush();
 		
 		free(route->train);
 		route->train = NULL;
-		syslog_server(LOG_NOTICE, "Release route: route %d released", route_id);
+		syslog_server(LOG_NOTICE, "Release route: route %s released", route_id);
     }
 
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -198,13 +210,13 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
-		const int route_id = params_check_route_id(data_route_id);
-		if (route_id == -1) {
+		const char *route_id = params_check_route_id(data_route_id);
+		if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			release_route(route_id);
-			syslog_server(LOG_NOTICE, "Request: Release route - route: %d", route_id);
+			syslog_server(LOG_NOTICE, "Request: Release route - route: %s", route_id);
 			return OCS_PROCESSED;
 		}
 	} else {

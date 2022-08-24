@@ -124,7 +124,7 @@
 
 				<div class="form-group">
 					<div class="input-group">
-						<div class="input-group-prepend">
+						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
 							<label class="input-group-text" for="grabTrainId">Train</label>
 						</div>
 						<select class="custom-select" id="grabTrainId">
@@ -165,13 +165,12 @@
 				<br />
 
 				<div class="form-group">
-					<div class="row">
-						<div class="col-8">
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<label class="input-group-text">DCC Speed</label>
-								<input type="text" class="form-control form-control" id="dccSpeed" readonly value="0" />
-							</div>
+					<div class="input-group">
+						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+							<label class="input-group-text">DCC Speed</label>
 						</div>
+						<input type="text" class="form-control" id="dccSpeed" readonly value="0" />
+						
 						<div class="col-4">
 							<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
 							<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
@@ -180,22 +179,13 @@
 
 					<br />
 
-					<div style="display: flex; justify-content: left">
-						<span style="width: 20.5%"></span>
-						<div class="input-group-prepend">
-							<label class="input-group-text">Direction</label>
-						</div>
-						<input id="direction" type="checkbox" checked data-toggle="toggle" data-on="Forward"
-							data-off="Backward" />
-					</div>
-
-					<br />
-
 					<div style="display: flex; justify-content: space-between">
+						<button id="swapDirection" type="button" class="btn btn-outline-primary"
+							style="width: 32%">Swap Direction</button>
 						<button id="driveTrainButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Drive</button>
+							style="width: 32%">Drive</button>
 						<button id="stopTrainButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Stop</button>
+							style="width: 32%">Stop</button>
 					</div>
 
 					<br />
@@ -206,44 +196,180 @@
 				</div>
 
 				<div class="form-group">
-					<div class="row">
-						<div class="col-7">
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<label class="input-group-text">From</label>
-								<input type="text" class="form-control form-control" id="signalIdFrom" readonly value="0" />
-							</div>
+					<div class="input-group">
+						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+							<label class="input-group-text">From</label>
 						</div>
-						<div class="col-5">
-							<button id="signalPlusFrom" type="button" class="btn btn-outline-primary">+</button>
-							<button id="signalMinusFrom" type="button" class="btn btn-outline-primary">–</button>
-						</div>
+						<select class="custom-select" id="signalIdFrom">
+							<option>signal1</option>
+							<option>signal2</option>
+							<option>signal3</option>
+							<option>signal4</option>
+							<option>signal4a</option>
+							<option>signal4b</option>
+							<option>signal5</option>
+							<option>signal6</option>
+							<option>signal7</option>
+							<option>signal7a</option>
+							<option>signal7b</option>
+							<option>signal8</option>
+							<option>signal9</option>
+							<option>signal10</option>
+							<option>signal11</option>
+							<option>signal12</option>
+							<option>signal13</option>
+							<option>signal14</option>
+							<option>signal15</option>
+							<option>signal16</option>
+							<option>signal17</option>
+							<option>signal18</option>
+							<option>signal18a</option>
+							<option>signal18b</option>
+							<option>signal19</option>
+							<option>signal20</option>
+							<option>signal21</option>
+							<option>signal22</option>
+							<option>signal22a</option>
+							<option>signal22b</option>
+							<option>signal23</option>
+							<option>signal24</option>
+							<option>signal25</option>
+							<option>signal26</option>
+							<option>signal27</option>
+							<option>signal28</option>
+							<option>signal29</option>
+							<option>signal30</option>
+							<option>signal31</option>
+							<option>signal32</option>
+							<option>signal33</option>
+							<option>signal34</option>
+							<option>signal35</option>
+							<option>signal35a</option>
+							<option>signal35b</option>
+							<option>signal36</option>
+							<option>signal37</option>
+							<option>signal38</option>
+							<option>signal39</option>
+							<option>signal40</option>
+							<option>signal41</option>
+							<option>signal42</option>
+							<option>signal43</option>
+							<option>signal44</option>
+							<option>signal45</option>
+							<option>signal46</option>
+							<option>signal46a</option>
+							<option>signal46b</option>
+							<option>signal47</option>
+							<option>signal48</option>
+							<option>signal48a</option>
+							<option>signal48b</option>
+							<option>signal49</option>
+							<option>signal50</option>
+							<option>signal50a</option>
+							<option>signal50b</option>
+							<option>signal51</option>
+							<option>signal52</option>
+							<option>signal53</option>
+							<option>signal53a</option>
+							<option>signal53b</option>
+						</select>
 					</div>
 
-					<div class="row">
-						<div class="col-7">
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<label class="input-group-text">To</label>
-								<input type="text" class="form-control form-control" id="signalIdTo" readonly value="0" />
-							</div>
+					<div class="input-group">
+						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
+							<label class="input-group-text">To</label>
 						</div>
-						<div class="col-5">
-							<button id="signalPlusTo" type="button" class="btn btn-outline-primary">+</button>
-							<button id="signalMinusTo" type="button" class="btn btn-outline-primary">–</button>
-						</div>
+						<select class="custom-select" id="signalIdTo">
+							<option>signal1</option>
+							<option>signal2</option>
+							<option>signal3</option>
+							<option>signal4</option>
+							<option>signal4a</option>
+							<option>signal4b</option>
+							<option>signal5</option>
+							<option>signal6</option>
+							<option>signal7</option>
+							<option>signal7a</option>
+							<option>signal7b</option>
+							<option>signal8</option>
+							<option>signal9</option>
+							<option>signal10</option>
+							<option>signal11</option>
+							<option>signal12</option>
+							<option>signal13</option>
+							<option>signal14</option>
+							<option>signal15</option>
+							<option>signal16</option>
+							<option>signal17</option>
+							<option>signal18</option>
+							<option>signal18a</option>
+							<option>signal18b</option>
+							<option>signal19</option>
+							<option>signal20</option>
+							<option>signal21</option>
+							<option>signal22</option>
+							<option>signal22a</option>
+							<option>signal22b</option>
+							<option>signal23</option>
+							<option>signal24</option>
+							<option>signal25</option>
+							<option>signal26</option>
+							<option>signal27</option>
+							<option>signal28</option>
+							<option>signal29</option>
+							<option>signal30</option>
+							<option>signal31</option>
+							<option>signal32</option>
+							<option>signal33</option>
+							<option>signal34</option>
+							<option>signal35</option>
+							<option>signal35a</option>
+							<option>signal35b</option>
+							<option>signal36</option>
+							<option>signal37</option>
+							<option>signal38</option>
+							<option>signal39</option>
+							<option>signal40</option>
+							<option>signal41</option>
+							<option>signal42</option>
+							<option>signal43</option>
+							<option>signal44</option>
+							<option>signal45</option>
+							<option>signal46</option>
+							<option>signal46a</option>
+							<option>signal46b</option>
+							<option>signal47</option>
+							<option>signal48</option>
+							<option>signal48a</option>
+							<option>signal48b</option>
+							<option>signal49</option>
+							<option>signal50</option>
+							<option>signal50a</option>
+							<option>signal50b</option>
+							<option>signal51</option>
+							<option>signal52</option>
+							<option>signal53</option>
+							<option>signal53a</option>
+							<option>signal53b</option>
+						</select>
 					</div>
 
-					<label class="badge bg-primary text-light"> Route ID:</label>
-					<span id="routeId">None</span>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<label class="input-group-text">Route ID</label>
+						</div>
+						<input type="text" class="form-control" id="routeId" readonly value="None" />
+					</div>
 
 					<br />
 
-					<div style="display: flex; justify-content: space-evenly">
+					<div style="display: flex; justify-content: space-between">
 						<button id="requestRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 30%">Request</button>
+							style="width: 32%">Request</button>
 						<button id="driveRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 30%">Drive</button>
+							style="width: 32%">Drive</button>
 						<button id="releaseRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 30%">Release</button>
+							style="width: 32%">Release</button>
 					</div>
 
 					</br>

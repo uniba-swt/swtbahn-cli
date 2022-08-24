@@ -51,9 +51,6 @@ typedef void pthread_mutex_t;
 typedef void key_t;
 #define key_t__global_0_0 key_t
 
-int NULL;
-#define NULL__global_0_0 NULL
-
 typedef int bool;
 #define bool__global_0_0 bool
 
@@ -129,14 +126,14 @@ static const unsigned int INTERLOCKER_COUNT_MAX  = 4;
 shared dynlib_data trainEngines[TRAIN_ENGINE_COUNT_MAX];
 shared dynlib_data interlockers[INTERLOCKER_COUNT_MAX];
 
-// Train engines that are available a compile time
+// Train engines that are available at compile time
 static const unsigned int TRAIN_ENGINE_DEFINED_COUNT = 2;
 const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
 	"../src/engines/libtrain_engine_default (unremovable)",
 	"../src/engines/libtrain_engine_linear (unremovable)"
 };
 
-// Interlockers that are available a compile time
+// Interlockers that are available at compile time
 static const unsigned int INTERLOCKER_DEFINED_COUNT = 1;
 const char *interlockerFilepaths[INTERLOCKER_DEFINED_COUNT] = {
 	"../src/interlockers/libinterlocker_default (unremovable)"
@@ -310,7 +307,7 @@ void main(int argc, char **argv) {
 	syslog_server(LOG_NOTICE, "ForeC: Starting dynamic library containers");
 	
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
-	                         &dyn_containers_interface);
+	                          &dyn_containers_interface);
 
 	resetInternalInputs();
 	resetInternalOutputs();
@@ -335,6 +332,7 @@ void main(int argc, char **argv) {
 thread letInterface(void) {
 	char *threadName;
 	threadName = "letInterface";
+	syslog_server(LOG_NOTICE, "%s: Started", threadName);
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	forec_intern_input.let_period_us = dyn_containers_interface->let_period_us;
@@ -416,6 +414,7 @@ thread letInterface(void) {
 thread loadEngines(void) {
 	const char *threadName;
 	threadName = "loadEngines";
+	syslog_server(LOG_NOTICE, "%s: Started", threadName);
 
 	// Load train engines that are already available
 	dynlib_status load_status;
@@ -513,6 +512,7 @@ thread loadEngines(void) {
 thread loadInterlockers(void) {
 	const char *threadName;
 	threadName = "loadInterlockers";
+	syslog_server(LOG_NOTICE, "%s: Started", threadName);
 
 	// Load interlockers that are already available
 	dynlib_status load_status;
@@ -544,7 +544,6 @@ thread loadInterlockers(void) {
 			forec_intern_output_interlocker_0.name = "";
 		}
 		
-		// Container 1, 2, and 3
 		container = 1;
 		if (forec_intern_input_interlocker_1.load && !forec_intern_output_interlocker_1.in_use) {
 			// Load the new dynamic library
@@ -888,6 +887,9 @@ thread engineInstance4(void) {
 
 
 thread interlockerInstance0(void) {
+	int NULL; (void)NULL;
+	#define NULL__interlockerInstance0_0_0 NULL
+
 	unsigned int instance = 0;
 	
 	const char *threadName;
@@ -912,7 +914,7 @@ thread interlockerInstance0(void) {
 				interlockerInstanceData[instance].dst_signal_id = forec_intern_input_interlocker_instance_0.dst_signal_id;
 				interlockerInstanceData[instance].train_id = forec_intern_input_interlocker_instance_0.train_id;
 
-				// Reset the interlocker so that it can execute its alglorithm from the start
+				// Reset the interlocker so that it can execute its algorithm from the start
 				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
 				forec_intern_output_interlocker_instance_0.has_reset = true;		
 		
@@ -979,13 +981,283 @@ thread interlockerInstance0(void) {
 }
 
 thread interlockerInstance1(void) {
-	forec_intern_output_interlocker_instance_1.in_use = true;
+	int NULL; (void)NULL;
+	#define NULL__interlockerInstance1_0_0 NULL
+	
+	unsigned int instance = 1;
+	
+	const char *threadName;
+	threadName = "interlockerInstance1";
+			
+	while (true) {
+		// Wait for a user to set an interlocker
+		while (!forec_intern_input_interlocker_instance_1.grab) {
+			pause;
+		}
+		
+		forec_intern_output_interlocker_instance_1.interlocker_type = forec_intern_input_interlocker_instance_1.interlocker_type;
+		forec_intern_output_interlocker_instance_1.in_use = true;
+		interlockerInstanceData[instance].terminated = true;
+
+		// Execute the chosen interlocker
+		while (!forec_intern_input_interlocker_instance_1.release) {
+			// Reset the interlocker
+			if (forec_intern_input_interlocker_instance_1.reset) {
+				// Copy inputs
+				interlockerInstanceData[instance].src_signal_id = forec_intern_input_interlocker_instance_1.src_signal_id;
+				interlockerInstanceData[instance].dst_signal_id = forec_intern_input_interlocker_instance_1.dst_signal_id;
+				interlockerInstanceData[instance].train_id = forec_intern_input_interlocker_instance_1.train_id;
+
+				// Reset the interlocker so that it can execute its algorithm from the start
+				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_1.interlocker_type], &interlockerInstanceData[instance]);
+				forec_intern_output_interlocker_instance_1.has_reset = true;		
+		
+				if (interlockerInstanceData[instance].route_id == NULL) {
+					interlockerInstanceData[instance].route_id = "";
+				}
+		
+				syslog_server(LOG_NOTICE, "%s: %s.reset() %s %s %s -> \"%s\" %d", threadName, 
+						      interlockers[forec_intern_output_interlocker_instance_1.interlocker_type].name,
+						      interlockerInstanceData[instance].src_signal_id,
+						      interlockerInstanceData[instance].dst_signal_id,
+						      interlockerInstanceData[instance].train_id,
+						      interlockerInstanceData[instance].route_id,
+						      interlockerInstanceData[instance].terminated);
+				
+				// Update outputs
+				forec_intern_output_interlocker_instance_1.route_id = interlockerInstanceData[instance].route_id;
+				forec_intern_output_interlocker_instance_1.terminated = interlockerInstanceData[instance].terminated;
+				
+				// Wait for the reset to be false
+				while (forec_intern_input_interlocker_instance_1.reset) {
+					pause;
+				}
+			}
+			
+			forec_intern_output_interlocker_instance_1.has_reset = false;
+
+			// Execute interlocker until it terminates
+			if (!interlockerInstanceData[instance].terminated) {
+
+				while (!interlockerInstanceData[instance].terminated) {
+					dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_1.interlocker_type], &interlockerInstanceData[instance]);
+
+					if (interlockerInstanceData[instance].route_id == NULL) {
+						interlockerInstanceData[instance].route_id = "";
+					}
+
+					syslog_server(LOG_NOTICE, "%s: %s.tick() %s %s %s -> \"%s\" %d", threadName, 
+								  interlockers[forec_intern_output_interlocker_instance_1.interlocker_type].name,
+								  interlockerInstanceData[instance].src_signal_id,
+								  interlockerInstanceData[instance].dst_signal_id,
+								  interlockerInstanceData[instance].train_id,
+								  interlockerInstanceData[instance].route_id,
+								  interlockerInstanceData[instance].terminated);
+					
+					// Update outputs
+					forec_intern_output_interlocker_instance_1.route_id = interlockerInstanceData[instance].route_id;
+					forec_intern_output_interlocker_instance_1.terminated = interlockerInstanceData[instance].terminated;
+					
+					pause;
+				}
+			}
+			
+			pause;
+		}
+
+		forec_intern_output_interlocker_instance_1.interlocker_type = -1;
+		forec_intern_output_interlocker_instance_1.in_use = false;
+		forec_intern_output_interlocker_instance_1.route_id = "";
+		syslog_server(LOG_NOTICE, "%s: Released container", threadName);
+
+		pause;
+	}
 }
 thread interlockerInstance2(void) {
-	forec_intern_output_interlocker_instance_2.in_use = true;
+	int NULL; (void)NULL;
+	#define NULL__interlockerInstance2_0_0 NULL
+
+	unsigned int instance = 2;
+	
+	const char *threadName;
+	threadName = "interlockerInstance0";
+			
+	while (true) {
+		// Wait for a user to set an interlocker
+		while (!forec_intern_input_interlocker_instance_2.grab) {
+			pause;
+		}
+		
+		forec_intern_output_interlocker_instance_2.interlocker_type = forec_intern_input_interlocker_instance_2.interlocker_type;
+		forec_intern_output_interlocker_instance_2.in_use = true;
+		interlockerInstanceData[instance].terminated = true;
+
+		// Execute the chosen interlocker
+		while (!forec_intern_input_interlocker_instance_2.release) {
+			// Reset the interlocker
+			if (forec_intern_input_interlocker_instance_2.reset) {
+				// Copy inputs
+				interlockerInstanceData[instance].src_signal_id = forec_intern_input_interlocker_instance_2.src_signal_id;
+				interlockerInstanceData[instance].dst_signal_id = forec_intern_input_interlocker_instance_2.dst_signal_id;
+				interlockerInstanceData[instance].train_id = forec_intern_input_interlocker_instance_2.train_id;
+
+				// Reset the interlocker so that it can execute its alglorithm from the start
+				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_2.interlocker_type], &interlockerInstanceData[instance]);
+				forec_intern_output_interlocker_instance_2.has_reset = true;		
+		
+				if (interlockerInstanceData[instance].route_id == NULL) {
+					interlockerInstanceData[instance].route_id = "";
+				}
+		
+				syslog_server(LOG_NOTICE, "%s: %s.reset() %s %s %s -> \"%s\" %d", threadName, 
+						      interlockers[forec_intern_output_interlocker_instance_2.interlocker_type].name,
+						      interlockerInstanceData[instance].src_signal_id,
+						      interlockerInstanceData[instance].dst_signal_id,
+						      interlockerInstanceData[instance].train_id,
+						      interlockerInstanceData[instance].route_id,
+						      interlockerInstanceData[instance].terminated);
+				
+				// Update outputs
+				forec_intern_output_interlocker_instance_2.route_id = interlockerInstanceData[instance].route_id;
+				forec_intern_output_interlocker_instance_2.terminated = interlockerInstanceData[instance].terminated;
+				
+				// Wait for the reset to be false
+				while (forec_intern_input_interlocker_instance_2.reset) {
+					pause;
+				}
+			}
+			
+			forec_intern_output_interlocker_instance_2.has_reset = false;
+
+			// Execute interlocker until it terminates
+			if (!interlockerInstanceData[instance].terminated) {
+
+				while (!interlockerInstanceData[instance].terminated) {
+					dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_2.interlocker_type], &interlockerInstanceData[instance]);
+
+					if (interlockerInstanceData[instance].route_id == NULL) {
+						interlockerInstanceData[instance].route_id = "";
+					}
+
+					syslog_server(LOG_NOTICE, "%s: %s.tick() %s %s %s -> \"%s\" %d", threadName, 
+								  interlockers[forec_intern_output_interlocker_instance_2.interlocker_type].name,
+								  interlockerInstanceData[instance].src_signal_id,
+								  interlockerInstanceData[instance].dst_signal_id,
+								  interlockerInstanceData[instance].train_id,
+								  interlockerInstanceData[instance].route_id,
+								  interlockerInstanceData[instance].terminated);
+					
+					// Update outputs
+					forec_intern_output_interlocker_instance_2.route_id = interlockerInstanceData[instance].route_id;
+					forec_intern_output_interlocker_instance_2.terminated = interlockerInstanceData[instance].terminated;
+					
+					pause;
+				}
+			}
+			
+			pause;
+		}
+
+		forec_intern_output_interlocker_instance_2.interlocker_type = -1;
+		forec_intern_output_interlocker_instance_2.in_use = false;
+		forec_intern_output_interlocker_instance_2.route_id = "";
+		syslog_server(LOG_NOTICE, "%s: Released container", threadName);
+
+		pause;
+	}
 }
 thread interlockerInstance3(void) {
-	forec_intern_output_interlocker_instance_3.in_use = true;
+	int NULL; (void)NULL;
+	#define NULL__interlockerInstance3_0_0 NULL
+
+	unsigned int instance = 0;
+	
+	const char *threadName;
+	threadName = "interlockerInstance0";
+			
+	while (true) {
+		// Wait for a user to set an interlocker
+		while (!forec_intern_input_interlocker_instance_3.grab) {
+			pause;
+		}
+		
+		forec_intern_output_interlocker_instance_3.interlocker_type = forec_intern_input_interlocker_instance_3.interlocker_type;
+		forec_intern_output_interlocker_instance_3.in_use = true;
+		interlockerInstanceData[instance].terminated = true;
+
+		// Execute the chosen interlocker
+		while (!forec_intern_input_interlocker_instance_3.release) {
+			// Reset the interlocker
+			if (forec_intern_input_interlocker_instance_3.reset) {
+				// Copy inputs
+				interlockerInstanceData[instance].src_signal_id = forec_intern_input_interlocker_instance_3.src_signal_id;
+				interlockerInstanceData[instance].dst_signal_id = forec_intern_input_interlocker_instance_3.dst_signal_id;
+				interlockerInstanceData[instance].train_id = forec_intern_input_interlocker_instance_3.train_id;
+
+				// Reset the interlocker so that it can execute its alglorithm from the start
+				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_3.interlocker_type], &interlockerInstanceData[instance]);
+				forec_intern_output_interlocker_instance_3.has_reset = true;		
+		
+				if (interlockerInstanceData[instance].route_id == NULL) {
+					interlockerInstanceData[instance].route_id = "";
+				}
+		
+				syslog_server(LOG_NOTICE, "%s: %s.reset() %s %s %s -> \"%s\" %d", threadName, 
+						      interlockers[forec_intern_output_interlocker_instance_3.interlocker_type].name,
+						      interlockerInstanceData[instance].src_signal_id,
+						      interlockerInstanceData[instance].dst_signal_id,
+						      interlockerInstanceData[instance].train_id,
+						      interlockerInstanceData[instance].route_id,
+						      interlockerInstanceData[instance].terminated);
+				
+				// Update outputs
+				forec_intern_output_interlocker_instance_3.route_id = interlockerInstanceData[instance].route_id;
+				forec_intern_output_interlocker_instance_3.terminated = interlockerInstanceData[instance].terminated;
+				
+				// Wait for the reset to be false
+				while (forec_intern_input_interlocker_instance_3.reset) {
+					pause;
+				}
+			}
+			
+			forec_intern_output_interlocker_instance_3.has_reset = false;
+
+			// Execute interlocker until it terminates
+			if (!interlockerInstanceData[instance].terminated) {
+
+				while (!interlockerInstanceData[instance].terminated) {
+					dynlib_interlocker_tick(&interlockers[forec_intern_output_interlocker_instance_3.interlocker_type], &interlockerInstanceData[instance]);
+
+					if (interlockerInstanceData[instance].route_id == NULL) {
+						interlockerInstanceData[instance].route_id = "";
+					}
+
+					syslog_server(LOG_NOTICE, "%s: %s.tick() %s %s %s -> \"%s\" %d", threadName, 
+								  interlockers[forec_intern_output_interlocker_instance_3.interlocker_type].name,
+								  interlockerInstanceData[instance].src_signal_id,
+								  interlockerInstanceData[instance].dst_signal_id,
+								  interlockerInstanceData[instance].train_id,
+								  interlockerInstanceData[instance].route_id,
+								  interlockerInstanceData[instance].terminated);
+					
+					// Update outputs
+					forec_intern_output_interlocker_instance_3.route_id = interlockerInstanceData[instance].route_id;
+					forec_intern_output_interlocker_instance_3.terminated = interlockerInstanceData[instance].terminated;
+					
+					pause;
+				}
+			}
+			
+			pause;
+		}
+
+		forec_intern_output_interlocker_instance_3.interlocker_type = -1;
+		forec_intern_output_interlocker_instance_3.in_use = false;
+		forec_intern_output_interlocker_instance_3.route_id = "";
+		syslog_server(LOG_NOTICE, "%s: Released container", threadName);
+
+		pause;
+	}
 }
 
 
@@ -1029,17 +1301,12 @@ void copyEngineInstanceOutputs(struct t_train_engine_instance_io *external,
 void unloadEngines(void) {
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		dynlib_close(&trainEngines[i]);
+		dyn_containers_interface->train_engines_io[i].output_in_use = false;
 	}
-	dyn_containers_interface->train_engines_io[0].output_in_use = false;
-	dyn_containers_interface->train_engines_io[1].output_in_use = false;
-	dyn_containers_interface->train_engines_io[2].output_in_use = false;
-	dyn_containers_interface->train_engines_io[3].output_in_use = false;
-
-	dyn_containers_interface->train_engine_instances_io[0].output_in_use = false;
-	dyn_containers_interface->train_engine_instances_io[1].output_in_use = false;
-	dyn_containers_interface->train_engine_instances_io[2].output_in_use = false;
-	dyn_containers_interface->train_engine_instances_io[3].output_in_use = false;
-	dyn_containers_interface->train_engine_instances_io[4].output_in_use = false;
+	
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		dyn_containers_interface->train_engine_instances_io[i].output_in_use = false;
+	}
 }
 
 void copyInterlockerInputs(t_forec_intern_input_interlocker *internal, 
@@ -1167,16 +1434,12 @@ void resetInternalOutputs(void) {
 void unloadInterlockers(void) {
 	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
 		dynlib_close(&interlockers[i]);
+		dyn_containers_interface->interlockers_io[i].output_in_use = false;
 	}
-	dyn_containers_interface->interlockers_io[0].output_in_use = false;
-	dyn_containers_interface->interlockers_io[1].output_in_use = false;
-	dyn_containers_interface->interlockers_io[2].output_in_use = false;
-	dyn_containers_interface->interlockers_io[3].output_in_use = false;
-	
-	dyn_containers_interface->interlocker_instances_io[0].output_in_use = false;
-	dyn_containers_interface->interlocker_instances_io[1].output_in_use = false;
-	dyn_containers_interface->interlocker_instances_io[2].output_in_use = false;
-	dyn_containers_interface->interlocker_instances_io[3].output_in_use = false;
+
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		dyn_containers_interface->interlocker_instances_io[i].output_in_use = false;
+	}
 }
 
 void printout(const char *threadName, const dynlib_status status, const dynlib_data *library) {

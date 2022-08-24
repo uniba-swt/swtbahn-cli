@@ -1,5 +1,55 @@
 # Track configuration: SWTbahnUltraloop
 boards:
+  - id: master
+    segments:
+      - id: seg1
+        address: 0x01
+        length: 0.0cm
+      - id: seg2
+        address: 0x02
+        length: 0.0cm
+      - id: seg3
+        address: 0x03
+        length: 0.0cm
+      - id: seg4
+        address: 0x04
+        length: 0.0cm
+      - id: seg5
+        address: 0x05
+        length: 0.0cm
+      - id: seg6
+        address: 0x06
+        length: 0.0cm
+      - id: seg7
+        address: 0x07
+        length: 0.0cm
+      - id: seg8
+        address: 0x08
+        length: 0.0cm
+      - id: seg17
+        address: 0x10
+        length: 0.0cm
+      - id: seg18
+        address: 0x11
+        length: 0.0cm
+      - id: seg19
+        address: 0x12
+        length: 0.0cm
+      - id: seg28
+        address: 0x1B
+        length: 0.0cm
+      - id: seg29
+        address: 0x1C
+        length: 0.0cm
+      - id: seg30
+        address: 0x1D
+        length: 0.0cm
+      - id: seg31
+        address: 0x1E
+        length: 0.0cm
+      - id: seg32
+        address: 0x1F
+        length: 0.0cm
   - id: onecontrol
     points-board:
       - id: point1
@@ -69,122 +119,72 @@ boards:
       - id: signal1
         number: 0x08
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal2
         number: 0x09
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal3a
         number: 0x0A
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal3b
         number: 0x0B
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal4
         number: 0x0C
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal5
         number: 0x0D
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal6
         number: 0x0E
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
       - id: signal7
         number: 0x0F
         aspects:
-          - id: green
+          - id: aspect_go
             value: 0x01
-          - id: red
+          - id: aspect_stop
             value: 0x00
-        initial: red
+        initial: aspect_stop
         type: block
-  - id: master
-    segments:
-      - id: seg1
-        address: 0x01
-        length: 0.0cm
-      - id: seg2
-        address: 0x02
-        length: 0.0cm
-      - id: seg3
-        address: 0x03
-        length: 0.0cm
-      - id: seg4
-        address: 0x04
-        length: 0.0cm
-      - id: seg5
-        address: 0x05
-        length: 0.0cm
-      - id: seg6
-        address: 0x06
-        length: 0.0cm
-      - id: seg7
-        address: 0x07
-        length: 0.0cm
-      - id: seg8
-        address: 0x08
-        length: 0.0cm
-      - id: seg17
-        address: 0x10
-        length: 0.0cm
-      - id: seg18
-        address: 0x11
-        length: 0.0cm
-      - id: seg19
-        address: 0x12
-        length: 0.0cm
-      - id: seg28
-        address: 0x1B
-        length: 0.0cm
-      - id: seg29
-        address: 0x1C
-        length: 0.0cm
-      - id: seg30
-        address: 0x1D
-        length: 0.0cm
-      - id: seg31
-        address: 0x1E
-        length: 0.0cm
-      - id: seg32
-        address: 0x1F
-        length: 0.0cm

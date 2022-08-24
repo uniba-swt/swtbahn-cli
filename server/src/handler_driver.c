@@ -44,6 +44,7 @@
 
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static unsigned int DRIVING_SPEED_SLOW = 20;
 static unsigned int next_grab_id = 0;
 
 t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
@@ -99,54 +100,75 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	return false;
 }
 
-static bool drive_route(const int grab_id, const int route_id) {
-	//Lock needs to go here
+static bool drive_route(const int grab_id, const char *route_id) {
+	pthread_mutex_lock(&interlocker_mutex);
 	const char *train_id = grabbed_trains[grab_id].name->str;
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
+		syslog_server(LOG_ERR, "Drive route: Route %s not granted to train %s", route_id, train_id);
 		return false;
 	}
 
-	pthread_mutex_lock(&interlocker_mutex);	// this needs to be removed/moved to 103
     if (strcmp(train_id, route->train) != 0) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Drive route: Route %d not granted to train %s", route_id, train_id);
+		syslog_server(LOG_ERR, "Drive route: Route %s not granted to train %s", route_id, train_id);
 		return false;
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	// Driving starts
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	const int requested_speed = 20; //this still up to date? -> define as a constant
+	pthread_mutex_lock(&grabbed_trains_mutex);	
+	// Driving starts: Driving direction is computed from the route orientation
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
 	                                        && train_position_query.orientation_is_left)
 	                                || (strcmp(route->orientation, "anticlockwise") == 0 
 	                                        && !train_position_query.orientation_is_left);
 	bidib_free_train_position_query(train_position_query);
+	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	dyn_containers_set_train_engine_instance_inputs(engine_instance,
-	                                                requested_speed, requested_forwards);
+	                                                DRIVING_SPEED_SLOW, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
-	// Set entry signal to red (stop aspect)
-	const char *signal_id = route->source;
-	const char *signal_aspect = "red";
-	if (bidib_set_signal(signal_id, signal_aspect)) {
-		syslog_server(LOG_ERR, "Drive route: Unable to set entry signal to aspect %s", signal_aspect);
-		return false;
-	} else {
-		syslog_server(LOG_NOTICE, "Drive route: Set signal - signal: %s state: %s",
-		              signal_id, signal_aspect);
-		bidib_flush();
-	}
-		
-	// Wait until the destination has been reached
+	// Set the signals along the route to Stop as the train drives past them
+	const char *signal_stop_aspect = "aspect_stop";
+	const char *next_signal = route->source;
+	bool set_signal_stop = true;
 	const int path_count = route->path->len;
-	const char *destination = g_array_index(route->path, char *, path_count - 1);
-	while (running && !train_position_is_at(train_id, destination)) {
+	for (int path_item_index = 0; path_item_index < path_count; path_item_index++) {
+		// Get path item (segment or signal)
+		const char *path_item = g_array_index(route->path, char *, path_item_index);
+		
+		if (is_type_signal(path_item)) {
+			// Train will encounter a signal when it exits the current segment
+			next_signal = path_item;
+			set_signal_stop = true;
+		}
+		
+		if (set_signal_stop && is_type_segment(path_item)) {
+			// Signal that the train has just passed will be set to the Stop aspect 
+			// when it enters the next segment
+
+			// Wait until the next segment is entered
+			while (running && !train_position_is_at(train_id, path_item)) {
+				usleep(TRAIN_DRIVE_TIME_STEP);
+			}
+			
+			// Set signal to the Stop aspect
+			set_signal_stop = false;
+			if (bidib_set_signal(next_signal, signal_stop_aspect)) {
+				syslog_server(LOG_ERR, "Drive route: Unable to set route signal %s to aspect %s", next_signal, signal_stop_aspect);
+				return false;
+			} else {
+				syslog_server(LOG_NOTICE, "Drive route: Set signal - signal: %s state: %s",
+							  next_signal, signal_stop_aspect);
+				bidib_flush();
+			}
+		}
+	}
+	
+	const char *dest_segment = g_array_index(route->path, char *, path_count - 1);
+	while (running && !train_position_is_at(train_id, dest_segment)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	
@@ -168,7 +190,7 @@ static int grab_train(const char *train, const char *engine) {
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
-			//TODO: insert log here
+			syslog_server(LOG_ERR, "Train %s already grabbed", train);
 			return -1;
 		}
 	}
@@ -315,33 +337,36 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			// Use interlocker to find and grant a route
-			const char *route_id = grant_route(grabbed_trains[grab_id].name->str,
-			                                   data_source_name,
-			                                   data_destination_name);
-			if (route_id != NULL && params_check_is_number(route_id)) {
+			
+			GString *route_id = grant_route(grabbed_trains[grab_id].name->str,
+			                                data_source_name,
+			                                data_destination_name);
+			if (route_id->str != NULL && params_check_is_number(route_id->str)) {
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
 				              "train: %s route %s",
-				              grabbed_trains[grab_id].name->str, route_id);
-				onion_response_printf(res, "%s", route_id);
+				              grabbed_trains[grab_id].name->str, route_id->str);
+				onion_response_printf(res, "%s", route_id->str);
+				g_string_free(route_id, true);
 				return OCS_PROCESSED;
 			} else {
 				syslog_server(LOG_ERR, "Request: Request train route - "
 				              "train: %s route not granted",
 				              grabbed_trains[grab_id].name->str);
-				if (strcmp(route_id, "no_interlocker") == 0) {
+				if (strcmp(route_id->str, "no_interlocker") == 0) {
 					onion_response_printf(res, "No interlocker has been selected for use");
-				} else if (strcmp(route_id, "no_routes") == 0) {
+				} else if (strcmp(route_id->str, "no_routes") == 0) {
 					onion_response_printf(res, "No routes possible from %s to %s", 
 					                      data_source_name, data_destination_name);
-				} else if (strcmp(route_id, "not_grantable") == 0) {
+				} else if (strcmp(route_id->str, "not_grantable") == 0) {
 					onion_response_printf(res, "Route found conflicts with others");
-				} else if (strcmp(route_id, "not_clear") == 0) {
+				} else if (strcmp(route_id->str, "not_clear") == 0) {
 					onion_response_printf(res, "Route found has occupied tracks "
 					                      "or source signal is not stop");
 				} else {
 					onion_response_printf(res, "Route could not be granted (%s)",
-					                      route_id);
+					                      route_id->str);
 				}
+				g_string_free(route_id, true);
 
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
 				return OCS_PROCESSED;
@@ -362,19 +387,19 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const int client_session_id = params_check_session_id(data_session_id);
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
-		const int route_id = params_check_route_id(data_route_id);
+		const char *route_id = params_check_route_id(data_route_id);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Drive route - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog_server(LOG_ERR, "Request: Drive route - bad grab id");
 			return OCS_NOT_IMPLEMENTED;
-		} else if (route_id == -1) {
+		} else if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, "Request: Drive route - invalid parameter");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			if (drive_route(grab_id, route_id)) {
-				onion_response_printf(res, "Route %d driving completed", route_id);
+				onion_response_printf(res, "Route %s driving completed", route_id);
 				return OCS_PROCESSED;
 			} else {
 				return OCS_NOT_IMPLEMENTED;

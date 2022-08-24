@@ -85,32 +85,38 @@ def route_is_grantable(string route_id, string train_id): bool
 end
 
 
-# Returns whether the route is physically ready for use:
-# Entry signal is in Stop aspect, all possible entries
+# Returns whether route ID is physically ready for use:
+# All route signals are in Stop aspect, all possible entries
 # into the route are protected by signals in the Stop aspect,
 # and all blocks are unoccupied
 def route_is_clear(string route_id): bool
-    # Get the source signal of route ID
-    string src_signal = get config route.source route_id
-
-    # Get the current aspect of the source signal
-    string src_state = get state src_signal
+    # Check that all signals along route ID are in the Stop aspect.
+    # 1. Get all the signals along route ID, including the source and
+    #    destination signals
+    string signal_ids[] = get config route.route_signals route_id
     
-    # Check that the entry signal is in the Stop aspect
-    if src_state != "stop"
-        return false
+    # 2. Iterate through the signals
+    for string signal_id in signal_ids
+        # 3. Check that each signal is in the Stop aspect
+        string signal_state = get state signal_id
+        if signal_state != "stop"
+            return false
+        end
     end
 
     # TODO: Check that the signals of all possible entries into 
     # route ID are in the Stop aspect
 
-    #  Get all segments along route ID
-    string seg_ids[] = get config route.path route_id
+    # Check that all the segments along route ID are unoccupied
+    # 1. Get all segments and signals along route ID
+    string item_ids[] = get config route.path route_id
     
-    # Iterate through the segments
-    for string seg_id in seg_ids
-        # Check whether the segment is occupied
-        if is seg_id occupied
+    # 2. Iterate through the segments and signals
+    for string item_id in item_ids
+        # 3. If the item is a segment, check whether it is occupied
+        bool is_a_segment = is item_id a_segment
+        bool is_occupied = is item_id occupied
+        if is_a_segment && is_occupied
             return false
         end
     end
@@ -123,7 +129,7 @@ end
 # are set to their required positions
 def set_points(string route_id)
     # Get all the points along route ID
-    string point_ids[] = get config route.point_positions route_id
+    string point_ids[] = get config route.route_points route_id
     
     # Iterate through each point
     for string point_id in point_ids
@@ -137,17 +143,34 @@ def set_points(string route_id)
             set state point_id to reverse
         end
     end
+
+    # TODO: Wait 1 sec for the points to physically move
+    # into position
 end
 
 
-# For a given route ID, the entry signal is 
-# set to the clear (Go aspect)
+# For a given route ID, all signals along the route, except
+# for the destination signal, are set to the Go aspect
 def set_signals(string route_id)
-    # Get the entry signal of route ID
-    string entry_id = get config route.source route_id
-    
-    # Set the entry signal of route ID to clear (Go aspect)
-    set state entry_id to clear
+    # Get the destination signal of route ID
+    string destination_id = get config route.destination route_id
+
+    # Get all the signals along route ID, including the source and
+    # destination signals
+    string signal_ids[] = get config route.route_signals route_id
+
+    # Iterate through the signals
+    for string signal_id in signal_ids
+        # Set each signal (except for the destination) to the Go aspect
+        if signal_id != destination_id
+            string signal_type = get config signal.type signal_id
+            if signal_type == "shunting"
+                set state signal_id to shunt
+            else
+                set state signal_id to go
+            end
+        end
+    end
 end
 
 

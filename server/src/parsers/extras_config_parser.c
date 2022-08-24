@@ -44,10 +44,12 @@ typedef enum {
     BLOCK_OVERLAPS,
     BLOCK_TRAIN_TYPES,
     CROSSINGS,
-    SIGNAL_TYPES,
     COMPOSITE_SIGNALS,
+    SIGNAL_TYPES,
+    SIGNAL_TYPE_INITIAL,
     SIGNAL_TYPE_ASPECTS,
     PERIPHERAL_TYPES,
+    PERIPHERAL_TYPE_INITIAL,
     PERIPHERAL_TYPE_ASPECTS
 } e_extras_sequence_level;
 
@@ -187,13 +189,23 @@ void extras_yaml_sequence_start(char *scalar) {
             }
             break;
         case SIGNAL_TYPE:
-            if (str_equal(scalar, "aspects")) {
+            if (str_equal(scalar, "initial")) {
+                extras_sequence = SIGNAL_TYPE_INITIAL;
+                return;
+            }
+            
+			if (str_equal(scalar, "aspects")) {
                 extras_sequence = SIGNAL_TYPE_ASPECTS;
                 cur_signal_type->aspects = g_array_sized_new(false, false, sizeof(char *), 3);
                 return;
             }
             break;
         case PERIPHERAL_TYPE:
+			if (str_equal(scalar, "initial")) {
+                extras_sequence = PERIPHERAL_TYPE_INITIAL;
+                return;
+            }
+        
             if (str_equal(scalar, "aspects")) {
                 extras_sequence = PERIPHERAL_TYPE_ASPECTS;
                 cur_peripheral_type->aspects = g_array_sized_new(false, false, sizeof(char *), 3);
@@ -256,6 +268,7 @@ void extras_yaml_mapping_start(char *scalar) {
             extras_mapping = SIGNAL_TYPE;
             cur_signal_type = malloc(sizeof(t_config_signal_type));
             cur_signal_type->id = NULL;
+            cur_signal_type->initial = NULL;
             cur_signal_type->aspects = NULL;
             break;
         case COMPOSITE_SIGNALS:
@@ -271,6 +284,7 @@ void extras_yaml_mapping_start(char *scalar) {
             extras_mapping = PERIPHERAL_TYPE;
             cur_peripheral_type = malloc(sizeof(t_config_peripheral_type));
             cur_peripheral_type->id = NULL;
+            cur_peripheral_type->initial = NULL;
             cur_peripheral_type->aspects = NULL;
             break;
         default:
@@ -296,7 +310,7 @@ void extras_yaml_mapping_end(char *scalar) {
             g_hash_table_insert(tb_signal_types, strdup(cur_signal_type->id), cur_signal_type);
             break;
         case COMPOSITE_SIGNAL:
-            log_debug("extras_yaml_mapping_end: nsert composite signal: %s", cur_composite_signal->id);
+            log_debug("extras_yaml_mapping_end: insert composite signal: %s", cur_composite_signal->id);
             g_hash_table_insert(tb_composite_signals, strdup(cur_composite_signal->id), cur_composite_signal);
             break;
         case PERIPHERAL_TYPE:
@@ -362,7 +376,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             }
 
             if (str_equal(last_scalar, "limit")) {
-                cur_block->limit_speed = strtol(cur_scalar, NULL, 10);
+                cur_block->limit_speed = strtof(cur_scalar, NULL);
                 break;
             }
 
@@ -397,6 +411,11 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 cur_signal_type->id = cur_scalar;
                 return;
             }
+            
+			if (str_equal(last_scalar, "initial")) {
+                cur_signal_type->initial = cur_scalar;
+                return;
+            }
             break;
         case COMPOSITE_SIGNAL:
             if (str_equal(last_scalar, "id")) {
@@ -420,13 +439,18 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             }
 
             if (str_equal(last_scalar, "distant")) {
-                cur_composite_signal->block = cur_scalar;
+                cur_composite_signal->distant = cur_scalar;
                 return;
             }
             break;
         case PERIPHERAL_TYPE:
             if (str_equal(last_scalar, "id")) {
                 cur_peripheral_type->id = cur_scalar;
+                return;
+            }
+
+			if (str_equal(last_scalar, "initial")) {
+                cur_peripheral_type->initial = cur_scalar;
                 return;
             }
             break;

@@ -50,13 +50,13 @@ bool init_config_parser(const char *config_dir, const char *table_file, FILE **f
     *fh = fopen(full_path, "r");
 
     if (*fh == NULL) {
-        syslog_server(LOG_ERR, "Interlocking parser: Failed to open %s", table_file);
+        syslog_server(LOG_ERR, "YAML parser: Failed to open %s", table_file);
         return false;
     }
 
     if (!yaml_parser_initialize(parser)) {
         fclose(*fh);
-        syslog_server(LOG_ERR, "Interlocking parser: Failed to initialise parser");
+        syslog_server(LOG_ERR, "YAML parser: Failed to initialise parser");
         return false;
     }
 

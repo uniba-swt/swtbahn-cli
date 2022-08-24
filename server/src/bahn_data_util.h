@@ -46,8 +46,6 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
 
 int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char* data[]);
 
-int config_get_array_int_value(const char *type, const char *id, const char *prop_name, int data[]);
-
 int config_get_array_float_value(const char *type, const char *id, const char *prop_name, float data[]);
 
 int config_get_array_bool_value(const char *type, const char *id, const char *prop_name, bool data[]);
@@ -59,6 +57,10 @@ char *track_state_get_value(const char *id);
 bool track_state_set_value(const char *id, const char *value);
 
 bool is_segment_occupied(const char *id);
+
+bool is_type_segment(const char *id);
+
+bool is_type_signal(const char *id);
 
 int train_state_get_speed(const char *train_id);
 

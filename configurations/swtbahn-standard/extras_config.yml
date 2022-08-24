@@ -130,29 +130,31 @@ crossings:
 signaltypes:
   - id: entry
     aspects:
-      - yellow
-      - green
-      - red
+      - aspect_caution
+      - aspect_go
+      - aspect_stop
   - id: exit
     aspects:
-      - yellow
-      - green
-      - red
+      - aspect_shunt
+      - aspect_caution
+      - aspect_go
+      - aspect_stop
   - id: distant
     aspects:
-      - yellow
-      - green
+      - aspect_caution
+      - aspect_go
+      - aspect_stop
   - id: block
     aspects:
-      - green
-      - red
+      - aspect_go
+      - aspect_stop
   - id: shunting
     aspects:
-      - white
-      - red
+      - aspect_shunt
+      - aspect_stop
   - id: halt
     aspects:
-      - red
+      - aspect_stop
   - id: platformlight
     aspects:
       - high

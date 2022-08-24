@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <yaml.h>
 
+const char INTERLOCKING_TABLE_FILENAME[] = "interlocking_table.yml";
+
 GHashTable *parse(yaml_parser_t *parser);
 
 bool is_str_equal(const char *str1, const char *str2) {
@@ -49,7 +51,7 @@ bool init_parser(const char *config_dir, const char *table_file,
     *fh = fopen(full_path, "r");
 
     if (*fh == NULL) {
-        syslog_server(LOG_ERR, "%Interlocking parser: Failed to open %s", table_file);
+        syslog_server(LOG_ERR, "%Interlocking parser: Failed to open %s", full_path);
         return false;
     }
 
@@ -414,7 +416,7 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
     // init
     FILE *fh;
     yaml_parser_t parser;
-    if (!init_parser(config_dir, "interlocking_table.yml", &fh, &parser)) {
+    if (!init_parser(config_dir, INTERLOCKING_TABLE_FILENAME, &fh, &parser)) {
         syslog_server(LOG_ERR, "Interlocking parser: Interlocking table file is missing");
         return false;
     }
