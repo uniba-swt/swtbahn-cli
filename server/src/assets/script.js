@@ -3,10 +3,23 @@ var sessionId = 0;
 var grabId = -1;
 var trainId = '';
 var trainEngine = '';
+var trainIsForwards = true;
+
+function updateTrainIsForwards() {
+	$.ajax({
+		type: 'POST',
+		url: '/monitor/train-state',
+		crossDomain: true,
+		data: { 'train': trainId },
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			trainIsForwards = responseData.includes('direction: forwards');
+		}
+	});
+}
 
 $(document).ready(
 	function () {
-		trackOutput = 'master';
 
 		// Configuration
 		$('#pingButton').click(function () {
@@ -99,6 +112,7 @@ $(document).ready(
 						$('#grabTrainResponse').text('Grabbed');
 						$('#grabTrainResponse').parent().removeClass('alert-danger');
 						$('#grabTrainResponse').parent().addClass('alert-success');
+						updateTrainIsForwards();
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#grabTrainResponse')
@@ -177,12 +191,16 @@ $(document).ready(
 				$('#dccSpeed:text').val(speeds[position + 1]);
 			}
 		});
+		
+		$('#swapDirection').click(function () {
+			trainIsForwards = !trainIsForwards;
+			$('#driveTrainButton').click();
+		});
 
 		$('#driveTrainButton').click(function () {
 			$('#driveTrainResponse').text('Waiting');
 			speed = $('#dccSpeed').val();
-			direction = $('#direction').is(':checked');
-			speed = direction ? speed : -speed;
+			speed = trainIsForwards ? speed : -speed;
 			if (sessionId != 0 && grabId != -1) {
 				$.ajax({
 					type: 'POST',
@@ -278,9 +296,8 @@ $(document).ready(
 			source = $('#signalIdFrom').val();
 			destination = $('#signalIdTo').val();
 			if (sessionId != 0 && grabId != -1) {
-
-				ajaxGetInterlocker().then(ajaxRequestRoute);
-				
+				ajaxGetInterlocker()
+					.then(ajaxRequestRoute);
 			} else {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
