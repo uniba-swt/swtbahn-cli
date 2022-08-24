@@ -328,6 +328,61 @@ def unset_interlocker(interlocker):
             click.echo(e, err=True)
 
 
+@click.command(help="Upload an interlocker. Absolute path to an BahnDSL (*.bahn) file")
+@click.argument('filepath')
+def upload_interlocker(filepath):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/upload/interlocker",
+                    files = {'file': open(filepath, 'r')})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Interlocker uploaded\n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Delete an interlocker")
+@click.argument('interlocker-name')
+def delete_interlocker(interlocker_name):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/upload/remove-interlocker",
+                    data = {'interlocker-name': interlocker_name})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Interlocker " + interlocker_name + " deleted\n")
+            else:
+                click.echo("Interlocker still in use, or system not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get a list of interlockers")
+def get_interlocker_list():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/upload/refresh-interlockers")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text.replace(",", "\n"))
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 # --- driver ---
 
 @click.group(help="Driver functionality")
@@ -814,6 +869,9 @@ controller.add_command(set_peripheral)
 controller.add_command(get_interlocker)
 controller.add_command(set_interlocker)
 controller.add_command(unset_interlocker)
+controller.add_command(upload_interlocker)
+controller.add_command(delete_interlocker)
+controller.add_command(get_interlocker_list)
 
 driver.add_command(grab)
 driver.add_command(release)
