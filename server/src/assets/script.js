@@ -196,6 +196,10 @@ $(document).ready(
 		$('#swapDirection').click(function () {
 			trainIsForwards = !trainIsForwards;
 			enteredSpeed = $('#dccSpeed').val();
+			if (lastSetSpeed == 0) {
+				$('#dccSpeed').val(1);
+				$('#driveTrainButton').click();
+			}
 			$('#dccSpeed').val(lastSetSpeed);
 			$('#driveTrainButton').click();
 			$('#dccSpeed').val(enteredSpeed);
