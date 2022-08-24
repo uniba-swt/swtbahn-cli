@@ -76,8 +76,7 @@
 
     <label>DCC Speed:</label>
     <input type="text" id=dccSpeed value="10" />
-    <label>Forward Direction:</label>
-    <input type="checkbox" id=direction checked />
+    <button id=swapDirection>Swap Direction</button>
     <button id=driveTrainButton>Drive</button>
     <button id=stopTrainButton>Stop</button>
     <span id=driveTrainResponse></span>
@@ -97,8 +96,8 @@
     <h1>Controller</h1>
 
     <label>Release Route:</label>
-    <input type="text" id=routeId value="" />
-    <button id=releaseRouteButtonClient>Release</button>
+    <input type="text" id=routeId value="None" />
+    <button id=releaseRouteButton>Release</button>
     <span id=releaseRouteResponse></span>
     <br />
 
