@@ -282,7 +282,7 @@ $(document).ready(
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
 
-								$('#routeId').text(responseData);
+								$('#routeId').val(responseData);
 							},
 							error: function (responseData, textStatus, errorThrown) {
 								$('#routeResponse').text(responseData.responseText);
@@ -359,7 +359,7 @@ $(document).ready(
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					routeId = responseData;
-					$('routeId').text(routeId);
+					$('routeId').val(routeId);
 					$('#routeResponse').parent().removeClass('alert-danger');
 					$('#routeResponse').parent().addClass('alert-success');
 					$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -374,7 +374,7 @@ $(document).ready(
 
 		$('#driveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').text();
+			var routeId = $('#routeId').val();
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -395,7 +395,7 @@ $(document).ready(
 						$('#routeResponse').parent().removeClass('alert-danger');
 						$('#routeResponse').parent().addClass('alert-success');
 						
-						$('#routeId').text("None");
+						$('#routeId').val("None");
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#routeResponse').text('Route could not be driven!');
@@ -520,10 +520,9 @@ $(document).ready(
 
 		// Controller
 		
-		// For driver.html
 		$('#releaseRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').text();
+			var routeId = $('#routeId').val();
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -543,7 +542,7 @@ $(document).ready(
 					$('#routeResponse').parent().addClass('alert-success');
 					$('#routeResponse').text('Route ' + routeId + ' released');
 				
-					$('#routeId').text("None");
+					$('#routeId').val("None");
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#routeResponse').parent().removeClass('alert-success');
@@ -552,38 +551,6 @@ $(document).ready(
 						.text('System not running or invalid track output!');
 				}
 			});
-		});
-		
-		// For client.html
-		$('#releaseRouteButtonClient').click(function () {
-			$('#releaseRouteResponse').text('Waiting');
-			var routeId = $('#routeId').val();
-			if (isNaN(routeId)) {
-				$('#releaseRouteResponse').parent().removeClass('alert-success');
-				$('#releaseRouteResponse').parent().addClass('alert-danger');
-				$('#releaseRouteResponse').text('Route \"' + routeId + '\" is not a number!');
-			} else {
-				$.ajax({
-					type: 'POST',
-					url: '/controller/release-route',
-					crossDomain: true,
-					data: { 'route-id': routeId },
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						$('#releaseRouteResponse').parent().removeClass('alert-danger');
-						$('#releaseRouteResponse').parent().addClass('alert-success');
-						$('#releaseRouteResponse').text('Route ' + routeId + ' released');
-					
-						$('#routeId').text("None");
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#releaseRouteResponse').parent().removeClass('alert-success');
-						$('#releaseRouteResponse').parent().addClass('alert-danger');
-						$('#releaseRouteResponse')
-							.text('System not running or invalid track output!');
-					}
-				});
-			}
 		});
 		
 		function setPointAjax(pointId, pointPosition) {
