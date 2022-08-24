@@ -563,6 +563,60 @@ def set_train_peripheral(peripheral, state, track_output):
             click.echo(e, err=True)
 
 
+@click.command(help="Upload a train engine. Absolute path to an SCCharts (*.sctx) file")
+@click.argument('filepath')
+def upload_engine(filepath):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/upload/engine",
+                    files = {'file': open(filepath, 'r')})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Train engine uploaded\n")
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Delete a train engine")
+@click.argument('engine-name')
+def delete_engine(engine_name):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/upload/remove-engine",
+                    data = {'engine-name': engine_name})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Train engine " + engine_name + " deleted\n")
+            else:
+                click.echo("Train engine still in use, or system not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get a list of train engines")
+def get_engine_list():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/upload/refresh-engines")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text.replace(",", "\n"))
+            else:
+                click.echo("System not running or invalid state!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
 
 # --- monitor ---
 
@@ -769,6 +823,9 @@ driver.add_command(set_dcc_speed)
 driver.add_command(set_calibrated_speed)
 driver.add_command(emergency_stop)
 driver.add_command(set_train_peripheral)
+driver.add_command(upload_engine)
+driver.add_command(delete_engine)
+driver.add_command(get_engine_list)
 
 monitor.add_command(get_trains)
 monitor.add_command(get_train_state)
