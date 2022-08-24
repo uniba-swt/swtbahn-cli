@@ -203,7 +203,7 @@ $(document).ready(
 				setTimeout(function() {
 					$('#driveTrainButton').click();
 					$('#dccSpeed').val(enteredSpeed);
-				}, 10);
+				}, 100 /* milliseconds */);
 			} else {
 				$('#dccSpeed').val(lastSetSpeed);
 				$('#driveTrainButton').click();
