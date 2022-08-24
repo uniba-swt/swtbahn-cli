@@ -108,7 +108,7 @@ def parse_config():
 
 
 @click.group(help="Command-line interface for controlling the SWTbahn. "
-        "Use the config command first to set the hostname and port.")
+        "Use the config command first to set the hostname and port")
 def cli():
     pass
 
@@ -337,7 +337,7 @@ def driver():
 
 @click.command(help="Grab a train")
 @click.argument('train')
-@click.option('--engine', '-e', help="The train engine behaviour to use.",
+@click.option('--engine', '-e', help="The train engine behaviour to use",
         default="libtrain_engine_default (unremovable)")
 def grab(train, engine):
     if (parse_config()):
@@ -444,10 +444,10 @@ def drive_route(route_id):
 
 
 @click.command(help="Set the dcc speed step of your train")
-@click.option('--backwards', '-b', help="The rear end of the train moves forward.",
+@click.option('--backwards', '-b', help="The rear end of the train moves forward",
         is_flag=True)
 @click.option('--track_output', '-t', help="Use another track output than the "
-        "default one.", default="")
+        "default one", default="")
 @click.argument('speed', type=click.IntRange(0, 126))
 def set_dcc_speed(backwards, speed, track_output):
     global session_id, grab_id, server, default_track_output
@@ -475,10 +475,10 @@ def set_dcc_speed(backwards, speed, track_output):
 
 
 @click.command(help="Set the calibrated speed step of your train")
-@click.option('--backwards', '-b', help="The rear end of the train moves forward.",
+@click.option('--backwards', '-b', help="The rear end of the train moves forward",
         is_flag=True)
 @click.option('--track_output', '-t', help="Use another track output than the "
-        "default one.", default="")
+        "default one", default="")
 @click.argument('speed', type=click.IntRange(0, 9))
 def set_calibrated_speed(backwards, speed, track_output):
     global session_id, grab_id, server, default_track_output
@@ -507,7 +507,7 @@ def set_calibrated_speed(backwards, speed, track_output):
 
 @click.command(help="Emergency stop your train")
 @click.option('--track_output', '-t', help="Use another track output than the "
-        "default one.", default="")
+        "default one", default="")
 def emergency_stop(track_output):
     global session_id, grab_id, server, default_track_output
     if (parse_config()):
@@ -532,7 +532,7 @@ def emergency_stop(track_output):
 
 @click.command(help="Set a peripheral of your train")
 @click.option('--track_output', '-t', help="Use another track output than the "
-        "default one.", default="")
+        "default one", default="")
 @click.argument('peripheral')
 @click.argument('state', type=click.Choice(['off', 'on']))
 def set_train_peripheral(peripheral, state, track_output):
