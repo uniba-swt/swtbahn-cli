@@ -43,3 +43,15 @@ body {
 #serverAlertBox {
 	height: 70px;
 }
+
+.alert-danger-blink {
+	border-style: solid;
+	border-width: 3px;
+	animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% {
+        border-color: var(--danger);
+    }
+}

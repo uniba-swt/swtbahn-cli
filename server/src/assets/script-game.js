@@ -72,16 +72,34 @@ function setResponse(responseId, message, callback) {
 	}, responseTimeout);
 }
 
+function speak(text) {
+    var msg = new SpeechSynthesisUtterance();
+    var voices = speechSynthesis.getVoices();
+    for (const voice of voices) {
+        if (voice.lang == "de-DE") {
+            msg.voice = voice;
+            break;
+        }
+    }
+    msg.text = text;
+    msg.rate = 0.7;
+    msg.lang = 'de';
+    speechSynthesis.speak(msg);
+}
+
 function setResponseDanger(responseId, message) {
 	setResponse(responseId, message, function() {
 		$(responseId).parent().addClass('alert-danger');
+		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
 	});
+	speak('NEIN, NEIN, NEIN!');
 }
 
 function setResponseSuccess(responseId, message) {
 	setResponse(responseId, message, function() {
 		$(responseId).parent().removeClass('alert-danger');
+		$(responseId).parent().removeClass('alert-danger-blink');
 		$(responseId).parent().addClass('alert-success');
 	});
 }
