@@ -24,7 +24,7 @@ const allPossibleDestinationsSwtbahnStandard = [
 ];
 
 const allPossibleDestinationsSwtbahnFull = [
-	// Empty.
+	// To be filled in.
 ];
 
 function getRoutes(sourceSignal) {
@@ -73,18 +73,14 @@ function setResponse(responseId, message, callback) {
 }
 
 function speak(text) {
-    var msg = new SpeechSynthesisUtterance();
-    var voices = speechSynthesis.getVoices();
-    for (const voice of voices) {
+    var msg = new SpeechSynthesisUtterance(text);
+    for (const voice of window.speechSynthesis.getVoices()) {
         if (voice.lang == "de-DE") {
             msg.voice = voice;
             break;
         }
     }
-    msg.text = text;
-    msg.rate = 0.7;
-    msg.lang = 'de';
-    speechSynthesis.speak(msg);
+    window.speechSynthesis.speak(msg);
 }
 
 function setResponseDanger(responseId, message) {
@@ -253,6 +249,45 @@ function driveToDestination(destination) {
 		.fail(releaseRoute).always(updatePossibleRoutes);
 }
 
+class Stopwatch {
+	elapsedTime = 0; // milliseconds
+	displayField = null;
+	intervalId = null;
+	updateInterval = 1000; // 1000 milliseconds
+	
+	constructor(htmlId) {
+		this.displayField = $(htmlId);
+		this.clear();
+	}
+	
+	clear() {
+		this.elapsedTime = 0;
+		this.display();
+	}
+	
+	start() {
+		this.intervalId = setInterval(() => {
+			this.increment();
+			this.display();
+		}, this.updateInterval);
+	}
+	
+	increment() {
+		this.elapsedTime += this.updateInterval;
+	}
+	
+	stop() {
+		clearInterval(this.intervalId);
+		this.intervalId = null;
+		this.display();
+	}
+	
+	display() {
+		this.displayField.text(this.elapsedTime/1000 + 's');
+	}
+}
+
+var stopwatch = null;
 
 function initialise() {
 	trackOutput = 'master';
@@ -282,6 +317,9 @@ function initialise() {
 			driveToDestination(`#${choice}`);
 		});
 	});
+	
+	stopwatch = new Stopwatch('#elapsedTime');
+	stopwatch.clear();
 }
 
 function resetSourceSignal() {
@@ -307,6 +345,11 @@ $(document).ready(
 		//-----------------------------------------------------
 		
 		$('#startGameButton').click(function () {
+			// On iOS, speech synthesis only works if it is first triggered by the user.
+			speak("");
+
+			stopwatch.clear();
+			
 			if (sessionId != 0 || grabId != -1) {
 				setResponseDanger('#serverResponse', 'You are already driving a train!')
 				return;
@@ -316,10 +359,14 @@ $(document).ready(
 			
 			resetSourceSignal();
 			
-			grabTrain().then(updatePossibleRoutes);
+			grabTrain()
+				.then(updatePossibleRoutes)
+				.then(() => stopwatch.start());			
 		});
 
 		$('#endGameButton').click(function () {
+			stopwatch.stop();
+
 			if (sessionId == 0 || grabId == -1) {
 				setResponseSuccess('#serverResponse', 'Thank you for playing 😀');
 				$('#startGameButton').show();
@@ -342,4 +389,6 @@ $(document).ready(
 
 	}	
 );
+
+
 

@@ -44,9 +44,13 @@ body {
 	height: 70px;
 }
 
-.alert-danger-blink {
-	border-style: solid;
+#serverAlert {
 	border-width: 3px;
+	border-style: solid;
+	border-color: white;
+}
+
+.alert-danger-blink {
 	animation: blink 1s infinite;
 }
 
@@ -55,3 +59,4 @@ body {
         border-color: var(--danger);
     }
 }
+
