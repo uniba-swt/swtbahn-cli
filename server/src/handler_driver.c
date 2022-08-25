@@ -86,6 +86,16 @@ bool train_grabbed(const char *train) {
 	return grabbed;
 }
 
+static bool train_is_on_tracks(const char *train_id) {
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+	bool ret = false;
+	if (train_position_query.length > 0) {
+		ret = true;
+	}
+	bidib_free_train_position_query(train_position_query);
+	return ret;
+}
+
 static bool train_position_is_at(const char *train_id, const char *segment) {
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 
@@ -149,10 +159,25 @@ static bool drive_route(const int grab_id, const char *route_id) {
 			// Signal that the train has just passed will be set to the Stop aspect 
 			// when it enters the next segment
 
-			// Wait until the next segment is entered
-			while (running && !train_position_is_at(train_id, path_item)) {
+			// Wait until the next segment is entered or train position is lost
+			while (running && !train_position_is_at(train_id, path_item) && train_is_on_tracks(train_id)) {
 				usleep(TRAIN_DRIVE_TIME_STEP);
 			}
+			// If train position was lost, need to check for train reappearing on segments further ahead
+			if (!train_is_on_tracks(train_id)) {
+				bool train_at_pos_or_ahead = false;
+				while (running && !train_at_pos_or_ahead) {
+					usleep(TRAIN_DRIVE_TIME_STEP);
+					for (int path_item_lookahead_index = path_item_index; path_item_lookahead_index < path_count; ++path_item_lookahead_index) {
+						const char *path_item_ahead = g_array_index(route->path, char *, path_item_lookahead_index);
+						train_at_pos_or_ahead = train_position_is_at(train_id, path_item_ahead);
+						if (train_at_pos_or_ahead || !running) {
+							break;
+						}
+					}
+				}
+			}
+			
 			
 			// Set signal to the Stop aspect
 			set_signal_stop = false;
