@@ -5,9 +5,14 @@ var userId = null;
 var trainId = null;
 var trainEngine = null;
 
+var gameSourceSignal = null;      // Initial source signal for the game.
+var gameDestinationSignal = null; // Final destination signal for the game.
 var sourceSignal = null;
 var destinationSignal = null;
 var routeId = null;
+
+// Portion of the route preview sprite to show is a percentage of the total sprite height.
+var routePreviewHeight = null;    
 
 const allDestinationChoices = [
 	'destination1',
@@ -20,11 +25,12 @@ var allPossibleDestinations = null;
 const allPossibleDestinationsSwtbahnStandard = [
 	{ source: 'signal3', destinations: { 'destination1': 'signal6' } },
 	{ source: 'signal6', destinations: { 'destination2': 'signal14' } },
-	{ source: 'signal14', destinations: { 'destination3': 'signal19' } }
+	{ source: 'signal14', destinations: { 'destination3': 'signal19' } },
+	{ source: 'signal12', destinations: { 'destination2': 'signal6' } },
 ];
 
 const allPossibleDestinationsSwtbahnFull = [
-	// To be filled in.
+	// FIXME: To be filled in.
 ];
 
 function getRoutes(sourceSignal) {
@@ -89,6 +95,8 @@ function setResponseDanger(responseId, message) {
 		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
 	});
+	
+	// FIXME: Replace with better game sounds.
 	speak('NEIN, NEIN, NEIN!');
 }
 
@@ -166,7 +174,7 @@ function updatePossibleRoutes() {
 	
 	const routes = getRoutes(sourceSignal);
 	if (routes.index == null) {
-		$('#routePreview').css('background-position', 'top -46% right');
+		$('#routePreview').css('background-position', 'top -100% right');
 		return;
 	}
 	
@@ -177,7 +185,15 @@ function updatePossibleRoutes() {
 		$(`#${choice}`).removeClass(disabledButtonStyle);
 	});
 	
-	$('#routePreview').css('background-position', `top ${46 * routes.index}% right`);
+	$('#routePreview').css('background-position', `top ${routePreviewHeight * routes.index}% right`);
+}
+
+function finalDestinationCheck() {
+	if (sourceSignal == gameDestinationSignal) {
+		stopwatch.stop();
+		speak('JA, JA, JA!');
+		
+	}
 }
 
 function requestRoute() {
@@ -246,11 +262,15 @@ function driveToDestination(destination) {
 	disableAllDestinations();
 
 	requestRoute().then(driveRoute)
-		.fail(releaseRoute).always(updatePossibleRoutes);
+		.fail(releaseRoute)
+		.always(() => {
+			updatePossibleRoutes();
+			finalDestinationCheck();
+		});
 }
 
 class Stopwatch {
-	elapsedTime = 0; // milliseconds
+	elapsedTime = 0;       // milliseconds
 	displayField = null;
 	intervalId = null;
 	updateInterval = 1000; // 1000 milliseconds
@@ -295,10 +315,27 @@ function initialise() {
 	grabId = -1;
 	userId = 'Bob Jones';
 	trainId = 'cargo_db';
-	trainEngine = 'libtrain_engine_default (unremovable)';	
+	trainEngine = 'libtrain_engine_default (unremovable)';
+	
+	gameSourceSignal = 'signal3';
+	gameDestinationSignal = 'signal19';
+	
+	// FIXME: Portion of the route preview sprite to show is a percentage of the total sprite height
+	routePreviewHeight = 24;
 
 	// Display the train name and user name.
 	$('#userDetails').html(`${userId} <br /> is driving ${trainId}`);
+	
+	// FIXME: Quick way to test other players.
+	$('#userDetails').click(function () {
+		// Set the source signal for the train's starting position.
+		userId = 'Anna Jones';
+		trainId = 'cargo_green';
+		gameSourceSignal = 'signal12';
+		gameDestinationSignal = 'signal19';
+		
+		$('#userDetails').html(`${userId} <br /> is driving ${trainId}`);
+	});
 	
 	// Only show the button to start the game.
 	$('#startGameButton').show();
@@ -318,13 +355,9 @@ function initialise() {
 		});
 	});
 	
+	// Initialise stop watch for the player's turn.
 	stopwatch = new Stopwatch('#elapsedTime');
 	stopwatch.clear();
-}
-
-function resetSourceSignal() {
-	// Set the source signal for the train's starting position.
-	sourceSignal = 'signal3';
 }
 
 // Wait for a duration in milliseconds.
@@ -345,7 +378,7 @@ $(document).ready(
 		//-----------------------------------------------------
 		
 		$('#startGameButton').click(function () {
-			// On iOS, speech synthesis only works if it is first triggered by the user.
+			// FIXME: On iOS, speech synthesis only works if it is first triggered by the user.
 			speak("");
 
 			stopwatch.clear();
@@ -357,7 +390,8 @@ $(document).ready(
 			
 			setResponseSuccess('#serverResponse', 'Waiting ⏳');
 			
-			resetSourceSignal();
+			// Set the source signal for the train's starting position.
+			sourceSignal = gameSourceSignal;
 			
 			grabTrain()
 				.then(updatePossibleRoutes)

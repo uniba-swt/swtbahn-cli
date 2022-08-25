@@ -31,7 +31,7 @@ body {
 #routePreview {
   background-image: url("swtbahn-standard-routes.png");
   background-repeat: no-repeat;
-  background-position: top -46% right;
+  background-position: top -100% right;
   background-size: 100%;
   position: relative;
   width: 100%;
