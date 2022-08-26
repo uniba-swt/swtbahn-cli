@@ -371,8 +371,8 @@ function initialise() {
 		
 	);
 	
-	gameSourceSignal = 'signal5';
-//	gameSourceSignal = 'signal3';
+//	gameSourceSignal = 'signal5';
+	gameSourceSignal = 'signal3';
 	gameDestinationSignal = 'signal19';
 	
 	// FIXME: Portion of the route preview sprite to show is a percentage of the total sprite height
@@ -400,8 +400,8 @@ function initialise() {
 	$('#serverResponse').parent().hide();
 	
 	// Set the possible destinations for the SWTbahn platform.
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
-	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
+	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+//	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinations();
 	
 	// Initialise the click handler of each destination button.
