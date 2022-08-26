@@ -1,15 +1,5 @@
-var trackOutput = null;
-var sessionId = null;
-var grabId = null;
-var userId = null;
-var trainId = null;
-var trainEngine = null;
-
 var gameSourceSignal = null;      // Initial source signal for the game.
 var gameDestinationSignal = null; // Final destination signal for the game.
-var sourceSignal = null;
-var destinationSignal = null;
-var routeId = null;
 
 // Portion of the route preview sprite to show is a percentage of the total sprite height.
 var routePreviewHeight = null;    
@@ -21,6 +11,11 @@ const allDestinationChoices = [
 ];
 
 var allPossibleDestinations = null;
+
+const allPossibleDestinationsSwtbahnUltraloop = [
+	{ source: 'signal5', destinations: { 'destination1': 'signal4' } },
+	{ source: 'signal6', destinations: { 'destination2': 'signal7' } }
+];
 
 const allPossibleDestinationsSwtbahnStandard = [
 	{ source: 'signal3', destinations: { 'destination1': 'signal6' } },
@@ -108,68 +103,7 @@ function setResponseSuccess(responseId, message) {
 	});
 }
 
-function grabTrain() {
-	return $.ajax({
-		type: 'POST',
-		url: '/driver/grab-train',
-		crossDomain: true,
-		data: { 'train': trainId, 'engine': trainEngine },
-		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			responseDataSplit = responseData.split(',');
-			sessionId = responseDataSplit[0];
-			grabId = responseDataSplit[1];
-			
-			setResponseSuccess('#serverResponse', 'Your train is ready 😁');
-			$('#startGameButton').hide();
-			$('#endGameButton').show();
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			setResponseDanger('#serverResponse', 'There was a problem starting your train 😢');
-		}
-	});
-}
-
-function stopTrain() {
-	return $.ajax({
-		type: 'POST',
-		url: '/driver/set-dcc-train-speed',
-		crossDomain: true,
-		data: {
-			'session-id': sessionId,
-			'grab-id': grabId,
-			'speed': 0,
-			'track-output': trackOutput
-		},
-		dataType: 'text',
-		error: function (responseData, textStatus, errorThrown) {
-			setResponseDanger('#serverResponse', 'There was a problem stopping your train 😢');
-		}
-	});
-}
-
-function releaseTrain() {
-	return $.ajax({
-		type: 'POST',
-		url: '/driver/release-train',
-		crossDomain: true,
-		data: { 'session-id': sessionId, 'grab-id': grabId },
-		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			sessionId = 0;
-			grabId = -1;
-			
-			setResponseSuccess('#serverResponse', 'Thank you for playing 😀');
-			$('#startGameButton').show();
-			$('#endGameButton').hide();
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			setResponseDanger('#serverResponse', 'There was a problem ending your turn 🤔');
-		}
-	});
-}
-
-function updatePossibleRoutes() {
+function updatePossibleRoutes(sourceSignal) {
 	disableAllDestinations();
 	
 	const routes = getRoutes(sourceSignal);
@@ -188,7 +122,7 @@ function updatePossibleRoutes() {
 	$('#routePreview').css('background-position', `top ${routePreviewHeight * routes.index}% right`);
 }
 
-function finalDestinationCheck() {
+function finalDestinationCheck(sourceSignal) {
 	if (sourceSignal == gameDestinationSignal) {
 		stopwatch.stop();
 		speak('JA, JA, JA!');
@@ -196,78 +130,192 @@ function finalDestinationCheck() {
 	}
 }
 
-function requestRoute() {
-	return $.ajax({
-		type: 'POST',
-		url: '/driver/request-route',
-		crossDomain: true,
-		data: {
-			'session-id': sessionId,
-			'grab-id': grabId,
-			'source': sourceSignal,
-			'destination': destinationSignal
-		},
-		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			routeId = responseData;
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			routeId = null;
-			setResponseDanger('#serverResponse', responseData.responseText);
-		}
-	});
-}
+class Driver {
+	sessionId = null;
+	grabId = null;
 
-function driveRoute() {
-	return $.ajax({
-		type: 'POST',
-		url: '/driver/drive-route',
-		crossDomain: true,
-		data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
-		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			routeId = null;
-			sourceSignal = destinationSignal;
-			setResponseSuccess('#serverResponse', 'Train was driven to your chosen destination 🥳');
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			setResponseDanger('#serverResponse', 'Train could not be driven to your chosen destination 😢');
-		}
-	});
-}
+	trackOutput = null;
+	trainEngine = null;
+	trainId = null;
+	userId = null;
 
-function releaseRoute() {
-	if (routeId == null) {
-		return;
-	}
+	sourceSignal = null;
+	destinationSignal = null;
+	routeId = null;
 
-	return $.ajax({
-		type: 'POST',
-		url: '/controller/release-route',
-		crossDomain: true,
-		data: { 'route-id': routeId },
-		dataType: 'text'
-	});
-}
-	
-function driveToDestination(destination) {
-	if (sessionId == 0 || grabId == -1) {
-		setResponseDanger('#serverResponse', 'Your train could not be found 😢');
-		return;
+	constructor(trackOutput, trainEngine, trainId, userId) {
+		this.sessionId = 0;
+		this.grabId = -1;
+
+		this.trackOutput = trackOutput;
+		this.trainEngine = trainEngine;
+		this.trainId = trainId;
+		this.userId = userId;
+
+		this.sourceSignal = null;
+		this.destinationSignal = null;
+		this.routeId = null;
 	}
 	
-	setResponseSuccess('#serverResponse', 'Driving your train to your chosen destination ⏳');
-
-	destinationSignal = $(destination).val();
-	disableAllDestinations();
-
-	requestRoute().then(driveRoute)
-		.fail(releaseRoute)
-		.always(() => {
-			updatePossibleRoutes();
-			finalDestinationCheck();
+	get hasValidTrainSession() {
+		return (this.sessionId != 0 && this.grabId != -1)
+	}
+	
+	grabTrainPromise() {
+		return $.ajax({
+			type: 'POST',
+			url: '/driver/grab-train',
+			crossDomain: true,
+			data: {
+				'train': this.trainId,
+				'engine': this.trainEngine
+			},
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				const responseDataSplit = responseData.split(',');
+				this.sessionId = responseDataSplit[0];
+				this.grabId = responseDataSplit[1];
+			
+				setResponseSuccess('#serverResponse', 'Your train is ready 😁');
+				$('#startGameButton').hide();
+				$('#endGameButton').show();
+			},
+			error: (responseData, textStatus, errorThrown) => {
+				setResponseDanger('#serverResponse', 'There was a problem starting your train 😢');
+			}
 		});
+	}
+
+	stopTrainPromise() {
+		return $.ajax({
+			type: 'POST',
+			url: '/driver/set-dcc-train-speed',
+			crossDomain: true,
+			data: {
+				'session-id': this.sessionId,
+				'grab-id': this.grabId,
+				'speed': 0,
+				'track-output': this.trackOutput
+			},
+			dataType: 'text',
+			error: (responseData, textStatus, errorThrown) => {
+				setResponseDanger('#serverResponse', 'There was a problem stopping your train 😢');
+			}
+		});
+	}
+
+	releaseTrainPromise() {
+		return $.ajax({
+			type: 'POST',
+			url: '/driver/release-train',
+			crossDomain: true,
+			data: {
+				'session-id': this.sessionId, 
+				'grab-id': this.grabId
+			},
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				this.sessionId = 0;
+				this.grabId = -1;
+			
+				setResponseSuccess('#serverResponse', 'Thank you for playing 😀');
+				$('#startGameButton').show();
+				$('#endGameButton').hide();
+			},
+			error: (responseData, textStatus, errorThrown) => {
+				setResponseDanger('#serverResponse', 'There was a problem ending your turn 🤔');
+			}
+		});
+	}
+	
+	requestRoutePromise() {
+		return $.ajax({
+			type: 'POST',
+			url: '/driver/request-route',
+			crossDomain: true,
+			data: {
+				'session-id': this.sessionId,
+				'grab-id': this.grabId,
+				'source': this.sourceSignal,
+				'destination': this.destinationSignal
+			},
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				this.routeId = responseData;
+			},
+			error: (responseData, textStatus, errorThrown) => {
+				this.routeId = null;
+				setResponseDanger('#serverResponse', responseData.responseText);
+			}
+		});
+	}
+
+	driveRoutePromise() {
+		return $.ajax({
+			type: 'POST',
+			url: '/driver/drive-route',
+			crossDomain: true,
+			data: {
+				'session-id': this.sessionId, 
+				'grab-id': this.grabId, 
+				'route-id': this.routeId
+			},
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				this.routeId = null;
+				this.sourceSignal = this.destinationSignal;
+				setResponseSuccess('#serverResponse', 'Train was driven to your chosen destination 🥳');
+			},
+			error: (responseData, textStatus, errorThrown) => {
+				this.routeId = null;
+				setResponseDanger('#serverResponse', 'Train could not be driven to your chosen destination 😢');
+			}
+		});
+	}
+
+	releaseRoutePromise() {
+		if (this.routeId == null) {
+			return;
+		}
+
+		return $.ajax({
+			type: 'POST',
+			url: '/controller/release-route',
+			crossDomain: true,
+			data: { 'route-id': this.routeId },
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				this.routeId = null;
+			}
+		});
+	}
+
+	async driveToPromise(destination) {
+		if (!this.hasValidTrainSession) {
+			setResponseDanger('#serverResponse', 'Your train could not be found 😢');
+			return;
+		}
+	
+		// FIXME: Keep retrying until the route is granted, or until the player selects another destination.
+		this.destinationSignal = $(destination).val();
+		await this.requestRoutePromise().catch(() => {});
+		if (this.routeId == null) {
+			return;
+		}
+		
+		setResponseSuccess('#serverResponse', 'Driving your train to your chosen destination ⏳');
+		disableAllDestinations();
+	
+		this.driveRoutePromise()
+			.catch(() => this.releaseRoutePromise())
+			.always(() => {
+				updatePossibleRoutes(this.sourceSignal);
+				finalDestinationCheck(this.sourceSignal);
+			});
+	}
 }
+
+var driver = null;
 
 class Stopwatch {
 	elapsedTime = 0;       // milliseconds
@@ -310,31 +358,33 @@ class Stopwatch {
 var stopwatch = null;
 
 function initialise() {
-	trackOutput = 'master';
-	sessionId = 0;
-	grabId = -1;
-	userId = 'Bob Jones';
-	trainId = 'cargo_db';
-	trainEngine = 'libtrain_engine_default (unremovable)';
+	driver = new Driver(
+		'master',                                 // trackOutput
+		'libtrain_engine_default (unremovable)',  // trainEngine
+		'cargo_db',                               // trainId
+		'Bob Jones'                               // userId
+		
+	);
 	
-	gameSourceSignal = 'signal3';
+	gameSourceSignal = 'signal5';
+//	gameSourceSignal = 'signal3';
 	gameDestinationSignal = 'signal19';
 	
 	// FIXME: Portion of the route preview sprite to show is a percentage of the total sprite height
 	routePreviewHeight = 24;
 
 	// Display the train name and user name.
-	$('#userDetails').html(`${userId} <br /> is driving ${trainId}`);
+	$('#userDetails').html(`${driver.userId} <br /> is driving ${driver.trainId}`);
 	
 	// FIXME: Quick way to test other players.
 	$('#userDetails').click(function () {
 		// Set the source signal for the train's starting position.
-		userId = 'Anna Jones';
-		trainId = 'cargo_green';
+		driver.userId = 'Anna Jones';
+		driver.trainId = 'cargo_green';
 		gameSourceSignal = 'signal12';
 		gameDestinationSignal = 'signal19';
 		
-		$('#userDetails').html(`${userId} <br /> is driving ${trainId}`);
+		$('#userDetails').html(`${driver.userId} <br /> is driving ${driver.trainId}`);
 	});
 	
 	// Only show the button to start the game.
@@ -345,13 +395,14 @@ function initialise() {
 	$('#serverResponse').parent().hide();
 	
 	// Set the possible destinations for the SWTbahn platform.
-	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinations();
 	
 	// Initialise the click handler of each destination button.
 	allDestinationChoices.forEach(choice => {
 		$(`#${choice}`).click(function () {
-			driveToDestination(`#${choice}`);
+			driver.driveToPromise(`#${choice}`);
 		});
 	});
 	
@@ -383,7 +434,7 @@ $(document).ready(
 
 			stopwatch.clear();
 			
-			if (sessionId != 0 || grabId != -1) {
+			if (driver.hasValidTrainSession) {
 				setResponseDanger('#serverResponse', 'You are already driving a train!')
 				return;
 			}
@@ -391,17 +442,17 @@ $(document).ready(
 			setResponseSuccess('#serverResponse', 'Waiting ⏳');
 			
 			// Set the source signal for the train's starting position.
-			sourceSignal = gameSourceSignal;
+			driver.sourceSignal = gameSourceSignal;
 			
-			grabTrain()
-				.then(updatePossibleRoutes)
+			driver.grabTrainPromise()
+				.then(() => updatePossibleRoutes(driver.sourceSignal))
 				.then(() => stopwatch.start());			
 		});
 
 		$('#endGameButton').click(function () {
 			stopwatch.stop();
 
-			if (sessionId == 0 || grabId == -1) {
+			if (!driver.hasValidTrainSession) {
 				setResponseSuccess('#serverResponse', 'Thank you for playing 😀');
 				$('#startGameButton').show();
 				$('#endGameButton').hide();
@@ -410,14 +461,14 @@ $(document).ready(
 			
 			setResponseSuccess('#serverResponse', 'Waiting ⏳');
 			
-			sourceSignal = null;
-			
-			stopTrain()
+			driver.sourceSignal = null;
+						
+			driver.stopTrainPromise()
 				.then(() => wait(500))
-				.then(releaseTrain)
+				.then(() => driver.releaseTrainPromise())
 				.always(() => { 
-					releaseRoute(); 
-					updatePossibleRoutes(); 
+					driver.releaseRoutePromise(); 
+					updatePossibleRoutes(driver.sourceSignal); 
 				});
 		});
 
