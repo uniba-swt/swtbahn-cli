@@ -30,7 +30,7 @@
 #include <onion/log.h>
 #include <onion/low.h>
 #include <signal.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
