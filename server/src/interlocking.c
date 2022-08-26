@@ -26,7 +26,7 @@
  *
  */
 
-#include <bidib.h>
+#include <bidib/bidib.h>
 #include <glib.h>
 #include <string.h>
 #include <stdio.h>

@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <glib.h>
-#include <bidib.h>
+#include <bidib/bidib.h>
 
 #include "dyn_containers_interface.h"
 #include "handler_admin.h"
