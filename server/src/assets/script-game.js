@@ -176,12 +176,12 @@ class Driver {
 				this.sessionId = responseDataSplit[0];
 				this.grabId = responseDataSplit[1];
 			
-				setResponseSuccess('#serverResponse', 'Your train is ready 😁');
+				setResponseSuccess('#serverResponse', '😁 Your train is ready');
 				$('#startGameButton').hide();
 				$('#endGameButton').show();
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 'There was a problem starting your train 😢');
+				setResponseDanger('#serverResponse', '😢 There was a problem starting your train');
 			}
 		});
 	}
@@ -199,7 +199,7 @@ class Driver {
 			},
 			dataType: 'text',
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 'There was a problem stopping your train 😢');
+				setResponseDanger('#serverResponse', '😢 There was a problem stopping your train');
 			}
 		});
 	}
@@ -218,12 +218,12 @@ class Driver {
 				this.sessionId = 0;
 				this.grabId = -1;
 			
-				setResponseSuccess('#serverResponse', 'Thank you for playing 😀');
+				setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 				$('#startGameButton').show();
 				$('#endGameButton').hide();
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 'There was a problem ending your turn 🤔');
+				setResponseDanger('#serverResponse', '🤔 There was a problem ending your turn');
 			}
 		});
 	}
@@ -264,11 +264,11 @@ class Driver {
 			success: (responseData, textStatus, jqXHR) => {
 				this.routeId = null;
 				this.sourceSignal = this.destinationSignal;
-				setResponseSuccess('#serverResponse', 'Train was driven to your chosen destination 🥳');
+				setResponseSuccess('#serverResponse', '🥳 Train was driven to your chosen destination');
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeId = null;
-				setResponseDanger('#serverResponse', 'Train could not be driven to your chosen destination 😢');
+				setResponseDanger('#serverResponse', '😢 Train could not be driven to your chosen destination');
 			}
 		});
 	}
@@ -296,15 +296,20 @@ class Driver {
 			return;
 		}
 	
-		// FIXME: Keep retrying until the route is granted, or until the player selects another destination.
-		this.destinationSignal = $(destination).val();
-		await this.requestRoutePromise().catch(() => {});
-		if (this.routeId == null) {
-			return;
-		}
+		// FIXME: Keep retrying until the route is granted, or until the player selects another destination.		
+		let routeIsGranted = false;
+		do {
+			this.destinationSignal = $(destination).val();
+			await this.requestRoutePromise().catch(() => {});
+			routeIsGranted = (this.routeId == null);
+			if (!routeIsGranted) {
+				setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen route to become available ...');
+				await wait(1000);
+			}
+		} while (!routeIsGranted);
 		
-		setResponseSuccess('#serverResponse', 'Driving your train to your chosen destination ⏳');
 		disableAllDestinations();
+		setResponseSuccess('#serverResponse', '⏳ Driving your train to your chosen destination ...');
 	
 		this.driveRoutePromise()
 			.catch(() => this.releaseRoutePromise())
@@ -439,7 +444,7 @@ $(document).ready(
 				return;
 			}
 			
-			setResponseSuccess('#serverResponse', 'Waiting ⏳');
+			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 			
 			// Set the source signal for the train's starting position.
 			driver.sourceSignal = gameSourceSignal;
@@ -453,13 +458,13 @@ $(document).ready(
 			stopwatch.stop();
 
 			if (!driver.hasValidTrainSession) {
-				setResponseSuccess('#serverResponse', 'Thank you for playing 😀');
+				setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 				$('#startGameButton').show();
 				$('#endGameButton').hide();
 				return;
 			}
 			
-			setResponseSuccess('#serverResponse', 'Waiting ⏳');
+			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 			
 			driver.sourceSignal = null;
 						
