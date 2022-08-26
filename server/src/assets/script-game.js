@@ -301,7 +301,7 @@ class Driver {
 		do {
 			this.destinationSignal = $(destination).val();
 			await this.requestRoutePromise().catch(() => {});
-			routeIsGranted = (this.routeId == null);
+			routeIsGranted = (this.routeId != null);
 			if (!routeIsGranted) {
 				setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen route to become available ...');
 				await wait(1000);
