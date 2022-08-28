@@ -52,13 +52,49 @@ const destinationButtonStyle = {
 	'destination3': 'btn-info'
 };
 
-function disableAllDestinations() {
+function disableAllDestinationButtons() {
 	allDestinationChoices.forEach(choice => {
 		$(`#${choice}`).val("");
 		$(`#${choice}`).prop('disabled', true);
 		$(`#${choice}`).removeClass(destinationButtonStyle[choice]);
 		$(`#${choice}`).addClass(disabledButtonStyle);
 	});
+}
+
+function highlightDestinationButton(choice) {
+	$(`#${choice}`).addClass(destinationButtonStyle[choice]);
+	$(`#${choice}`).removeClass(disabledButtonStyle);
+}
+
+function enableDestinationButton(choice) {
+	$(`#${choice}`).val(routes.destinations[choice]);
+	$(`#${choice}`).prop('disabled', false);
+	$(`#${choice}`).addClass(destinationButtonStyle[choice]);
+	$(`#${choice}`).removeClass(disabledButtonStyle);
+}
+
+function updatePossibleRoutes(sourceSignal) {
+	disableAllDestinationButtons();
+	
+	const routes = getRoutes(sourceSignal);
+	if (routes.index == null) {
+		$('#routePreview').css('background-position', 'top -100% right');
+		return;
+	}
+	
+	Object.keys(routes.destinations).forEach(choice => {
+		enableDestinationButton(choice);
+	});
+	
+	$('#routePreview').css('background-position', `top ${routePreviewHeight * routes.index}% right`);
+}
+
+function finalDestinationCheck(sourceSignal) {
+	if (sourceSignal == gameDestinationSignal) {
+		stopwatch.stop();
+		// FIXME: Replace with better game sounds and visual response.
+		speak('JA, JA, JA!');
+	}
 }
 
 var responseTimer = null;
@@ -106,33 +142,6 @@ function setResponseSuccess(responseId, message) {
 	});
 }
 
-function updatePossibleRoutes(sourceSignal) {
-	disableAllDestinations();
-	
-	const routes = getRoutes(sourceSignal);
-	if (routes.index == null) {
-		$('#routePreview').css('background-position', 'top -100% right');
-		return;
-	}
-	
-	Object.keys(routes.destinations).forEach(choice => {
-		$(`#${choice}`).val(routes.destinations[choice]);
-		$(`#${choice}`).prop('disabled', false);
-		$(`#${choice}`).addClass(destinationButtonStyle[choice]);
-		$(`#${choice}`).removeClass(disabledButtonStyle);
-	});
-	
-	$('#routePreview').css('background-position', `top ${routePreviewHeight * routes.index}% right`);
-}
-
-function finalDestinationCheck(sourceSignal) {
-	if (sourceSignal == gameDestinationSignal) {
-		stopwatch.stop();
-		// FIXME: Replace with better game sounds and visual response.
-		speak('JA, JA, JA!');
-	}
-}
-
 class Driver {
 	sessionId = null;
 	grabId = null;
@@ -145,6 +154,9 @@ class Driver {
 	sourceSignal = null;
 	destinationSignal = null;
 	routeId = null;
+	
+	routeRequestInterval = null;
+	retryRouteInterval = null;
 
 	constructor(trackOutput, trainEngine, trainId, userId) {
 		this.sessionId = 0;
@@ -158,10 +170,17 @@ class Driver {
 		this.sourceSignal = null;
 		this.destinationSignal = null;
 		this.routeId = null;
+		
+		this.routeRequestInterval = null;
+		this.retryRouteInterval = 1;   // seconds
 	}
 	
 	get hasValidTrainSession() {
 		return (this.sessionId != 0 && this.grabId != -1)
+	}
+	
+	get hasRouteGranted() {
+		return (this.routeId != null);
 	}
 	
 	grabTrainPromise() {
@@ -299,21 +318,34 @@ class Driver {
 			return;
 		}
 	
-		// FIXME: Keep retrying until the route is granted, or until the player selects another destination.		
-		let routeIsGranted = false;
-		do {
-			this.destinationSignal = $(destination).val();
-			await this.requestRoutePromise().catch(() => {});
-			routeIsGranted = (this.routeId != null);
-			if (!routeIsGranted) {
-				setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen destination to become available ...');
-				await wait(1000);
-			}
-		} while (!routeIsGranted);
+		const lock = await Mutex.lock();
 		
-		disableAllDestinations();
+		if (this.hasRouteGranted) {
+			Mutex.unlock(request);
+			return;
+		}
+		
+		if (this.routeRequestInterval != null) {
+			cancelInterval(this.routeRequestInterval);
+			this.routeRequestInterval = null;
+		}
+		
+		this.destinationSignal = $(destination).val();
+		await this.requestRoutePromise().catch(() => {});
+		if (!this.hasRouteGranted)  {
+			// Keep retrying until the route is granted, or until the player selects another destination.
+			setInterval(() => this.driveToPromise(destination), this.retryRouteInterval*1000);
+			setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen destination to become available ...');
+			Mutex.unlock(request);
+			return;
+		}
+		
+		disableAllDestinationButtons();
+		highlightDestinationButton(destination);
+		Mutex.unlock(request);
+
 		setResponseSuccess('#serverResponse', '⏳ Driving your train to your chosen destination ...');
-		
+	
 		this.driveRoutePromise()
 			.catch(() => this.releaseRoutePromise())
 			.always(() => {
@@ -362,7 +394,7 @@ function initialise() {
 	// Set the possible destinations for the SWTbahn platform.
 	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
-	disableAllDestinations();
+	disableAllDestinationButtons();
 	
 	// Initialise the click handler of each destination button.
 	allDestinationChoices.forEach(choice => {
