@@ -1,3 +1,6 @@
+var driver = null;       // Train driver logic.
+var stopwatch = null;    // Manages and displays the elapsed time.
+
 var gameSourceSignal = null;      // Initial source signal for the game.
 var gameDestinationSignal = null; // Final destination signal for the game.
 
@@ -125,8 +128,8 @@ function updatePossibleRoutes(sourceSignal) {
 function finalDestinationCheck(sourceSignal) {
 	if (sourceSignal == gameDestinationSignal) {
 		stopwatch.stop();
+		// FIXME: Replace with better game sounds and visual response.
 		speak('JA, JA, JA!');
-		
 	}
 }
 
@@ -303,14 +306,14 @@ class Driver {
 			await this.requestRoutePromise().catch(() => {});
 			routeIsGranted = (this.routeId != null);
 			if (!routeIsGranted) {
-				setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen route to become available ...');
+				setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen destination to become available ...');
 				await wait(1000);
 			}
 		} while (!routeIsGranted);
 		
 		disableAllDestinations();
 		setResponseSuccess('#serverResponse', '⏳ Driving your train to your chosen destination ...');
-	
+		
 		this.driveRoutePromise()
 			.catch(() => this.releaseRoutePromise())
 			.always(() => {
@@ -320,55 +323,12 @@ class Driver {
 	}
 }
 
-var driver = null;
-
-class Stopwatch {
-	elapsedTime = 0;       // milliseconds
-	displayField = null;
-	intervalId = null;
-	updateInterval = 1000; // 1000 milliseconds
-	
-	constructor(htmlId) {
-		this.displayField = $(htmlId);
-		this.clear();
-	}
-	
-	clear() {
-		this.elapsedTime = 0;
-		this.display();
-	}
-	
-	start() {
-		this.intervalId = setInterval(() => {
-			this.increment();
-			this.display();
-		}, this.updateInterval);
-	}
-	
-	increment() {
-		this.elapsedTime += this.updateInterval;
-	}
-	
-	stop() {
-		clearInterval(this.intervalId);
-		this.intervalId = null;
-		this.display();
-	}
-	
-	display() {
-		this.displayField.text(this.elapsedTime/1000 + 's');
-	}
-}
-
-var stopwatch = null;
-
 function initialise() {
 	driver = new Driver(
 		'master',                                 // trackOutput
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		'cargo_db',                               // trainId
 		'Bob Jones'                               // userId
-		
 	);
 	
 //	gameSourceSignal = 'signal5';
@@ -377,7 +337,7 @@ function initialise() {
 	
 	// FIXME: Portion of the route preview sprite to show is a percentage of the total sprite height
 	routePreviewHeight = 24;
-
+	
 	// Display the train name and user name.
 	$('#userDetails').html(`${driver.userId} <br /> is driving ${driver.trainId}`);
 	
@@ -395,7 +355,7 @@ function initialise() {
 	// Only show the button to start the game.
 	$('#startGameButton').show();
 	$('#endGameButton').hide();
-
+	
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
 	
