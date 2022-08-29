@@ -41,22 +41,21 @@ body {
 }
 
 #serverAlertBox {
-	height: 70px;
+  height: 70px;
 }
 
 #serverAlert {
-	border-width: 3px;
-	border-style: solid;
-	border-color: white;
+  border-width: 3px;
+  border-style: solid;
+  border-color: white;
 }
 
 .alert-danger-blink {
-	animation: blink 1s infinite;
+  animation: blink 1s infinite;
 }
-
 @keyframes blink {
-    50% {
-        border-color: var(--danger);
-    }
+  50% {
+    border-color: var(--danger);
+  }
 }
 

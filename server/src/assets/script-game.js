@@ -21,7 +21,7 @@ const allPossibleDestinationsSwtbahnUltraloop = [
 ];
 
 const allPossibleDestinationsSwtbahnStandard = [
-	{ source: 'signal3', destinations: { 'destination1': 'signal6' } },
+	{ source: 'signal3', destinations: { 'destination1': 'signal6', 'destination2': 'noSignal2', 'destination3': 'noSignal3' } },
 	{ source: 'signal6', destinations: { 'destination2': 'signal14' } },
 	{ source: 'signal14', destinations: { 'destination3': 'signal19' } },
 	{ source: 'signal12', destinations: { 'destination2': 'signal6' } },
@@ -46,7 +46,12 @@ function getRoutes(sourceSignal) {
 }
 
 const disabledButtonStyle = 'btn-outline-secondary';
-const destinationButtonStyle = {
+const destinationEnabledButtonStyle = {
+	'destination1': 'btn-dark',
+	'destination2': 'btn-primary',
+	'destination3': 'btn-info'
+};
+const destinationHighlightedButtonStyle = {
 	'destination1': 'btn-dark',
 	'destination2': 'btn-primary',
 	'destination3': 'btn-info'
@@ -56,20 +61,20 @@ function disableAllDestinationButtons() {
 	allDestinationChoices.forEach(choice => {
 		$(`#${choice}`).val("");
 		$(`#${choice}`).prop('disabled', true);
-		$(`#${choice}`).removeClass(destinationButtonStyle[choice]);
+		$(`#${choice}`).removeClass(destinationEnabledButtonStyle[choice]);
+		$(`#${choice}`).removeClass(destinationHighlightedButtonStyle[choice]);
 		$(`#${choice}`).addClass(disabledButtonStyle);
 	});
 }
 
 function highlightDestinationButton(choice) {
-	$(`#${choice}`).addClass(destinationButtonStyle[choice]);
-	$(`#${choice}`).removeClass(disabledButtonStyle);
+	$(`#${choice}`).addClass(destinationHighlightedButtonStyle[choice]);
 }
 
-function enableDestinationButton(choice) {
-	$(`#${choice}`).val(routes.destinations[choice]);
+function enableDestinationButton(choice, signal) {
+	$(`#${choice}`).val(signal);
 	$(`#${choice}`).prop('disabled', false);
-	$(`#${choice}`).addClass(destinationButtonStyle[choice]);
+	$(`#${choice}`).addClass(destinationEnabledButtonStyle[choice]);
 	$(`#${choice}`).removeClass(disabledButtonStyle);
 }
 
@@ -83,7 +88,7 @@ function updatePossibleRoutes(sourceSignal) {
 	}
 	
 	Object.keys(routes.destinations).forEach(choice => {
-		enableDestinationButton(choice);
+		enableDestinationButton(choice, routes.destinations[choice]);
 	});
 	
 	$('#routePreview').css('background-position', `top ${routePreviewHeight * routes.index}% right`);
@@ -155,8 +160,8 @@ class Driver {
 	destinationSignal = null;
 	routeId = null;
 	
-	routeRequestInterval = null;
-	retryRouteInterval = null;
+	routeRequestTimeout = null;
+	retryRouteTimeout = null;
 
 	constructor(trackOutput, trainEngine, trainId, userId) {
 		this.sessionId = 0;
@@ -171,8 +176,8 @@ class Driver {
 		this.destinationSignal = null;
 		this.routeId = null;
 		
-		this.routeRequestInterval = null;
-		this.retryRouteInterval = 1;   // seconds
+		this.routeRequestTimeout = null;
+		this.retryRouteTimeout = 1;   // seconds
 	}
 	
 	get hasValidTrainSession() {
@@ -181,6 +186,11 @@ class Driver {
 	
 	get hasRouteGranted() {
 		return (this.routeId != null);
+	}
+	
+	cancelRouteRequestTimeout() {
+		clearTimeout(this.routeRequestTimeout);
+		this.routeRequestTimeout = null;
 	}
 	
 	grabTrainPromise() {
@@ -262,6 +272,7 @@ class Driver {
 				'destination': this.destinationSignal
 			},
 			dataType: 'text',
+			// FIXME: On iOS, speech synthesis only works if it is first triggered by the user.
 			success: (responseData, textStatus, jqXHR) => {
 				this.routeId = responseData;
 			},
@@ -321,28 +332,25 @@ class Driver {
 		const lock = await Mutex.lock();
 		
 		if (this.hasRouteGranted) {
-			Mutex.unlock(request);
+			Mutex.unlock(lock);
 			return;
 		}
 		
-		if (this.routeRequestInterval != null) {
-			cancelInterval(this.routeRequestInterval);
-			this.routeRequestInterval = null;
-		}
+		this.cancelRouteRequestTimeout();
 		
-		this.destinationSignal = $(destination).val();
+		this.destinationSignal = $(`#${destination}`).val();
 		await this.requestRoutePromise().catch(() => {});
 		if (!this.hasRouteGranted)  {
 			// Keep retrying until the route is granted, or until the player selects another destination.
-			setInterval(() => this.driveToPromise(destination), this.retryRouteInterval*1000);
+			this.routeRequestTimeout = setTimeout(() => this.driveToPromise(destination), this.retryRouteTimeout*1000);
 			setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen destination to become available ...');
-			Mutex.unlock(request);
+			Mutex.unlock(lock);
 			return;
 		}
 		
 		disableAllDestinationButtons();
 		highlightDestinationButton(destination);
-		Mutex.unlock(request);
+		Mutex.unlock(lock);
 
 		setResponseSuccess('#serverResponse', '⏳ Driving your train to your chosen destination ...');
 	
@@ -399,7 +407,7 @@ function initialise() {
 	// Initialise the click handler of each destination button.
 	allDestinationChoices.forEach(choice => {
 		$(`#${choice}`).click(function () {
-			driver.driveToPromise(`#${choice}`);
+			driver.driveToPromise(choice);
 		});
 	});
 	
@@ -459,12 +467,13 @@ $(document).ready(
 			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 			
 			driver.sourceSignal = null;
-						
+			
+			driver.cancelRouteRequestTimeout();
 			driver.stopTrainPromise()
 				.then(() => wait(500))
-				.then(() => driver.releaseTrainPromise())
-				.always(() => { 
-					driver.releaseRoutePromise(); 
+				.then(() => driver.releaseRoutePromise())
+				.always(() => {
+					driver.releaseTrainPromise();
 					updatePossibleRoutes(driver.sourceSignal); 
 				});
 		});
