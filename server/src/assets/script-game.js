@@ -78,6 +78,14 @@ function enableDestinationButton(choice, signal) {
 	$(`#${choice}`).removeClass(disabledButtonStyle);
 }
 
+function hideCancelRouteRequestButton() {
+	$(`#cancelRouteRequest`).hide();
+}
+
+function showCancelRouteRequestButton() {
+	$(`#cancelRouteRequest`).show();
+}
+
 function updatePossibleRoutes(sourceSignal) {
 	disableAllDestinationButtons();
 	
@@ -191,6 +199,14 @@ class Driver {
 	cancelRouteRequestTimeout() {
 		clearTimeout(this.routeRequestTimeout);
 		this.routeRequestTimeout = null;
+	}
+	
+	async cancelRouteRequest() {
+		const lock = await Mutex.lock();
+		this.cancelRouteRequestTimeout();
+		hideCancelRouteRequestButton();
+		setResponseSuccess('#serverResponse', 'Cancelled your destination choice');
+		Mutex.unlock(lock);
 	}
 	
 	grabTrainPromise() {
@@ -343,12 +359,14 @@ class Driver {
 		if (!this.hasRouteGranted)  {
 			// Keep retrying until the route is granted, or until the player selects another destination.
 			this.routeRequestTimeout = setTimeout(() => this.driveToPromise(destination), this.retryRouteTimeout*1000);
-			setResponseSuccess('#serverResponse', '⏳ Waiting for your chosen destination to become available ...');
+			setResponseSuccess('#serverResponse', `⏳ Waiting for your chosen destination (${this.destinationSignal}) to become available ...`);
+			showCancelRouteRequestButton();
 			Mutex.unlock(lock);
 			return;
 		}
 		
 		disableAllDestinationButtons();
+		hideCancelRouteRequestButton();
 		highlightDestinationButton(destination);
 		Mutex.unlock(lock);
 
@@ -411,6 +429,12 @@ function initialise() {
 		});
 	});
 	
+	// Hide the cancel route button, and initialise its click handler.
+	hideCancelRouteRequestButton();
+	$(`#cancelRouteRequest`).click(function () {
+		driver.cancelRouteRequest();
+	});
+	
 	// Initialise stop watch for the player's turn.
 	stopwatch = new Stopwatch('#elapsedTime');
 	stopwatch.clear();
@@ -468,13 +492,14 @@ $(document).ready(
 			
 			driver.sourceSignal = null;
 			
+			hideCancelRouteRequestButton();
 			driver.cancelRouteRequestTimeout();
 			driver.stopTrainPromise()
 				.then(() => wait(500))
 				.then(() => driver.releaseRoutePromise())
 				.always(() => {
 					driver.releaseTrainPromise();
-					updatePossibleRoutes(driver.sourceSignal); 
+					updatePossibleRoutes(driver.sourceSignal);
 				});
 		});
 
