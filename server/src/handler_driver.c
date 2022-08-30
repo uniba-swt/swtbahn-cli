@@ -120,7 +120,7 @@ static bool drive_route(const int grab_id, const char *route_id) {
 		return false;
 	}
 
-    if (strcmp(train_id, route->train) != 0) {
+	if (strcmp(train_id, route->train) != 0) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Drive route: Route %s not granted to train %s", route_id, train_id);
 		return false;
