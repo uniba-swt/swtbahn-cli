@@ -85,6 +85,14 @@ bool interlocking_table_initialise(const char *config_dir);
 void free_interlocking_table(void);
 
 /**
+ * Return all the route IDs in the interlocking table.
+ * 
+ * @return array of route IDs. Caller is responsible for freeing the GArray, 
+ *         but not the GArray elements.
+ */
+GArray *interlocking_table_get_all_route_ids(void);
+
+/**
  * Return the array of route ID for a given source and destination signal.
  * 
  * @return array if it exists, otherwise NULL

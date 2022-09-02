@@ -34,6 +34,9 @@
 
 #include "server.h"
 #include "handler_driver.h"
+#include "interlocking.h"
+#include "param_verification.h"
+
 
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
@@ -429,6 +432,88 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req,
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get peripherals - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+
+onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
+                                                   onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *granted_routes = g_string_new("");
+		GArray *route_ids = interlocking_table_get_all_route_ids();
+		for (size_t i = 0; i < route_ids->len; i++) {
+			const char *route_id = g_array_index(route_ids, char *, i);
+			t_interlocking_route *route = get_route(route_id);
+			if (route->train != NULL) {
+				g_string_append_printf(granted_routes, "route id: %s train: %s\n", 
+				                       route->id, route->train);
+			}
+		}
+		g_array_free(route_ids, false);
+		char response[route_ids->len + 1];
+		strcpy(response, granted_routes->str);
+		g_string_free(granted_routes, true);
+		onion_response_printf(res, "%s", response);
+		syslog_server(LOG_NOTICE, "Request: Get granted routes");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get granted routes - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+
+}
+
+void sprintf_garray_char(GString *output, GArray *garray) {
+	for (size_t i = 0; i < garray->len; i++) {
+		g_string_append_printf(output, "%s%s", 
+		                       g_array_index(garray, char *, i),
+		                       i != (garray->len - 1) ? ", " : "");
+	}
+}
+
+onion_connection_status handler_get_route(void *_, onion_request *req,
+                                          onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_route_id = onion_request_get_post(req, "route-id");
+		const char *route_id = params_check_route_id(data_route_id);
+		if (route_id == NULL || strcmp(route_id, "") == 0) {
+			syslog_server(LOG_ERR, "Request: Get route - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			GString *route_str = g_string_new("");
+			t_interlocking_route *route = get_route(route_id);
+			g_string_append_printf(route_str, "route id: %s\n", route->id);
+			g_string_append_printf(route_str, "source signal: %s\n", route->source);
+			g_string_append_printf(route_str, "destination signal: %s\n", route->destination);
+			g_string_append_printf(route_str, "orientation: %s\n", route->orientation);
+			g_string_append_printf(route_str, "length: %f\n", route->length);
+			g_string_append_printf(route_str, "path: ");
+			sprintf_garray_char(route_str, route->path);
+			g_string_append_printf(route_str, "\nsections: ");
+			sprintf_garray_char(route_str, route->sections);
+			g_string_append_printf(route_str, "\npoints: ");
+			sprintf_garray_char(route_str, route->points);
+			g_string_append_printf(route_str, "\nsignals: ");
+			sprintf_garray_char(route_str, route->signals);
+			g_string_append_printf(route_str, "\nconflicts: ");
+			sprintf_garray_char(route_str, route->conflicts);
+			g_string_append_printf(route_str, "\ntrain: %s", 
+			                       route->train == NULL ? "none" : route->train);
+			
+			char response[route_str->len + 1];
+			strcpy(response, route_str->str);
+			g_string_free(route_str, true);
+			onion_response_printf(res, "%s", response);
+			syslog_server(LOG_NOTICE, "Request: Get route");
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Get route - system not running or "
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}

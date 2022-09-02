@@ -10,7 +10,7 @@ interlocking-table:
       - id: seg30
     sections:
       - id: block1
-    length: 0.00cm
+    length: 1.00cm
     signals:
       - id: signal5
       - id: signal4
@@ -31,7 +31,7 @@ interlocking-table:
       - id: seg19
     sections:
       - id: block3
-    length: 0.00cm
+    length: 2.00cm
     signals:
       - id: signal6
       - id: signal7

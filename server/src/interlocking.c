@@ -77,6 +77,17 @@ void create_interlocking_hashtable(void) {
     syslog_server(LOG_NOTICE, "Interlocking create hash table: successful");
 }
 
+bool interlocking_table_initialise(const char *config_dir) {
+    // Parse the interlocking table from the YAML file
+    route_hash_table = parse_interlocking_table(config_dir);
+    if (route_hash_table != NULL) {
+        create_interlocking_hashtable();
+        return true;
+    }
+
+    return false;
+}
+
 void free_interlocking_table(void) {
     // free hash table
     if (route_string_to_ids_hashtable != NULL) {
@@ -93,15 +104,18 @@ void free_interlocking_table(void) {
     syslog_server(LOG_NOTICE, "Interlocking table freed");
 }
 
-bool interlocking_table_initialise(const char *config_dir) {
-    // Parse the interlocking table from the YAML file
-    route_hash_table = parse_interlocking_table(config_dir);
-    if (route_hash_table != NULL) {
-        create_interlocking_hashtable();
-        return true;
-    }
-
-    return false;
+GArray *interlocking_table_get_all_route_ids(void) {
+	GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+	
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init (&iter, route_hash_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)) {
+        t_interlocking_route *route = (t_interlocking_route *) value;
+        g_array_append_val(route_ids, route->id);
+	}
+	
+	return route_ids;
 }
 
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id) {
