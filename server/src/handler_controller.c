@@ -31,6 +31,7 @@
 #include <bidib/bidib.h>
 #include <pthread.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "server.h"
 #include "dyn_containers_interface.h"
@@ -121,6 +122,49 @@ void free_all_interlockers(void) {
 	
 	selected_interlocker_instance = -1;
 }
+
+GArray *get_granted_route_conflicts(const char *route_id) {
+	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+
+	char *conflict_routes[1024];
+	const size_t conflict_routes_len = config_get_array_string_value("route", route_id, "conflicts", conflict_routes);	
+	for (size_t i = 0; i < conflict_routes_len; i++) {
+		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
+		if (conflict_route->train != NULL) {
+			const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
+			char *conflict_route_id_string = malloc(sizeof(char *) * conflict_route_id_string_len);
+			snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
+			         conflict_route->id, conflict_route->train);
+			g_array_append_val(conflict_route_ids, conflict_route_id_string);
+		}
+	}
+	
+	return conflict_route_ids;
+}
+
+const bool get_route_is_clear(const char *route_id) {
+	// Check that all route signals are in the Stop aspect
+	char *signal_ids[1024];
+	const size_t signal_ids_len = config_get_array_string_value("route", route_id, "route_signals", signal_ids);
+	for (size_t i = 0; i < signal_ids_len; i++) {
+		char *signal_state = track_state_get_value(signal_ids[i]);
+		if (strcmp(signal_state, "stop")) {
+			return false;
+		}
+	}
+	
+	// Check that all blocks are unoccupied
+	char *item_ids[1024]; 
+	const size_t item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
+	for (size_t i = 0; i < item_ids_len; i++) {
+		if (is_type_segment(item_ids[i]) && is_segment_occupied(item_ids[i])) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 
 GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {

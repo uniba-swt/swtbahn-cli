@@ -87,8 +87,7 @@ void free_interlocking_table(void);
 /**
  * Return all the route IDs in the interlocking table.
  * 
- * @return array of route IDs. Caller is responsible for freeing the GArray, 
- *         but not the GArray elements.
+ * @return array of route IDs. Caller is responsible for freeing the GArray
  */
 GArray *interlocking_table_get_all_route_ids(void);
 

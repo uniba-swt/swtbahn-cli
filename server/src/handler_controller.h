@@ -50,6 +50,24 @@ void free_all_interlockers(void);
 const int load_default_interlocker_instance();
 
 /**
+ * Finds conflicting routes that have been granted.
+ * 
+ * @param ID of route for which conflicts should be checked
+ * @return GArray of granted route conflicts
+ */
+GArray *get_granted_route_conflicts(const char *route_id);
+
+/**
+ * Determines whether a route is physically ready for use:
+ * All route signals are in the Stop aspect and all blocks 
+ * are unoccupied.
+ * 
+ * @param ID of route for which clearance should be checked
+ * @return true if clear, otherwise false
+ */
+const bool get_route_is_clear(const char *route_id);
+
+/**
   * Finds and grants a requested train route.
   * A requested route is defined by a pair of source and destination signals. 
   * 

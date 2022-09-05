@@ -112,7 +112,10 @@ GArray *interlocking_table_get_all_route_ids(void) {
     g_hash_table_iter_init (&iter, route_hash_table);
     while (g_hash_table_iter_next (&iter, &key, &value)) {
         t_interlocking_route *route = (t_interlocking_route *) value;
-        g_array_append_val(route_ids, route->id);
+        const size_t route_id_string_len = strlen(route->id) + 1;
+        char *route_id_string = malloc(sizeof(char *) * route_id_string_len);
+        strncpy(route_id_string, route->id, route_id_string_len);
+        g_array_append_val(route_ids, route_id_string);
 	}
 	
 	return route_ids;

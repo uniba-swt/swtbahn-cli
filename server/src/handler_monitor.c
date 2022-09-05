@@ -34,6 +34,7 @@
 
 #include "server.h"
 #include "handler_driver.h"
+#include "handler_controller.h"
 #include "interlocking.h"
 #include "param_verification.h"
 
@@ -452,7 +453,7 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 				                       route->id, route->train);
 			}
 		}
-		g_array_free(route_ids, false);
+		g_array_free(route_ids, true);
 		char response[route_ids->len + 1];
 		strcpy(response, granted_routes->str);
 		g_string_free(granted_routes, true);
@@ -468,6 +469,11 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 }
 
 void sprintf_garray_char(GString *output, GArray *garray) {
+	if (garray->len == 0) {
+		g_string_append_printf(output, "none");
+		return;
+	}
+	
 	for (size_t i = 0; i < garray->len; i++) {
 		g_string_append_printf(output, "%s%s", 
 		                       g_array_index(garray, char *, i),
@@ -488,21 +494,29 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 			GString *route_str = g_string_new("");
 			t_interlocking_route *route = get_route(route_id);
 			g_string_append_printf(route_str, "route id: %s\n", route->id);
-			g_string_append_printf(route_str, "source signal: %s\n", route->source);
-			g_string_append_printf(route_str, "destination signal: %s\n", route->destination);
-			g_string_append_printf(route_str, "orientation: %s\n", route->orientation);
-			g_string_append_printf(route_str, "length: %f\n", route->length);
-			g_string_append_printf(route_str, "path: ");
+			g_string_append_printf(route_str, "  source signal: %s\n", route->source);
+			g_string_append_printf(route_str, "  destination signal: %s\n", route->destination);
+			g_string_append_printf(route_str, "  orientation: %s\n", route->orientation);
+			g_string_append_printf(route_str, "  length: %f\n", route->length);
+			g_string_append_printf(route_str, "  path: ");
 			sprintf_garray_char(route_str, route->path);
-			g_string_append_printf(route_str, "\nsections: ");
+			g_string_append_printf(route_str, "\n  sections: ");
 			sprintf_garray_char(route_str, route->sections);
-			g_string_append_printf(route_str, "\npoints: ");
+			g_string_append_printf(route_str, "\n  points: ");
 			sprintf_garray_char(route_str, route->points);
-			g_string_append_printf(route_str, "\nsignals: ");
+			g_string_append_printf(route_str, "\n  signals: ");
 			sprintf_garray_char(route_str, route->signals);
-			g_string_append_printf(route_str, "\nconflicts: ");
+			g_string_append_printf(route_str, "\n  conflicting route ids: ");
 			sprintf_garray_char(route_str, route->conflicts);
-			g_string_append_printf(route_str, "\ntrain: %s", 
+			
+			g_string_append_printf(route_str, "\nstatus:");
+			g_string_append_printf(route_str, "\n  granted conflicting route ids: ");
+			GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
+			sprintf_garray_char(route_str, granted_route_conflicts);
+			g_array_free(granted_route_conflicts, true);
+			g_string_append_printf(route_str, "\n  route clear: %s", 
+			                       get_route_is_clear(route_id) ? "yes": "no");
+			g_string_append_printf(route_str, "\n  granted train: %s", 
 			                       route->train == NULL ? "none" : route->train);
 			
 			char response[route_str->len + 1];

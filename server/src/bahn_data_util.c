@@ -543,7 +543,7 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
     return result;
 }
 
-int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char* data[]) {
+int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char *data[]) {
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     int result = 0;
