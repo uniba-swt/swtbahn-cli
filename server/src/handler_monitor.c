@@ -438,7 +438,6 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req,
 	}
 }
 
-
 onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
                                                    onion_response *res) {
 	build_response_header(res);
@@ -458,7 +457,7 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 			g_string_append_printf(granted_routes, "No granted routes");
 		}
 		g_array_free(route_ids, true);
-		char response[route_ids->len + 1];
+		char response[granted_routes->len + 1];
 		strcpy(response, granted_routes->str);
 		g_string_free(granted_routes, true);
 		onion_response_printf(res, "%s", response);
@@ -476,10 +475,21 @@ void sprintf_garray_char(GString *output, GArray *garray) {
 		g_string_append_printf(output, "none");
 		return;
 	}
-	
 	for (size_t i = 0; i < garray->len; i++) {
 		g_string_append_printf(output, "%s%s", 
 		                       g_array_index(garray, char *, i),
+		                       i != (garray->len - 1) ? ", " : "");
+	}
+}
+
+void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
+	if (garray->len == 0) {
+		g_string_append_printf(output, "none");
+		return;
+	}
+	for (size_t i = 0; i < garray->len; i++) {
+		g_string_append_printf(output, "%s%s", 
+		                       g_array_index(garray, t_interlocking_point, i).id,
 		                       i != (garray->len - 1) ? ", " : "");
 	}
 }
@@ -506,7 +516,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 			g_string_append_printf(route_str, "\n  sections: ");
 			sprintf_garray_char(route_str, route->sections);
 			g_string_append_printf(route_str, "\n  points: ");
-			sprintf_garray_char(route_str, route->points);
+			sprintf_garray_interlocking_point(route_str, route->points);
 			g_string_append_printf(route_str, "\n  signals: ");
 			sprintf_garray_char(route_str, route->signals);
 			g_string_append_printf(route_str, "\n  conflicting route ids: ");
