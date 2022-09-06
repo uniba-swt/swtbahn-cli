@@ -372,9 +372,7 @@ $(document).ready(
 			});
 		} */
 
-		$('#driveRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').val();
+		function driveRoute(routeId, mode) {
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -388,7 +386,12 @@ $(document).ready(
 					type: 'POST',
 					url: '/driver/drive-route',
 					crossDomain: true,
-					data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
+					data: { 
+						'session-id': sessionId, 
+						'grab-id': grabId, 
+						'route-id': routeId,
+						'mode': mode
+					},
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$('#routeResponse').text(responseData);
@@ -408,8 +411,20 @@ $(document).ready(
 				$('#routeResponse').parent().addClass('alert-danger');
 				$('#routeResponse').text('You must have a grabbed train!');
 			}
+		}
+
+		$('#automaticDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "automatic");
 		});
 
+		$('#manualDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "manual");
+		});
+		
 
 		// Custom Engines
 		$('#uploadEngineButton').click(function () {
