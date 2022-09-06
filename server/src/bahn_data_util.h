@@ -44,7 +44,7 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
 
 bool config_get_scalar_bool_value(const char *type, const char *id, const char *prop_name);
 
-int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char* data[]);
+int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char *data[]);
 
 int config_get_array_float_value(const char *type, const char *id, const char *prop_name, float data[]);
 
