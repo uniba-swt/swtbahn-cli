@@ -140,11 +140,13 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 			// Set signal to the Stop aspect
 			set_signal_stop = false;
 			if (bidib_set_signal(next_signal, signal_stop_aspect)) {
-				syslog_server(LOG_ERR, "Drive route progressive stop signals: Unable to set route signal %s to aspect %s", 
+				syslog_server(LOG_ERR, "Drive route progressive stop signals: "
+				              "Unable to set route signal %s to aspect %s", 
 				              next_signal, signal_stop_aspect);
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Drive route progressive stop signals: Set signal - signal: %s state: %s",
+				syslog_server(LOG_NOTICE, "Drive route progressive stop signals: "
+				              "Set signal - signal: %s state: %s",
 							  next_signal, signal_stop_aspect);
 			}
 		}
@@ -153,29 +155,34 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 	return true;
 }
 
-static bool drive_route_automatic(const int grab_id, const char *route_id) {
+static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic) {
 	const char *train_id = grabbed_trains[grab_id].name->str;
 	t_interlocking_route *route = get_route(route_id);
 	if (!drive_route_params_valid(train_id, route)) {
 		return false;
 	}
 
-	pthread_mutex_lock(&grabbed_trains_mutex);	
 	// Driving starts: Driving direction is computed from the route orientation
-	syslog_server(LOG_NOTICE, "Drive route automatic: Driving starts");
+	syslog_server(LOG_NOTICE, "Drive route: Driving starts");
+	pthread_mutex_lock(&grabbed_trains_mutex);	
+	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
 	                                        && train_position_query.orientation_is_left)
 	                                || (strcmp(route->orientation, "anticlockwise") == 0 
 	                                        && !train_position_query.orientation_is_left);
 	bidib_free_train_position_query(train_position_query);
-	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	dyn_containers_set_train_engine_instance_inputs(engine_instance,
-	                                                DRIVING_SPEED_SLOW, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
+	if (is_automatic) {
+		pthread_mutex_lock(&grabbed_trains_mutex);	
+		dyn_containers_set_train_engine_instance_inputs(engine_instance,
+														DRIVING_SPEED_SLOW, requested_forwards);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+	}
 	
 	// Set the signals along the route to Stop as the train drives past them
 	const bool result = drive_route_progressive_stop_signals(train_id, route);
+	
 	// Wait for train to reach the end of the route
 	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 1);
 	while (running && result && !train_position_is_at(train_id, dest_segment)
@@ -186,7 +193,7 @@ static bool drive_route_automatic(const int grab_id, const char *route_id) {
 	
 	// Driving stops
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	syslog_server(LOG_NOTICE, "Drive route automatic: Driving stops");
+	syslog_server(LOG_NOTICE, "Drive route: Driving stops");
 	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
@@ -194,12 +201,6 @@ static bool drive_route_automatic(const int grab_id, const char *route_id) {
 	if (drive_route_params_valid(train_id, route)) {
 		release_route(route_id);
 	}
-	
-	return true;
-}
-
-static bool drive_route_manual(const int grab_id, const char *route_id) {
-
 	
 	return true;
 }
@@ -422,20 +423,12 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Drive route - bad route id");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			if (strcmp(mode, "automatic") == 0) {
-				if (drive_route_automatic(grab_id, route_id)) {
-					onion_response_printf(res, "Route %s driving completed", route_id);
-					return OCS_PROCESSED;
-				} else {
-					return OCS_NOT_IMPLEMENTED;
-				}
+			const bool is_automatic = (strcmp(mode, "automatic") == 0);
+			if (drive_route(grab_id, route_id, is_automatic)) {
+				onion_response_printf(res, "Route %s driving completed", route_id);
+				return OCS_PROCESSED;
 			} else {
-				if (drive_route_manual(grab_id, route_id)) {
-					onion_response_printf(res, "Route %s driving completed", route_id);
-					return OCS_PROCESSED;
-				} else {
-					return OCS_NOT_IMPLEMENTED;
-				}
+				return OCS_NOT_IMPLEMENTED;
 			}
 		}
 	} else {
