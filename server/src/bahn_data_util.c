@@ -345,7 +345,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
 
                 break;
                 
-
             case TYPE_PERIPHERAL:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_peripheral *) obj)->id;
@@ -705,6 +704,7 @@ e_config_type get_track_state_type(const char *id) {
 /**
  * Get raw signal aspect from bidib state (stop, go, caution, shunt)
  * Convert back to signalling action based on signal type
+ * 
  * @param id signal name
  * @param value stop, go, caution, or shunt
  * @return true of success, otherwise false
@@ -784,6 +784,7 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
 /**
  * Convert the signalling action to raw aspect based on signal types
  * Update bidib state
+ * 
  * @param id signal name
  * @param value stop, go, caution, shunt
  * @return true if successful, otherwise false
@@ -861,6 +862,7 @@ bool set_peripheral_raw_aspect(t_config_peripheral *peripheral, const char *valu
 /**
  * Convert the peripheral action to raw aspect based on peripheral types
  * Update bidib state
+ * 
  * @param id peripheral name
  * @param value on or off
  * @return true if successful, otherwise false

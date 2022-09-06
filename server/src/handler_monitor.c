@@ -449,9 +449,13 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 			const char *route_id = g_array_index(route_ids, char *, i);
 			t_interlocking_route *route = get_route(route_id);
 			if (route->train != NULL) {
-				g_string_append_printf(granted_routes, "route id: %s train: %s\n", 
-				                       route->id, route->train);
+				g_string_append_printf(granted_routes, "route id: %s train: %s%s", 
+				                       route->id, route->train,
+				                       (route_ids->len == 0) ? "" : "\n");
 			}
+		}
+		if (strcmp(granted_routes->str, "") == 0) {
+			g_string_append_printf(granted_routes, "No granted routes");
 		}
 		g_array_free(route_ids, true);
 		char response[route_ids->len + 1];
@@ -465,7 +469,6 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
-
 }
 
 void sprintf_garray_char(GString *output, GArray *garray) {

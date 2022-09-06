@@ -143,15 +143,20 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 }
 
 const bool get_route_is_clear(const char *route_id) {
+	bahn_data_util_init_cached_track_state();
+	
 	// Check that all route signals are in the Stop aspect
 	char *signal_ids[1024];
 	const size_t signal_ids_len = config_get_array_string_value("route", route_id, "route_signals", signal_ids);
 	for (size_t i = 0; i < signal_ids_len; i++) {
 		char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
+			bahn_data_util_free_cached_track_state();
 			return false;
 		}
 	}
+	
+	bahn_data_util_free_cached_track_state();
 	
 	// Check that all blocks are unoccupied
 	char *item_ids[1024]; 

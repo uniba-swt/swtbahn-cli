@@ -21,7 +21,7 @@ interlocking-table:
     conflicts:
       - id: 1
   - id: 1 #route1
-    source: signal3
+    source: signal3a
     destination: signal6
     orientation: anticlockwise
     path:
@@ -33,7 +33,7 @@ interlocking-table:
       - id: block1
     length: 2.00cm
     signals:
-      - id: signal3
+      - id: signal3a
       - id: signal6
     points:
       - id: point2
