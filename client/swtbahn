@@ -329,7 +329,7 @@ def unset_interlocker(interlocker):
 
 
 @click.command(help="Upload an interlocker. Absolute path to an BahnDSL (*.bahn) file")
-@click.argument('filepath')
+@click.argument('filepath', type=click.Path(exists=True))
 def upload_interlocker(filepath):
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -474,9 +474,10 @@ def request_route(source, destination):
             click.echo(e, err=True)
 
 
-@click.command(help="Automatically drive along a granted route")
+@click.command(help="Drive along a granted route")
+@click.argument('mode')
 @click.argument('route-id')
-def drive_route(route_id):
+def drive_route(mode, route_id):
     global session_id, grab_id, server
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -486,7 +487,7 @@ def drive_route(route_id):
         try:
             response = requests.post(server + "/driver/drive-route",
                     data = {'session-id': session_id, 'grab-id': grab_id,
-                        'route-id': route_id})
+                        'mode': mode, 'route-id': route_id})
             if (response.status_code == requests.codes.ok):
                 process_id_feedback(response.text, "Driving along route " + route_id + 
                         " completed\n")
@@ -619,7 +620,7 @@ def set_train_peripheral(peripheral, state, track_output):
 
 
 @click.command(help="Upload a train engine. Absolute path to an SCCharts (*.sctx) file")
-@click.argument('filepath')
+@click.argument('filepath', type=click.Path(exists=True))
 def upload_engine(filepath):
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)

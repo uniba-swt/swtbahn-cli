@@ -372,9 +372,10 @@ $(document).ready(
 			});
 		} */
 
-		$('#driveRouteButton').click(function () {
+		$('#automaticDriveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
 			var routeId = $('#routeId').val();
+			let mode = 'automatic';
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -388,7 +389,12 @@ $(document).ready(
 					type: 'POST',
 					url: '/driver/drive-route',
 					crossDomain: true,
-					data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
+					data: { 
+						'session-id': sessionId, 
+						'grab-id': grabId, 
+						'mode': mode,
+						'route-id': routeId 
+					},
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$('#routeResponse').text(responseData);
