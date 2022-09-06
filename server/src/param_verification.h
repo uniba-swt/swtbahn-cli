@@ -43,6 +43,8 @@ int params_check_state(const char *data_state);
 
 const char *params_check_route_id(const char *data_route_id);
 
+const char *params_check_mode(const char *data_mode);
+
 bool params_check_is_number(const char *string);
 
 
