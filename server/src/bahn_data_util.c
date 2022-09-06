@@ -35,8 +35,6 @@
 #include "bahn_data_util.h"
 #include "handler_driver.h"
 
-t_config_data config_data = {};
-
 typedef enum {
     TYPE_ROUTE,
     TYPE_SEGMENT,
@@ -52,8 +50,12 @@ typedef enum {
     TYPE_NOT_SUPPORTED
 } e_config_type;
 
-bool bahn_data_util_initialise_config(const char *config_dir) {
+t_config_data config_data = {};
 
+// Needed to temporarily store new strings created by config_get_... 
+GArray *cached_allocated_str = NULL;
+
+bool bahn_data_util_initialise_config(const char *config_dir) {
     if (!interlocking_table_initialise(config_dir)) {
         return false;
     }
@@ -73,9 +75,6 @@ void bahn_data_util_free_config() {
 bool string_equals(const char *str1, const char *str2) {
     return strcmp(str1, str2) == 0;
 }
-
-// Needed to temporarily store new strings created by config_get_... 
-GArray *cached_allocated_str;
 
 void bahn_data_util_init_cached_track_state() {
     cached_allocated_str = g_array_sized_new(FALSE, FALSE, sizeof(char *), 16);
@@ -682,9 +681,11 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
 }
 
 e_config_type get_track_state_type(const char *id) {
-    if (id == NULL)
+    if (id == NULL) {
+        syslog_server(LOG_ERR, "Get track state: %s is NULL", id);
         return TYPE_NOT_SUPPORTED;
-
+    }
+    
     if (g_hash_table_contains(config_data.table_signals, id)) {
         return TYPE_SIGNAL;
     }
@@ -697,6 +698,7 @@ e_config_type get_track_state_type(const char *id) {
         return TYPE_PERIPHERAL;
     }
 
+    syslog_server(LOG_ERR, "Get track state: %s could not be found", id);
     return TYPE_NOT_SUPPORTED;
 }
 
