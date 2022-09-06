@@ -372,10 +372,7 @@ $(document).ready(
 			});
 		} */
 
-		$('#automaticDriveRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').val();
-			let mode = 'automatic';
+		function driveRoute(routeId, mode) {
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -392,8 +389,8 @@ $(document).ready(
 					data: { 
 						'session-id': sessionId, 
 						'grab-id': grabId, 
-						'mode': mode,
-						'route-id': routeId 
+						'route-id': routeId,
+						'mode': mode
 					},
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
@@ -414,8 +411,20 @@ $(document).ready(
 				$('#routeResponse').parent().addClass('alert-danger');
 				$('#routeResponse').text('You must have a grabbed train!');
 			}
+		}
+
+		$('#automaticDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "automatic");
 		});
 
+		$('#manualDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "manual");
+		});
+		
 
 		// Custom Engines
 		$('#uploadEngineButton').click(function () {
