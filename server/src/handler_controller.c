@@ -229,6 +229,41 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	return route_id_copy;
 }
 
+const char *grant_route_id(const char *train_id, const char *route_id) {
+	// Check whether the route can be granted
+	t_interlocking_route * const route = get_route(route_id);
+	const GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
+	if (route->train != NULL || granted_conflicts->len > 0) {
+		return "not_grantable";
+	}
+	
+	// Check whether the route is physically available
+	if (!get_route_is_clear(route_id)) {
+		return "not_clear";
+	}
+	
+	// Grant the route to the train and mark it unavailable
+	route->train = strdup(train_id);
+	
+	// Set the points to their required positions
+	for (size_t i = 0; i < route->points->len; i++) {
+		const t_interlocking_point point = 
+				g_array_index(route->points, t_interlocking_point, i);
+		const char *position = (point.position == NORMAL) ? "normal" : "reverse";
+		bidib_switch_point(point.id, position);
+		bidib_flush();
+	}
+	
+	// Set the signals to their required aspects
+	for (size_t i = 0; i < route->signals->len - 1; i++) {
+		const char *signal = g_array_index(route->signals, char *, i);
+		bidib_set_signal(signal, "aspect_go");
+		bidib_flush();
+	}
+	
+	return "granted";
+}
+
 void release_route(const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
