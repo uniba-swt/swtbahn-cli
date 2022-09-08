@@ -352,7 +352,7 @@ function disableReachedDestinationButton() {
 }
 
 function enableReachedDestinationButton() {
-	$('destinationReached').prop('disabled', false);
+	$('#destinationReached').prop('disabled', false);
 }
 
 var responseTimer = null;
@@ -614,7 +614,7 @@ function initialise() {
 		null                                      // userId
 	);
 	
-	gameBlockId = 'block0';
+	gameBlockId = 'block1';
 	
 	// Display the train name and user name.
 	$('#trainDetails').html(driver.trainId);
@@ -623,7 +623,7 @@ function initialise() {
 	$('#trainDetails').click(function () {
 		// Set the source signal for the train's starting position.
 		driver.trainId = 'cargo_green';
-		gameBlockId = 'block0';
+		gameBlockId = 'block1';
 		
 		$('#trainDetails').html(driver.trainId);
 	});
@@ -636,8 +636,8 @@ function initialise() {
 	$('#serverResponse').parent().hide();
 	
 	// Set the possible destinations for the SWTbahn platform.
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
-	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
+	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+//	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
 	
 	// Initialise the click handler of each destination button.
@@ -663,6 +663,7 @@ function initialise() {
 	
 	// Initialise the click handler of the destination reached button.
 	$("#destinationReached").click(function () {
+		driver.setTrainSpeedPromise(0);
 		driver.releaseRoutePromise();
 	});
 }
@@ -716,7 +717,7 @@ $(document).ready(
 				.then(() => driver.releaseRoutePromise())
 				.always(() => {
 					driver.releaseTrainPromise();
-					updatePossibleRoutes(driver.blockId);
+					disableAllDestinationButtons();
 				});
 		});
 
