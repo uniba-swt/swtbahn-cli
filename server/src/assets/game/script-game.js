@@ -1,113 +1,358 @@
-var driver = null;       // Train driver logic.
-var stopwatch = null;    // Manages and displays the elapsed time.
+var driver = null;           // Train driver logic.
+var gameBlockId = null;      // Initial railway block for the game.
 
-var gameSourceSignal = null;      // Initial source signal for the game.
-var gameDestinationSignal = null; // Final destination signal for the game.
-
-// Portion of the route preview sprite to show is a percentage of the total sprite height.
-var routePreviewHeight = null;    
-
-const allDestinationChoices = [
-	'destination1',
-	'destination2',
-	'destination3'
-];
+const numberOfDestinationsMax = 8;
+const destinationNamePrefix = "destination";
 
 var allPossibleDestinations = null;
 
-const allPossibleDestinationsSwtbahnUltraloop = [
-	{ source: 'signal5', destinations: { 'destination1': 'signal4' } },
-	{ source: 'signal6', destinations: { 'destination2': 'signal7' } }
-];
+const allPossibleDestinationsSwtbahnUltraloop = {
+	'block0': {                     // Source block
+		
+		// Route
+		"signal4": {                    // Destination signal of route
+			"route-id": 0,                  // Required route ID
+			"orientation": "clockwise",     // Route orientation
+			"block": "block1",              // Block ID of destination signal
+			"segment": "seg29"              // ID of main segment of destination block
+		},
+		
+		// Route
+		"signal6": {                    // Destination signal of route
+			"route-id": 1,                  // Required route ID
+			"orientation": "anticlockwise", // Route orientation
+			"block": "block1",              // Block ID of destination signal
+			"segment": "seg17"              // ID of main segment of destination block
+		}
+	}
+};
 
-const allPossibleDestinationsSwtbahnStandard = [
-	{ source: 'signal3', destinations: { 'destination1': 'signal6', 'destination2': 'noSignal2', 'destination3': 'noSignal3' } },
-	{ source: 'signal6', destinations: { 'destination2': 'signal14' } },
-	{ source: 'signal14', destinations: { 'destination3': 'signal19' } },
-	{ source: 'signal12', destinations: { 'destination2': 'signal6' } },
-];
+const allPossibleDestinationsSwtbahnStandard = {
+	'buffer': {
+		"signal6": {
+			"route-id": 57,
+			"orientation": "anticlockwise",
+			"block": "block2",
+			"segment": "seg8"
+		}
+	},
+	'block1': {
+		"signal1": {
+			"route-id": 44,
+			"orientation": "clockwise",
+			"block": "buffer",
+			"segment": "seg1"
+		},
+		"signal7": {
+			"route-id": 47,
+			"orientation": "clockwise",
+			"block": "block3",
+			"segment": "seg12"
+		},
+		"signal6": {
+			"route-id": 57,
+			"orientation": "anticlockwise",
+			"block": "block2",
+			"segment": "seg8"
+		}
+	},
+	'block2': {
+		"signal2": {
+			"route-id": 77,
+			"orientation": "clockwise",
+			"block": "block1",
+			"segment": "seg4"
+		},
+		"signal9": {
+			"route-id": 75,
+			"orientation": "clockwise",
+			"block": "block5",
+			"segment": "seg28"
+		},
+		"signal10": {
+			"route-id": 78,
+			"orientation": "clockwise",
+			"block": "block4",
+			"segment": "seg16"
+		},
+		"signal8": {
+			"route-id": 104,
+			"orientation": "anticlockwise",
+			"block": "block3",
+			"segment": "seg12"
+		},
+		"signal11": {
+			"route-id": 111,
+			"orientation": "anticlockwise",
+			"block": "block5",
+			"segment": "seg28"
+		},
+		"signal14": {
+			"route-id": 114,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		},
+		"signal15": {
+			"route-id": 108,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		}
+	},
+	'block3': {
+		"signal4": {
+			"route-id": 120,
+			"orientation": "clockwise",
+			"block": "block2",
+			"segment": "seg8"
+		},
+		"signal3": {
+			"route-id": 6,
+			"orientation": "anticlockwise",
+			"block": "block1",
+			"segment": "seg4"
+		},
+		"signal12": {
+			"route-id": 23,
+			"orientation": "anticlockwise",
+			"block": "block4",
+			"segment": "seg16"
+		}
+	},
+	'block4': {
+		"signal7": {
+			"route-id": 70,
+			"orientation": "clockwise",
+			"block": "block3",
+			"segment": "seg12"
+		},
+		"signal6": {
+			"route-id": 221,
+			"orientation": "anticlockwise",
+			"block": "block2",
+			"segment": "seg8"
+		}
+	},
+	'block5': {
+		"signal4": {
+			"route-id": 33,
+			"orientation": "clockwise",
+			"block": "block2",
+			"segment": "seg8"
+		},
+		"signal13": {
+			"route-id": 40,
+			"orientation": "clockwise",
+			"block": "block6",
+			"segment": "seg21"
+		},
+		"signal17": {
+			"route-id": 39,
+			"orientation": "clockwise",
+			"block": "platform1",
+			"segment": "seg37"
+		},
+		"signal19": {
+			"route-id": 26,
+			"orientation": "clockwise",
+			"block": "platform2",
+			"segment": "seg40"
+		},		
+		"signal5": {
+			"route-id": 203,
+			"orientation": "anticlockwise",
+			"block": "block6",
+			"segment": "seg21"
+		},
+		"signal6": {
+			"route-id": 204,
+			"orientation": "anticlockwise",
+			"block": "block2",
+			"segment": "seg8"
+		}
+	},
+	'block6': {
+		"signal9": {
+			"route-id": 229,
+			"orientation": "clockwise",
+			"block": "block5",
+			"segment": "seg28"
+		},
+		"signal11": {
+			"route-id": 96,
+			"orientation": "anticlockwise",
+			"block": "block5",
+			"segment": "seg28"
+		},
+		"signal14": {
+			"route-id": 100,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		},
+		"signal15": {
+			"route-id": 94,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		}
+	},
+	'block7': {
+		"signal17": {
+			"route-id": 260,
+			"orientation": "clockwise",
+			"block": "platform1",
+			"segment": "seg37"
+		},
+		"signal19": {
+			"route-id": 243,
+			"orientation": "clockwise",
+			"block": "platform2",
+			"segment": "seg40"
+		},
+		"signal4": {
+			"route-id": 255,
+			"orientation": "clockwise",
+			"block": "block2",
+			"segment": "seg8"
+		},
+		"signal13": {
+			"route-id": 261,
+			"orientation": "clockwise",
+			"block": "block6",
+			"segment": "seg21"
+		}
+	},
+	'platform1': {
+		"signal11": {
+			"route-id": 152,
+			"orientation": "anticlockwise",
+			"block": "block5",
+			"segment": "seg28"
+		},
+		"signal15": {
+			"route-id": 151,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		}
+	},
+	'platform2': {
+		"signal11": {
+			"route-id": 187,
+			"orientation": "anticlockwise",
+			"block": "block5",
+			"segment": "seg28"
+		},
+		"signal14": {
+			"route-id": 193,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		},
+		"signal15": {
+			"route-id": 185,
+			"orientation": "anticlockwise",
+			"block": "block7",
+			"segment": "seg31"
+		}
+	}
+};
 
-const allPossibleDestinationsSwtbahnFull = [
+const allPossibleDestinationsSwtbahnFull = {
 	// FIXME: To be filled in.
-];
+};
 
-function getRoutes(sourceSignal) {
-	if (allPossibleDestinations == null) {
-		return { index: null, destinations: null };
+function getRoutes(blockId) {
+	if (allPossibleDestinations == null || !allPossibleDestinations.hasOwnProperty(blockId)) {
+		return null;
 	}
 	
-	const index = allPossibleDestinations.findIndex(element => (element.source == sourceSignal));
-	if (index == -1) {
-		return { index: null, destinations: null };
+	return allPossibleDestinations[blockId];
+}
+
+function unpackRoute(route) {
+	for (let destinationSignal in route) {
+    	return [destinationSignal, route[destinationSignal]];
 	}
-		
-	const destinations = allPossibleDestinations.at(index).destinations;
-	return { index: index, destinations: destinations };
+	return null;
 }
 
 const disabledButtonStyle = 'btn-outline-secondary';
-const destinationEnabledButtonStyle = {
-	'destination1': 'btn-dark',
-	'destination2': 'btn-primary',
-	'destination3': 'btn-info'
-};
-const destinationHighlightedButtonStyle = {
-	'destination1': 'btn-dark',
-	'destination2': 'btn-primary',
-	'destination3': 'btn-info'
-};
+const destinationEnabledButtonStyle = 'btn-dark';
+const destinationHighlightedButtonStyle = 'btn-dark';
 
 function disableAllDestinationButtons() {
-	allDestinationChoices.forEach(choice => {
-		$(`#${choice}`).val("");
-		$(`#${choice}`).prop('disabled', true);
-		$(`#${choice}`).removeClass(destinationEnabledButtonStyle[choice]);
-		$(`#${choice}`).removeClass(destinationHighlightedButtonStyle[choice]);
-		$(`#${choice}`).addClass(disabledButtonStyle);
-	});
+	// FIXME: Remove the signal-specific CSS styles
+	for (let i = 0; i < numberOfDestinationsMax; i++) {
+		$(`#${destinationNamePrefix}${i}`).val("");
+		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
+		$(`#${destinationNamePrefix}${i}`).removeClass(destinationEnabledButtonStyle);
+		$(`#${destinationNamePrefix}${i}`).removeClass(destinationHighlightedButtonStyle);
+		$(`#${destinationNamePrefix}${i}`).addClass(disabledButtonStyle);
+	}
 }
 
-function highlightDestinationButton(choice) {
-	$(`#${choice}`).addClass(destinationHighlightedButtonStyle[choice]);
+function highlightDestinationButton(choice, route) {
+	// FIXME: Use signal-specific styles
+	const [destinationSignal, routeDetails] = unpackRoute(route);
+	
+	$(`#${destinationNamePrefix}${choice}`).addClass(destinationHighlightedButtonStyle);
 }
 
-function enableDestinationButton(choice, signal) {
-	$(`#${choice}`).val(signal);
-	$(`#${choice}`).prop('disabled', false);
-	$(`#${choice}`).addClass(destinationEnabledButtonStyle[choice]);
-	$(`#${choice}`).removeClass(disabledButtonStyle);
+function enableDestinationButton(choice, route) {
+	// FIXME: Use signal-specific styles
+	const [destinationSignal, routeDetails] = unpackRoute(route);
+	
+	const routeString = JSON.stringify(route);
+
+	$(`#${destinationNamePrefix}${choice}`).val(routeString);
+	$(`#${destinationNamePrefix}${choice}`).prop('disabled', false);
+	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
+	$(`#${destinationNamePrefix}${choice}`).removeClass(disabledButtonStyle);
 }
 
-function hideCancelRouteRequestButton() {
-	$(`#cancelRouteRequest`).hide();
-}
-
-function showCancelRouteRequestButton() {
-	$(`#cancelRouteRequest`).show();
-}
-
-function updatePossibleRoutes(sourceSignal) {
+function updatePossibleRoutes(blockId) {
 	disableAllDestinationButtons();
 	
-	const routes = getRoutes(sourceSignal);
-	if (routes.index == null) {
-		$('#routePreview').css('background-position', 'top -100% right');
+	const routes = getRoutes(blockId);
+	if (routes == null) {
 		return;
 	}
 	
-	Object.keys(routes.destinations).forEach(choice => {
-		enableDestinationButton(choice, routes.destinations[choice]);
-	});
-	
-	$('#routePreview').css('background-position', `top ${routePreviewHeight * routes.index}% right`);
+	Object.keys(routes).forEach((destinationSignal, choice) => {
+		const route = { };
+		route[destinationSignal] = routes[destinationSignal];
+		enableDestinationButton(choice, route);
+	});	
 }
 
-function finalDestinationCheck(sourceSignal) {
-	if (sourceSignal == gameDestinationSignal) {
-		stopwatch.stop();
-		// FIXME: Replace with better game sounds and visual response.
-		speak('JA, JA, JA!');
-	}
+const speedButtons = [
+	"stop",
+	"slow",
+	"normal",
+	"fast"
+];
+
+function disableSpeedButtons() {
+	speedButtons.forEach(speed => {
+		$(`#${speed}`).prop('disabled', true);
+	});
+}
+
+function enableSpeedButtons() {
+	speedButtons.forEach(speed => {
+		$(`#${speed}`).prop('disabled', false);
+	});
+}
+
+function disableReachedDestinationButton() {
+	$('#destinationReached').prop('disabled', true);
+}
+
+function enableReachedDestinationButton() {
+	$('destinationReached').prop('disabled', false);
 }
 
 var responseTimer = null;
@@ -158,19 +403,15 @@ function setResponseSuccess(responseId, message) {
 class Driver {
 	sessionId = null;
 	grabId = null;
+	userId = null;
 
 	trackOutput = null;
 	trainEngine = null;
 	trainId = null;
-	userId = null;
 
-	sourceSignal = null;
-	destinationSignal = null;
-	routeId = null;
+	routeDetails = null;
+	drivingIsForwards = null;
 	
-	routeRequestTimeout = null;
-	retryRouteTimeout = null;
-
 	constructor(trackOutput, trainEngine, trainId, userId) {
 		this.sessionId = 0;
 		this.grabId = -1;
@@ -180,12 +421,8 @@ class Driver {
 		this.trainId = trainId;
 		this.userId = userId;
 
-		this.sourceSignal = null;
-		this.destinationSignal = null;
-		this.routeId = null;
-		
-		this.routeRequestTimeout = null;
-		this.retryRouteTimeout = 1;   // seconds
+		this.routeDetails = null;
+		this.drivingIsForwards = null;
 	}
 	
 	get hasValidTrainSession() {
@@ -193,20 +430,7 @@ class Driver {
 	}
 	
 	get hasRouteGranted() {
-		return (this.routeId != null);
-	}
-	
-	cancelRouteRequestTimeout() {
-		clearTimeout(this.routeRequestTimeout);
-		this.routeRequestTimeout = null;
-	}
-	
-	async cancelRouteRequest() {
-		const lock = await Mutex.lock();
-		this.cancelRouteRequestTimeout();
-		hideCancelRouteRequestButton();
-		setResponseSuccess('#serverResponse', 'Cancelled your destination choice');
-		Mutex.unlock(lock);
+		return (this.routeDetails != null);
 	}
 	
 	grabTrainPromise() {
@@ -233,8 +457,29 @@ class Driver {
 			}
 		});
 	}
+	
+	updateDrivingDirectionPromise() {
+		return $.ajax({
+			type: 'POST',
+			url: '/monitor/train-state',
+			crossDomain: true,
+			data: {
+				'train': this.trainId
+			},
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				const trainIsLeft = responseData.includes('left');
+				const routeIsClockwise = (this.routeDetails["orientation"] == "clockwise");
+				this.drivingIsForwards = (routeIsClockwise && trainIsLeft)
+				                         || (!routeIsClockwise && !trainIsLeft);
+			},
+			error: (responseData, textStatus, errorThrown) => {
+				setResponseDanger('#serverResponse', '😢 Could not find your train');
+			}
+		});
+	}
 
-	stopTrainPromise() {
+	setTrainSpeedPromise(speed) {
 		return $.ajax({
 			type: 'POST',
 			url: '/driver/set-dcc-train-speed',
@@ -242,12 +487,12 @@ class Driver {
 			data: {
 				'session-id': this.sessionId,
 				'grab-id': this.grabId,
-				'speed': 0,
+				'speed': this.drivingIsForwards ? speed : "-" + speed,
 				'track-output': this.trackOutput
 			},
 			dataType: 'text',
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 There was a problem stopping your train');
+				setResponseDanger('#serverResponse', '😢 There was a problem setting the speed of your train');
 			}
 		});
 	}
@@ -276,24 +521,23 @@ class Driver {
 		});
 	}
 	
-	requestRoutePromise() {
+	requestRouteIdPromise(routeDetails) {
 		return $.ajax({
 			type: 'POST',
-			url: '/driver/request-route',
+			url: '/driver/request-route-id',
 			crossDomain: true,
 			data: {
 				'session-id': this.sessionId,
 				'grab-id': this.grabId,
-				'source': this.sourceSignal,
-				'destination': this.destinationSignal
+				'route-id': routeDetails["route-id"]
 			},
 			dataType: 'text',
-			// FIXME: On iOS, speech synthesis only works if it is first triggered by the user.
 			success: (responseData, textStatus, jqXHR) => {
-				this.routeId = responseData;
+				this.routeDetails = routeDetails;
+				setResponseSuccess('#serverResponse', '🥳 Start driving your train to your chosen destination');
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				this.routeId = null;
+				this.routeDetails = null;
 				setResponseDanger('#serverResponse', responseData.responseText);
 			}
 		});
@@ -307,77 +551,58 @@ class Driver {
 			data: {
 				'session-id': this.sessionId, 
 				'grab-id': this.grabId, 
-				'route-id': this.routeId
+				'route-id': this.routeDetails["route-id"],
+				'mode': 'manual'
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				this.routeId = null;
-				this.sourceSignal = this.destinationSignal;
-				setResponseSuccess('#serverResponse', '🥳 Train was driven to your chosen destination');
+				this.routeDetails = null;
+				setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				this.routeId = null;
-				setResponseDanger('#serverResponse', '😢 Train could not be driven to your chosen destination');
+				this.routeDetails = null;
+				setResponseDanger('#serverResponse', '😢 Route to your chosen destination is unavailable');
 			}
 		});
 	}
 
 	releaseRoutePromise() {
-		if (this.routeId == null) {
+		if (!this.hasRouteGranted) {
 			return;
 		}
-
+		
 		return $.ajax({
 			type: 'POST',
 			url: '/controller/release-route',
 			crossDomain: true,
-			data: { 'route-id': this.routeId },
+			data: { 'route-id': this.routeDetails["route-id"] },
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				this.routeId = null;
+				this.routeDetails = null;
 			}
 		});
 	}
 
-	async driveToPromise(destination) {
+	driveToPromise(route) {
 		if (!this.hasValidTrainSession) {
 			setResponseDanger('#serverResponse', 'Your train could not be found 😢');
 			return;
 		}
 	
-		const lock = await Mutex.lock();
+		const [destinationSignal, routeDetails] = unpackRoute(route);
 		
-		if (this.hasRouteGranted) {
-			Mutex.unlock(lock);
-			return;
-		}
+		this.requestRouteIdPromise(routeDetails)
+			.then(() => this.updateDrivingDirectionPromise())
+			.then(() => disableAllDestinationButtons())
+			.then(() => enableSpeedButtons())
+			.then(() => this.driveRoutePromise())
+			.then(() => updatePossibleRoutes(routeDetails["block"]))
+			.then(() => disableSpeedButtons())
+			.then(() => disableReachedDestinationButton());
 		
-		this.cancelRouteRequestTimeout();
-		
-		this.destinationSignal = $(`#${destination}`).val();
-		await this.requestRoutePromise().catch(() => {});
-		if (!this.hasRouteGranted)  {
-			// Keep retrying until the route is granted, or until the player selects another destination.
-			this.routeRequestTimeout = setTimeout(() => this.driveToPromise(destination), this.retryRouteTimeout*1000);
-			setResponseSuccess('#serverResponse', `⏳ Waiting for your chosen destination (${this.destinationSignal}) to become available ...`);
-			showCancelRouteRequestButton();
-			Mutex.unlock(lock);
-			return;
-		}
-		
-		disableAllDestinationButtons();
-		hideCancelRouteRequestButton();
-		highlightDestinationButton(destination);
-		Mutex.unlock(lock);
-
-		setResponseSuccess('#serverResponse', '⏳ Driving your train to your chosen destination ...');
-	
-		this.driveRoutePromise()
-			.catch(() => this.releaseRoutePromise())
-			.always(() => {
-				updatePossibleRoutes(this.sourceSignal);
-				finalDestinationCheck(this.sourceSignal);
-			});
+		// FIXME: Only enable the reached destination button 
+		// when the train is in the destination segment.
+		enableReachedDestinationButton();
 	}
 }
 
@@ -386,31 +611,24 @@ function initialise() {
 		'master',                                 // trackOutput
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		'cargo_db',                               // trainId
-		'Bob Jones'                               // userId
+		null                                      // userId
 	);
 	
-//	gameSourceSignal = 'signal5';
-	gameSourceSignal = 'signal3';
-	gameDestinationSignal = 'signal19';
-	
-	// FIXME: Portion of the route preview sprite to show is a percentage of the total sprite height
-	routePreviewHeight = 24;
+	gameBlockId = 'block0';
 	
 	// Display the train name and user name.
-	$('#userDetails').html(`${driver.userId} <br /> is driving ${driver.trainId}`);
+	$('#trainDetails').html(driver.trainId);
 	
 	// FIXME: Quick way to test other players.
-	$('#userDetails').click(function () {
+	$('#trainDetails').click(function () {
 		// Set the source signal for the train's starting position.
-		driver.userId = 'Anna Jones';
 		driver.trainId = 'cargo_green';
-		gameSourceSignal = 'signal12';
-		gameDestinationSignal = 'signal19';
+		gameBlockId = 'block0';
 		
-		$('#userDetails').html(`${driver.userId} <br /> is driving ${driver.trainId}`);
+		$('#trainDetails').html(driver.trainId);
 	});
 	
-	// Only show the button to start the game.
+	// Show only the start game button.
 	$('#startGameButton').show();
 	$('#endGameButton').hide();
 	
@@ -418,26 +636,35 @@ function initialise() {
 	$('#serverResponse').parent().hide();
 	
 	// Set the possible destinations for the SWTbahn platform.
-	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
+//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
 	
 	// Initialise the click handler of each destination button.
-	allDestinationChoices.forEach(choice => {
-		$(`#${choice}`).click(function () {
-			driver.driveToPromise(choice);
+	for (let i = 0; i < numberOfDestinationsMax; i++) {
+		const destinationButton = $(`#${destinationNamePrefix}${i}`);
+		destinationButton.click(function () {
+			const route = JSON.parse(destinationButton.val());
+			driver.driveToPromise(route);
+		});
+	}
+	
+	disableSpeedButtons();
+	
+	// Initialise the click handler of each speed button.
+	speedButtons.forEach(speed => {
+		const speedButton = $(`#${speed}`);
+		speedButton.click(function () {
+			driver.setTrainSpeedPromise(speedButton.val());
 		});
 	});
 	
-	// Hide the cancel route button, and initialise its click handler.
-	hideCancelRouteRequestButton();
-	$(`#cancelRouteRequest`).click(function () {
-		driver.cancelRouteRequest();
-	});
+	disableReachedDestinationButton();
 	
-	// Initialise stop watch for the player's turn.
-	stopwatch = new Stopwatch('#elapsedTime');
-	stopwatch.clear();
+	// Initialise the click handler of the destination reached button.
+	$("#destinationReached").click(function () {
+		driver.releaseRoutePromise();
+	});
 }
 
 // Wait for a duration in milliseconds.
@@ -460,8 +687,6 @@ $(document).ready(
 		$('#startGameButton').click(function () {
 			// FIXME: On iOS, speech synthesis only works if it is first triggered by the user.
 			speak("");
-
-			stopwatch.clear();
 			
 			if (driver.hasValidTrainSession) {
 				setResponseDanger('#serverResponse', 'You are already driving a train!')
@@ -469,18 +694,12 @@ $(document).ready(
 			}
 			
 			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
-			
-			// Set the source signal for the train's starting position.
-			driver.sourceSignal = gameSourceSignal;
-			
+						
 			driver.grabTrainPromise()
-				.then(() => updatePossibleRoutes(driver.sourceSignal))
-				.then(() => stopwatch.start());			
+				.then(() => updatePossibleRoutes(gameBlockId));
 		});
 
 		$('#endGameButton').click(function () {
-			stopwatch.stop();
-
 			if (!driver.hasValidTrainSession) {
 				setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 				$('#startGameButton').show();
@@ -490,16 +709,14 @@ $(document).ready(
 			
 			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 			
-			driver.sourceSignal = null;
+			driver.blockId = null;
 			
-			hideCancelRouteRequestButton();
-			driver.cancelRouteRequestTimeout();
-			driver.stopTrainPromise()
+			driver.setTrainSpeedPromise(0)
 				.then(() => wait(500))
 				.then(() => driver.releaseRoutePromise())
 				.always(() => {
 					driver.releaseTrainPromise();
-					updatePossibleRoutes(driver.sourceSignal);
+					updatePossibleRoutes(driver.blockId);
 				});
 		});
 

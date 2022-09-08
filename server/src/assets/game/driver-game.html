@@ -10,8 +10,6 @@
 
 	<link rel="stylesheet" href="style-game.css" />
 
-	<script src="script-game-stopwatch.js"></script>
-	<script src="script-game-mutex.js"></script>
 	<script src="script-game.js"></script>
 
 	<title>SWTbahn Driver Client</title>
@@ -22,7 +20,7 @@
 <body>
 	<div class="row">
 		<div class="col-sm-8">
-			<div id="userDetails"></div>
+			<div id="trainDetails"></div>
 		</div>
 
 		<div class="col-sm-4">
@@ -35,26 +33,10 @@
 		<div class="col-2">
 			<button id="startGameButton" type="button" class="btn btn-lg btn-primary">Start Game</button>
 			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">End Game</button>
-			
-			<div class="m-4"></div>
-			
-			<h4>Time: <span id="elapsedTime">0s</span></h4>
-			<h4>Remaining capacity</h4>
-			<ul>
-				<li>Passengers: <span id="passengersCollected">300</span> of 300</li>
-				<li>Cargo: <span id="cargoCollected">100</span> of 100 tons</li>
-			</ul>
-			<h4>Delivered</h4>
-			<ul>
-				<li>Passengers: <span id="passengersDelivered">0</span></li>
-				<li>Cargo: <span id="cargoDelivered">0</span> tons</li>
-			</ul>
-		</div>
-		
-		<div id="routePreviewFrame" class="col-10">
-			<img id="routePreview"></img>
 		</div>
 	</div>
+
+	<div class="m-4"></div>
 
 	<div id="serverAlertBox">
 		<div id="serverAlert" class="alert" role="alert">
@@ -66,10 +48,38 @@
 		<div class="input-group row">
 			<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Possible destinations:</b></label>
 			<div id="possibleDestinations" class="col">
-				<button id="destination1" type="button" class="btn btn-lg col-2 me-md-5" value="">#</button>
-				<button id="destination2" type="button" class="btn btn-lg col-2 me-md-5" value="">%</button>
-				<button id="destination3" type="button" class="btn btn-lg col-2 me-md-5" value="">$</button>
-				<button id="cancelRouteRequest" type="button" class="btn btn-lg btn-danger col-2 me-md-5" value="">Cancel Choice</button>
+				<button id="destination0" type="button" class="btn btn-lg col-2 me-md-5" value="">0</button>
+				<button id="destination1" type="button" class="btn btn-lg col-2 me-md-5" value="">1</button>
+				<button id="destination2" type="button" class="btn btn-lg col-2 me-md-5" value="">2</button>
+				<button id="destination3" type="button" class="btn btn-lg col-2 me-md-5" value="">3</button>
+				
+				<div class="m-4"></div>
+
+				<button id="destination4" type="button" class="btn btn-lg col-2 me-md-5" value="">4</button>
+				<button id="destination5" type="button" class="btn btn-lg col-2 me-md-5" value="">5</button>
+				<button id="destination6" type="button" class="btn btn-lg col-2 me-md-5" value="">6</button>
+				<button id="destination7" type="button" class="btn btn-lg col-2 me-md-5" value="">7</button>
+			</div>
+		</div>
+		
+		<div class="m-4"></div>
+
+		<div class="input-group row">
+			<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Stopped at destination?</b></label>
+			<div class="col">
+				<button id="destinationReached" type="button" class="btn btn-lg btn-success col-2 me-md-5" value="">Yes</button>
+			</div>
+		</div>
+		
+		<div class="m-4"></div>
+
+		<div class="input-group row">
+			<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Speed:</b></label>
+			<div class="col">
+				<button id="stop" type="button" class="btn btn-danger btn-lg col-2 me-md-5" value="0">Stop</button>
+				<button id="slow" type="button" class="btn btn-warning btn-lg col-2 me-md-5" value="20">Slow</button>
+				<button id="normal" type="button" class="btn btn-secondary btn-lg col-2 me-md-5" value="40">Normal</button>
+				<button id="fast" type="button" class="btn btn-success btn-lg col-2 me-md-5" value="60">Fast</button>
 			</div>
 		</div>
 	</form>
