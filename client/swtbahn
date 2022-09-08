@@ -448,7 +448,7 @@ def release():
             click.echo(e, err=True)
 
 
-@click.command(help="Request a route for your train from source to destination block")
+@click.command(help="Request a route for your train from a source to a destination signal")
 @click.argument('source')
 @click.argument('destination')
 def request_route(source, destination):
@@ -466,9 +466,32 @@ def request_route(source, destination):
                 process_id_feedback(response.text, "Route " + response.text + 
                         " from " + source + " to " + destination + " has been granted\n")
             else:
-                click.echo("Route from " + source + " to " + destination + " " +
-						"has not been granted,\n" + 
-						"or system not running or invalid track output!\n",
+                click.echo("Route from " + source + " to " + destination +
+                        " has not been granted,\n" + 
+                        "or system not running or invalid track output!\n",
+                        err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Request a specific route ID for your train ")
+@click.argument('route-id')
+def request_route_id(route_id):
+    global session_id, grab_id, server
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    elif (session_id == 0 and grab_id == -1):
+        click.echo("No train grabbed!")
+    else:
+        try:
+            response = requests.post(server + "/driver/request-route-id",
+                    data = {'session-id': session_id, 'grab-id': grab_id,
+                        'route-id': route_id})
+            if (response.status_code == requests.codes.ok):
+                process_id_feedback(response.text, "Route " + route_id + " has been granted\n")
+            else:
+                click.echo("Route " + route_id + " has not been granted,\n" + 
+                        "or system not running or invalid track output!\n",
                         err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
@@ -912,6 +935,7 @@ controller.add_command(get_interlocker_list)
 driver.add_command(grab)
 driver.add_command(release)
 driver.add_command(request_route)
+driver.add_command(request_route_id)
 driver.add_command(drive_route)
 driver.add_command(set_dcc_speed)
 driver.add_command(set_calibrated_speed)

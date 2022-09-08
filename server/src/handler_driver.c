@@ -363,7 +363,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			                                data_destination_name);
 			if (route_id->str != NULL && params_check_is_number(route_id->str)) {
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
-				              "train: %s route %s",
+				              "train: %s route: %s",
 				              grabbed_trains[grab_id].name->str, route_id->str);
 				onion_response_printf(res, "%s", route_id->str);
 				g_string_free(route_id, true);
@@ -387,6 +387,61 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 					                      route_id->str);
 				}
 				g_string_free(route_id, true);
+
+				onion_response_set_code(res, HTTP_BAD_REQUEST);
+				return OCS_PROCESSED;
+			}
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}                                       
+}
+
+onion_connection_status handler_request_route_id(void *_, onion_request *req,
+                                                 onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_session_id = onion_request_get_post(req, "session-id");
+		const char *data_grab_id = onion_request_get_post(req, "grab-id");
+		const char *data_route_id = onion_request_get_post(req, "route-id");
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const char *route_id = params_check_route_id(data_route_id);
+		if (client_session_id != session_id) {
+			syslog_server(LOG_ERR, "Request: Request train route - invalid session id");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			syslog_server(LOG_ERR, "Request: Request train route - bad grab id");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (strcmp(route_id, "") == 0) {
+			syslog_server(LOG_ERR, "Request: Request train route - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			// Grant the route ID using an internal algorithm
+			
+			const char *result = grant_route_id(grabbed_trains[grab_id].name->str,
+			                                    route_id);
+			if (strcmp(result, "granted") == 0) {
+				syslog_server(LOG_NOTICE, "Request: Request train route - "
+				              "train: %s route: %s",
+				              grabbed_trains[grab_id].name->str, route_id);
+				onion_response_printf(res, "%s", result);
+				return OCS_PROCESSED;
+			} else {
+				syslog_server(LOG_ERR, "Request: Request train route - "
+				              "train: %s route: %s not granted",
+				              grabbed_trains[grab_id].name->str, route_id);
+				if (strcmp(result, "not_grantable") == 0) {
+					onion_response_printf(res, "Route found is not available "
+					                      "or has conflicts with others");
+				} else if (strcmp(result, "not_clear") == 0) {
+					onion_response_printf(res, "Route found has occupied tracks "
+					                      "or source signal is not stop");
+				} else {
+					onion_response_printf(res, "Route could not be granted (%s)",
+					                      route_id);
+				}
 
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
 				return OCS_PROCESSED;

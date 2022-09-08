@@ -68,7 +68,7 @@ GArray *get_granted_route_conflicts(const char *route_id);
 const bool get_route_is_clear(const char *route_id);
 
 /**
-  * Finds and grants a requested train route.
+  * Finds and grants a requested train route using an external algorithm.
   * A requested route is defined by a pair of source and destination signals. 
   * 
   * @param name of requesting train
@@ -79,6 +79,16 @@ const bool get_route_is_clear(const char *route_id);
 GString *grant_route(const char *train_id, 
                      const char *source_id, 
                      const char *destination_id);
+
+/**
+  * Grants a requested train route using an internal algorithm.
+  * 
+  * @param name of requesting train
+  * @param ID of the requested route
+  * @return short description of grant success or error
+  */ 
+const char *grant_route_id(const char *train_id, 
+                           const char *route_id);
 
 void release_route(const char *route_id);
 
