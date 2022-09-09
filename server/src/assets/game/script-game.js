@@ -678,6 +678,26 @@ class Driver {
 	}
 }
 
+function trainIsAvailable(trainId, success, error){
+	$.ajax({
+		type: 'POST',
+		url: serverAddress+'/monitor/train-state',
+		crossDomain: true,
+		data: { 'train': trainId },
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			if(responseData.includes("grabbed: no") && !responseData.includes("on segment: no")){
+				success();
+			} else {
+				error();
+			}
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			// ignore for now .. 
+		}
+	});
+}
+
 function initialise() {
 
 	$('#destinationsForm').hide();
@@ -694,6 +714,28 @@ function initialise() {
 	// gameBlockId = 'platform1';
 	// driver.currentBlock =  gameBlockId;
 	driver.routeAvailabilityInterval = null;
+
+	// set all trains to disabled
+	$('.selectTrainButton').prop("disabled", true);
+	driver.trainAvailabilityInterval = setInterval(() => {
+		// enable a train if it is on the platform and has not been grabbed so far
+		$('.selectTrainButton').each((index, obj) => {
+			let trainId = obj.id
+			trainIsAvailable(
+				trainId, 
+				()=>	{
+					if($(obj).prop("disabled") == true){
+						$(obj).prop("disabled", false)
+					}
+				},
+				()=>	{
+					if($(obj).prop("disabled") == false){
+						$(obj).prop("disabled", true)
+					}
+				}
+			)
+		})
+	}, 1000);
 
 	// Display the train name and user name.
 	// $('#trainDetails').html(driver.trainId);
@@ -783,8 +825,8 @@ let startGameLogic = function () {
 	setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 				
 	driver.grabTrainPromise()
-		.then(() => updatePossibleRoutes(driver.currentBlock));
-	
+		.then(() => updatePossibleRoutes(driver.currentBlock))
+		.always(() => 			clearInterval(driver.trainAvailabilityInterval));
 }
 
 $(document).ready(
