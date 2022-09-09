@@ -15,11 +15,15 @@ body {
 }
 
 #trainSelection{
-  /*center elements verticall within*/
+  /*center elements vertically*/
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
-#bahnImage1 {
+/* #bahnImage1 {
   line-height: 100px;
   color: #054479;
   height: 100px;
@@ -35,7 +39,7 @@ body {
   line-height: 100px;
   color: #054479;
   height: 100px;
-}
+} */
 
 #trainDetails {
   font-size: 29pt;
