@@ -6,12 +6,35 @@ body {
 #swtLogo {
   background-image: url("swtbahn-logo.png");
   background-repeat: no-repeat;
-  background-position: right;
+  background-position: center;
   background-size: auto 100px;
   line-height: 100px;
   color: #054479;
   height: 100px;
   width: 100%;
+}
+
+#trainSelection{
+  /*center elements verticall within*/
+  display: flex;
+}
+
+#bahnImage1 {
+  line-height: 100px;
+  color: #054479;
+  height: 100px;
+}
+
+#bahnImage2 {
+  line-height: 100px;
+  color: #054479;
+  height: 100px;
+}
+
+#bahnImage3 {
+  line-height: 100px;
+  color: #054479;
+  height: 100px;
 }
 
 #trainDetails {
