@@ -34,6 +34,12 @@ bool bahn_data_util_initialise_config(const char *config_dir);
 
 void bahn_data_util_free_config();
 
+bool string_equals(const char *str1, const char *str2);
+
+void bahn_data_util_init_cached_track_state();
+
+void bahn_data_util_free_cached_track_state();
+
 int interlocking_table_get_routes(const char *src_signal_id, const char *dst_signal_id, char *route_ids[]);
 
 char *config_get_scalar_string_value(const char *type, const char *id, const char *prop_name);
@@ -68,10 +74,7 @@ bool train_state_set_speed(const char *train_id, int speed);
 
 char *config_get_point_position(const char *route_id, const char *point_id);
 
-bool string_equals(const char *str1, const char *str2);
+const char *config_get_block_id_of_segment(const char *seg_id);
 
-void bahn_data_util_init_cached_track_state();
-
-void bahn_data_util_free_cached_track_state();
 
 #endif // BAHN_DATA_UTIL_H
