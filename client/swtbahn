@@ -118,9 +118,7 @@ def cli():
 @click.argument('port', type=click.IntRange(0, 65535))
 @click.argument('default_track_output')
 def config(hostname, port, default_track_output):
-    if (click.confirm("Only continue if you have NO train grabbed! Continue?")):
-        create_config(hostname, port, default_track_output)
-
+    create_config(hostname, port, default_track_output)
 
 
 # --- admin ---

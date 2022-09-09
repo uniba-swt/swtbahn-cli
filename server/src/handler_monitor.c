@@ -35,6 +35,7 @@
 #include "server.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
+#include "bahn_data_util.h"
 #include "interlocking.h"
 #include "param_verification.h"
 
@@ -79,19 +80,32 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 			t_bidib_train_position_query train_position_query = 
 				bidib_get_train_position(data_train);
 			if (train_state_query.known) {
-				GString *seg_string = g_string_new("No segments");
+				GString *seg_string = g_string_new("no");
+				GString *block_string = g_string_new("no");
 				if (train_position_query.length > 0) {
 					g_string_printf(seg_string, "%s", train_position_query.segments[0]);
 					for (size_t i = 1; i < train_position_query.length; i++) {
 						g_string_append_printf(seg_string, ", %s", train_position_query.segments[i]);
 					}
+
+					for (size_t i = 0; i < train_position_query.length; i++) {
+						const char *block_id =
+								config_get_block_id_of_segment(train_position_query.segments[i]);
+						if (block_id != NULL) {
+							g_string_printf(block_string, "%s", block_id);
+							break;
+						}
+					}
 				}
 				bidib_free_train_position_query(train_position_query);
 			
 				GString *ret_string = g_string_new("");
-				g_string_append_printf(ret_string, "on track: %s - orientation: %s"
+				g_string_append_printf(ret_string, "grabbed: %s - on segment: %s - on block: %s"
+				                       " - orientation: %s"
 				                       " - speed step: %d - detected speed: %d km/h - direction: %s",
-				                       train_state_query.data.on_track ? seg_string->str : "no",
+				                       train_grabbed(data_train) ? "yes" : "no",
+				                       seg_string->str,
+				                       block_string->str,
 				                       (train_state_query.data.orientation ==
 				                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
 				                       "left" : "right",
