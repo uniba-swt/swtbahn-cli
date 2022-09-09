@@ -143,6 +143,8 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 }
 
 const bool get_route_is_clear(const char *route_id) {
+	pthread_mutex_lock(&interlocker_mutex);
+
 	bahn_data_util_init_cached_track_state();
 	
 	// Check that all route signals are in the Stop aspect
@@ -152,21 +154,26 @@ const bool get_route_is_clear(const char *route_id) {
 		char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
 			bahn_data_util_free_cached_track_state();
+			pthread_mutex_unlock(&interlocker_mutex);
 			return false;
 		}
 	}
 	
-	bahn_data_util_free_cached_track_state();
 	
 	// Check that all blocks are unoccupied
 	char *item_ids[1024]; 
 	const size_t item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
 	for (size_t i = 0; i < item_ids_len; i++) {
 		if (is_type_segment(item_ids[i]) && is_segment_occupied(item_ids[i])) {
+			bahn_data_util_free_cached_track_state();
+			pthread_mutex_unlock(&interlocker_mutex);
 			return false;
 		}
 	}
 	
+	bahn_data_util_free_cached_track_state();
+	
+	pthread_mutex_unlock(&interlocker_mutex);
 	return true;
 }
 
