@@ -86,7 +86,7 @@ typedef struct {
     float limit_speed;
     GArray *train_types;
     GArray *signals;
-    char *main_segment;
+    GArray *main_segments;
     GArray *overlaps;
     bool is_reversed;
     char *direction;

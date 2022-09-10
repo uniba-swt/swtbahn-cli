@@ -191,8 +191,11 @@ static void block_information(void ** state) {
 	char *id = config_get_scalar_string_value("block", "block1", "id");
 	assert_string_equal(id, "block1");
 
-	char *segment = config_get_scalar_string_value("block" , "block1", "segment");
-	assert_string_equal(segment, "seg2");
+	char *segments[1024];
+	int segments_count = config_get_array_string_value("block" , "block1", "main_segments", segments);
+	assert_non_null(segments);
+	assert_int_equal(1, segments_count);
+	assert_string_equal(segments[0], "seg2");
 
 	char *overlap_ids[1024];
 	int overlap_count = config_get_array_string_value("block", "block1", "overlaps", overlap_ids);

@@ -40,6 +40,7 @@ typedef enum {
 typedef enum {
     EXTRAS_SEQ_NONE,
     BLOCKS,
+    BLOCK_MAIN_SEGMENTS,
     BLOCK_SIGNALS,
     BLOCK_OVERLAPS,
     BLOCK_TRAIN_TYPES,
@@ -76,6 +77,11 @@ void free_extras_id_key(void *pointer) {
 void free_block(void *pointer) {
     t_config_block *block = (t_config_block *) pointer;
     log_debug("free block: %s", block->id);
+
+    if (block->main_segments != NULL) {
+        log_debug("free block main segments");
+        g_array_free(block->main_segments, true);
+    }
 
     if (block->overlaps != NULL) {
         log_debug("free block overlaps");
@@ -170,6 +176,12 @@ void extras_yaml_sequence_start(char *scalar) {
             }
             break;
         case BLOCK:
+            if (str_equal(scalar, "main")) {
+                extras_sequence = BLOCK_MAIN_SEGMENTS;
+                cur_block->main_segments = g_array_sized_new(false, false, sizeof(char *), 2);
+                return;
+            }
+
             if (str_equal(scalar, "overlaps")) {
                 extras_sequence = BLOCK_OVERLAPS;
                 cur_block->overlaps = g_array_sized_new(false, false, sizeof(char *), 2);
@@ -228,6 +240,7 @@ void extras_yaml_sequence_end(char *scalar) {
         case PERIPHERAL_TYPES:
             extras_sequence = EXTRAS_SEQ_NONE;
             break;
+        case BLOCK_MAIN_SEGMENTS:
         case BLOCK_OVERLAPS:
         case BLOCK_SIGNALS:
         case BLOCK_TRAIN_TYPES:
@@ -253,7 +266,7 @@ void extras_yaml_mapping_start(char *scalar) {
             cur_block->id = NULL;
             cur_block->train_types = NULL;
             cur_block->signals = NULL;
-            cur_block->main_segment = NULL;
+            cur_block->main_segments = NULL;
             cur_block->overlaps = NULL;
             cur_block->is_reversed = false;
             cur_block->direction = NULL;
@@ -336,6 +349,11 @@ void extras_yaml_mapping_end(char *scalar) {
 }
 
 void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
+    if (extras_sequence == BLOCK_MAIN_SEGMENTS) {
+        g_array_append_val(cur_block->main_segments, cur_scalar);
+        return;
+    }
+    
     if (extras_sequence == BLOCK_OVERLAPS) {
         g_array_append_val(cur_block->overlaps, cur_scalar);
         return;
@@ -378,11 +396,6 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "limit")) {
                 cur_block->limit_speed = strtof(cur_scalar, NULL);
                 break;
-            }
-
-            if (str_equal(last_scalar, "main")) {
-                cur_block->main_segment = cur_scalar;
-                return;
             }
             
             if (str_equal(last_scalar, "is_reversed")) {
