@@ -134,7 +134,6 @@ boards:
     reversers:
       - id: reverser
         cv: 30051
-        block: block14
   - id: slave
     segments:
       - id: seg8

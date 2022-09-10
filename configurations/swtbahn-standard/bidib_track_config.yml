@@ -134,7 +134,6 @@ boards:
     reversers:
       - id: reverser
         cv: 10051
-        block: block7
   - id: lightcontrol1
     signals-board:
       - id: signal3
