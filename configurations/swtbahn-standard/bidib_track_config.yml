@@ -131,6 +131,10 @@ boards:
       - id: seg41
         address: 0x2A
         length: 10.0cm
+    reversers:
+      - id: reverser
+        cv: 10051
+        block: block7
   - id: lightcontrol1
     signals-board:
       - id: signal3

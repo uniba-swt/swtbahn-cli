@@ -160,6 +160,10 @@ module SWTbahnFull
         seg91b 0x09 length 41.6cm
         seg92  0x0a length 15cm
     end
+    
+    reversers master
+    	reverser 30051 block14
+    end
 
     signals lightcontrol1
         # Long partition

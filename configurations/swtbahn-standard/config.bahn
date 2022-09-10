@@ -56,6 +56,10 @@ module SWTbahnStandard
 		seg40 0x29 length 56.7cm
 		seg41 0x2A length 10cm
 	end
+	
+	reversers master
+		reverser 10051 block7
+	end
 
 	signals lightcontrol1
 		entry signal3 0x00
