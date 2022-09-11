@@ -1051,14 +1051,14 @@ char *config_get_point_position(const char *route_id, const char *point_id) {
     return result;
 }
 
-const char *config_get_block_id_of_segment(const char *seg_id) {
+char *config_get_block_id_of_segment(const char *seg_id) {
     GHashTableIter iterator;
     g_hash_table_iter_init(&iterator, config_data.table_blocks);
     
     gpointer key;
     gpointer value;
     while (g_hash_table_iter_next(&iterator, &key, &value)) {
-        const char *block_id = (const char *)key;
+        char *block_id = (char *)key;
         const t_config_block *block_details = (t_config_block *)value;
         
         // A block always has a main segment
@@ -1077,7 +1077,7 @@ const char *config_get_block_id_of_segment(const char *seg_id) {
         for (int i = 0; i < overlaps->len; ++i) {
             const char *overlap = g_array_index(overlaps, const char *, i);
             if (strcmp(seg_id, overlap) == 0) {
-                return overlap;
+                return block_id;
             }
         }
     }
