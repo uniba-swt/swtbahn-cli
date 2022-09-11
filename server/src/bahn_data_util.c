@@ -38,6 +38,7 @@
 typedef enum {
     TYPE_ROUTE,
     TYPE_SEGMENT,
+    TYPE_REVERSER,
     TYPE_SIGNAL,
     TYPE_POINT,
     TYPE_PERIPHERAL,
@@ -108,6 +109,10 @@ e_config_type get_config_type(const char *type) {
         return TYPE_SEGMENT;
     }
 
+    if (string_equals(type, "reverser")) {
+        return TYPE_REVERSER;
+    }
+
     if (string_equals(type, "signal")) {
         return TYPE_SIGNAL;
     }
@@ -154,6 +159,9 @@ void *get_object(e_config_type config_type, const char *id) {
             return get_route(id);
         case TYPE_SEGMENT:
             tb = config_data.table_segments;
+            break;
+        case TYPE_REVERSER:
+            tb = config_data.table_reversers;
             break;
         case TYPE_SIGNAL:
             tb = config_data.table_signals;
@@ -299,6 +307,24 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
 
                 break;
                 
+            case TYPE_REVERSER:
+                if (string_equals(prop_name, "id")) {
+                    result = ((t_config_reverser *) obj)->id;
+                    break;
+                }
+                
+                if (string_equals(prop_name, "board")) {
+                    result = ((t_config_reverser *) obj)->board;
+                    break;
+                }
+
+                if (string_equals(prop_name, "block")) {
+                    result = ((t_config_reverser *) obj)->block;
+                    break;
+                }
+
+                break;
+            
             case TYPE_SIGNAL:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_signal *) obj)->id;
