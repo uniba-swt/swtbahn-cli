@@ -100,6 +100,22 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	return false;
 }
 
+static const bool is_forward_driving(const char *route_orientation, 
+                                     const bool train_is_left) {
+	const bool route_is_clockwise = (strcmp(route_orientation, "clockwise") == 0);
+	const bool requested_forwards = (route_is_clockwise && train_is_left)
+	                                || (!route_is_clockwise && !train_is_left);
+	                                
+	// Determine whether the train is on a block controlled by a Kehrschleifenmodul
+	const bool electrically_reversed = false;
+	// Get train block
+	// Get reverser
+	// Get reverser state
+	
+	
+	return (electrically_reversed ? !requested_forwards : requested_forwards);
+}
+
 static bool drive_route_params_valid(const char *train_id, t_interlocking_route *route) {
 	if ((route->train == NULL) || strcmp(train_id, route->train) != 0) {
 		syslog_server(LOG_ERR, "Check drive route params: Route %s not granted to train %s", 
@@ -167,16 +183,15 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	pthread_mutex_lock(&grabbed_trains_mutex);	
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
-	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
-	                                        && train_position_query.orientation_is_left)
-	                                || (strcmp(route->orientation, "anticlockwise") == 0 
-	                                        && !train_position_query.orientation_is_left);
+	const char requested_forwards = is_forward_driving(route->orientation, 
+	                                                   train_position_query.orientation_is_left);
 	bidib_free_train_position_query(train_position_query);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (is_automatic) {
 		pthread_mutex_lock(&grabbed_trains_mutex);	
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
-														DRIVING_SPEED_SLOW, requested_forwards);
+														DRIVING_SPEED_SLOW, 
+														requested_forwards);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 	}
 	

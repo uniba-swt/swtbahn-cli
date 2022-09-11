@@ -289,6 +289,39 @@ void release_route(const char *route_id) {
 	pthread_mutex_unlock(&interlocker_mutex);
 }
 
+const bool reversers_state_update(void) {
+	const int max_retries = 2;
+	
+	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
+	for (size_t i = 0; i < rev_query.length; i++) {
+		const char *reverser_id = rev_query.ids[i];
+		const char *reverser_board = 
+				config_get_scalar_string_value("reverser", reverser_id, "board");
+		int err = bidib_request_reverser_state(reverser_id, reverser_board);
+		bidib_flush();
+		if (err) {
+			return false;
+		}
+		
+		bool state_unknown = true;
+		for (int retry = 0; retry < max_retries && state_unknown; retry++) {
+			t_bidib_reverser_state_query rev_state_query =
+					bidib_get_reverser_state(reverser_id);
+			if (rev_state_query.available) {
+				state_unknown = (rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_UNKNOWN);
+			}
+			bidib_free_reverser_state_query(rev_state_query);
+			usleep(50000);   // 0.05s
+		}
+		
+		if (state_unknown) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                           onion_response *res) {
 	build_response_header(res);
