@@ -211,6 +211,7 @@ class Driver {
 
 	routeDetails = null;
 	drivingIsForwards = null;
+	currentBlock = null;
 	
 	trainAvailabilityInterval = null;
 	routeAvailabilityInterval = null;
@@ -226,6 +227,7 @@ class Driver {
 
 		this.routeDetails = null;
 		this.drivingIsForwards = null;
+		this.currentBlock = null;
 		
 		this.trainAvailabilityInterval = null;
 		this.routeAvailabilityInterval = null;
@@ -245,6 +247,30 @@ class Driver {
 	
 	clearRouteAvailabilityInterval() {
 		clearInterval(this.routeAvailabilityInterval);
+	}
+	
+	updateTrainAvailability() {
+		$('.selectTrainButton').prop("disabled", true);
+		const trainAvailabilityTimeout = 1000;
+		this.trainAvailabilityInterval = setInterval(() => {
+			// Enable a train if it is on the platform and has not been grabbed
+			$('.selectTrainButton').each((index, obj) => {
+				let trainId = obj.id;
+				trainIsAvailable(
+					trainId, 
+					() => {
+						if ($(obj).prop("disabled") == true) {
+							$(obj).prop("disabled", false)
+						}
+					},
+					() => {
+						if ($(obj).prop("disabled") == false) {
+							$(obj).prop("disabled", true)
+						}
+					}
+				)
+			})
+		}, trainAvailabilityTimeout);
 	}
 	
 	grabTrainPromise() {
@@ -370,9 +396,6 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				// FIXME: Delete after implementing auto-detection of train's current block
-				this.currentBlock = this.routeDetails["block"];
-				
 				this.routeDetails = null;
 				setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 			},
@@ -489,29 +512,8 @@ function initialise() {
 		null                                      // userId
 	);
 	
-	// FIXME: Needs to be triggered again when the game ends?
-	// Disable all train selections
-	$('.selectTrainButton').prop("disabled", true);
-	const trainAvailabilityTimeout = 1000;
-	driver.trainAvailabilityInterval = setInterval(() => {
-		// Enable a train if it is on the platform and has not been grabbed
-		$('.selectTrainButton').each((index, obj) => {
-			let trainId = obj.id;
-			trainIsAvailable(
-				trainId, 
-				() => {
-					if ($(obj).prop("disabled") == true) {
-						$(obj).prop("disabled", false)
-					}
-				},
-				() => {
-					if ($(obj).prop("disabled") == false) {
-						$(obj).prop("disabled", true)
-					}
-				}
-			)
-		})
-	}, trainAvailabilityTimeout);
+	// Update all train selections
+	driver.updateTrainAvailability();
 
 	// Handle train selection
 	$('.selectTrainButton').click(function (event) {
@@ -580,6 +582,7 @@ $(document).ready(
 				$('#destinationsForm').hide();
 				disableReachedDestinationButton();
 				disableSpeedButtons();
+				driver.updateTrainAvailability();
 
 				driver.trainId = null;
 				return;
@@ -598,6 +601,7 @@ $(document).ready(
 					$('#destinationsForm').hide();
 					disableReachedDestinationButton();
 					disableSpeedButtons();
+					driver.updateTrainAvailability();
 				});
 		});
 	}
