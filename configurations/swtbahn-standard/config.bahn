@@ -58,7 +58,7 @@ module SWTbahnStandard
 	end
 	
 	reversers master
-		reverser 10051 block7
+		reverser 20051 block7
 	end
 
 	signals lightcontrol1

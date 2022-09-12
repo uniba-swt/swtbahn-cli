@@ -133,7 +133,7 @@ boards:
         length: 10.0cm
     reversers:
       - id: reverser
-        cv: 10051
+        cv: 20051
   - id: lightcontrol1
     signals-board:
       - id: signal3

@@ -133,10 +133,11 @@ static const bool is_forward_driving(const char *route_orientation,
 				config_get_scalar_string_value("reverser", reverser_id, "block");
 
 		if (strcmp(block_id, reverser_block) == 0) {
+			const bool succ = reversers_state_update();
 			t_bidib_reverser_state_query rev_state_query =
 					bidib_get_reverser_state(reverser_id);
 			// 3. Check the reverser's state
-			if (rev_state_query.available) {
+			if (succ && rev_state_query.available) {
 				electrically_reversed = 
 						(rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
 			}

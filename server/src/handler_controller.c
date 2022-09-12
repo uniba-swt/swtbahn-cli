@@ -300,6 +300,7 @@ const bool reversers_state_update(void) {
 		int err = bidib_request_reverser_state(reverser_id, reverser_board);
 		bidib_flush();
 		if (err) {
+			bidib_free_id_list_query(rev_query);
 			return false;
 		}
 		
@@ -315,6 +316,7 @@ const bool reversers_state_update(void) {
 		}
 		
 		if (state_unknown) {
+			bidib_free_id_list_query(rev_query);
 			return false;
 		}
 	}
