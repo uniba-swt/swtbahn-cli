@@ -74,7 +74,7 @@ bool train_state_set_speed(const char *train_id, int speed);
 
 char *config_get_point_position(const char *route_id, const char *point_id);
 
-const char *config_get_block_id_of_segment(const char *seg_id);
+char *config_get_block_id_of_segment(const char *seg_id);
 
 
 #endif // BAHN_DATA_UTIL_H

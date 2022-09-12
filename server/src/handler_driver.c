@@ -100,6 +100,54 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	return false;
 }
 
+static const bool is_forward_driving(const char *route_orientation, 
+                                     const char *train_id) {
+
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+	const bool train_is_left = train_position_query.orientation_is_left;
+	const bool route_is_clockwise = (strcmp(route_orientation, "clockwise") == 0);
+	const bool requested_forwards = (route_is_clockwise && train_is_left)
+	                                || (!route_is_clockwise && !train_is_left);
+	                                
+	// Determine whether the train is on a block controlled by a Kehrschleifenmodul
+	// 1. Get train block
+	char *block_id = NULL;
+	for (size_t i = 0; i < train_position_query.length; i++) {
+		block_id = config_get_block_id_of_segment(train_position_query.segments[i]);
+		if (block_id != NULL) {
+			break;
+		}
+	}
+	bidib_free_train_position_query(train_position_query);
+	
+	if (block_id == NULL) {
+		return requested_forwards;
+	}
+
+	// 2. Check whether the train is on a block controlled by a reverser
+	bool electrically_reversed = false;
+	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
+	for (size_t i = 0; i < rev_query.length; i++) {
+		const char *reverser_id = rev_query.ids[i];
+		const char *reverser_block = 
+				config_get_scalar_string_value("reverser", reverser_id, "block");
+
+		if (strcmp(block_id, reverser_block) == 0) {
+			const bool succ = reversers_state_update();
+			t_bidib_reverser_state_query rev_state_query =
+					bidib_get_reverser_state(reverser_id);
+			// 3. Check the reverser's state
+			if (succ && rev_state_query.available) {
+				electrically_reversed = 
+						(rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
+			}
+			break;
+		}
+	}
+
+	return (electrically_reversed ? !requested_forwards : requested_forwards);
+}
+
 static bool drive_route_params_valid(const char *train_id, t_interlocking_route *route) {
 	if ((route->train == NULL) || strcmp(train_id, route->train) != 0) {
 		syslog_server(LOG_ERR, "Check drive route params: Route %s not granted to train %s", 
@@ -166,17 +214,13 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	syslog_server(LOG_NOTICE, "Drive route: Driving starts");
 	pthread_mutex_lock(&grabbed_trains_mutex);	
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
-	const char requested_forwards = (strcmp(route->orientation, "clockwise") == 0 
-	                                        && train_position_query.orientation_is_left)
-	                                || (strcmp(route->orientation, "anticlockwise") == 0 
-	                                        && !train_position_query.orientation_is_left);
-	bidib_free_train_position_query(train_position_query);
+	const char requested_forwards = is_forward_driving(route->orientation, train_id);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (is_automatic) {
 		pthread_mutex_lock(&grabbed_trains_mutex);	
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
-														DRIVING_SPEED_SLOW, requested_forwards);
+														DRIVING_SPEED_SLOW, 
+														requested_forwards);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 	}
 	

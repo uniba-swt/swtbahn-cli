@@ -90,7 +90,21 @@ GString *grant_route(const char *train_id,
 const char *grant_route_id(const char *train_id, 
                            const char *route_id);
 
+/**
+  * Releases the requested route id.
+  * 
+  * @param ID of the requested route
+  */ 
 void release_route(const char *route_id);
+
+/**
+ * Requests the reverser state to be updated and waits
+ * for the update to complete. The waiting is bounded by 
+ * a maximum number of retries.
+ * 
+ * @return true if the update was successful, otherwise false
+ */
+const bool reversers_state_update(void);
 
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                               onion_response *res);

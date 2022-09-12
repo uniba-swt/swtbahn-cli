@@ -38,6 +38,7 @@ typedef struct {
     GHashTable *table_peripherals;
     GHashTable *table_trains;
     GHashTable *table_blocks; // store: blocks and platforms
+    GHashTable *table_reversers;
     GHashTable *table_crossings;
     GHashTable *table_signal_types;
     GHashTable *table_composite_signals;
@@ -48,6 +49,12 @@ typedef struct {
     char *id;
     float length;
 } t_config_segment;
+
+typedef struct {
+    char *id;
+    char *board;
+    char *block;
+} t_config_reverser;
 
 typedef struct {
     char *id;
@@ -86,7 +93,7 @@ typedef struct {
     float limit_speed;
     GArray *train_types;
     GArray *signals;
-    char *main_segment;
+    GArray *main_segments;
     GArray *overlaps;
     bool is_reversed;
     char *direction;

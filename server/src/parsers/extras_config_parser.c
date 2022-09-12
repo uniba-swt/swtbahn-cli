@@ -31,6 +31,7 @@
 typedef enum {
     EXTRAS_ROOT,
     BLOCK,
+    REVERSER,
     CROSSING,
     SIGNAL_TYPE,
     COMPOSITE_SIGNAL,
@@ -40,9 +41,11 @@ typedef enum {
 typedef enum {
     EXTRAS_SEQ_NONE,
     BLOCKS,
+    BLOCK_MAIN_SEGMENTS,
     BLOCK_SIGNALS,
     BLOCK_OVERLAPS,
     BLOCK_TRAIN_TYPES,
+    REVERSERS,
     CROSSINGS,
     COMPOSITE_SIGNALS,
     SIGNAL_TYPES,
@@ -54,12 +57,14 @@ typedef enum {
 } e_extras_sequence_level;
 
 GHashTable *tb_blocks;
-GHashTable *tb_crossing;
+GHashTable *tb_reversers;
+GHashTable *tb_crossings;
 GHashTable *tb_signal_types;
 GHashTable *tb_composite_signals;
 GHashTable *tb_peripheral_types;
 
 t_config_block *cur_block;
+t_config_reverser *cur_reverser;
 t_config_crossing *cur_crossing;
 t_config_signal_type *cur_signal_type;
 t_config_composite_signal *cur_composite_signal;
@@ -77,6 +82,11 @@ void free_block(void *pointer) {
     t_config_block *block = (t_config_block *) pointer;
     log_debug("free block: %s", block->id);
 
+    if (block->main_segments != NULL) {
+        log_debug("free block main segments");
+        g_array_free(block->main_segments, true);
+    }
+
     if (block->overlaps != NULL) {
         log_debug("free block overlaps");
         g_array_free(block->overlaps, true);
@@ -93,6 +103,12 @@ void free_block(void *pointer) {
     }
 
     free(block);
+}
+
+void free_reverser(void *pointer) {
+    t_config_reverser *reverser = (t_config_reverser *) pointer;
+    log_debug("free crossing: %s", reverser->id);
+    free(reverser);
 }
 
 void free_crossing(void *pointer) {
@@ -129,7 +145,8 @@ void free_peripheral_type(void *pointer) {
 
 void nullify_extras_config_tables(void) {
     tb_blocks = NULL;
-    tb_crossing = NULL;
+    tb_reversers = NULL;
+    tb_crossings = NULL;
     tb_signal_types = NULL;
     tb_composite_signals = NULL;
     tb_peripheral_types = NULL;
@@ -146,9 +163,15 @@ void extras_yaml_sequence_start(char *scalar) {
                 return;
             }
 
+            if (str_equal(scalar, "reversers")) {
+                extras_sequence = REVERSERS;
+                tb_reversers = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_reverser);
+                return;
+            }
+
             if (str_equal(scalar, "crossings")) {
                 extras_sequence = CROSSINGS;
-                tb_crossing = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_crossing);
+                tb_crossings = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_crossing);
                 return;
             }
 
@@ -170,6 +193,12 @@ void extras_yaml_sequence_start(char *scalar) {
             }
             break;
         case BLOCK:
+            if (str_equal(scalar, "main")) {
+                extras_sequence = BLOCK_MAIN_SEGMENTS;
+                cur_block->main_segments = g_array_sized_new(false, false, sizeof(char *), 2);
+                return;
+            }
+
             if (str_equal(scalar, "overlaps")) {
                 extras_sequence = BLOCK_OVERLAPS;
                 cur_block->overlaps = g_array_sized_new(false, false, sizeof(char *), 2);
@@ -222,12 +251,14 @@ void extras_yaml_sequence_end(char *scalar) {
     // decrease sequence level
     switch (extras_sequence) {
         case BLOCKS:
+        case REVERSERS:
         case CROSSINGS:
         case SIGNAL_TYPES:
         case COMPOSITE_SIGNALS:
         case PERIPHERAL_TYPES:
             extras_sequence = EXTRAS_SEQ_NONE;
             break;
+        case BLOCK_MAIN_SEGMENTS:
         case BLOCK_OVERLAPS:
         case BLOCK_SIGNALS:
         case BLOCK_TRAIN_TYPES:
@@ -253,10 +284,17 @@ void extras_yaml_mapping_start(char *scalar) {
             cur_block->id = NULL;
             cur_block->train_types = NULL;
             cur_block->signals = NULL;
-            cur_block->main_segment = NULL;
+            cur_block->main_segments = NULL;
             cur_block->overlaps = NULL;
             cur_block->is_reversed = false;
             cur_block->direction = NULL;
+            break;
+        case REVERSERS:
+            extras_mapping = REVERSER;
+            cur_reverser = malloc(sizeof(t_config_reverser));
+            cur_reverser->id = NULL;
+            cur_reverser->board = NULL;
+            cur_reverser->block = NULL;
             break;
         case CROSSINGS:
             extras_mapping = CROSSING;
@@ -301,9 +339,13 @@ void extras_yaml_mapping_end(char *scalar) {
             log_debug("extras_yaml_mapping_end: insert block: %s", cur_block->id);
             g_hash_table_insert(tb_blocks, strdup(cur_block->id), cur_block);
             break;
+        case REVERSER:
+            log_debug("extras_yaml_mapping_end: insert reverser: %s", cur_reverser->id);
+            g_hash_table_insert(tb_reversers, strdup(cur_reverser->id), cur_reverser);
+            break;
         case CROSSING:
             log_debug("extras_yaml_mapping_end: insert crossing: %s", cur_crossing->id);
-            g_hash_table_insert(tb_crossing, strdup(cur_crossing->id), cur_crossing);
+            g_hash_table_insert(tb_crossings, strdup(cur_crossing->id), cur_crossing);
             break;
         case SIGNAL_TYPE:
             log_debug("extras_yaml_mapping_end: insert signal type: %s", cur_signal_type->id);
@@ -324,6 +366,7 @@ void extras_yaml_mapping_end(char *scalar) {
     // decrease mapping level
     switch (extras_mapping) {
         case BLOCK:
+        case REVERSER:
         case CROSSING:
         case SIGNAL_TYPE:
         case COMPOSITE_SIGNAL:
@@ -336,6 +379,11 @@ void extras_yaml_mapping_end(char *scalar) {
 }
 
 void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
+    if (extras_sequence == BLOCK_MAIN_SEGMENTS) {
+        g_array_append_val(cur_block->main_segments, cur_scalar);
+        return;
+    }
+    
     if (extras_sequence == BLOCK_OVERLAPS) {
         g_array_append_val(cur_block->overlaps, cur_scalar);
         return;
@@ -379,11 +427,6 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 cur_block->limit_speed = strtof(cur_scalar, NULL);
                 break;
             }
-
-            if (str_equal(last_scalar, "main")) {
-                cur_block->main_segment = cur_scalar;
-                return;
-            }
             
             if (str_equal(last_scalar, "is_reversed")) {
                 cur_block->is_reversed = strcmp(cur_scalar, "true") == 0;
@@ -392,6 +435,22 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
             if (str_equal(last_scalar, "direction")) {
                 cur_block->direction = cur_scalar;
+                return;
+            }
+            break;
+        case REVERSER:
+            if (str_equal(last_scalar, "id")) {
+                cur_reverser->id = cur_scalar;
+                return;
+            }
+
+            if (str_equal(last_scalar, "board")) {
+                cur_reverser->board = cur_scalar;
+                return;
+            }
+
+            if (str_equal(last_scalar, "block")) {
+                cur_reverser->block = cur_scalar;
                 return;
             }
             break;
@@ -465,7 +524,8 @@ void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data) {
     
     parse_yaml_content(parser, extras_yaml_sequence_start, extras_yaml_sequence_end, extras_yaml_mapping_start, extras_yaml_mapping_end, extras_yaml_scalar);
     data->table_blocks = tb_blocks;
-    data->table_crossings = tb_crossing;
+    data->table_reversers = tb_reversers;
+    data->table_crossings = tb_crossings;
     data->table_signal_types = tb_signal_types;
     data->table_composite_signals = tb_composite_signals;
     data->table_peripheral_types = tb_peripheral_types;
