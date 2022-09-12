@@ -38,6 +38,7 @@
 typedef enum {
     TYPE_ROUTE,
     TYPE_SEGMENT,
+    TYPE_REVERSER,
     TYPE_SIGNAL,
     TYPE_POINT,
     TYPE_PERIPHERAL,
@@ -108,6 +109,10 @@ e_config_type get_config_type(const char *type) {
         return TYPE_SEGMENT;
     }
 
+    if (string_equals(type, "reverser")) {
+        return TYPE_REVERSER;
+    }
+
     if (string_equals(type, "signal")) {
         return TYPE_SIGNAL;
     }
@@ -154,6 +159,9 @@ void *get_object(e_config_type config_type, const char *id) {
             return get_route(id);
         case TYPE_SEGMENT:
             tb = config_data.table_segments;
+            break;
+        case TYPE_REVERSER:
+            tb = config_data.table_reversers;
             break;
         case TYPE_SIGNAL:
             tb = config_data.table_signals;
@@ -299,6 +307,24 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
 
                 break;
                 
+            case TYPE_REVERSER:
+                if (string_equals(prop_name, "id")) {
+                    result = ((t_config_reverser *) obj)->id;
+                    break;
+                }
+                
+                if (string_equals(prop_name, "board")) {
+                    result = ((t_config_reverser *) obj)->board;
+                    break;
+                }
+
+                if (string_equals(prop_name, "block")) {
+                    result = ((t_config_reverser *) obj)->block;
+                    break;
+                }
+
+                break;
+            
             case TYPE_SIGNAL:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_signal *) obj)->id;
@@ -379,11 +405,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
             case TYPE_BLOCK:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_block *) obj)->id;
-                    break;
-                }
-
-                if (string_equals(prop_name, "segment")) {
-                    result = ((t_config_block *) obj)->main_segment;
                     break;
                 }
 
@@ -584,6 +605,11 @@ int config_get_array_string_value(const char *type, const char *id, const char *
 
                 if (string_equals(prop_name, "block_signals")) {
                     arr = ((t_config_block *) obj)->signals;
+                    break;
+                }
+
+                if (string_equals(prop_name, "main_segments")) {
+                    arr = ((t_config_block *) obj)->main_segments;
                     break;
                 }
 
@@ -1025,22 +1051,24 @@ char *config_get_point_position(const char *route_id, const char *point_id) {
     return result;
 }
 
-const char *config_get_block_id_of_segment(const char *seg_id) {
+char *config_get_block_id_of_segment(const char *seg_id) {
     GHashTableIter iterator;
     g_hash_table_iter_init(&iterator, config_data.table_blocks);
     
     gpointer key;
     gpointer value;
     while (g_hash_table_iter_next(&iterator, &key, &value)) {
-        const char *block_id = (const char *)key;
+        char *block_id = (char *)key;
         const t_config_block *block_details = (t_config_block *)value;
         
         // A block always has a main segment
-        const char *main_segment = block_details->main_segment;
-        if (strcmp(seg_id, main_segment) == 0) {
-            return block_id;
-        }
-        
+        const GArray *main_segments = block_details->main_segments;
+        for (int i = 0; i < main_segments->len; ++i) {
+            const char *main_segment = g_array_index(main_segments, const char *, i);
+            if (strcmp(seg_id, main_segment) == 0) {
+                return block_id;
+            }
+        }        
         // A block may have no overlap segments
         const GArray *overlaps = block_details->overlaps;
         if (overlaps == NULL) {
@@ -1049,7 +1077,7 @@ const char *config_get_block_id_of_segment(const char *seg_id) {
         for (int i = 0; i < overlaps->len; ++i) {
             const char *overlap = g_array_index(overlaps, const char *, i);
             if (strcmp(seg_id, overlap) == 0) {
-                return overlap;
+                return block_id;
             }
         }
     }

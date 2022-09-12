@@ -106,6 +106,11 @@ void free_config_data(t_config_data config_data) {
         config_data.table_blocks = NULL;
     }
 
+    if (config_data.table_reversers != NULL) {
+        g_hash_table_destroy(config_data.table_reversers);
+        config_data.table_reversers = NULL;
+    }
+
     if (config_data.table_crossings != NULL) {
         g_hash_table_destroy(config_data.table_crossings);
         config_data.table_crossings = NULL;

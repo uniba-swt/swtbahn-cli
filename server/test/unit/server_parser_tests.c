@@ -141,6 +141,9 @@ static void extra_information(void **state) {
 
 	char *crossing_segment = config_get_scalar_string_value ("crossing", "crossing1", "segment");
 	assert_string_equal(crossing_segment, "seg20");
+
+	char *reverser_id = config_get_scalar_string_value("reverser", "reverser", "id");
+	assert_string_equal(reverser_id, "reverser");
 }
 
 static void signal_type(void **state) {
@@ -170,7 +173,6 @@ static void signal_type(void **state) {
 
 	char *signal_type_id = config_get_scalar_string_value("signaltype", "distant", "id");
 	assert_string_equal(signal_type_id, "distant");
-
 }
 
 static void train_information(void **state) {
@@ -191,8 +193,11 @@ static void block_information(void ** state) {
 	char *id = config_get_scalar_string_value("block", "block1", "id");
 	assert_string_equal(id, "block1");
 
-	char *segment = config_get_scalar_string_value("block" , "block1", "segment");
-	assert_string_equal(segment, "seg2");
+	char *segments[1024];
+	int segments_count = config_get_array_string_value("block" , "block1", "main_segments", segments);
+	assert_non_null(segments);
+	assert_int_equal(1, segments_count);
+	assert_string_equal(segments[0], "seg2");
 
 	char *overlap_ids[1024];
 	int overlap_count = config_get_array_string_value("block", "block1", "overlaps", overlap_ids);
@@ -223,6 +228,17 @@ static void block_information(void ** state) {
 	assert_int_equal(signals_count, 2);
 	assert_string_equal(signal_ids[0], "signal1");
 	assert_string_equal(signal_ids[1], "signal4a");
+}
+
+static void reverser_information(void ** state) {
+	char *reverser_id = config_get_scalar_string_value("reverser", "reverser", "id");
+	assert_string_equal(reverser_id, "reverser");
+
+	char *reverser_board = config_get_scalar_string_value("reverser", "reverser", "board");
+	assert_string_equal(reverser_board, "master");
+	
+	char *reverser_block = config_get_scalar_string_value("reverser", "reverser", "block");
+	assert_string_equal(reverser_block, "block14");
 }
 
 static void signal_composition(void **state) {
@@ -283,6 +299,7 @@ int main(int argc, char **argv) {
 			cmocka_unit_test(signal_type),
 			cmocka_unit_test(train_information),
 			cmocka_unit_test(block_information),
+			cmocka_unit_test(reverser_information),
 			cmocka_unit_test(signal_composition),
 			cmocka_unit_test(invalid_ids)
 	};

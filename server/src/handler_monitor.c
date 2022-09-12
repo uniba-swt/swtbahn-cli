@@ -423,6 +423,57 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 	}
 }
 
+onion_connection_status handler_get_reversers(void *_, onion_request *req,
+                                              onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		if (!reversers_state_update()) {
+			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			GString *reversers = g_string_new("");
+			t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
+			for (size_t i = 0; i < rev_query.length; i++) {
+				const char *reverser_id = rev_query.ids[i];
+				t_bidib_reverser_state_query rev_state_query =
+						bidib_get_reverser_state(reverser_id);
+				if (!rev_state_query.available) {
+					continue;
+				}
+				
+				char *state_value_str = "unknown";
+				switch (rev_state_query.data.state_value) {
+					case BIDIB_REV_EXEC_STATE_OFF: 
+						state_value_str = "off";
+						break;
+					case BIDIB_REV_EXEC_STATE_ON: 
+						state_value_str = "on";
+						break;
+					default:
+						state_value_str = "unknown";
+						break;
+				}
+						
+				g_string_append_printf(reversers, "%s%s - state: %s",
+									   i != 0 ? "\n" : "",
+									   reverser_id, state_value_str);
+				bidib_free_reverser_state_query(rev_state_query);
+			}
+			bidib_free_id_list_query(rev_query);
+			char response[reversers->len + 1];
+			strcpy(response, reversers->str);
+			g_string_free(reversers, true);
+			onion_response_printf(res, "%s", response);
+			syslog_server(LOG_NOTICE, "Request: Get reversers");
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Get reversers - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
 onion_connection_status handler_get_peripherals(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);

@@ -201,6 +201,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/point-aspects", handler_get_point_aspects);
 	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects);
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
+	onion_url_add(urls, "monitor/reversers", handler_get_reversers);
 	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);

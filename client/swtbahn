@@ -857,6 +857,22 @@ def get_segments():
             click.echo(e, err=True)
 
 
+@click.command(help="Get a list of reversers")
+def get_reversers():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/reversers")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 @click.command(help="Get a list of peripherals")
 def get_peripherals():
     if(parse_config()):
@@ -952,6 +968,7 @@ monitor.add_command(get_signals)
 monitor.add_command(get_point_aspects)
 monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
+monitor.add_command(get_reversers)
 monitor.add_command(get_peripherals)
 monitor.add_command(get_granted_routes)
 monitor.add_command(get_route)
