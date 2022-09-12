@@ -62,13 +62,15 @@ static void increment_next_grab_id(void) {
 
 const int train_get_grab_id(const char *train) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
+	int grab_id = -1;
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (strcmp(grabbed_trains[i].name->str, train) == 0) {
-			return i;
+			grab_id = i;
+			break;
 		}
 	}
-	return -1;
 	pthread_mutex_unlock(&grabbed_trains_mutex);
+	return grab_id;
 }
 
 bool train_grabbed(const char *train) {
@@ -215,14 +217,12 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	pthread_mutex_lock(&grabbed_trains_mutex);	
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const char requested_forwards = is_forward_driving(route->orientation, train_id);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (is_automatic) {
-		pthread_mutex_lock(&grabbed_trains_mutex);	
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
 														DRIVING_SPEED_SLOW, 
 														requested_forwards);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
 	}
+	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set the signals along the route to Stop as the train drives past them
 	const bool result = drive_route_progressive_stop_signals(train_id, route);
