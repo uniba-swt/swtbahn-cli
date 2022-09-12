@@ -25,7 +25,6 @@ const destinationEnabledButtonStyle = 'btn-dark';
 const destinationHighlightedButtonStyle = 'btn-dark';
 
 function disableAllDestinationButtons() {
-	console.log("clearing the interval");
 	driver.clearRouteAvailabilityInterval();
 
 	// FIXME: Remove the signal-specific CSS styles
@@ -232,6 +231,11 @@ class Driver {
 		this.routeAvailabilityInterval = null;
 	}
 	
+	reset() {
+		this.sessionId = 0;
+		this.grabId = -1;
+	}
+	
 	get hasValidTrainSession() {
 		return (this.sessionId != 0 && this.grabId != -1)
 	}
@@ -241,11 +245,32 @@ class Driver {
 	}
 	
 	clearTrainAvailabilityInterval() {
+		console.log("clearTrainAvailabilityInterval");
 		clearInterval(this.trainAvailabilityInterval);
 	}
 	
 	clearRouteAvailabilityInterval() {
+		console.log("clearRouteAvailabilityInterval");
 		clearInterval(this.routeAvailabilityInterval);
+	}
+	
+	updateCurrentBlock() {
+		return $.ajax({
+			type: 'POST',
+			url: serverAddress + '/monitor/train-state',
+			crossDomain: true,
+			data: {
+				'train': this.trainId
+			},
+			dataType: 'text',
+			success: (responseData, textStatus, jqXHR) => {
+				const regexMatch = /on block: (.*?) /g.exec(responseData);
+				this.currentBlock =  regexMatch[1];
+			},
+			error: (responseData, textStatus, errorThrown) => {
+				setResponseDanger('#serverResponse', '😢 Could not find your train');
+			}
+		});
 	}
 	
 	updateTrainAvailability() {
@@ -433,11 +458,16 @@ class Driver {
 		// FIXME: Only enable the reached destination button when the train is in the destination segment.
 			.then(() => enableReachedDestinationButton())
 			.then(() => this.driveRoutePromise())
-		// FIXME: .then(() => this.updateCurrentBlock())
-		// FIXME: .then(() => updatePossibleRoutes(driver.currentBlock))
-			.then(() => updatePossibleRoutes(routeDetails["block"]))   // FIXME: Delete after implementing auto-detection of train's current block
+			.then(() => {
+				if (!this.hasValidTrainSession) {
+					throw new Error("Game has ended");
+				}
+			})
+			.then(() => this.updateCurrentBlock())
+			.then(() => updatePossibleRoutes(driver.currentBlock))
 			.then(() => disableSpeedButtons())
-			.then(() => disableReachedDestinationButton());
+			.then(() => disableReachedDestinationButton())
+			.catch();
 	}
 }
 
@@ -462,15 +492,6 @@ function startGameLogic() {
 	// FIXME: On iOS, speech synthesis only works if it is first triggered by the user.
 	speak("");
 
-	// FIXME: Delete after implementing auto-detection of train's current block
-	if(driver.trainId == 'cargo_db') {
-		driver.currentBlock = 'platform1';
-	} else if(driver.trainId == 'cargo_green') {
-		driver.currentBlock = 'platform2';
-	} else if(driver.trainId == 'regional_odeg') {
-		driver.currentBlock = 'block1';
-	}
-
 	if (driver.hasValidTrainSession) {
 		setResponseDanger('#serverResponse', 'You are already driving a train!')
 		return;
@@ -481,7 +502,7 @@ function startGameLogic() {
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
 		.then(() => $('#endGameButton').show())
-	// FIXME: .then(() => driver.updateCurrentBlock())
+		.then(() => driver.updateCurrentBlock())
 		.then(() => updatePossibleRoutes(driver.currentBlock))
 		.always(() => driver.clearTrainAvailabilityInterval());
 }
@@ -489,6 +510,8 @@ function startGameLogic() {
 function endGameLogic() {
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
+	driver.clearRouteAvailabilityInterval();
+	driver.reset();
 	disableAllDestinationButtons();
 	disableReachedDestinationButton();
 	disableSpeedButtons();
@@ -577,7 +600,6 @@ $(document).ready(
 		$('#endGameButton').click(function () {
 			if (!driver.hasValidTrainSession) {
 				endGameLogic();
-				this.trainId = null;
 				return;
 			}
 			
