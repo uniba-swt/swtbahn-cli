@@ -203,7 +203,7 @@ function setResponseSuccess(responseId, message) {
 class Driver {
 	sessionId = null;
 	grabId = null;
-	userId = null;
+	trainId = null;
 
 	trackOutput = null;
 	trainEngine = null;
@@ -216,14 +216,13 @@ class Driver {
 	trainAvailabilityInterval = null;
 	routeAvailabilityInterval = null;
 	
-	constructor(trackOutput, trainEngine, trainId, userId) {
+	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
 		this.grabId = -1;
 
 		this.trackOutput = trackOutput;
 		this.trainEngine = trainEngine;
 		this.trainId = trainId;
-		this.userId = userId;
 
 		this.routeDetails = null;
 		this.drivingIsForwards = null;
@@ -289,8 +288,6 @@ class Driver {
 				this.grabId = responseDataSplit[1];
 			
 				setResponseSuccess('#serverResponse', '😁 Your train is ready');
-				$('#trainSelection').hide();
-				$('#endGameButton').show();
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				setResponseDanger('#serverResponse', '😢 There was a problem starting your train');
@@ -350,10 +347,7 @@ class Driver {
 			success: (responseData, textStatus, jqXHR) => {
 				this.sessionId = 0;
 				this.grabId = -1;
-			
-				setResponseSuccess('#serverResponse', '😀 Thank you for playing');
-				$('#endGameButton').hide();
-				$('#trainSelection').show();
+				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				setResponseDanger('#serverResponse', '🤔 There was a problem ending your turn');
@@ -429,18 +423,14 @@ class Driver {
 			return;
 		}
 
-		$('#destinationsForm').hide();
-		enableSpeedButtons();
-
-
 		const [destinationSignal, routeDetails] = unpackRoute(route);
 		
 		this.requestRouteIdPromise(routeDetails)
 			.then(() => this.updateDrivingDirectionPromise())
+			.then(() => $('#destinationsForm').hide())
 			.then(() => disableAllDestinationButtons())
 			.then(() => enableSpeedButtons())
-		// FIXME: Only enable the reached destination button 
-		// when the train is in the destination segment.
+		// FIXME: Only enable the reached destination button when the train is in the destination segment.
 			.then(() => enableReachedDestinationButton())
 			.then(() => this.driveRoutePromise())
 		// FIXME: .then(() => this.updateCurrentBlock())
@@ -468,7 +458,6 @@ function trainIsAvailable(trainId, success, error) {
 	});
 }
 
-// Start the game logic
 function startGameLogic() {
 	// FIXME: On iOS, speech synthesis only works if it is first triggered by the user.
 	speak("");
@@ -490,9 +479,21 @@ function startGameLogic() {
 	setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 				
 	driver.grabTrainPromise()
+		.then(() => $('#trainSelection').hide())
+		.then(() => $('#endGameButton').show())
 	// FIXME: .then(() => driver.updateCurrentBlock())
 		.then(() => updatePossibleRoutes(driver.currentBlock))
 		.always(() => driver.clearTrainAvailabilityInterval());
+}
+
+function endGameLogic() {
+	$('#endGameButton').hide();
+	$('#destinationsForm').hide();
+	disableAllDestinationButtons();
+	disableReachedDestinationButton();
+	disableSpeedButtons();
+	$('#trainSelection').show();
+	driver.updateTrainAvailability();
 }
 
 function initialise() {
@@ -508,8 +509,7 @@ function initialise() {
 	driver = new Driver(
 		'master',                                 // trackOutput
 		'libtrain_engine_default (unremovable)',  // trainEngine
-		null,		                              // trainId
-		null                                      // userId
+		null                                      // trainId
 	);
 	
 	// Update all train selections
@@ -576,33 +576,22 @@ $(document).ready(
 
 		$('#endGameButton').click(function () {
 			if (!driver.hasValidTrainSession) {
-				setResponseSuccess('#serverResponse', '😀 Thank you for playing');
-				$('#trainSelection').show();
-				$('#endGameButton').hide();
-				$('#destinationsForm').hide();
-				disableReachedDestinationButton();
-				disableSpeedButtons();
-				driver.updateTrainAvailability();
-
-				driver.trainId = null;
+				endGameLogic();
+				this.trainId = null;
 				return;
 			}
 			
 			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
-			
-			driver.blockId = null;
-			
+						
 			driver.setTrainSpeedPromise(0)
 				.then(() => wait(500))
 				.then(() => driver.releaseRoutePromise())
 				.always(() => {
 					driver.releaseTrainPromise();
-					disableAllDestinationButtons();
-					$('#destinationsForm').hide();
-					disableReachedDestinationButton();
-					disableSpeedButtons();
-					driver.updateTrainAvailability();
+					endGameLogic();
 				});
+
+			setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 		});
 	}
 );
