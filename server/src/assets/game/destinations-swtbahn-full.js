@@ -1,878 +1,810 @@
 const allPossibleDestinationsSwtbahnFull = {
   "block1": {
-    "signal1": {
-      "signal36": {
-        "routeID": 122,
-        "lastBlock": "block15",
-        "lastSegment": "seg67",
-        "orientation": "clockwise"
-      },
-      "signal11": {
-        "routeID": 123,
-        "lastBlock": "block4",
-        "lastSegment": "seg15",
-        "orientation": "clockwise"
-      },
-      "signal8": {
-        "routeID": 124,
-        "lastBlock": "block3",
-        "lastSegment": "seg11",
-        "orientation": "clockwise"
-      },
-      "signal23": {
-        "routeID": 125,
-        "lastBlock": "block8",
-        "lastSegment": "seg36",
-        "orientation": "clockwise"
-      }
+    "signal36": {
+      "route-id": 122,
+      "orientation": "clockwise",
+      "block": "block15",
+      "segment": "seg67"
     },
-    "signal4a": {
-      "signal50a": {
-        "routeID": 63,
-        "lastBlock": "block21",
-        "lastSegment": "seg92",
-        "orientation": "anticlockwise"
-      },
-      "signal46a": {
-        "routeID": 65,
-        "lastBlock": "block19",
-        "lastSegment": "seg83",
-        "orientation": "anticlockwise"
-      },
-      "signal53a": {
-        "routeID": 67,
-        "lastBlock": "block22",
-        "lastSegment": "seg95",
-        "orientation": "anticlockwise"
-      },
-      "signal7a": {
-        "routeID": 68,
-        "lastBlock": "block2",
-        "lastSegment": "seg8",
-        "orientation": "anticlockwise"
-      },
-      "signal48a": {
-        "routeID": 70,
-        "lastBlock": "block20",
-        "lastSegment": "seg88",
-        "orientation": "anticlockwise"
-      },
-      "signal20": {
-        "routeID": 72,
-        "lastBlock": "block6",
-        "lastSegment": "seg28",
-        "orientation": "anticlockwise"
-      }
+    "signal11": {
+      "route-id": 123,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg15"
+    },
+    "signal8": {
+      "route-id": 124,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg11"
+    },
+    "signal23": {
+      "route-id": 125,
+      "orientation": "clockwise",
+      "block": "block8",
+      "segment": "seg36"
+    },
+    "signal50a": {
+      "route-id": 63,
+      "orientation": "anticlockwise",
+      "block": "block21",
+      "segment": "seg92"
+    },
+    "signal46a": {
+      "route-id": 65,
+      "orientation": "anticlockwise",
+      "block": "block19",
+      "segment": "seg83"
+    },
+    "signal53a": {
+      "route-id": 67,
+      "orientation": "anticlockwise",
+      "block": "block22",
+      "segment": "seg95"
+    },
+    "signal7a": {
+      "route-id": 68,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal48a": {
+      "route-id": 70,
+      "orientation": "anticlockwise",
+      "block": "block20",
+      "segment": "seg88"
+    },
+    "signal20": {
+      "route-id": 72,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg28"
     }
   },
   "block4": {
-    "signal11": {
-      "signal8": {
-        "routeID": 95,
-        "lastBlock": "block3",
-        "lastSegment": "seg11",
-        "orientation": "clockwise"
-      }
+    "signal8": {
+      "route-id": 95,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg11"
     },
-    "signal14": {
-      "signal18a": {
-        "routeID": 96,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "anticlockwise"
-      },
-      "signal4a": {
-        "routeID": 97,
-        "lastBlock": "block1",
-        "lastSegment": "seg3",
-        "orientation": "anticlockwise"
-      },
-      "signal27": {
-        "routeID": 98,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "anticlockwise"
-      }
+    "signal18a": {
+      "route-id": 96,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg23"
+    },
+    "signal4a": {
+      "route-id": 97,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg3"
+    },
+    "signal27": {
+      "route-id": 98,
+      "orientation": "anticlockwise",
+      "block": "platform3",
+      "segment": "seg47"
     }
   },
   "block5": {
-    "signal15": {
-      "signal36": {
-        "routeID": 84,
-        "lastBlock": "block15",
-        "lastSegment": "seg67",
-        "orientation": "clockwise"
-      },
-      "signal40": {
-        "routeID": 85,
-        "lastBlock": "platform7",
-        "lastSegment": "seg73",
-        "orientation": "clockwise"
-      },
-      "signal42": {
-        "routeID": 86,
-        "lastBlock": "platform6",
-        "lastSegment": "seg76",
-        "orientation": "clockwise"
-      },
-      "signal11": {
-        "routeID": 87,
-        "lastBlock": "block4",
-        "lastSegment": "seg15",
-        "orientation": "clockwise"
-      },
-      "signal8": {
-        "routeID": 90,
-        "lastBlock": "block3",
-        "lastSegment": "seg11",
-        "orientation": "clockwise"
-      },
-      "signal35a": {
-        "routeID": 91,
-        "lastBlock": "block14",
-        "lastSegment": "seg64",
-        "orientation": "clockwise"
-      },
-      "signal23": {
-        "routeID": 93,
-        "lastBlock": "block8",
-        "lastSegment": "seg36",
-        "orientation": "clockwise"
-      }
+    "signal36": {
+      "route-id": 84,
+      "orientation": "clockwise",
+      "block": "block15",
+      "segment": "seg67"
     },
-    "signal18a": {
-      "signal50a": {
-        "routeID": 8,
-        "lastBlock": "block21",
-        "lastSegment": "seg92",
-        "orientation": "anticlockwise"
-      },
-      "signal46a": {
-        "routeID": 9,
-        "lastBlock": "block19",
-        "lastSegment": "seg83",
-        "orientation": "anticlockwise"
-      },
-      "signal53a": {
-        "routeID": 10,
-        "lastBlock": "block22",
-        "lastSegment": "seg95",
-        "orientation": "anticlockwise"
-      },
-      "signal48a": {
-        "routeID": 11,
-        "lastBlock": "block20",
-        "lastSegment": "seg88",
-        "orientation": "anticlockwise"
-      },
-      "signal20": {
-        "routeID": 12,
-        "lastBlock": "block6",
-        "lastSegment": "seg28",
-        "orientation": "anticlockwise"
-      }
+    "signal40": {
+      "route-id": 85,
+      "orientation": "clockwise",
+      "block": "platform7",
+      "segment": "seg73"
+    },
+    "signal42": {
+      "route-id": 86,
+      "orientation": "clockwise",
+      "block": "platform6",
+      "segment": "seg76"
+    },
+    "signal11": {
+      "route-id": 87,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg15"
+    },
+    "signal8": {
+      "route-id": 90,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg11"
+    },
+    "signal35a": {
+      "route-id": 91,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg64"
+    },
+    "signal23": {
+      "route-id": 93,
+      "orientation": "clockwise",
+      "block": "block8",
+      "segment": "seg36"
+    },
+    "signal50a": {
+      "route-id": 8,
+      "orientation": "anticlockwise",
+      "block": "block21",
+      "segment": "seg92"
+    },
+    "signal46a": {
+      "route-id": 9,
+      "orientation": "anticlockwise",
+      "block": "block19",
+      "segment": "seg83"
+    },
+    "signal53a": {
+      "route-id": 10,
+      "orientation": "anticlockwise",
+      "block": "block22",
+      "segment": "seg95"
+    },
+    "signal48a": {
+      "route-id": 11,
+      "orientation": "anticlockwise",
+      "block": "block20",
+      "segment": "seg88"
+    },
+    "signal20": {
+      "route-id": 12,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg28"
     }
   },
   "block6": {
-    "signal19": {
-      "signal15": {
-        "routeID": 73,
-        "lastBlock": "block5",
-        "lastSegment": "seg21b",
-        "orientation": "clockwise"
-      },
-      "signal1": {
-        "routeID": 74,
-        "lastBlock": "block1",
-        "lastSegment": "seg1",
-        "orientation": "clockwise"
-      }
+    "signal15": {
+      "route-id": 73,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg21b"
     },
-    "signal20": {
-      "signal22a": {
-        "routeID": 126,
-        "lastBlock": "platform4",
-        "lastSegment": "seg32",
-        "orientation": "anticlockwise"
-      },
-      "signal44": {
-        "routeID": 127,
-        "lastBlock": "platform5",
-        "lastSegment": "seg79",
-        "orientation": "anticlockwise"
-      }
+    "signal1": {
+      "route-id": 74,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg1"
+    },
+    "signal22a": {
+      "route-id": 126,
+      "orientation": "anticlockwise",
+      "block": "platform4",
+      "segment": "seg32"
+    },
+    "signal44": {
+      "route-id": 127,
+      "orientation": "anticlockwise",
+      "block": "platform5",
+      "segment": "seg79"
     }
   },
   "block7": {
-    "signal21": {
-      "signal19": {
-        "routeID": 128,
-        "lastBlock": "block6",
-        "lastSegment": "seg26",
-        "orientation": "clockwise"
-      }
+    "signal19": {
+      "route-id": 128,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg26"
     },
-    "signal22a": {
-      "signal37": {
-        "routeID": 0,
-        "lastBlock": "block15",
-        "lastSegment": "seg69",
-        "orientation": "anticlockwise"
-      },
-      "signal9": {
-        "routeID": 1,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      },
-      "signal24": {
-        "routeID": 3,
-        "lastBlock": "block8",
-        "lastSegment": "seg38",
-        "orientation": "anticlockwise"
-      }
+    "signal37": {
+      "route-id": 0,
+      "orientation": "anticlockwise",
+      "block": "block15",
+      "segment": "seg69"
+    },
+    "signal9": {
+      "route-id": 1,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
+    },
+    "signal24": {
+      "route-id": 3,
+      "orientation": "anticlockwise",
+      "block": "block8",
+      "segment": "seg38"
     }
   },
   "block8": {
-    "signal23": {
-      "signal32": {
-        "routeID": 146,
-        "lastBlock": "block14",
-        "lastSegment": "seg62",
-        "orientation": "clockwise"
-      },
-      "signal49": {
-        "routeID": 147,
-        "lastBlock": "block21",
-        "lastSegment": "seg90",
-        "orientation": "clockwise"
-      },
-      "signal45": {
-        "routeID": 148,
-        "lastBlock": "block19",
-        "lastSegment": "seg81",
-        "orientation": "clockwise"
-      },
-      "signal47": {
-        "routeID": 149,
-        "lastBlock": "block20",
-        "lastSegment": "seg86",
-        "orientation": "clockwise"
-      },
-      "signal51": {
-        "routeID": 150,
-        "lastBlock": "block22",
-        "lastSegment": "seg93",
-        "orientation": "clockwise"
-      },
-      "signal21": {
-        "routeID": 151,
-        "lastBlock": "platform4",
-        "lastSegment": "seg30",
-        "orientation": "clockwise"
-      }
+    "signal32": {
+      "route-id": 146,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg62"
     },
-    "signal24": {
-      "signal18a": {
-        "routeID": 154,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "anticlockwise"
-      },
-      "signal31": {
-        "routeID": 155,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "anticlockwise"
-      },
-      "signal4a": {
-        "routeID": 156,
-        "lastBlock": "block1",
-        "lastSegment": "seg3",
-        "orientation": "anticlockwise"
-      },
-      "signal27": {
-        "routeID": 157,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "anticlockwise"
-      },
-      "signal29": {
-        "routeID": 159,
-        "lastBlock": "platform2",
-        "lastSegment": "seg56",
-        "orientation": "anticlockwise"
-      }
+    "signal49": {
+      "route-id": 147,
+      "orientation": "clockwise",
+      "block": "block21",
+      "segment": "seg90"
+    },
+    "signal45": {
+      "route-id": 148,
+      "orientation": "clockwise",
+      "block": "block19",
+      "segment": "seg81"
+    },
+    "signal47": {
+      "route-id": 149,
+      "orientation": "clockwise",
+      "block": "block20",
+      "segment": "seg86"
+    },
+    "signal51": {
+      "route-id": 150,
+      "orientation": "clockwise",
+      "block": "block22",
+      "segment": "seg93"
+    },
+    "signal21": {
+      "route-id": 151,
+      "orientation": "clockwise",
+      "block": "platform4",
+      "segment": "seg30"
+    },
+    "signal18a": {
+      "route-id": 154,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg23"
+    },
+    "signal31": {
+      "route-id": 155,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg59"
+    },
+    "signal4a": {
+      "route-id": 156,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg3"
+    },
+    "signal27": {
+      "route-id": 157,
+      "orientation": "anticlockwise",
+      "block": "platform3",
+      "segment": "seg47"
+    },
+    "signal29": {
+      "route-id": 159,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg56"
     }
   },
   "block11": {
-    "signal26": {
-      "signal36": {
-        "routeID": 130,
-        "lastBlock": "block15",
-        "lastSegment": "seg67",
-        "orientation": "clockwise"
-      },
-      "signal40": {
-        "routeID": 132,
-        "lastBlock": "platform7",
-        "lastSegment": "seg73",
-        "orientation": "clockwise"
-      },
-      "signal42": {
-        "routeID": 133,
-        "lastBlock": "platform6",
-        "lastSegment": "seg76",
-        "orientation": "clockwise"
-      },
-      "signal11": {
-        "routeID": 134,
-        "lastBlock": "block4",
-        "lastSegment": "seg15",
-        "orientation": "clockwise"
-      },
-      "signal8": {
-        "routeID": 135,
-        "lastBlock": "block3",
-        "lastSegment": "seg11",
-        "orientation": "clockwise"
-      },
-      "signal35a": {
-        "routeID": 137,
-        "lastBlock": "block14",
-        "lastSegment": "seg64",
-        "orientation": "clockwise"
-      },
-      "signal23": {
-        "routeID": 138,
-        "lastBlock": "block8",
-        "lastSegment": "seg36",
-        "orientation": "clockwise"
-      }
+    "signal36": {
+      "route-id": 130,
+      "orientation": "clockwise",
+      "block": "block15",
+      "segment": "seg67"
+    },
+    "signal40": {
+      "route-id": 132,
+      "orientation": "clockwise",
+      "block": "platform7",
+      "segment": "seg73"
+    },
+    "signal42": {
+      "route-id": 133,
+      "orientation": "clockwise",
+      "block": "platform6",
+      "segment": "seg76"
+    },
+    "signal11": {
+      "route-id": 134,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg15"
+    },
+    "signal8": {
+      "route-id": 135,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg11"
+    },
+    "signal35a": {
+      "route-id": 137,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg64"
+    },
+    "signal23": {
+      "route-id": 138,
+      "orientation": "clockwise",
+      "block": "block8",
+      "segment": "seg36"
     }
   },
   "block12": {
-    "signal28": {
-      "signal36": {
-        "routeID": 140,
-        "lastBlock": "block15",
-        "lastSegment": "seg67",
-        "orientation": "clockwise"
-      },
-      "signal40": {
-        "routeID": 141,
-        "lastBlock": "platform7",
-        "lastSegment": "seg73",
-        "orientation": "clockwise"
-      },
-      "signal42": {
-        "routeID": 142,
-        "lastBlock": "platform6",
-        "lastSegment": "seg76",
-        "orientation": "clockwise"
-      },
-      "signal8": {
-        "routeID": 143,
-        "lastBlock": "block3",
-        "lastSegment": "seg11",
-        "orientation": "clockwise"
-      },
-      "signal35a": {
-        "routeID": 144,
-        "lastBlock": "block14",
-        "lastSegment": "seg64",
-        "orientation": "clockwise"
-      },
-      "signal23": {
-        "routeID": 145,
-        "lastBlock": "block8",
-        "lastSegment": "seg36",
-        "orientation": "clockwise"
-      }
+    "signal36": {
+      "route-id": 140,
+      "orientation": "clockwise",
+      "block": "block15",
+      "segment": "seg67"
+    },
+    "signal40": {
+      "route-id": 141,
+      "orientation": "clockwise",
+      "block": "platform7",
+      "segment": "seg73"
+    },
+    "signal42": {
+      "route-id": 142,
+      "orientation": "clockwise",
+      "block": "platform6",
+      "segment": "seg76"
+    },
+    "signal8": {
+      "route-id": 143,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg11"
+    },
+    "signal35a": {
+      "route-id": 144,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg64"
+    },
+    "signal23": {
+      "route-id": 145,
+      "orientation": "clockwise",
+      "block": "block8",
+      "segment": "seg36"
     }
   },
   "block13": {
-    "signal30": {
-      "signal36": {
-        "routeID": 17,
-        "lastBlock": "block15",
-        "lastSegment": "seg67",
-        "orientation": "clockwise"
-      },
-      "signal40": {
-        "routeID": 18,
-        "lastBlock": "platform7",
-        "lastSegment": "seg73",
-        "orientation": "clockwise"
-      },
-      "signal42": {
-        "routeID": 19,
-        "lastBlock": "platform6",
-        "lastSegment": "seg76",
-        "orientation": "clockwise"
-      },
-      "signal8": {
-        "routeID": 20,
-        "lastBlock": "block3",
-        "lastSegment": "seg11",
-        "orientation": "clockwise"
-      },
-      "signal35a": {
-        "routeID": 21,
-        "lastBlock": "block14",
-        "lastSegment": "seg64",
-        "orientation": "clockwise"
-      },
-      "signal23": {
-        "routeID": 22,
-        "lastBlock": "block8",
-        "lastSegment": "seg36",
-        "orientation": "clockwise"
-      },
-      "signal44": {
-        "routeID": 160,
-        "lastBlock": "platform5",
-        "lastSegment": "seg79",
-        "orientation": "clockwise"
-      }
+    "signal36": {
+      "route-id": 17,
+      "orientation": "clockwise",
+      "block": "block15",
+      "segment": "seg67"
+    },
+    "signal40": {
+      "route-id": 18,
+      "orientation": "clockwise",
+      "block": "platform7",
+      "segment": "seg73"
+    },
+    "signal42": {
+      "route-id": 19,
+      "orientation": "clockwise",
+      "block": "platform6",
+      "segment": "seg76"
+    },
+    "signal8": {
+      "route-id": 20,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg11"
+    },
+    "signal35a": {
+      "route-id": 21,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg64"
+    },
+    "signal23": {
+      "route-id": 22,
+      "orientation": "clockwise",
+      "block": "block8",
+      "segment": "seg36"
+    },
+    "signal44": {
+      "route-id": 160,
+      "orientation": "clockwise",
+      "block": "platform5",
+      "segment": "seg79"
     }
   },
   "block14": {
-    "signal32": {
-      "signal18a": {
-        "routeID": 23,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "clockwise"
-      },
-      "signal31": {
-        "routeID": 24,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "clockwise"
-      },
-      "signal27": {
-        "routeID": 25,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "clockwise"
-      },
-      "signal29": {
-        "routeID": 26,
-        "lastBlock": "platform2",
-        "lastSegment": "seg56",
-        "orientation": "clockwise"
-      }
+    "signal18a": {
+      "route-id": 23,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg23"
     },
-    "signal35a": {
-      "signal37": {
-        "routeID": 119,
-        "lastBlock": "block15",
-        "lastSegment": "seg69",
-        "orientation": "anticlockwise"
-      },
-      "signal9": {
-        "routeID": 120,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      },
-      "signal24": {
-        "routeID": 121,
-        "lastBlock": "block8",
-        "lastSegment": "seg38",
-        "orientation": "anticlockwise"
-      }
+    "signal31": {
+      "route-id": 24,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg59"
+    },
+    "signal27": {
+      "route-id": 25,
+      "orientation": "clockwise",
+      "block": "platform3",
+      "segment": "seg47"
+    },
+    "signal29": {
+      "route-id": 26,
+      "orientation": "clockwise",
+      "block": "platform2",
+      "segment": "seg56"
+    },
+    "signal37": {
+      "route-id": 119,
+      "orientation": "anticlockwise",
+      "block": "block15",
+      "segment": "seg69"
+    },
+    "signal9": {
+      "route-id": 120,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
+    },
+    "signal24": {
+      "route-id": 121,
+      "orientation": "anticlockwise",
+      "block": "block8",
+      "segment": "seg38"
     }
   },
   "block15": {
-    "signal36": {
-      "signal32": {
-        "routeID": 39,
-        "lastBlock": "block14",
-        "lastSegment": "seg62",
-        "orientation": "clockwise"
-      },
-      "signal49": {
-        "routeID": 40,
-        "lastBlock": "block21",
-        "lastSegment": "seg90",
-        "orientation": "clockwise"
-      },
-      "signal45": {
-        "routeID": 41,
-        "lastBlock": "block19",
-        "lastSegment": "seg81",
-        "orientation": "clockwise"
-      },
-      "signal47": {
-        "routeID": 42,
-        "lastBlock": "block20",
-        "lastSegment": "seg86",
-        "orientation": "clockwise"
-      },
-      "signal51": {
-        "routeID": 43,
-        "lastBlock": "block22",
-        "lastSegment": "seg93",
-        "orientation": "clockwise"
-      },
-      "signal21": {
-        "routeID": 44,
-        "lastBlock": "platform4",
-        "lastSegment": "seg30",
-        "orientation": "clockwise"
-      }
+    "signal32": {
+      "route-id": 39,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg62"
     },
-    "signal37": {
-      "signal18a": {
-        "routeID": 27,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "anticlockwise"
-      },
-      "signal31": {
-        "routeID": 30,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "anticlockwise"
-      },
-      "signal4a": {
-        "routeID": 31,
-        "lastBlock": "block1",
-        "lastSegment": "seg3",
-        "orientation": "anticlockwise"
-      },
-      "signal27": {
-        "routeID": 33,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "anticlockwise"
-      },
-      "signal29": {
-        "routeID": 34,
-        "lastBlock": "platform2",
-        "lastSegment": "seg56",
-        "orientation": "anticlockwise"
-      }
+    "signal49": {
+      "route-id": 40,
+      "orientation": "clockwise",
+      "block": "block21",
+      "segment": "seg90"
+    },
+    "signal45": {
+      "route-id": 41,
+      "orientation": "clockwise",
+      "block": "block19",
+      "segment": "seg81"
+    },
+    "signal47": {
+      "route-id": 42,
+      "orientation": "clockwise",
+      "block": "block20",
+      "segment": "seg86"
+    },
+    "signal51": {
+      "route-id": 43,
+      "orientation": "clockwise",
+      "block": "block22",
+      "segment": "seg93"
+    },
+    "signal21": {
+      "route-id": 44,
+      "orientation": "clockwise",
+      "block": "platform4",
+      "segment": "seg30"
+    },
+    "signal18a": {
+      "route-id": 27,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg23"
+    },
+    "signal31": {
+      "route-id": 30,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg59"
+    },
+    "signal4a": {
+      "route-id": 31,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg3"
+    },
+    "signal27": {
+      "route-id": 33,
+      "orientation": "anticlockwise",
+      "block": "platform3",
+      "segment": "seg47"
+    },
+    "signal29": {
+      "route-id": 34,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg56"
     }
   },
   "block16": {
-    "signal39": {
-      "signal18a": {
-        "routeID": 35,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "anticlockwise"
-      },
-      "signal31": {
-        "routeID": 36,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "anticlockwise"
-      },
-      "signal27": {
-        "routeID": 37,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "anticlockwise"
-      },
-      "signal29": {
-        "routeID": 38,
-        "lastBlock": "platform2",
-        "lastSegment": "seg56",
-        "orientation": "anticlockwise"
-      }
+    "signal18a": {
+      "route-id": 35,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg23"
+    },
+    "signal31": {
+      "route-id": 36,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg59"
+    },
+    "signal27": {
+      "route-id": 37,
+      "orientation": "anticlockwise",
+      "block": "platform3",
+      "segment": "seg47"
+    },
+    "signal29": {
+      "route-id": 38,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg56"
     }
   },
   "block17": {
-    "signal41": {
-      "signal18a": {
-        "routeID": 49,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "anticlockwise"
-      },
-      "signal31": {
-        "routeID": 50,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "anticlockwise"
-      },
-      "signal27": {
-        "routeID": 51,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "anticlockwise"
-      },
-      "signal29": {
-        "routeID": 52,
-        "lastBlock": "platform2",
-        "lastSegment": "seg56",
-        "orientation": "anticlockwise"
-      }
+    "signal18a": {
+      "route-id": 49,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg23"
+    },
+    "signal31": {
+      "route-id": 50,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg59"
+    },
+    "signal27": {
+      "route-id": 51,
+      "orientation": "anticlockwise",
+      "block": "platform3",
+      "segment": "seg47"
+    },
+    "signal29": {
+      "route-id": 52,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg56"
     }
   },
   "block18": {
-    "signal43": {
-      "signal19": {
-        "routeID": 53,
-        "lastBlock": "block6",
-        "lastSegment": "seg26",
-        "orientation": "clockwise"
-      },
-      "signal31": {
-        "routeID": 161,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "clockwise"
-      }
+    "signal19": {
+      "route-id": 53,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg26"
+    },
+    "signal31": {
+      "route-id": 161,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg59"
     }
   },
   "block19": {
-    "signal45": {
-      "signal15": {
-        "routeID": 57,
-        "lastBlock": "block5",
-        "lastSegment": "seg21b",
-        "orientation": "clockwise"
-      },
-      "signal1": {
-        "routeID": 59,
-        "lastBlock": "block1",
-        "lastSegment": "seg1",
-        "orientation": "clockwise"
-      }
+    "signal15": {
+      "route-id": 57,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg21b"
     },
-    "signal46a": {
-      "signal37": {
-        "routeID": 13,
-        "lastBlock": "block15",
-        "lastSegment": "seg69",
-        "orientation": "anticlockwise"
-      },
-      "signal9": {
-        "routeID": 15,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      },
-      "signal24": {
-        "routeID": 16,
-        "lastBlock": "block8",
-        "lastSegment": "seg38",
-        "orientation": "anticlockwise"
-      }
+    "signal1": {
+      "route-id": 59,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg1"
+    },
+    "signal37": {
+      "route-id": 13,
+      "orientation": "anticlockwise",
+      "block": "block15",
+      "segment": "seg69"
+    },
+    "signal9": {
+      "route-id": 15,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
+    },
+    "signal24": {
+      "route-id": 16,
+      "orientation": "anticlockwise",
+      "block": "block8",
+      "segment": "seg38"
     }
   },
   "block20": {
-    "signal47": {
-      "signal15": {
-        "routeID": 60,
-        "lastBlock": "block5",
-        "lastSegment": "seg21b",
-        "orientation": "clockwise"
-      },
-      "signal1": {
-        "routeID": 62,
-        "lastBlock": "block1",
-        "lastSegment": "seg1",
-        "orientation": "clockwise"
-      }
+    "signal15": {
+      "route-id": 60,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg21b"
     },
-    "signal48a": {
-      "signal37": {
-        "routeID": 76,
-        "lastBlock": "block15",
-        "lastSegment": "seg69",
-        "orientation": "anticlockwise"
-      },
-      "signal9": {
-        "routeID": 77,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      },
-      "signal24": {
-        "routeID": 79,
-        "lastBlock": "block8",
-        "lastSegment": "seg38",
-        "orientation": "anticlockwise"
-      }
+    "signal1": {
+      "route-id": 62,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg1"
+    },
+    "signal37": {
+      "route-id": 76,
+      "orientation": "anticlockwise",
+      "block": "block15",
+      "segment": "seg69"
+    },
+    "signal9": {
+      "route-id": 77,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
+    },
+    "signal24": {
+      "route-id": 79,
+      "orientation": "anticlockwise",
+      "block": "block8",
+      "segment": "seg38"
     }
   },
   "block21": {
-    "signal49": {
-      "signal15": {
-        "routeID": 54,
-        "lastBlock": "block5",
-        "lastSegment": "seg21b",
-        "orientation": "clockwise"
-      },
-      "signal1": {
-        "routeID": 55,
-        "lastBlock": "block1",
-        "lastSegment": "seg1",
-        "orientation": "clockwise"
-      }
+    "signal15": {
+      "route-id": 54,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg21b"
     },
-    "signal50a": {
-      "signal37": {
-        "routeID": 4,
-        "lastBlock": "block15",
-        "lastSegment": "seg69",
-        "orientation": "anticlockwise"
-      },
-      "signal9": {
-        "routeID": 6,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      },
-      "signal24": {
-        "routeID": 7,
-        "lastBlock": "block8",
-        "lastSegment": "seg38",
-        "orientation": "anticlockwise"
-      }
+    "signal1": {
+      "route-id": 55,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg1"
+    },
+    "signal37": {
+      "route-id": 4,
+      "orientation": "anticlockwise",
+      "block": "block15",
+      "segment": "seg69"
+    },
+    "signal9": {
+      "route-id": 6,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
+    },
+    "signal24": {
+      "route-id": 7,
+      "orientation": "anticlockwise",
+      "block": "block8",
+      "segment": "seg38"
     }
   },
   "block2": {
-    "signal5": {
-      "signal1": {
-        "routeID": 129,
-        "lastBlock": "block1",
-        "lastSegment": "seg1",
-        "orientation": "clockwise"
-      }
+    "signal1": {
+      "route-id": 129,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg1"
     },
-    "signal7a": {
-      "signal9": {
-        "routeID": 48,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      }
+    "signal9": {
+      "route-id": 48,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
     }
   },
   "block22": {
-    "signal51": {
-      "signal15": {
-        "routeID": 80,
-        "lastBlock": "block5",
-        "lastSegment": "seg21b",
-        "orientation": "clockwise"
-      },
-      "signal1": {
-        "routeID": 81,
-        "lastBlock": "block1",
-        "lastSegment": "seg1",
-        "orientation": "clockwise"
-      }
+    "signal15": {
+      "route-id": 80,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg21b"
     },
-    "signal53a": {
-      "signal37": {
-        "routeID": 45,
-        "lastBlock": "block15",
-        "lastSegment": "seg69",
-        "orientation": "anticlockwise"
-      },
-      "signal9": {
-        "routeID": 46,
-        "lastBlock": "block3",
-        "lastSegment": "seg13",
-        "orientation": "anticlockwise"
-      },
-      "signal24": {
-        "routeID": 47,
-        "lastBlock": "block8",
-        "lastSegment": "seg38",
-        "orientation": "anticlockwise"
-      }
+    "signal1": {
+      "route-id": 81,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg1"
+    },
+    "signal37": {
+      "route-id": 45,
+      "orientation": "anticlockwise",
+      "block": "block15",
+      "segment": "seg69"
+    },
+    "signal9": {
+      "route-id": 46,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg13"
+    },
+    "signal24": {
+      "route-id": 47,
+      "orientation": "anticlockwise",
+      "block": "block8",
+      "segment": "seg38"
     }
   },
   "block3": {
-    "signal8": {
-      "signal32": {
-        "routeID": 99,
-        "lastBlock": "block14",
-        "lastSegment": "seg62",
-        "orientation": "clockwise"
-      },
-      "signal49": {
-        "routeID": 101,
-        "lastBlock": "block21",
-        "lastSegment": "seg90",
-        "orientation": "clockwise"
-      },
-      "signal45": {
-        "routeID": 103,
-        "lastBlock": "block19",
-        "lastSegment": "seg81",
-        "orientation": "clockwise"
-      },
-      "signal47": {
-        "routeID": 105,
-        "lastBlock": "block20",
-        "lastSegment": "seg86",
-        "orientation": "clockwise"
-      },
-      "signal51": {
-        "routeID": 106,
-        "lastBlock": "block22",
-        "lastSegment": "seg93",
-        "orientation": "clockwise"
-      },
-      "signal21": {
-        "routeID": 108,
-        "lastBlock": "platform4",
-        "lastSegment": "seg30",
-        "orientation": "clockwise"
-      },
-      "signal5": {
-        "routeID": 109,
-        "lastBlock": "block2",
-        "lastSegment": "seg6",
-        "orientation": "clockwise"
-      }
+    "signal32": {
+      "route-id": 99,
+      "orientation": "clockwise",
+      "block": "block14",
+      "segment": "seg62"
     },
-    "signal9": {
-      "signal18a": {
-        "routeID": 112,
-        "lastBlock": "block5",
-        "lastSegment": "seg23",
-        "orientation": "anticlockwise"
-      },
-      "signal31": {
-        "routeID": 113,
-        "lastBlock": "platform1",
-        "lastSegment": "seg59",
-        "orientation": "anticlockwise"
-      },
-      "signal4a": {
-        "routeID": 114,
-        "lastBlock": "block1",
-        "lastSegment": "seg3",
-        "orientation": "anticlockwise"
-      },
-      "signal14": {
-        "routeID": 115,
-        "lastBlock": "block4",
-        "lastSegment": "seg17",
-        "orientation": "anticlockwise"
-      },
-      "signal27": {
-        "routeID": 116,
-        "lastBlock": "platform3",
-        "lastSegment": "seg47",
-        "orientation": "anticlockwise"
-      },
-      "signal29": {
-        "routeID": 118,
-        "lastBlock": "platform2",
-        "lastSegment": "seg56",
-        "orientation": "anticlockwise"
-      }
+    "signal49": {
+      "route-id": 101,
+      "orientation": "clockwise",
+      "block": "block21",
+      "segment": "seg90"
+    },
+    "signal45": {
+      "route-id": 103,
+      "orientation": "clockwise",
+      "block": "block19",
+      "segment": "seg81"
+    },
+    "signal47": {
+      "route-id": 105,
+      "orientation": "clockwise",
+      "block": "block20",
+      "segment": "seg86"
+    },
+    "signal51": {
+      "route-id": 106,
+      "orientation": "clockwise",
+      "block": "block22",
+      "segment": "seg93"
+    },
+    "signal21": {
+      "route-id": 108,
+      "orientation": "clockwise",
+      "block": "platform4",
+      "segment": "seg30"
+    },
+    "signal5": {
+      "route-id": 109,
+      "orientation": "clockwise",
+      "block": "block2",
+      "segment": "seg6"
+    },
+    "signal18a": {
+      "route-id": 112,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg23"
+    },
+    "signal31": {
+      "route-id": 113,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg59"
+    },
+    "signal4a": {
+      "route-id": 114,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg3"
+    },
+    "signal14": {
+      "route-id": 115,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg17"
+    },
+    "signal27": {
+      "route-id": 116,
+      "orientation": "anticlockwise",
+      "block": "platform3",
+      "segment": "seg47"
+    },
+    "signal29": {
+      "route-id": 118,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg56"
     }
   }
 };
