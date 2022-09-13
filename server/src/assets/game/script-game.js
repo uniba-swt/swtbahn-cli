@@ -70,7 +70,7 @@ function updatePossibleRoutes(blockId) {
 	
 	disableAllDestinationButtons();
 	driver.routeAvailabilityInterval = setInterval(() => {
-		console.log("Checking available destinations ... ");
+		console.log("Checking available destinations ...");
 		
 		const routes = getRoutes(blockId);
 		if (routes == null) {
@@ -86,16 +86,15 @@ function updatePossibleRoutes(blockId) {
 			updateRouteAvailability(
 				routeId,
 				// route is available
-				() => { setDestinationButtonAvailable(choice, route); },
+				() => setDestinationButtonAvailable(choice, route),
 				// route is unavailable
-				() => { setDestinationButtonUnavailable(choice, route); }
+				() => setDestinationButtonUnavailable(choice, route)
 			);
 		});	
 	}, updatePossibleRoutesTimeout);
 }
 
 function updateRouteAvailability(routeId, available, unavailable) {
-	console.log(`Checking availability of route ${routeId}`);
 	return $.ajax({
 		type: 'POST',
 		url: serverAddress + '/monitor/route',
@@ -287,6 +286,8 @@ class Driver {
 		$('.selectTrainButton').prop("disabled", true);
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
+			console.log("Checking available trains ... ");
+
 			// Enable a train if it is on the platform and has not been grabbed
 			$('.selectTrainButton').each((index, obj) => {
 				let trainId = obj.id;
@@ -516,7 +517,7 @@ function trainIsAvailable(trainId, success, error) {
 		data: { 'train': trainId },
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
-			if(responseData.includes("grabbed: no") && !responseData.includes("on segment: no")){
+			if (responseData.includes("grabbed: no") && !responseData.includes("on segment: no")) {
 				success();
 			} else {
 				error();
@@ -557,6 +558,11 @@ function endGameLogic() {
 	driver.updateTrainAvailability();
 }
 
+// Wait for a duration in milliseconds.
+function wait(duration) { 
+	return new Promise(resolve => setTimeout(resolve, duration));
+}
+
 function initialise() {
 	driver = new Driver(
 		'master',                                 // trackOutput
@@ -564,17 +570,22 @@ function initialise() {
 		null                                      // trainId
 	);
 	
-	// Hide the train driving buttons (destinations and speed selections)
-	$('#endGameButton').hide();	
-	$('#destinationsForm').hide();
-	disableReachedDestinationButton();
-	disableSpeedButtons();
-
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
 	
 	// Update all train selections
 	driver.updateTrainAvailability();
+
+
+	//-----------------------------------------------------
+	// Button behaviours
+	//-----------------------------------------------------
+
+	// Hide the train driving buttons (destinations and speed selections)
+	$('#endGameButton').hide();	
+	$('#destinationsForm').hide();
+	disableReachedDestinationButton();
+	disableSpeedButtons();
 
 	// Handle train selection
 	$('.selectTrainButton').click(function (event) {
@@ -618,43 +629,34 @@ function initialise() {
 			}
 		});
 	});
-}
 
-// Wait for a duration in milliseconds.
-function wait(duration) { 
-	return new Promise(resolve => setTimeout(resolve, duration));
+	$('#endGameButton').click(function () {
+		if (!driver.hasValidTrainSession) {
+			endGameLogic();
+			return;
+		}
+		
+		setResponseSuccess('#serverResponse', '⏳ Waiting ...');
+					
+		driver.setTrainSpeedPromise(0)
+			.then(() => wait(500))
+			.then(() => driver.releaseRoutePromise())
+			.always(() => {
+				driver.releaseTrainPromise();
+				endGameLogic();
+			});
+
+		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
+	});
+
+
+	//-----------------------------------------------------
+	// Page unload (refresh) behaviour
+	//-----------------------------------------------------
+	
+	
 }
 
 $(document).ready(
-	function () {
-		//-----------------------------------------------------
-		// Initialisation
-		//-----------------------------------------------------
-
-		initialise();
-
-
-		//-----------------------------------------------------
-		// Button behaviours
-		//-----------------------------------------------------
-
-		$('#endGameButton').click(function () {
-			if (!driver.hasValidTrainSession) {
-				endGameLogic();
-				return;
-			}
-			
-			setResponseSuccess('#serverResponse', '⏳ Waiting ...');
-						
-			driver.setTrainSpeedPromise(0)
-				.then(() => wait(500))
-				.then(() => driver.releaseRoutePromise())
-				.always(() => {
-					driver.releaseTrainPromise();
-					endGameLogic();
-				});
-
-			setResponseSuccess('#serverResponse', '😀 Thank you for playing');
-		});
-	}
+	() => initialise()
 );
