@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 project(swtbahn-cli)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "-Wall -Wno-gnu-folding-constant")
+set(CMAKE_C_FLAGS "-g -Wall -Wno-gnu-folding-constant")
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 find_package(PkgConfig REQUIRED)

@@ -384,7 +384,7 @@ class Driver {
 					const segments = segmentIDs.split(", "); // Splits them into Array
 					
 					// Note: True when first segment object (it should be one) is the destination last segment
-					if (segments.length == 1 && segments[0] == this.routeDetails["segment"]) {
+					if (segments.length == 1 && segments[0].includes(this.routeDetails["segment"])) {
 						this.clearDestinationReachedInterval();
 						this.endGameButtonIsPersistent = true;
 						$('#endGameButton').show();
@@ -496,6 +496,7 @@ class Driver {
 			.then(() => this.driveRoutePromise())
 			.then(() => {
 				if (!this.hasValidTrainSession) {
+					this.clearDestinationReachedInterval();
 					throw new Error("Game has ended");
 				}
 			})
@@ -583,8 +584,8 @@ function initialise() {
 	});
 	
 	// Set the possible destinations for the SWTbahn platform.
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
-	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
+//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
 	

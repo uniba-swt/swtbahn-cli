@@ -10,7 +10,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 123,
       "orientation": "clockwise",
       "block": "block4",
-      "segment": "seg16a"
+      "segment": "seg16"
     },
     "signal8": {
       "route-id": 124,
@@ -28,31 +28,31 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 63,
       "orientation": "anticlockwise",
       "block": "block21",
-      "segment": "seg91a"
+      "segment": "seg91"
     },
     "signal46a": {
       "route-id": 65,
       "orientation": "anticlockwise",
       "block": "block19",
-      "segment": "seg82a"
+      "segment": "seg82"
     },
     "signal53a": {
       "route-id": 67,
       "orientation": "anticlockwise",
       "block": "block22",
-      "segment": "seg94a"
+      "segment": "seg94"
     },
     "signal7a": {
       "route-id": 68,
       "orientation": "anticlockwise",
       "block": "block2",
-      "segment": "seg7a"
+      "segment": "seg7"
     },
     "signal48a": {
       "route-id": 69,
       "orientation": "anticlockwise",
       "block": "block20",
-      "segment": "seg87a"
+      "segment": "seg87"
     },
     "signal20": {
       "route-id": 71,
@@ -86,25 +86,25 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 100,
       "orientation": "clockwise",
       "block": "block21",
-      "segment": "seg91a"
+      "segment": "seg91"
     },
     "signal45": {
       "route-id": 102,
       "orientation": "clockwise",
       "block": "block19",
-      "segment": "seg82a"
+      "segment": "seg82"
     },
     "signal47": {
       "route-id": 104,
       "orientation": "clockwise",
       "block": "block20",
-      "segment": "seg87a"
+      "segment": "seg87"
     },
     "signal51": {
       "route-id": 106,
       "orientation": "clockwise",
       "block": "block22",
-      "segment": "seg94a"
+      "segment": "seg94"
     },
     "signal21": {
       "route-id": 107,
@@ -116,7 +116,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 109,
       "orientation": "clockwise",
       "block": "block2",
-      "segment": "seg7a"
+      "segment": "seg7"
     },
     "signal18a": {
       "route-id": 112,
@@ -140,7 +140,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 115,
       "orientation": "anticlockwise",
       "block": "block4",
-      "segment": "seg16a"
+      "segment": "seg16"
     },
     "signal27": {
       "route-id": 116,
@@ -204,7 +204,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 87,
       "orientation": "clockwise",
       "block": "block4",
-      "segment": "seg16a"
+      "segment": "seg16"
     },
     "signal8": {
       "route-id": 90,
@@ -228,25 +228,25 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 8,
       "orientation": "anticlockwise",
       "block": "block21",
-      "segment": "seg91a"
+      "segment": "seg91"
     },
     "signal46a": {
       "route-id": 9,
       "orientation": "anticlockwise",
       "block": "block19",
-      "segment": "seg82a"
+      "segment": "seg82"
     },
     "signal53a": {
       "route-id": 10,
       "orientation": "anticlockwise",
       "block": "block22",
-      "segment": "seg94a"
+      "segment": "seg94"
     },
     "signal48a": {
       "route-id": 11,
       "orientation": "anticlockwise",
       "block": "block20",
-      "segment": "seg87a"
+      "segment": "seg87"
     },
     "signal20": {
       "route-id": 12,
@@ -292,25 +292,25 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 147,
       "orientation": "clockwise",
       "block": "block21",
-      "segment": "seg91a"
+      "segment": "seg91"
     },
     "signal45": {
       "route-id": 148,
       "orientation": "clockwise",
       "block": "block19",
-      "segment": "seg82a"
+      "segment": "seg82"
     },
     "signal47": {
       "route-id": 149,
       "orientation": "clockwise",
       "block": "block20",
-      "segment": "seg87a"
+      "segment": "seg87"
     },
     "signal51": {
       "route-id": 150,
       "orientation": "clockwise",
       "block": "block22",
-      "segment": "seg94a"
+      "segment": "seg94"
     },
     "signal21": {
       "route-id": 151,
@@ -406,25 +406,25 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 40,
       "orientation": "clockwise",
       "block": "block21",
-      "segment": "seg91a"
+      "segment": "seg91"
     },
     "signal45": {
       "route-id": 41,
       "orientation": "clockwise",
       "block": "block19",
-      "segment": "seg82a"
+      "segment": "seg82"
     },
     "signal47": {
       "route-id": 42,
       "orientation": "clockwise",
       "block": "block20",
-      "segment": "seg87a"
+      "segment": "seg87"
     },
     "signal51": {
       "route-id": 43,
       "orientation": "clockwise",
       "block": "block22",
-      "segment": "seg94a"
+      "segment": "seg94"
     },
     "signal21": {
       "route-id": 44,
@@ -627,12 +627,6 @@ const allPossibleDestinationsSwtbahnFull = {
       "orientation": "clockwise",
       "block": "block8",
       "segment": "seg37"
-    },
-    "signal44": {
-      "route-id": 160,
-      "orientation": "clockwise",
-      "block": "platform5",
-      "segment": "seg78"
     }
   },
   "platform2": {
@@ -696,7 +690,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "route-id": 134,
       "orientation": "clockwise",
       "block": "block4",
-      "segment": "seg16a"
+      "segment": "seg16"
     },
     "signal8": {
       "route-id": 135,
@@ -749,12 +743,6 @@ const allPossibleDestinationsSwtbahnFull = {
       "orientation": "clockwise",
       "block": "block6",
       "segment": "seg27"
-    },
-    "signal31": {
-      "route-id": 161,
-      "orientation": "clockwise",
-      "block": "platform1",
-      "segment": "seg58"
     }
   },
   "platform6": {
