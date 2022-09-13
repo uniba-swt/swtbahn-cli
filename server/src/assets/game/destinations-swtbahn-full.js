@@ -281,7 +281,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "segment": "seg56"
     }
   },
-  "block11": {
+  "platform3": {
     "signal36": {
       "route-id": 130,
       "orientation": "clockwise",
@@ -325,7 +325,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "segment": "seg36"
     }
   },
-  "block12": {
+  "platform2": {
     "signal36": {
       "route-id": 140,
       "orientation": "clockwise",
@@ -363,7 +363,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "segment": "seg36"
     }
   },
-  "block13": {
+  "platform1": {
     "signal36": {
       "route-id": 17,
       "orientation": "clockwise",
@@ -519,7 +519,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "segment": "seg56"
     }
   },
-  "block16": {
+  "platform7": {
     "signal18a": {
       "route-id": 35,
       "orientation": "anticlockwise",
@@ -545,7 +545,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "segment": "seg56"
     }
   },
-  "block17": {
+  "platform4": {
     "signal18a": {
       "route-id": 49,
       "orientation": "anticlockwise",
@@ -571,7 +571,7 @@ const allPossibleDestinationsSwtbahnFull = {
       "segment": "seg56"
     }
   },
-  "block18": {
+  "platform5": {
     "signal19": {
       "route-id": 53,
       "orientation": "clockwise",
