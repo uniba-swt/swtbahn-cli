@@ -495,6 +495,26 @@ def request_route_id(route_id):
             click.echo(e, err=True)
 
 
+@click.command(help="Get a train's required physical driving direction for a given route")
+@click.argument('train')
+@click.argument('route-id')
+def direction(train, route_id):
+    global server
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        try:
+            response = requests.post(server + "/driver/direction",
+                    data = {'session-id': session_id, 'train': train,
+                        'route-id': route_id})
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 @click.command(help="Drive along a granted route")
 @click.argument('mode')
 @click.argument('route-id')
@@ -950,6 +970,7 @@ driver.add_command(grab)
 driver.add_command(release)
 driver.add_command(request_route)
 driver.add_command(request_route_id)
+driver.add_command(direction)
 driver.add_command(drive_route)
 driver.add_command(set_dcc_speed)
 driver.add_command(set_calibrated_speed)

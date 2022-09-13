@@ -64,6 +64,9 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 onion_connection_status handler_request_route_id(void *_, onion_request *req,
                                                  onion_response *res);
 
+onion_connection_status handler_driving_direction(void *_, onion_request *req,
+                                                  onion_response *res);
+
 onion_connection_status handler_drive_route(void *_, onion_request *req,
                                             onion_response *res);
 

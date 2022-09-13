@@ -151,6 +151,7 @@ function enableSpeedButtons(destination) {
 function disableReachedDestinationButton() {
 	$('#destinationReachedForm').hide();
 	$('#destinationReached').prop('disabled', true);
+	driver.endGameButtonIsPersistent = false;
 }
 
 
@@ -211,6 +212,7 @@ class Driver {
 	routeDetails = null;
 	drivingIsForwards = null;
 	currentBlock = null;
+	endGameButtonIsPersistent = null;
 	
 	trainAvailabilityInterval = null;
 	routeAvailabilityInterval = null;
@@ -227,6 +229,7 @@ class Driver {
 		this.routeDetails = null;
 		this.drivingIsForwards = null;
 		this.currentBlock = null;
+		this.endGameButtonIsPersistent = false;
 		
 		this.trainAvailabilityInterval = null;
 		this.routeAvailabilityInterval = null;
@@ -330,17 +333,15 @@ class Driver {
 	updateDrivingDirectionPromise() {
 		return $.ajax({
 			type: 'POST',
-			url: serverAddress + '/monitor/train-state',
+			url: serverAddress + '/driver/direction',
 			crossDomain: true,
 			data: {
-				'train': this.trainId
+				'train': this.trainId,
+				'route-id': this.routeDetails["route-id"]
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				const trainIsLeft = responseData.includes('left');
-				const routeIsClockwise = (this.routeDetails["orientation"] == "clockwise");
-				this.drivingIsForwards = (routeIsClockwise && trainIsLeft)
-				                         || (!routeIsClockwise && !trainIsLeft);
+				this.drivingIsForwards = responseData.includes("forwards");
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				setResponseDanger('#serverResponse', '😢 Could not find your train');
@@ -384,7 +385,9 @@ class Driver {
 					
 					// Note: True when first segment object (it should be one) is the destination last segment
 					if (segments.length == 1 && segments[0] == this.routeDetails["segment"]) {
-						this.clearDestinationReachedInterval();					
+						this.clearDestinationReachedInterval();
+						this.endGameButtonIsPersistent = true;
+						$('#endGameButton').show();
 						$('#destinationReachedForm').show();
 						$('#destinationReached').prop('disabled', false);
 					}
@@ -392,7 +395,6 @@ class Driver {
 			});
 		}, destinationReachedTimeout);
 	}
-	
 
 	releaseTrainPromise() {
 		return $.ajax({
@@ -501,7 +503,7 @@ class Driver {
 			.then(() => updatePossibleRoutes(driver.currentBlock))
 			.then(() => disableSpeedButtons())
 			.then(() => disableReachedDestinationButton())
-			.catch();
+			.catch(() => { });
 	}
 }
 
@@ -555,6 +557,12 @@ function endGameLogic() {
 }
 
 function initialise() {
+	driver = new Driver(
+		'master',                                 // trackOutput
+		'libtrain_engine_default (unremovable)',  // trainEngine
+		null                                      // trainId
+	);
+	
 	// Hide the train driving buttons (destinations and speed selections)
 	$('#endGameButton').hide();	
 	$('#destinationsForm').hide();
@@ -563,12 +571,6 @@ function initialise() {
 
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
-	
-	driver = new Driver(
-		'master',                                 // trackOutput
-		'libtrain_engine_default (unremovable)',  // trainEngine
-		null                                      // trainId
-	);
 	
 	// Update all train selections
 	driver.updateTrainAvailability();
@@ -610,6 +612,9 @@ function initialise() {
 		const speedButton = $(`#${speed}`);
 		speedButton.click(function () {
 			driver.setTrainSpeedPromise(speedButton.val());
+			if (!driver.endGameButtonIsPersistent) {
+				$('#endGameButton').hide();
+			}
 		});
 	});
 }
