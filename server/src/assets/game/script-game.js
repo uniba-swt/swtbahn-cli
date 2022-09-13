@@ -131,13 +131,17 @@ const speedButtons = [
 ];
 
 function disableSpeedButtons() {
+	$('#destination').html("");
+	
 	$('#speedForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
 	});
 }
 
-function enableSpeedButtons() {
+function enableSpeedButtons(destination) {
+	$('#destination').html(destination);
+	
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
@@ -210,6 +214,7 @@ class Driver {
 	
 	trainAvailabilityInterval = null;
 	routeAvailabilityInterval = null;
+	destinationReachedInterval = null;
 	
 	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
@@ -225,6 +230,7 @@ class Driver {
 		
 		this.trainAvailabilityInterval = null;
 		this.routeAvailabilityInterval = null;
+		this.destinationReachedInterval = null;
 	}
 	
 	reset() {
@@ -250,6 +256,11 @@ class Driver {
 		clearInterval(this.routeAvailabilityInterval);
 	}
 	
+	clearDestinationReachedInterval() {
+		console.log("clearDestinationReachedInterval");
+		clearInterval(this.destinationReachedInterval);
+	}
+	
 	updateCurrentBlock() {
 		return $.ajax({
 			type: 'POST',
@@ -267,34 +278,6 @@ class Driver {
 				setResponseDanger('#serverResponse', '😢 Could not find your train');
 			}
 		});
-	}
-	
-	// FIXME: Cancel timer when game ends early
-	enableReachedDestinationButton() {
-		const destinationReachedTimeout = 500; 
-		let destinationReachedInterval = setInterval(() => {
-			return $.ajax({
-				type: 'POST',
-				url: serverAddress + '/monitor/train-state',
-				crossDomain: true,
-				data: {
-					'train': this.trainId
-				},
-				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					const matches = /on segment: (.*?) -/g.exec(responseData); // Get all Segment IDS as String
-					const segmentIDs = matches[1];
-					const segments = segmentIDs.split(", "); // Splits them into Array
-					
-					// Note: True when first segment object (it should be one) is the destination last segment
-					if (segments.length == 1 && segments[0] == this.routeDetails["segment"]) {
-						clearInterval(destinationReachedInterval);					
-						$('#destinationReachedForm').show();
-						$('#destinationReached').prop('disabled', false);
-					}
-				}
-			});
-		}, destinationReachedTimeout);
 	}
 	
 	updateTrainAvailability() {
@@ -382,6 +365,34 @@ class Driver {
 			}
 		});
 	}
+
+	enableReachedDestinationButton() {
+		const destinationReachedTimeout = 500; 
+		this.destinationReachedInterval = setInterval(() => {
+			return $.ajax({
+				type: 'POST',
+				url: serverAddress + '/monitor/train-state',
+				crossDomain: true,
+				data: {
+					'train': this.trainId
+				},
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					const matches = /on segment: (.*?) -/g.exec(responseData); // Get all Segment IDS as String
+					const segmentIDs = matches[1];
+					const segments = segmentIDs.split(", "); // Splits them into Array
+					
+					// Note: True when first segment object (it should be one) is the destination last segment
+					if (segments.length == 1 && segments[0] == this.routeDetails["segment"]) {
+						this.clearDestinationReachedInterval();					
+						$('#destinationReachedForm').show();
+						$('#destinationReached').prop('disabled', false);
+					}
+				}
+			});
+		}, destinationReachedTimeout);
+	}
+	
 
 	releaseTrainPromise() {
 		return $.ajax({
@@ -478,11 +489,9 @@ class Driver {
 			.then(() => this.updateDrivingDirectionPromise())
 			.then(() => $('#destinationsForm').hide())
 			.then(() => disableAllDestinationButtons())
-			.then(() => enableSpeedButtons())
-			// FIXME: State the destination to the driver
+			.then(() => enableSpeedButtons(destinationSignal))
 			.then(() => this.enableReachedDestinationButton())
 			.then(() => this.driveRoutePromise())
-			// FIXME: Hide the destination from the driver
 			.then(() => {
 				if (!this.hasValidTrainSession) {
 					throw new Error("Game has ended");
@@ -536,6 +545,7 @@ function endGameLogic() {
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	driver.clearRouteAvailabilityInterval();
+	driver.clearDestinationReachedInterval();
 	driver.reset();
 	disableAllDestinationButtons();
 	disableReachedDestinationButton();
