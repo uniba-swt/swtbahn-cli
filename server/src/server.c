@@ -209,6 +209,9 @@ int main(int argc, char **argv) {
 
 	onion_listen(o);
 	onion_free(o);
+	if (running) {
+		stop_bidib();
+	}
 	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 

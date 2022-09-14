@@ -110,6 +110,18 @@ static bool start_bidib(void) {
 	return true;
 }
 
+void stop_bidib(void) {
+	session_id = 0;
+	syslog_server(LOG_NOTICE, "Request: Stop");
+	free_all_grabbed_trains();
+	free_all_interlockers();
+	running = false;
+	dyn_containers_stop();
+	bahn_data_util_free_config();
+	pthread_join(poll_bidib_messages_thread, NULL);
+	bidib_stop();
+}
+
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res) {
 	build_response_header(res);
@@ -143,15 +155,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) &
 	                                          OR_METHODS) == OR_POST)) {
-		session_id = 0;
-		syslog_server(LOG_NOTICE, "Request: Stop");
-		free_all_grabbed_trains();
-		free_all_interlockers();
-		running = false;
-		dyn_containers_stop();
-		bahn_data_util_free_config();
-		pthread_join(poll_bidib_messages_thread, NULL);
-		bidib_stop();
+		stop_bidib();
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running");
