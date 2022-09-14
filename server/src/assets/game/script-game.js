@@ -454,8 +454,12 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
+				if (this.routeDetails == null) {
+					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
+				} else {
+					setResponseDanger('#serverResponse', '👎 You did not stop your train before the destination signal!');
+				}
 				this.routeDetails = null;
-				setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
