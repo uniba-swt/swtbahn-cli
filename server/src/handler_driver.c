@@ -226,8 +226,8 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	const char requested_forwards = is_forward_driving(route, train_id);
 	if (is_automatic) {
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
-														DRIVING_SPEED_SLOW, 
-														requested_forwards);
+		                                                DRIVING_SPEED_SLOW, 
+		                                                requested_forwards);
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	

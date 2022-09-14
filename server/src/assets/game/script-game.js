@@ -389,6 +389,7 @@ class Driver {
 						this.clearDestinationReachedInterval();
 						this.endGameButtonIsPersistent = true;
 						$('#endGameButton').show();
+						$(window).unbind("beforeunload", pageRefreshWarning);
 						$('#destinationReachedForm').show();
 						$('#destinationReached').prop('disabled', false);
 					}
@@ -626,6 +627,7 @@ function initialise() {
 			driver.setTrainSpeedPromise(speedButton.val());
 			if (!driver.endGameButtonIsPersistent) {
 				$('#endGameButton').hide();
+				$(window).bind("beforeunload", pageRefreshWarning);
 			}
 		});
 	});
@@ -648,15 +650,27 @@ function initialise() {
 
 		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 	});
-
-
-	//-----------------------------------------------------
-	// Page unload (refresh) behaviour
-	//-----------------------------------------------------
-	
-	
 }
 
 $(document).ready(
 	() => initialise()
 );
+
+// Page unload (refresh or close) behaviour
+function pageRefreshWarning(event) {
+	event.preventDefault();
+	console.log("Before unloading");
+	
+	// Most web browsers will display a generic message instead!!
+	const message = "Are you sure you want to refresh or leave this page? " + 
+					"Leaving this page without ending your game will prevent others from grabbing your train 😕";
+	return event.returnValue = message;
+}
+
+$(window).on("unload", (event) => {
+	// Exit game logic
+	console.log("Unloading");
+	if ($('#endGameButton').is(":visible")) {
+		$('#endGameButton').click();
+	}
+});

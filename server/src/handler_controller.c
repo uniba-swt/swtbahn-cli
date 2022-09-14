@@ -264,7 +264,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	// Set the signals to their required aspects
 	for (size_t i = 0; i < route->signals->len - 1; i++) {
 		const char *signal = g_array_index(route->signals, char *, i);
-		bidib_set_signal(signal, "aspect_go");
+		const char *signal_type = config_get_scalar_string_value("signal", signal, "type");
+		const char *signal_aspect = strcmp(signal_type, "shunting") == 0 ? "aspect_shunt" : "aspect_go";
+		bidib_set_signal(signal, signal_aspect);
 		bidib_flush();
 	}
 	
