@@ -188,7 +188,7 @@ function setResponseDanger(responseId, message) {
 	});
 	
 	// FIXME: Replace with better game sounds.
-	speak('NEIN, NEIN, NEIN!');
+	speak('STOP, NEIN, ACHTUNG!');
 }
 
 function setResponseSuccess(responseId, message) {
@@ -322,7 +322,7 @@ class Driver {
 				const responseDataSplit = responseData.split(',');
 				this.sessionId = responseDataSplit[0];
 				this.grabId = responseDataSplit[1];
-			
+
 				setResponseSuccess('#serverResponse', '😁 Your train is ready');
 			},
 			error: (responseData, textStatus, errorThrown) => {
@@ -454,15 +454,13 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				if (this.routeDetails == null) {
+				if (!this.hasRouteGranted) {
 					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 				} else {
 					setResponseDanger('#serverResponse', '👎 You did not stop your train before the destination signal!');
 				}
-				this.routeDetails = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				this.routeDetails = null;
 				setResponseDanger('#serverResponse', '😢 Route to your chosen destination is unavailable');
 			}
 		});
@@ -495,21 +493,23 @@ class Driver {
 		
 		this.requestRouteIdPromise(routeDetails)
 			.then(() => this.updateDrivingDirectionPromise())
+			.then(() => this.setTrainSpeedPromise(1))    // Needed to update the orientation of the train lights
+			.then(() => this.setTrainSpeedPromise(0))
 			.then(() => $('#destinationsForm').hide())
 			.then(() => disableAllDestinationButtons())
 			.then(() => enableSpeedButtons(destinationSignal))
 			.then(() => this.enableReachedDestinationButton())
 			.then(() => this.driveRoutePromise())
+			.then(() => disableSpeedButtons())
 			.then(() => {
 				if (!this.hasValidTrainSession) {
 					this.clearDestinationReachedInterval();
 					throw new Error("Game has ended");
 				}
 			})
+			.then(() => disableReachedDestinationButton())
 			.then(() => this.updateCurrentBlock())
 			.then(() => updatePossibleRoutes(driver.currentBlock))
-			.then(() => disableSpeedButtons())
-			.then(() => disableReachedDestinationButton())
 			.catch(() => { });
 	}
 }
@@ -673,8 +673,18 @@ function pageRefreshWarning(event) {
 
 $(window).on("unload", (event) => {
 	// Exit game logic
+	// Only synchronouse statements will be executed by this handler!
+	// Promises will not be executed!
 	console.log("Unloading");
-	if ($('#endGameButton').is(":visible")) {
-		$('#endGameButton').click();
+	if (driver.hasRouteGranted) {
+		const formData = new FormData();
+		formData.append('route-id', driver.routeDetails['route-id']);
+		navigator.sendBeacon(serverAddress + '/controller/release-route', formData);
+	}
+	if (driver.hasValidTrainSession) {
+		const formData = new FormData();
+		formData.append('session-id', driver.sessionId);
+		formData.append('grab-id', driver.grabId);
+		navigator.sendBeacon(serverAddress + '/driver/release-train', formData);
 	}
 });
