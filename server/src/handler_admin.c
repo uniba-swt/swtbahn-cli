@@ -197,7 +197,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		const char *data_train = onion_request_get_post(req, "train");
 		const int grab_id = train_get_grab_id(data_train);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			syslog_server(LOG_ERR, "Request: Admin release train - invalid train id " + 
+			syslog_server(LOG_ERR, "Request: Admin release train - invalid train id " 
 			              "or train not grabbed (%s)",
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
