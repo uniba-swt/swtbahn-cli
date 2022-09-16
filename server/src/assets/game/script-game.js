@@ -347,7 +347,7 @@ class Driver {
 							$(obj).prop("disabled", true)
 						}
 					}
-				)
+				);
 			})
 		}, trainAvailabilityTimeout);
 	}
@@ -435,7 +435,12 @@ class Driver {
 					
 					// Show the destination reached button when the train is only on the
 					// main segment of the destination
-					if (segments.length == 1 && segments[0].includes(this.routeDetails["segment"])) {
+					if (segments.length != 1) {
+						return;
+					}
+					// Take into account that a main segment could be split into a/b segments
+					const segment = segments[0].replace(/(a|b)$/, '');
+					if(segment == this.routeDetails["segment"]) {
 						this.clearDestinationReachedInterval();
 						this.endGameButtonIsPersistent = true;
 						$('#endGameButton').show();
@@ -510,7 +515,9 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				if (!this.hasRouteGranted) {
+				if (!this.hasValidTrainSession) {
+					// Ignore, end game was called
+				} else if (!this.hasRouteGranted) {
 					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 				} else {
 					setResponseDanger('#serverResponse', '👎 You did not stop your train before the destination signal!');

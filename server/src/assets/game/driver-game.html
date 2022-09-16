@@ -25,6 +25,12 @@
 		<div id="swtLogo"></div>
 	</div>
 	
+	<div class="row">
+		<div class="col-2">
+			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">End Game</button>
+		</div>
+	</div>
+	
 	<hr />
 
 	<div id="trainSelection">
@@ -62,12 +68,6 @@
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-2">
-			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">End Game</button>
-		</div>
-	</div>
-
 	<div class="m-4"></div>
 
 	<div id="serverAlertBox">
@@ -77,7 +77,7 @@
 	</div>
 
 	<form id="destinationsForm">
-		<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Possible destinations:</b></label>
+		<label class="col-auto col-form-label-lg me-md-5"><b>Possible destinations:</b></label>
 		<div class="input-group row">
 			<div id="possibleDestinations" class="col">
 				<button id="destination0" type="button" class="btn btn-lg col-2 me-md-5" value="">0</button>
@@ -96,10 +96,12 @@
 	</form>
 
 	<form id="speedForm">
-		<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Destination:</b></label>
-		<div id="destination"></div>
+		<div class="row">
+			<label class="col-auto col-form-label-lg me-md-5"><b>Destination: </b></label>
+			<div id="destination" class="col-auto col-form-label-lg"></div>
+		</div>
 		
-		<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Speed:</b></label>
+		<label class="col-auto col-form-label-lg me-md-5"><b>Speed:</b></label>
 		<div class="input-group row">
 			<div class="col">
 				<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">Stop</button>
@@ -113,10 +115,10 @@
 	</form>
 
 	<form id="destinationReachedForm">
-		<label class="col-auto col-form-label-lg col-form-label me-md-5"><b>Stopped at destination?</b></label>
+		<label class="col-auto col-form-label-lg me-md-5"><b>Stopped at destination?</b></label>
 		<div class="input-group row">
 			<div class="col">
-				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5" value="">Yes</button>
+				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5">Yes</button>
 			</div>
 		</div>
 	</form>
