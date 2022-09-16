@@ -159,6 +159,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "admin/startup", handler_startup);
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
+	onion_url_add(urls, "admin/release-train", handler_admin_release_train);
+	onion_url_add(urls, "admin/set-dcc-train-speed", handler_admin_set_dcc_train_speed);
 	
 	// --- track controller functions ---
 	onion_url_add(urls, "controller/release-route", handler_release_route);
@@ -174,6 +176,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "driver/release-train", handler_release_train);	
 	onion_url_add(urls, "driver/request-route", handler_request_route);
 	onion_url_add(urls, "driver/request-route-id", handler_request_route_id);
+	onion_url_add(urls, "driver/direction", handler_driving_direction);
 	onion_url_add(urls, "driver/drive-route", handler_drive_route);
 	onion_url_add(urls, "driver/set-dcc-train-speed", handler_set_dcc_train_speed);
 	onion_url_add(urls, "driver/set-calibrated-train-speed",
@@ -208,6 +211,9 @@ int main(int argc, char **argv) {
 
 	onion_listen(o);
 	onion_free(o);
+	if (running) {
+		stop_bidib();
+	}
 	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 

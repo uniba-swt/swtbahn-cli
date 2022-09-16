@@ -565,7 +565,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
-		if (route_id == NULL || strcmp(route_id, "") == 0) {
+		if (route_id == NULL || strcmp(route_id, "") == 0 || get_route(route_id) == NULL) {
 			syslog_server(LOG_ERR, "Request: Get route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {

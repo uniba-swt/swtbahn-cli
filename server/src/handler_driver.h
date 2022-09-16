@@ -50,7 +50,9 @@ const int train_get_grab_id(const char *train);
 
 bool train_grabbed(const char *train);
 
-void free_all_grabbed_trains(void);
+bool release_train(int grab_id);
+
+void release_all_grabbed_trains(void);
 
 onion_connection_status handler_grab_train(void *_, onion_request *req,
                                            onion_response *res);
@@ -63,6 +65,9 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 
 onion_connection_status handler_request_route_id(void *_, onion_request *req,
                                                  onion_response *res);
+
+onion_connection_status handler_driving_direction(void *_, onion_request *req,
+                                                  onion_response *res);
 
 onion_connection_status handler_drive_route(void *_, onion_request *req,
                                             onion_response *res);

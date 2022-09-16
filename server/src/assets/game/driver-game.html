@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" />
+
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
+	<link rel="stylesheet" href="style-game.css" />
+
+	<script src="destinations-swtbahn-ultraloop.js"></script>
+	<script src="destinations-swtbahn-standard.js"></script>
+	<script src="destinations-swtbahn-full.js"></script>
+	<script src="script-game.js"></script>
+
+	<title>SWTbahn Driver Client</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body>
+	<div class="row">
+		<div id="swtLogo"></div>
+	</div>
+	
+	<div class="row">
+		<div class="col-2">
+			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">End Game</button>
+		</div>
+	</div>
+	
+	<hr />
+
+	<div id="row g-0 trainSelection">
+		<div class="card mb-3">
+			<img src="train-cargo-db.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Cargo DB</h5>
+				<p class="card-text">Lorem ipsum</p>
+				<button class="selectTrainButton btn btn-primary" id="cargo_db">
+					Drive this train
+				</button>
+			</div>
+		</div>
+
+		<div class="card mb-3">
+			<img src="train-cargo-green.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Cargo Green</h5>
+				<p class="card-text">Lorem ipsum</p>
+				<button class="selectTrainButton btn btn-primary" id="cargo_green">
+					Drive this train
+				</button>
+			</div>
+		 </div>
+
+		<div class="card mb-3">
+			<img src="train-regional-odeg.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Regional ODEG</h5>
+				<p class="card-text">Lorem ipsum</p>
+				<button class="selectTrainButton btn btn-primary" id="regional_odeg">
+					Drive this train
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="m-4"></div>
+
+	<div id="serverAlertBox">
+		<div id="serverAlert" class="alert" role="alert">
+			<span id="serverResponse"></span>
+		</div>
+	</div>
+
+	<form id="destinationsForm">
+		<label class="col-auto col-form-label-lg me-md-5"><b>Possible destinations:</b></label>
+		<div class="input-group row">
+			<div id="possibleDestinations" class="col">
+				<button id="destination0" type="button" class="btn btn-lg col-2 me-md-5" value="">0</button>
+				<button id="destination1" type="button" class="btn btn-lg col-2 me-md-5" value="">1</button>
+				<button id="destination2" type="button" class="btn btn-lg col-2 me-md-5" value="">2</button>
+				<button id="destination3" type="button" class="btn btn-lg col-2 me-md-5" value="">3</button>
+				
+				<div class="m-4"></div>
+
+				<button id="destination4" type="button" class="btn btn-lg col-2 me-md-5" value="">4</button>
+				<button id="destination5" type="button" class="btn btn-lg col-2 me-md-5" value="">5</button>
+				<button id="destination6" type="button" class="btn btn-lg col-2 me-md-5" value="">6</button>
+				<button id="destination7" type="button" class="btn btn-lg col-2 me-md-5" value="">7</button>
+			</div>
+		</div>
+	</form>
+
+	<form id="speedForm">
+		<div class="row">
+			<label class="col-auto col-form-label-lg me-md-5"><b>Destination: </b></label>
+			<div id="destination" class="col-auto col-form-label-lg"></div>
+		</div>
+		
+		<label class="col-auto col-form-label-lg me-md-5"><b>Speed:</b></label>
+		<div class="input-group row">
+			<div class="col">
+				<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">Stop</button>
+				<div class="btn-group" role="group">
+					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">Slow</button>
+					<button id="normal" type="button" class="btn btn-secondary btn-lg" value="40">Normal</button>
+					<button id="fast" type="button" class="btn btn-success btn-lg" value="60">Fast</button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+	<form id="destinationReachedForm">
+		<label class="col-auto col-form-label-lg me-md-5"><b>Stopped at destination?</b></label>
+		<div class="input-group row">
+			<div class="col">
+				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5">Yes</button>
+			</div>
+		</div>
+	</form>
+
+</html>

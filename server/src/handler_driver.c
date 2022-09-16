@@ -64,7 +64,8 @@ const int train_get_grab_id(const char *train) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	int grab_id = -1;
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		if (strcmp(grabbed_trains[i].name->str, train) == 0) {
+		if (grabbed_trains[i].is_valid 
+				&& strcmp(grabbed_trains[i].name->str, train) == 0) {
 			grab_id = i;
 			break;
 		}
@@ -102,14 +103,14 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	return false;
 }
 
-static const bool is_forward_driving(const char *route_orientation, 
+static const bool is_forward_driving(const t_interlocking_route *route, 
                                      const char *train_id) {
 
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const bool train_is_left = train_position_query.orientation_is_left;
-	const bool route_is_clockwise = (strcmp(route_orientation, "clockwise") == 0);
-	const bool requested_forwards = (route_is_clockwise && train_is_left)
-	                                || (!route_is_clockwise && !train_is_left);
+	const bool route_is_clockwise = (strcmp(route->orientation, "clockwise") == 0);
+	const bool is_forwards = (route_is_clockwise && train_is_left)
+	                         || (!route_is_clockwise && !train_is_left);
 	                                
 	// Determine whether the train is on a block controlled by a Kehrschleifenmodul
 	// 1. Get train block
@@ -123,7 +124,9 @@ static const bool is_forward_driving(const char *route_orientation,
 	bidib_free_train_position_query(train_position_query);
 	
 	if (block_id == NULL) {
-		return requested_forwards;
+		syslog_server(LOG_ERR, "Driving is forwards: %s - current block of train: %s is unknown",
+					  is_forwards ? "yes" : "no", train_id);
+		return is_forwards;
 	}
 
 	// 2. Check whether the train is on a block controlled by a reverser
@@ -146,13 +149,18 @@ static const bool is_forward_driving(const char *route_orientation,
 			break;
 		}
 	}
-
-	return (electrically_reversed ? !requested_forwards : requested_forwards);
+	
+	const bool requested_forwards = electrically_reversed
+	                                ? !is_forwards
+	                                : is_forwards;
+	syslog_server(LOG_NOTICE, "Driving is forwards: %s",
+				  requested_forwards ? "yes" : "no");
+	return requested_forwards;
 }
 
 static bool drive_route_params_valid(const char *train_id, t_interlocking_route *route) {
 	if ((route->train == NULL) || strcmp(train_id, route->train) != 0) {
-		syslog_server(LOG_ERR, "Check drive route params: Route %s not granted to train %s", 
+		syslog_server(LOG_NOTICE, "Check drive route params: Route %s not granted to train %s", 
 		              route->id, train_id);
 		return false;
 	}
@@ -197,7 +205,7 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 				bidib_flush();
 				syslog_server(LOG_NOTICE, "Drive route progressive stop signals: "
 				              "Set signal - signal: %s state: %s",
-							  next_signal, signal_stop_aspect);
+				              next_signal, signal_stop_aspect);
 			}
 		}
 	}
@@ -206,7 +214,7 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 }
 
 static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic) {
-	const char *train_id = grabbed_trains[grab_id].name->str;
+	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	t_interlocking_route *route = get_route(route_id);
 	if (!drive_route_params_valid(train_id, route)) {
 		return false;
@@ -216,11 +224,11 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	syslog_server(LOG_NOTICE, "Drive route: Driving starts");
 	pthread_mutex_lock(&grabbed_trains_mutex);	
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	const char requested_forwards = is_forward_driving(route->orientation, train_id);
+	const char requested_forwards = is_forward_driving(route, train_id);
 	if (is_automatic) {
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
-														DRIVING_SPEED_SLOW, 
-														requested_forwards);
+		                                                DRIVING_SPEED_SLOW, 
+		                                                requested_forwards);
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
@@ -246,6 +254,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		release_route(route_id);
 	}
 	
+	free(train_id);
 	return true;
 }
 
@@ -285,7 +294,7 @@ static int grab_train(const char *train, const char *engine) {
 	return grab_id;
 }
 
-static bool free_train(int grab_id) {
+bool release_train(int grab_id) {
 	bool success = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	if (grabbed_trains[grab_id].is_valid) {
@@ -300,9 +309,9 @@ static bool free_train(int grab_id) {
 	return success;
 }
 
-void free_all_grabbed_trains(void) {
+void release_all_grabbed_trains(void) {
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		free_train(i);
+		release_train(i);
 	}
 }
 
@@ -326,7 +335,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 				bidib_free_train_state_query(train_state_query);
 				int grab_id = grab_train(data_train, data_engine);
 				if (grab_id == -1) {
-					//TODO more precise error msg if all slots are taken
+					//TODO more precise error message if all slots are taken
 					syslog_server(LOG_ERR, "Request: Grab train - train already grabbed or engine not found");
 					return OCS_NOT_IMPLEMENTED;
 				} else {
@@ -345,37 +354,42 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 onion_connection_status handler_release_train(void *_, onion_request *req,
                                               onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {		
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		int client_session_id = params_check_session_id(data_session_id);
 		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		if (client_session_id != session_id) {
-			syslog_server(LOG_ERR, "Request: Release train - invalid session id");
+			syslog_server(LOG_ERR, "Request: Release train - invalid session id (%s != %d)",
+			              data_session_id, session_id);
 			return OCS_NOT_IMPLEMENTED;
-		} else if (!grabbed_trains[grab_id].is_valid) {
+		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		t_bidib_train_state_query train_state_query = 
-			bidib_get_train_state(grabbed_trains[grab_id].name->str);
-
-		if (train_state_query.data.set_speed_step != 0) {
+		// Ensure that the train has stopped moving
+		pthread_mutex_lock(&grabbed_trains_mutex);	
+		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		
+		t_bidib_train_state_query train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
-			syslog_server(LOG_ERR, "Request: Release train - train still moving");
-			return OCS_NOT_IMPLEMENTED;
-		} else if (grab_id == -1 || !free_train(grab_id)) {
-			bidib_free_train_state_query(train_state_query);
+			train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+		}
+		bidib_free_train_state_query(train_state_query);
+		
+		if (!release_train(grab_id)) {
 			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			bidib_free_train_state_query(train_state_query);
 			syslog_server(LOG_NOTICE, "Request: Release train");
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog_server(LOG_ERR, "Request: Free train - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Release train - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -495,6 +509,32 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}                                       
+}
+
+onion_connection_status handler_driving_direction(void *_, onion_request *req,
+                                                  onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_train = onion_request_get_post(req, "train");
+		const char *data_route_id = onion_request_get_post(req, "route-id");
+		const char *route_id = params_check_route_id(data_route_id);
+		if (data_train == NULL) {
+			syslog_server(LOG_ERR, "Request: Driving direction - bad train id");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (strcmp(route_id, "") == 0) {
+			syslog_server(LOG_ERR, "Request: Driving direction - bad route id");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			const t_interlocking_route *route = get_route(route_id);
+			const char *direction = is_forward_driving(route, data_train)
+			                        ? "forwards" : "backwards";
+			onion_response_printf(res, "%s", direction);
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Driving direction - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}  
 }
 
 onion_connection_status handler_drive_route(void *_, onion_request *req,

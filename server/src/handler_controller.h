@@ -41,7 +41,7 @@ typedef struct {
 } t_interlocker_data;
 
 
-void free_all_interlockers(void);
+void release_all_interlockers(void);
 
 /**
  * Loads the default interlocker

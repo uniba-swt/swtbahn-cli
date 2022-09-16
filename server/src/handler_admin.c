@@ -32,6 +32,7 @@
 #include <stdio.h>
 
 #include "server.h"
+#include "param_verification.h"
 #include "handler_upload.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
@@ -110,6 +111,18 @@ static bool start_bidib(void) {
 	return true;
 }
 
+void stop_bidib(void) {
+	session_id = 0;
+	syslog_server(LOG_NOTICE, "Request: Stop");
+	release_all_grabbed_trains();
+	release_all_interlockers();
+	running = false;
+	dyn_containers_stop();
+	bahn_data_util_free_config();
+	pthread_join(poll_bidib_messages_thread, NULL);
+	bidib_stop();
+}
+
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res) {
 	build_response_header(res);
@@ -143,15 +156,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) &
 	                                          OR_METHODS) == OR_POST)) {
-		session_id = 0;
-		syslog_server(LOG_NOTICE, "Request: Stop");
-		free_all_grabbed_trains();
-		free_all_interlockers();
-		running = false;
-		dyn_containers_stop();
-		bahn_data_util_free_config();
-		pthread_join(poll_bidib_messages_thread, NULL);
-		bidib_stop();
+		stop_bidib();
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running");
@@ -185,3 +190,79 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 	}
 }
 
+onion_connection_status handler_admin_release_train(void *_, onion_request *req,
+                                                    onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {		
+		const char *data_train = onion_request_get_post(req, "train");
+		const int grab_id = train_get_grab_id(data_train);
+		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			syslog_server(LOG_ERR, "Request: Admin release train - invalid train id " + 
+			              "or train not grabbed (%s)",
+			              data_train);
+			return OCS_NOT_IMPLEMENTED;
+		}
+		
+		// Ensure that the train has stopped moving
+		pthread_mutex_lock(&grabbed_trains_mutex);	
+		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		
+		t_bidib_train_state_query train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+		while (train_state_query.data.set_speed_step != 0) {
+			bidib_free_train_state_query(train_state_query);
+			train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+		}
+		bidib_free_train_state_query(train_state_query);
+		
+		if (!release_train(grab_id)) {
+			syslog_server(LOG_ERR, "Request: Admin release train - invalid grab id");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			syslog_server(LOG_NOTICE, "Request: Admin release train");
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Admin release train - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
+                                                          onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_train = onion_request_get_post(req, "train");
+		const char *data_speed = onion_request_get_post(req, "speed");
+		const char *data_track_output = onion_request_get_post(req, "track-output");
+		const int grab_id = train_get_grab_id(data_train);
+		int speed = params_check_speed(data_speed);
+		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			syslog_server(LOG_ERR, "Request: Admin set train speed - bad grab id");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (speed == 999) {
+			syslog_server(LOG_ERR, "Request: Admin set train speed - bad speed");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (data_track_output == NULL) {
+			syslog_server(LOG_ERR, "Request: Admin set train speed - bad track output");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			pthread_mutex_lock(&grabbed_trains_mutex);
+			strcpy(grabbed_trains[grab_id].track_output, data_track_output);
+			int dyn_containers_engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+			if (speed < 0) {
+				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
+				                                                -speed, false);
+			} else {
+				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
+				                                                speed, true);
+			}
+			pthread_mutex_unlock(&grabbed_trains_mutex);
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Admin set train speed - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}

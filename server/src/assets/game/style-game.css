@@ -1,0 +1,51 @@
+body {
+  font-family: UB Scala Sans, sans-serif;
+  margin: 20px;
+}
+
+#swtLogo {
+  background-image: url("swtbahn-logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto 100px;
+  line-height: 100px;
+  color: #054479;
+  height: 100px;
+  width: 100%;
+}
+
+#trainSelection{
+  /* center elements vertically */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+#trainDetails {
+  font-size: 29pt;
+  font-weight: bold;
+  color: #054479;
+  height: 100px;
+}
+
+#serverAlertBox {
+  height: 70px;
+}
+
+#serverAlert {
+  border-width: 3px;
+  border-style: solid;
+  border-color: white;
+}
+
+.alert-danger-blink {
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  50% {
+    border-color: var(--danger);
+  }
+}
+
