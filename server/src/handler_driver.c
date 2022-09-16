@@ -64,7 +64,8 @@ const int train_get_grab_id(const char *train) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	int grab_id = -1;
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		if (strcmp(grabbed_trains[i].name->str, train) == 0) {
+		if (grabbed_trains[i].is_valid 
+				&& strcmp(grabbed_trains[i].name->str, train) == 0) {
 			grab_id = i;
 			break;
 		}
@@ -293,7 +294,7 @@ static int grab_train(const char *train, const char *engine) {
 	return grab_id;
 }
 
-static bool free_train(int grab_id) {
+bool release_train(int grab_id) {
 	bool success = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	if (grabbed_trains[grab_id].is_valid) {
@@ -308,9 +309,9 @@ static bool free_train(int grab_id) {
 	return success;
 }
 
-void free_all_grabbed_trains(void) {
+void release_all_grabbed_trains(void) {
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		free_train(i);
+		release_train(i);
 	}
 }
 
@@ -380,7 +381,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		}
 		bidib_free_train_state_query(train_state_query);
 		
-		if (!free_train(grab_id)) {
+		if (!release_train(grab_id)) {
 			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
@@ -388,7 +389,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog_server(LOG_ERR, "Request: Free train - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Release train - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

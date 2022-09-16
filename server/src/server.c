@@ -159,6 +159,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "admin/startup", handler_startup);
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
+	onion_url_add(urls, "admin/release-train", handler_admin_release_train);
+	onion_url_add(urls, "admin/set-dcc-train-speed", handler_admin_set_dcc_train_speed);
 	
 	// --- track controller functions ---
 	onion_url_add(urls, "controller/release-route", handler_release_route);

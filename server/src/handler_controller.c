@@ -105,7 +105,7 @@ const int load_default_interlocker_instance() {
 	return (result == -1);
 }
 
-void free_all_interlockers(void) {
+void release_all_interlockers(void) {
 	if (selected_interlocker_name != NULL) {
 		g_string_free(selected_interlocker_name, true);
 		selected_interlocker_name = NULL;
