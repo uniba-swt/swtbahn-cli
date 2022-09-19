@@ -513,9 +513,9 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 			const char *route_id = g_array_index(route_ids, char *, i);
 			t_interlocking_route *route = get_route(route_id);
 			if (route->train != NULL) {
-				g_string_append_printf(granted_routes, "route id: %s train: %s%s", 
-				                       route->id, route->train,
-				                       (route_ids->len == 0) ? "" : "\n");
+				g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
+				                       (i == 0) ? "" : "\n",
+				                       route->id, route->train);
 			}
 		}
 		if (strcmp(granted_routes->str, "") == 0) {
