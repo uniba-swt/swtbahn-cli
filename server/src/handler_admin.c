@@ -236,12 +236,8 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		const char *data_train = onion_request_get_post(req, "train");
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
-		const int grab_id = train_get_grab_id(data_train);
 		int speed = params_check_speed(data_speed);
-		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			syslog_server(LOG_ERR, "Request: Admin set train speed - bad grab id");
-			return OCS_NOT_IMPLEMENTED;
-		} else if (speed == 999) {
+		if (speed == 999) {
 			syslog_server(LOG_ERR, "Request: Admin set train speed - bad speed");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
@@ -249,14 +245,14 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			strcpy(grabbed_trains[grab_id].track_output, data_track_output);
-			int dyn_containers_engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-			if (speed < 0) {
-				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
-				                                                -speed, false);
+			if (bidib_set_train_speed(data_train, speed, 
+									  data_track_output)) {
+				syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s: bad parameter values",
+							  data_train);
 			} else {
-				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
-				                                                speed, true);
+				bidib_flush();
+				syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d",
+							  data_train, speed);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
