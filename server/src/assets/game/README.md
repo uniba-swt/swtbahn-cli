@@ -58,7 +58,7 @@ The main limitations are:
   - Users typically can no longer play their game when their device loses 
     (Wi-Fi) connection to the server, and their train has to be released
     manually
-  - Game state is not restored when th game client is reloaded or reopened
+  - Game state is not restored when the game client is reloaded or reopened
 
 
 ## Source File Organisation
