@@ -507,15 +507,17 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
                                                    onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		bool needNewLine = false;
 		GString *granted_routes = g_string_new("");
 		GArray *route_ids = interlocking_table_get_all_route_ids();
 		for (size_t i = 0; i < route_ids->len; i++) {
 			const char *route_id = g_array_index(route_ids, char *, i);
 			t_interlocking_route *route = get_route(route_id);
 			if (route->train != NULL) {
-				g_string_append_printf(granted_routes, "route id: %s train: %s%s", 
-				                       route->id, route->train,
-				                       (route_ids->len == 0) ? "" : "\n");
+				g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
+				                       needNewLine ? "\n" : "",
+				                       route->id, route->train);
+				needNewLine = true;
 			}
 		}
 		if (strcmp(granted_routes->str, "") == 0) {
