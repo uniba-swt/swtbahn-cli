@@ -80,8 +80,8 @@ const signalToFlagFull = {
         "altTag": "signal36 - bw4"
     },
     "signal23": {
-        "file": "rw5.svg",
-        "altTag": "signal23 - rw5"
+        "file": "bw5.svg",
+        "altTag": "signal23 - bw5"
     },
     "signal8": {
         "file": "bw6.svg",
@@ -120,8 +120,8 @@ const signalToFlagFull = {
         "altTag": "signal32 - r1"
     },
     "signal24": {
-        "file": "rw4.svg",
-        "altTag": "signal24 - rw4"
+        "file": "r2.svg",
+        "altTag": "signal24 - r2"
     },
     "signal30": {
         "file": "r3.svg",
@@ -142,5 +142,13 @@ const signalToFlagFull = {
     "signal31": {
         "file": "rw3.svg",
         "altTag": "signal31 - rw3"
+    },
+    "signal29": {
+        "file": "rw4.svg",
+        "altTag": "signal29 - rw4"
+    },
+    "signal27": {
+        "file": "rw5.svg",
+        "altTag": "signal27 - rw5"
     }
 };
