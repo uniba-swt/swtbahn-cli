@@ -44,7 +44,7 @@ function disableAllDestinationButtons() {
 		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
 		$(`#${destinationNamePrefix}${i}`).removeClass(destinationEnabledButtonStyle);
 		$(`#${destinationNamePrefix}${i}`).addClass(destinationDisabledButtonStyle);
-		document.getElementById(`${destinationNamePrefix}${choice}`).innerHTML = "<p>Keine Route</p>";
+		document.getElementById(`${destinationNamePrefix}${i}`).innerHTML = "<p>Keine Route</p>";
 	}
 }
 
