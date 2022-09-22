@@ -11,6 +11,10 @@ const destinationNamePrefix = "destination";  // HTML element ID prefix of the d
 
 var allPossibleDestinations = null;           // Platform specific lookup table for destinations
 
+// Load Signal To Flag (icon) Mapping and load root Folder Location #flagInit
+const flagRootLocation = "flagGenerator/dice/";
+const signalToFlagMapping = signalToFlagFull;
+
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
 	if (allPossibleDestinations == null || !allPossibleDestinations.hasOwnProperty(blockId)) {
@@ -49,6 +53,7 @@ function setDestinationButton(choice, route) {
 	
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
+	$(`#${destinationNamePrefix}${choice}`).innerText = JSON.stringify(route);
 	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
 	$(`#${destinationNamePrefix}${choice}`).removeClass(destinationDisabledButtonStyle);
 }
@@ -658,12 +663,14 @@ function initialise() {
 		startGameLogic();
 	});
 	
-	// Set the possible destinations for the SWTbahn platform.
+	// Set the possible destinations for the SWTbahn platform. #RouteTableInit
 	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
-	
+
+
+
 	// Initialise the click handler of each destination button.
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
 		const destinationButton = $(`#${destinationNamePrefix}${i}`);
