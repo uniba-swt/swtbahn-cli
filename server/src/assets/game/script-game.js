@@ -129,7 +129,7 @@ function updatePossibleDestinations(blockId) {
 	// Set up a timer interval to periodically update the availability
 	const updatePossibleDestinationsTimeout = 500;
 	driver.updatePossibleDestinationsInterval = setInterval(() => {
-		console.log("Checking available destinations ...");
+		console.log(Math.floor(Date.now() / 1000) + "Checking available destinations ...");
 
 		const routes = getDestinations(blockId);
 		if (routes == null) {
