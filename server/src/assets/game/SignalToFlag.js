@@ -1,154 +1,218 @@
 const signalToFlagFull = {
     "signal4": {
-        "file": "sw1.svg",
-        "altTag": "signal4 - sw1"
+        "fillColor": "black",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-black",
+        "number": "one-face"
     },
     "signal18": {
-        "file": "sw2.svg",
-        "altTag": "signal18 - sw2"
+        "fillColor": "black",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-black",
+        "number": "second-face"
     },
     "signal51": {
-        "file": "sw3.svg",
-        "altTag": "signal51 - sw3"
+        "fillColor": "black",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-black",
+        "number": "third-face"
     },
     "signal14": {
-        "file": "sw4.svg",
-        "altTag": "signal14 - sw4"
+        "fillColor": "black",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-black",
+        "number": "fourth-face"
     },
     "signal5": {
-        "file": "sw5.svg",
-        "altTag": "signal5 - sw5"
+        "fillColor": "black",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-black",
+        "number": "fifth-face"
     },
     "signal49": {
-        "file": "s1.svg",
-        "altTag": "signal49 - s1"
+        "fillColor": "white",
+        "backgroundColor": "black",
+        "cssClassForColor": "bg-black-white",
+        "number": "one-face"
     },
     "signal47": {
-        "file": "s2.svg",
-        "altTag": "signal47 - s2"
+        "fillColor": "white",
+        "backgroundColor": "black",
+        "cssClassForColor": "bg-black-white",
+        "number": "second-face"
     },
     "signal45": {
-        "file": "s3.svg",
-        "altTag": "signal45 - s3"
+        "fillColor": "white",
+        "backgroundColor": "black",
+        "cssClassForColor": "bg-black-white",
+        "number": "third-face"
     },
     "signal28": {
-        "file": "r4.svg",
-        "altTag": "signal28 - r4"
+        "fillColor": "white",
+        "backgroundColor": "red",
+        "cssClassForColor": "bg-red-white",
+        "number": "fourth-face"
     },
     "signal43": {
-        "file": "s5.svg",
-        "altTag": "signal43 - s5"
+        "fillColor": "white",
+        "backgroundColor": "black",
+        "cssClassForColor": "bg-black-white",
+        "number": "fifth-face"
     },
     "signal21": {
-        "file": "s6.svg",
-        "altTag": "signal21 - s6"
+        "fillColor": "white",
+        "backgroundColor": "black",
+        "cssClassForColor": "bg-black-white",
+        "number": "sixth-face"
     },
     "signal50": {
-        "file": "b1.svg",
-        "altTag": "signal50 - b1"
+        "fillColor": "white",
+        "backgroundColor": "blue",
+        "cssClassForColor": "bg-blue-white",
+        "number": "one-face"
     },
     "signal48": {
-        "file": "b2.svg",
-        "altTag": "signal48 - b2"
+        "fillColor": "white",
+        "backgroundColor": "blue",
+        "cssClassForColor": "bg-blue-white",
+        "number": "second-face"
     },
     "signal44": {
-        "file": "b3.svg",
-        "altTag": "signal44 - b3"
+        "fillColor": "white",
+        "backgroundColor": "blue",
+        "cssClassForColor": "bg-blue-white",
+        "number": "third-face"
     },
     "signal46": {
-        "file": "b4.svg",
-        "altTag": "signal46 - b4"
+        "fillColor": "white",
+        "backgroundColor": "blue",
+        "cssClassForColor": "bg-blue-white",
+        "number": "fourth-face"
     },
     "signal22": {
-        "file": "b5.svg",
-        "altTag": "signal22 - b5"
+        "fillColor": "white",
+        "backgroundColor": "blue",
+        "cssClassForColor": "bg-blue-white",
+        "number": "fifth-face"
     },
     "signal35": {
-        "file": "bw1.svg",
-        "altTag": "signal35 - bw1"
+        "fillColor": "blue",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-blue",
+        "number": "one-face"
     },
     "signal53": {
-        "file": "bw2.svg",
-        "altTag": "signal53 - bw2"
+        "fillColor": "blue",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-blue",
+        "number": "second-face"
     },
     "signal7": {
-        "file": "bw3.svg",
-        "altTag": "signal7 - bw3"
+        "fillColor": "blue",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-blue",
+        "number": "third-face"
     },
     "signal36": {
-        "file": "bw4.svg",
-        "altTag": "signal36 - bw4"
+        "fillColor": "blue",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-blue",
+        "number": "fourth-face"
     },
     "signal23": {
-        "file": "bw5.svg",
-        "altTag": "signal23 - bw5"
+        "fillColor": "red",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-red",
+        "number": "fifth-face"
     },
     "signal8": {
-        "file": "bw6.svg",
-        "altTag": "signal8 - bw6"
+        "fillColor": "blue",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-blue",
+        "number": "sixth-face"
     },
     "signal42": {
-        "file": "gw1.svg",
-        "altTag": "signal42 - gw1"
+        "fillColor": "green",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-green",
+        "number": "one-face"
     },
     "signal40": {
-        "file": "gw2.svg",
-        "altTag": "signal40 - gw2"
+        "fillColor": "green",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-green",
+        "number": "second-face"
     },
     "signal37": {
-        "file": "gw3.svg",
-        "altTag": "signal37 - gw3"
+        "fillColor": "green",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-green",
+        "number": "third-face"
     },
     "signal9": {
-        "file": "gw5.svg",
-        "altTag": "signal9 - gw5"
+        "fillColor": "green",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-green",
+        "number": "fifth-face"
     },
     "signal41": {
-        "file": "g1.svg",
-        "altTag": "signal41 - g1"
+        "fillColor": "white",
+        "backgroundColor": "green",
+        "cssClassForColor": "bg-green-white",
+        "number": "one-face"
     },
     "signal34": {
-        "file": "g2.svg",
-        "altTag": "signal34 - g2"
+        "fillColor": "white",
+        "backgroundColor": "green",
+        "cssClassForColor": "bg-green-white",
+        "number": "second-face"
     },
     "signal11": {
-        "file": "g3.svg",
-        "altTag": "signal11 - g3"
+        "fillColor": "white",
+        "backgroundColor": "green",
+        "cssClassForColor": "bg-green-white",
+        "number": "third-face"
     },
     "signal32": {
-        "file": "r1.svg",
-        "altTag": "signal32 - r1"
+        "fillColor": "white",
+        "backgroundColor": "red",
+        "cssClassForColor": "bg-red-white",
+        "number": "one-face"
     },
     "signal24": {
-        "file": "r2.svg",
-        "altTag": "signal24 - r2"
+        "fillColor": "red",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-red",
+        "number": "fourth-face"
     },
     "signal30": {
-        "file": "r3.svg",
-        "altTag": "signal30 - r3"
+        "fillColor": "white",
+        "backgroundColor": "red",
+        "cssClassForColor": "bg-red-white",
+        "number": "third-face"
     },
     "signal1": {
-        "file": "r5.svg",
-        "altTag": "signal1 - r5"
+        "fillColor": "white",
+        "backgroundColor": "red",
+        "cssClassForColor": "bg-red-white",
+        "number": "fifth-face"
     },
     "signal26": {
-        "file": "rw1.svg",
-        "altTag": "signal26 - rw1"
+        "fillColor": "red",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-red",
+        "number": "one-face"
     },
     "signal15": {
-        "file": "rw2.svg",
-        "altTag": "signal15 - rw2"
+        "fillColor": "red",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-red",
+        "number": "second-face"
     },
     "signal31": {
-        "file": "rw3.svg",
-        "altTag": "signal31 - rw3"
-    },
-    "signal29": {
-        "file": "rw4.svg",
-        "altTag": "signal29 - rw4"
-    },
-    "signal27": {
-        "file": "rw5.svg",
-        "altTag": "signal27 - rw5"
+        "fillColor": "red",
+        "backgroundColor": "white",
+        "cssClassForColor": "bg-white-red",
+        "number": "third-face"
     }
 };
