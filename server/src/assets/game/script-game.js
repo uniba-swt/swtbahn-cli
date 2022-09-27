@@ -49,7 +49,7 @@ function disableAllDestinationButtons() {
 function addDice(fillColor, backgroundColor, number, numbercss){
 	const DiceObject = document.createElement("span");
 	DiceObject.setAttribute("class", "dice " + numbercss);
-	DiceObject.setAttribute("style", ("--background: %s; --fillcolor: %s", backgroundColor, fillColor));
+	DiceObject.setAttribute("style", `--background: ${backgroundColor}; --fillColor=${fillColor};`);
 	if (number <= 3){
 		for (let i = 0; i < number; i++) {
 			const dot = document.createElement("span");
