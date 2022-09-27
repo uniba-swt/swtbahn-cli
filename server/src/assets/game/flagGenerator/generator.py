@@ -51,7 +51,8 @@ with open("SignalToFlag.csv", "r") as f:
         jsonString[signalName]["fillColor"] = fillColor
         jsonString[signalName]["backgroundColor"] = backgroundColor
         jsonString[signalName]["cssClassForColor"] = "bg-{}-{}".format(backgroundColor, fillColor)
-        jsonString[signalName]["number"] = "{}-face".format(numberToWord(int(number)))
+        jsonString[signalName]["number"] = number
+        jsonString[signalName]["numberClass"] = "{}-face".format(numberToWord(int(number)))
 
     with open("SignalFlag.json", "w") as file:
         jsonString = json.dumps(jsonString, indent=4)
