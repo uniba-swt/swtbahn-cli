@@ -88,9 +88,8 @@ function addDice(fillColor, backgroundColor, number, numbercss){
 function setDestinationButton(choice, route) {
 	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
-
 	//#DiceAdd
-	if($(`#${destinationNamePrefix}${choice}`)[0].innerHTML != null){
+	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
 		let destination = destinationSignal;
 		if(isNaN(destinationSignal[destinationSignal.length - 1])){
 			destination = destinationSignal.substring(0, destinationSignal.length -1 );
