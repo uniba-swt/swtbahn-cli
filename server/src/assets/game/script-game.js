@@ -90,7 +90,7 @@ function setDestinationButton(choice, route) {
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 
 	//#DiceAdd
-	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
+	if($(`#${destinationNamePrefix}${choice}`)[0].innerHTML != null){
 		let destination = destinationSignal;
 		if(isNaN(destinationSignal[destinationSignal.length - 1])){
 			destination = destinationSignal.substring(0, destinationSignal.length -1 );
