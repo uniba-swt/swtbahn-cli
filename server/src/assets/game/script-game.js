@@ -11,9 +11,6 @@ const destinationNamePrefix = "destination";  // HTML element ID prefix of the d
 
 var allPossibleDestinations = null;           // Platform specific lookup table for destinations
 
-// Load Signal To Flag (icon) Mapping and load root Folder Location #flagInit
-const flagRootLocation = "flagGenerator/dice/";
-const signalToFlagMapping = signalToFlagFull;
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -44,28 +41,56 @@ function disableAllDestinationButtons() {
 		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
 		$(`#${destinationNamePrefix}${i}`).removeClass(destinationEnabledButtonStyle);
 		$(`#${destinationNamePrefix}${i}`).addClass(destinationDisabledButtonStyle);
-		document.getElementById(`${destinationNamePrefix}${i}`).innerHTML = "<p>Keine Route</p>";
+		$(`#${destinationNamePrefix}${i}`).removeChild($(`#${destinationNamePrefix}${i}`).firstChild);
 	}
 }
 
-function getImageSrcFlag(destinationSignal){
-	let FlagData = signalToFlagMapping[destinationSignal];
-	if(FlagData != null){
-		console.log(flagRootLocation + FlagData["file"]);
-		return "<img src='" + flagRootLocation + FlagData["file"] + "' style='width: 35px; height: 35px;'/>";
+//#DiceHTMLGeneration
+function addDice(colorcss, number, numbercss){
+	const DiceObject = document.createElement("span");
+	DiceObject.setAttribute("class", "dice " + colorcss + numbercss);
+	if (number <= 3){
+		for (let i = 0; i < number; i++) {
+			const dot = document.createElement("span");
+			dot.setAttribute("class", "dot " + colorcss);
+			DiceObject.appendChild(dot);
+		}
+	}else{
+		if(number !== 5){
+			for(let i = 0; i < 2; i++){
+				const column = document.createElement("span");
+				column.setAttribute("class", "column");
+				for(let j = 0; j < (number/2); j++){
+					const dot = document.createElement("span");
+					dot.setAttribute("class", "dot " + colorcss);
+					column.appendChild(dot);
+				}
+				DiceObject.appendChild(column);
+			}
+		}else{
+			for (let i = 0; i < 3; i++){
+				const column = document.createElement("span");
+				column.setAttribute("class", "column");
+				for (let j = 0; j < 1 + (1 - (i % 2)) ; j++) {
+					const dot = document.createElement("span");
+					dot.setAttribute("class", "dot " + colorcss);
+					column.appendChild(dot);
+				}
+				DiceObject.appendChild(column);
+			}
+		}
 	}
-	FlagData = signalToFlagMapping[destinationSignal.substring(0, destinationSignal.length-1)];
-	if (FlagData != null){
-		return "<img src='" + flagRootLocation + FlagData["file"] + "' style='width: 35px; height: 35px;'/>";
-	}
-	return destinationSignal.substring(5, destinationSignal.length);
-
+	return DiceObject;
 }
+
 function setDestinationButton(choice, route) {
 	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 
-	document.getElementById(`${destinationNamePrefix}${choice}`).innerHTML = getImageSrcFlag(destinationSignal);
+	//#DiceAdd
+	const diceObject = addDice(signalToFlagFull[destinationSignal]["cssClassForColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
+	$(`#${destinationNamePrefix}${choice}`).appendChild(diceObject);
+
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
 	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
