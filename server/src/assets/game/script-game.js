@@ -92,7 +92,7 @@ function setDestinationButton(choice, route) {
 	//#DiceAdd
 	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
 		let destination = destinationSignal;
-		if(isNaN(destinationSignal)){
+		if(isNaN(destinationSignal[-1])){
 			destination = destinationSignal.substring(0, destinationSignal.length -1 );
 		}
 		console.log(destination);
