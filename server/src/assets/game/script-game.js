@@ -89,7 +89,7 @@ function setDestinationButton(choice, route) {
 	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 	//#DiceAdd
-	if(choice < 9){
+	if(choice < 8){
 		if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
 			let destination = destinationSignal;
 			if(isNaN(destinationSignal[destinationSignal.length - 1])){
