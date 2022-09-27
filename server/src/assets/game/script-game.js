@@ -203,8 +203,6 @@ function disableSpeedButtons() {
 }
 
 function enableSpeedButtons(destination) {
-	$('#destination').html(getImageSrcFlag(destination));
-
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
