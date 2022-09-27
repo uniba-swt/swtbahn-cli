@@ -1,18 +1,6 @@
 const signalToFlagFull = {
-    "signal4": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal18": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "2",
-        "numberClass": "second-face"
-    },
+    "signal4": "flagThemeBlack flagOutline flagOne",
+    "signal18": "flagThemeBlack flagOutline flagTwo",
     "signal51": {
         "fillColor": "black",
         "backgroundColor": "white",

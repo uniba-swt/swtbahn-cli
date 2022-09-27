@@ -50,53 +50,105 @@ body {
 }
 
 
-/* Dice */
-.dice{
-  display: block;
-  padding: 10%;
-  border-radius: 5px;
-  width: 3em;
-  height: 3em;
-  background-color: var(--background);
-  border: var(--fillColor) 5px solid;
-
+/* Hide the SVG template for the destination flags */
+#svgDef {
+  height: 0px;
+  width: 0px;
 }
 
-.dot{
-  display: block;
+svg.flag {
   width: 20%;
-  height: 20%;
-  border-radius: 50%;
-  background-color: var(--fillColor)
+  padding-right: 5%;
 }
 
-.one-face{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Colour themes for the destination flags */
+.flagThemeBlack {
+  --flag-theme: black;
 }
 
-.second-face, .third-face, .fourth-face, .fifth-face, .sixth-face{
-  display: flex;
-  justify-content: space-between;
+.flagThemeGreen {
+  --flag-theme: green;
 }
 
-.second-face .dot:nth-of-type(2){
-  align-self: flex-end;
+.flagThemeRed {
+  --flag-theme: red;
 }
 
-.third-face .dot:nth-of-type(3){
-  align-self: flex-end;
+.flagThemeBlue {
+  --flag-theme: blue;
 }
 
-.third-face .dot:nth-of-type(2), .fifth-face .column:nth-of-type(2){
-  align-self: center;
+.flagThemeDisabled {
+  --flag-fill: white;
+  --flag-circle-fill: white;
+  --flag-stroke: white;
+  --flag-topLeft-fill: white;
+  --flag-topRight-fill: white;
+  --flag-centre-fill: white;
+  --flag-bottomLeft-fill: white;
+  --flag-bottomRight-fill: white;
 }
 
-.fourth-face .column, .fifth-face .column, .sixth-face .column{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* Design themes for the destination flags */
+.flagOutline {
+  --flag-fill: white;
+  --flag-circle-fill: var(--flag-theme);
+  --flag-stroke: var(--flag-theme);
+}
+
+.flagFilled {
+  --flag-fill: var(--flag-theme);
+  --flag-circle-fill: white;
+  --flag-stroke: var(--flag-theme);
+}
+
+/* Flag symbols */
+.flagZero {
+  --flag-topLeft-fill: var(--flag-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-fill);
+}
+
+.flagOne {
+  --flag-topLeft-fill: var(--flag-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-circle-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-fill);
+}
+
+.flagTwo {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
+.flagThree {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-circle-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
+.flagFour {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-circle-fill);
+  --flag-centre-fill: var(--flag-fill);
+  --flag-bottomLeft-fill: var(--flag-circle-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
+.flagFive {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-circle-fill);
+  --flag-centre-fill: var(--flag-circle-fill);
+  --flag-bottomLeft-fill: var(--flag-circle-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
 }
 
 

@@ -772,9 +772,15 @@ function initialise() {
 	});
 }
 
-$(document).ready(
-	() => initialise()
-);
+function debugDestinationFlags() {
+    $('#trainSelection').hide();
+	$('#destinationsForm').show();
+}
+
+$(document).ready(() => {
+	initialise();
+	debugDestinationFlags();
+});
 
 /*************************************
  * Handlers for page refresh or close
