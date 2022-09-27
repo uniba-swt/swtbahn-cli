@@ -46,13 +46,15 @@ function disableAllDestinationButtons() {
 }
 
 //#DiceHTMLGeneration
-function addDice(colorcss, number, numbercss){
+function addDice(fillColor, backgroundColor, number, numbercss){
 	const DiceObject = document.createElement("span");
-	DiceObject.setAttribute("class", "dice " + colorcss + numbercss);
+	DiceObject.setAttribute("class", "dice" + numbercss);
+	DiceObject.setAttribute("style", ("--background: %s; --fillcolor: %s", backgroundColor, fillColor));
 	if (number <= 3){
 		for (let i = 0; i < number; i++) {
 			const dot = document.createElement("span");
-			dot.setAttribute("class", "dot " + colorcss);
+			dot.setAttribute("class", "dot");
+			dot.setAttribute("style", ("--background: %s; --fillcolor: %s", backgroundColor, fillColor));
 			DiceObject.appendChild(dot);
 		}
 	}else{
@@ -62,7 +64,7 @@ function addDice(colorcss, number, numbercss){
 				column.setAttribute("class", "column");
 				for(let j = 0; j < (number/2); j++){
 					const dot = document.createElement("span");
-					dot.setAttribute("class", "dot " + colorcss);
+					dot.setAttribute("class", "dot");
 					column.appendChild(dot);
 				}
 				DiceObject.appendChild(column);
@@ -73,7 +75,7 @@ function addDice(colorcss, number, numbercss){
 				column.setAttribute("class", "column");
 				for (let j = 0; j < 1 + (1 - (i % 2)) ; j++) {
 					const dot = document.createElement("span");
-					dot.setAttribute("class", "dot " + colorcss);
+					dot.setAttribute("class", "dot");
 					column.appendChild(dot);
 				}
 				DiceObject.appendChild(column);
@@ -88,7 +90,7 @@ function setDestinationButton(choice, route) {
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 
 	//#DiceAdd
-	const diceObject = addDice(signalToFlagFull[destinationSignal]["cssClassForColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
+	const diceObject = addDice(signalToFlagFull[destinationSignal]["fillColor"], signalToFlagFull[destinationSignal]["backgroundColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
 	$(`#${destinationNamePrefix}${choice}`).appendChild(diceObject);
 
 	// Route details are stored in the value parameter of the destination button

@@ -51,6 +51,25 @@ body {
 
 
 /* Dice */
+.dice{
+  display: block;
+  padding: 0.5em;
+  border-radius: 5px;
+  width: 5em;
+  height: 5em;
+  background-color: var(--background);
+  border: var(--fillcolor) 5px solid;
+
+}
+
+.dot{
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background-color: var(--fillcolor)
+}
+
 .first-face{
   display: flex;
   justify-content: center;
@@ -80,10 +99,4 @@ body {
   justify-content: space-between;
 }
 
-.dot{
-  display: block;
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-}
 
