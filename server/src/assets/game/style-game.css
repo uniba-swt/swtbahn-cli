@@ -70,7 +70,7 @@ body {
   background-color: var(--fillColor)
 }
 
-.first-face{
+.one-face{
   display: flex;
   justify-content: center;
   align-items: center;
