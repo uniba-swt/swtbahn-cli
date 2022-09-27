@@ -53,9 +53,10 @@ body {
 /* Dice */
 .dice{
   display: block;
+  padding: 10%;
   border-radius: 5px;
-  width: 2em;
-  height: 2em;
+  width: 3em;
+  height: 3em;
   background-color: var(--background);
   border: var(--fillColor) 5px solid;
 
