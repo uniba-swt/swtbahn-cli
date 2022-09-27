@@ -54,7 +54,7 @@ function addDice(fillColor, backgroundColor, number, numbercss){
 		for (let i = 0; i < number; i++) {
 			const dot = document.createElement("span");
 			dot.setAttribute("class", "dot");
-			dot.setAttribute("style", ("--background: %s; --fillcolor: %s", backgroundColor, fillColor));
+			dot.setAttribute("style", `--background: ${backgroundColor}; --fillColor=${fillColor};`);
 			DiceObject.appendChild(dot);
 		}
 	}else{
