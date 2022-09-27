@@ -91,7 +91,7 @@ function setDestinationButton(choice, route) {
 
 	//#DiceAdd
 	const diceObject = addDice(signalToFlagFull[destinationSignal]["fillColor"], signalToFlagFull[destinationSignal]["backgroundColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
-	$(`#${destinationNamePrefix}${choice}`).appendChild(diceObject);
+	$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
 
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
