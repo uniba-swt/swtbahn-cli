@@ -58,8 +58,6 @@ function addDice(fillColor, backgroundColor, number, numbercss){
 			DiceObject.appendChild(dot);
 		}
 	}else{
-		console.log(number != 5);
-		console.log(number !== 5);
 		if(number != 5){
 			for(let i = 0; i < 2; i++){
 				const column = document.createElement("span");
