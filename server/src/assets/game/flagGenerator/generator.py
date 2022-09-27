@@ -1,22 +1,19 @@
-import json, csv
+import json
+import csv
 
-from diceGenerator import generateDice
-colors = {
-    "red": "FF0000",
-    "blue": "0000ff",
-    "green": "00ff00",
-    "black": "000000",
-    "white": "ffffff"
-}
-
-color = json.loads(json.dumps(colors))
-
-def getColorCode(color):
-    print("Searching color: {}".format(color))
-    try:
-        return colors[color]
-    except KeyError:
-        return "-1"
+def numberToWord(number):
+    if number == 1:
+        return "one"
+    elif number == 2:
+        return "second"
+    elif number == 3:
+        return "third"
+    elif number == 4:
+        return "fourth"
+    elif number == 5:
+        return "fifth"
+    elif number == 6:
+        return "sixth"
 
 # Load Match to Signal into File
 with open("SignalToFlag.csv", "r") as f:
@@ -30,7 +27,6 @@ with open("SignalToFlag.csv", "r") as f:
         borderColor = None
         print(colorDefinition)
         number = colorDefinition[-1]
-        filename = colorDefinition + ".svg"
         if colorDefinition[0] == "b":
             backgroundColor = "blue"
             borderColor = "blue"
@@ -50,17 +46,12 @@ with open("SignalToFlag.csv", "r") as f:
         if number == 6:
             number = 0
 
-        backgroundColor = getColorCode(backgroundColor)
-        borderColor = getColorCode(borderColor)
-        fillColor = getColorCode(fillColor)
-
-        print("Executing: generateDice({}, {}, {}, {}, {})".format(backgroundColor, borderColor, fillColor, number, filename))
-        generateDice(backgroundColor, borderColor, fillColor, number, filename)
-
         signalName = "signal{}".format(str(signal))
         jsonString[signalName] = {}
-        jsonString[signalName]["file"] = filename
-        jsonString[signalName]["altTag"] = "{} - {}".format(signalName, colorDefinition)
+        jsonString[signalName]["fillColor"] = fillColor
+        jsonString[signalName]["backgroundColor"] = backgroundColor
+        jsonString[signalName]["cssClassForColor"] = "bg-{}-{}".format(backgroundColor, fillColor)
+        jsonString[signalName]["number"] = "{}-face".format(numberToWord(int(number)))
 
     with open("SignalFlag.json", "w") as file:
         jsonString = json.dumps(jsonString, indent=4)

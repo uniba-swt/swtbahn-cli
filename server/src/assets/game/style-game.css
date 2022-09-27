@@ -49,3 +49,41 @@ body {
   }
 }
 
+
+/* Dice */
+.first-face{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.second-face, .third-face, .fourth-face, .fifth-face, .sixth-face{
+  display: flex;
+  justify-content: space-between;
+}
+
+.second-face .dot:nth-of-type(2){
+  align-self: flex-end;
+}
+
+.third-face .dot:nth-of-type(3){
+  align-self: flex-end;
+}
+
+.third-face .dot:nth-of-type(2), .fifth-face .column:nth-of-type(2){
+  align-self: center;
+}
+
+.fourth-face .column, .fifth-face .column, .sixth-face .column{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dot{
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+}
+
