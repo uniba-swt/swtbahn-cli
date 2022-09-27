@@ -95,7 +95,7 @@ function setDestinationButton(choice, route) {
 		if(isNaN(destinationSignal)){
 			destination = destinationSignal.substring(0, destinationSignal.length -1 );
 		}
-		console.log(signalToFlagFull[destination] );
+		console.log(destination);
 		const diceObject = addDice(signalToFlagFull[destination]["fillColor"], signalToFlagFull[destination]["backgroundColor"], signalToFlagFull[destination]["number"], signalToFlagFull[destination]["numberClass"]);
 		$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
 	}
