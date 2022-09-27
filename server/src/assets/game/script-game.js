@@ -90,9 +90,10 @@ function setDestinationButton(choice, route) {
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 
 	//#DiceAdd
-	const diceObject = addDice(signalToFlagFull[destinationSignal]["fillColor"], signalToFlagFull[destinationSignal]["backgroundColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
-	$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
-
+	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
+		const diceObject = addDice(signalToFlagFull[destinationSignal]["fillColor"], signalToFlagFull[destinationSignal]["backgroundColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
+		$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
+	}
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
 	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
