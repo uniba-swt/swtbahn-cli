@@ -41,7 +41,7 @@ function disableAllDestinationButtons() {
 		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
 		$(`#${destinationNamePrefix}${i}`).removeClass(destinationEnabledButtonStyle);
 		$(`#${destinationNamePrefix}${i}`).addClass(destinationDisabledButtonStyle);
-		$(`#${destinationNamePrefix}${i}`).removeChild($(`#${destinationNamePrefix}${i}`).firstChild);
+		$(`#${destinationNamePrefix}${i}`).empty();
 	}
 }
 
