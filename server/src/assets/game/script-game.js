@@ -91,8 +91,12 @@ function setDestinationButton(choice, route) {
 
 	//#DiceAdd
 	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
-		console.log(signalToFlagFull[destinationSignal] + destinationSignal);
-		const diceObject = addDice(signalToFlagFull[destinationSignal]["fillColor"], signalToFlagFull[destinationSignal]["backgroundColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
+		let destination = destinationSignal;
+		if(isNaN(destinationSignal)){
+			destination = destinationSignal.substring(0, destinationSignal.length -1 );
+		}
+		console.log(signalToFlagFull[destination] );
+		const diceObject = addDice(signalToFlagFull[destination]["fillColor"], signalToFlagFull[destination]["backgroundColor"], signalToFlagFull[destination]["number"], signalToFlagFull[destination]["numberClass"]);
 		$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
 	}
 	// Route details are stored in the value parameter of the destination button
