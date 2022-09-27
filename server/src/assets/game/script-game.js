@@ -48,7 +48,7 @@ function disableAllDestinationButtons() {
 //#DiceHTMLGeneration
 function addDice(fillColor, backgroundColor, number, numbercss){
 	const DiceObject = document.createElement("span");
-	DiceObject.setAttribute("class", "dice" + numbercss);
+	DiceObject.setAttribute("class", "dice " + numbercss);
 	DiceObject.setAttribute("style", ("--background: %s; --fillcolor: %s", backgroundColor, fillColor));
 	if (number <= 3){
 		for (let i = 0; i < number; i++) {
