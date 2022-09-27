@@ -91,7 +91,7 @@ function setDestinationButton(choice, route) {
 
 	//#DiceAdd
 	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
-		console.log(signalToFlagFull[destinationSignal]);
+		console.log(signalToFlagFull[destinationSignal] + route);
 		const diceObject = addDice(signalToFlagFull[destinationSignal]["fillColor"], signalToFlagFull[destinationSignal]["backgroundColor"], signalToFlagFull[destinationSignal]["number"], signalToFlagFull[destinationSignal]["numberClass"]);
 		$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
 	}
