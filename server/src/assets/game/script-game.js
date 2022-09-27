@@ -89,16 +89,18 @@ function setDestinationButton(choice, route) {
 	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 	//#DiceAdd
-	console.log(choice);
-	if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
-		let destination = destinationSignal;
-		if(isNaN(destinationSignal[destinationSignal.length - 1])){
-			destination = destinationSignal.substring(0, destinationSignal.length -1 );
+	if(choice < 9){
+		if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
+			let destination = destinationSignal;
+			if(isNaN(destinationSignal[destinationSignal.length - 1])){
+				destination = destinationSignal.substring(0, destinationSignal.length -1 );
+			}
+			console.log(destination);
+			const diceObject = addDice(signalToFlagFull[destination]["fillColor"], signalToFlagFull[destination]["backgroundColor"], signalToFlagFull[destination]["number"], signalToFlagFull[destination]["numberClass"]);
+			$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
 		}
-		console.log(destination);
-		const diceObject = addDice(signalToFlagFull[destination]["fillColor"], signalToFlagFull[destination]["backgroundColor"], signalToFlagFull[destination]["number"], signalToFlagFull[destination]["numberClass"]);
-		$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
 	}
+
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
 	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
