@@ -206,10 +206,13 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 			}
 			// If train position was lost, need to check for train reappearing on segments further ahead
 			if (!train_is_on_tracks(train_id)) {
+				/// TODO: Add Logs here for testing
 				bool train_at_pos_or_ahead = false;
 				while (running && !train_at_pos_or_ahead) {
 					usleep(TRAIN_DRIVE_TIME_STEP);
+					/// TODO: Add check for drive_route_params_valid as done above
 					for (int path_item_lookahead_index = path_item_index; path_item_lookahead_index < path_count; ++path_item_lookahead_index) {
+						/// TODO: Only do the train_position_is_at check if the current path_item_lookahead_index indexes a segment
 						const char *path_item_ahead = g_array_index(route->path, char *, path_item_lookahead_index);
 						train_at_pos_or_ahead = train_position_is_at(train_id, path_item_ahead);
 						if (train_at_pos_or_ahead || !running) {
