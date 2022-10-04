@@ -45,46 +45,6 @@ function disableAllDestinationButtons() {
 	}
 }
 
-//#DiceHTMLGeneration
-function addDice(fillColor, backgroundColor, number, numbercss){
-	const DiceObject = document.createElement("span");
-	DiceObject.setAttribute("class", "dice " + numbercss);
-	DiceObject.setAttribute("style", `--background: ${backgroundColor}; --fillColor: ${fillColor};`);
-	if (number <= 3){
-		for (let i = 0; i < number; i++) {
-			const dot = document.createElement("span");
-			dot.setAttribute("class", "dot");
-			dot.setAttribute("style", `--background: ${backgroundColor}; --fillColor: ${fillColor};`);
-			DiceObject.appendChild(dot);
-		}
-	}else{
-		if(number != 5){
-			for(let i = 0; i < 2; i++){
-				const column = document.createElement("span");
-				column.setAttribute("class", "column");
-				for(let j = 0; j < (number/2); j++){
-					const dot = document.createElement("span");
-					dot.setAttribute("class", "dot");
-					column.appendChild(dot);
-				}
-				DiceObject.appendChild(column);
-			}
-		}else{
-			for (let i = 0; i < 3; i++){
-				const column = document.createElement("span");
-				column.setAttribute("class", "column");
-				for (let j = 0; j < 1 + (1 - (i % 2)) ; j++) {
-					const dot = document.createElement("span");
-					dot.setAttribute("class", "dot");
-					column.appendChild(dot);
-				}
-				DiceObject.appendChild(column);
-			}
-		}
-	}
-	return DiceObject;
-}
-
 function setDestinationButton(choice, route) {
 	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
@@ -96,8 +56,7 @@ function setDestinationButton(choice, route) {
 				destination = destinationSignal.substring(0, destinationSignal.length -1 );
 			}
 			console.log(destination);
-			const diceObject = addDice(signalToFlagFull[destination]["fillColor"], signalToFlagFull[destination]["backgroundColor"], signalToFlagFull[destination]["number"], signalToFlagFull[destination]["numberClass"]);
-			$(`#${destinationNamePrefix}${choice}`)[0].appendChild(diceObject);
+			$(`#${destinationNamePrefix}${choice}`)[0].setAttribute("class", signalToFlagFull[destination]);
 		}
 	}
 
@@ -772,14 +731,14 @@ function initialise() {
 	});
 }
 
-function debugDestinationFlags() {
+/*function debugDestinationFlags() {
     $('#trainSelection').hide();
 	$('#destinationsForm').show();
-}
+}*/
 
 $(document).ready(() => {
 	initialise();
-	debugDestinationFlags();
+//	debugDestinationFlags();
 });
 
 /*************************************
