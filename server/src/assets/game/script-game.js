@@ -44,7 +44,7 @@ function setDestinationButton(choice, route) {
 	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
 	//#DiceAdd
-	if(choice < 8){ // Dont execute childnode validation -> buttons above id 7 doesnt exist -> Typeerror
+	if(choice < 12){ // Dont execute childnode validation -> buttons above id 7 doesnt exist -> Typeerror
 		if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
 			let destination = destinationSignal;
 			if(isNaN(destinationSignal[destinationSignal.length - 1])){
