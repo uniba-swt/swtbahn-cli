@@ -165,6 +165,7 @@ function disableSpeedButtons() {
 }
 
 function enableSpeedButtons(destination) {
+	console.log(destination);
 	$('#destination')[0].setAttribute("class", signalToFlagFull[destination]);
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
