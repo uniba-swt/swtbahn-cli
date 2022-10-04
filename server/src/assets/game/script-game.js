@@ -10,7 +10,7 @@ const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
 var allPossibleDestinations = null;           // Platform specific lookup table for destinations
-var signalFlagMap = null;
+var signalFlagMap = null;                     // Platform specific lookup table for signal flags
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -335,16 +335,8 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => {
-						if ($(obj).prop("disabled") == true) {
-							$(obj).prop("disabled", false)
-						}
-					},
-					() => {
-						if ($(obj).prop("disabled") == false) {
-							$(obj).prop("disabled", true)
-						}
-					}
+					() => $(obj).prop("disabled", false),
+					() => $(obj).prop("disabled", true)
 				);
 			})
 		}, trainAvailabilityTimeout);
@@ -560,7 +552,7 @@ class Driver {
 			.then(() => disableAllDestinationButtons())
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => this.setTrainSpeedPromise(0))
-			.then(() => setChosenDestination())                        // 5. Show the chosen destination and possible train speeds to the driver
+			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver
 			.then(() => enableSpeedButtons(destinationSignal))
 			.then(() => this.enableReachedDestinationButtonPromise())  // 6. Start monitoring whether the train has reached the destination
 
