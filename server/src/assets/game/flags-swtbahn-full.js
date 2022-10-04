@@ -19,7 +19,7 @@ const signalToFlagFull = {
     "signal53": "flagThemeBlue flagOutline flagTwo",
     "signal7": "flagThemeBlue flagOutline flagThree",
     "signal36": "flagThemeBlue flagOutline flagFour",
-    "signal23": "flagThemeRed flagOutline flagFive",
+    "signal23": "flagThemeBlue flagOutline flagFive",
     "signal8": "flagThemeBlue flagOutline flagZero",
     "signal42": "flagThemeGreen flagOutline flagOne",
     "signal40": "flagThemeGreen flagOutline flagTwo",
@@ -29,11 +29,13 @@ const signalToFlagFull = {
     "signal34": "flagThemeGreen flagFilled flagTwo",
     "signal11": "flagThemeGreen flagFilled flagThree",
     "signal32": "flagThemeRed flagFilled flagOne",
-    "signal24": "flagThemeRed flagOutline flagFour",
+    "signal24": "flagThemeRed flagFilled flagTwo",
     "signal30": "flagThemeRed flagFilled flagThree",
     "signal1": "flagThemeRed flagFilled flagFive",
     "signal26": "flagThemeRed flagOutline flagOne",
     "signal15": "flagThemeRed flagOutline flagTwo",
     "signal31": "flagThemeRed flagOutline flagThree",
+    "signal29": "flagThemeRed flagOutline flagFour",
+    "signal27": "flagThemeRed flagOutline flagFive",
     "signal19": "flagThemeBlack flagOutline flagFour"
 };
