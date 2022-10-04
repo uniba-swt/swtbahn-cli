@@ -34,5 +34,6 @@
     "signal1": "flagThemeRed flagFilled flagFive",
     "signal26": "flagThemeRed flagOutline flagOne",
     "signal15": "flagThemeRed flagOutline flagTwo",
-    "signal31": "flagThemeRed flagOutline flagThree"
+    "signal31": "flagThemeRed flagOutline flagThree",
+    "signal19": "flagThemeBlack flagOutline flagFour"
 }
