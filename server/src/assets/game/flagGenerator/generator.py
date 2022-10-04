@@ -26,14 +26,12 @@ with open("SignalToFlag.csv", "r") as f:
 
         endString = endString + color + " "
 
-
         if colorDefinition[1] == "w":
             endString = endString + "flagOutline "
         else:
             endString = endString + "flagFilled "
 
-
-        if number == 6:
+        if int(number) == 6:
             number = 0
 
         endString = endString + "flag" + numberToWord(number)
