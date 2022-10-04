@@ -15,7 +15,6 @@ body {
 }
 
 #trainSelection{
-  /* center elements vertically */
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -67,15 +66,15 @@ svg.flag {
 }
 
 .flagThemeGreen {
-  --flag-theme: green;
+  --flag-theme: DarkGreen;
 }
 
 .flagThemeRed {
-  --flag-theme: red;
+  --flag-theme: DarkRed;
 }
 
 .flagThemeBlue {
-  --flag-theme: blue;
+  --flag-theme: var(--bs-primary);
 }
 
 .flagThemeDisabled {

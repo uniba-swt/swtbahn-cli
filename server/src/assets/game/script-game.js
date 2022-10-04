@@ -68,7 +68,7 @@ function updatePossibleDestinations(blockId) {
 	// Set up a timer interval to periodically update the availability
 	const updatePossibleDestinationsTimeout = 500;
 	driver.updatePossibleDestinationsInterval = setInterval(() => {
-		console.log(`${Math.floor(Date.now() / 1000)}: Checking available destinations ...`);
+		console.log("Checking available destinations ...");
 
 		const routes = getDestinations(blockId);
 		if (routes == null) {
@@ -149,7 +149,7 @@ function enableSpeedButtons(destination) {
 }
 
 function clearChosenDestination() {
-	$('#destination').html("");
+	$('#destination').attr("class", "flagThemeBlank");
 }
 
 function setChosenDestination(destination) {
@@ -640,7 +640,7 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
-	// Hide the train driving buttons (destinations selections)
+	// Hide the train driving buttons (destination selections)
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
@@ -661,7 +661,6 @@ function initialise() {
 
 	// Set the signal to flag mapping.
 	signalFlagMap = signalFlagMapSwtbahnFull;
-
 
 	// Initialise the click handler of each destination button.
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
@@ -732,7 +731,7 @@ function pageRefreshWarning(event) {
 
 	// Most web browsers will display a generic message instead!!
 	const message = "Are you sure you want to refresh or leave this page? " +
-		            "Leaving this page without ending your game will prevent others from grabbing your train 😕";
+	                "Leaving this page without ending your game will prevent others from grabbing your train 😕";
 	return event.returnValue = message;
 }
 
