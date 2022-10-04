@@ -57,8 +57,6 @@ function setDestinationButton(choice, route) {
 
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
-	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
-	$(`#${destinationNamePrefix}${choice}`).removeClass(destinationDisabledButtonStyle);
 }
 
 function setDestinationButtonAvailable(choice, route) {
