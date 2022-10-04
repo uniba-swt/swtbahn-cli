@@ -159,9 +159,8 @@ function disableSpeedButtons() {
 }
 
 function enableSpeedButtons(destination) {
-	if (isNaN(destination[-1])){
-		destination = destination.substring(0, destination.length - 1);
-	}
+	destination = destination.replace(/(a|b)$/, '');
+	console.log(destination);
 	$('#destination')[0].setAttribute("class", signalToFlagFull[destination]);
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
