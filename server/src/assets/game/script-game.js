@@ -1,4 +1,4 @@
-  var driver = null;           // Train driver logic.
+var driver = null;           // Train driver logic.
 var serverAddress = ""; //= "http://141.13.32.44:8080"; // The address of the server.
 
 
@@ -6,11 +6,11 @@ var serverAddress = ""; //= "http://141.13.32.44:8080"; // The address of the se
  * Destination related information and UI elements
  */
 
-const numberOfDestinationsMax = 8;            // Maximum destinations to display
+const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
 var allPossibleDestinations = null;           // Platform specific lookup table for destinations
-
+var signalFlagMap = null;
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -31,43 +31,28 @@ function unpackRoute(route) {
 function disableAllDestinationButtons() {
 	driver.clearUpdatePossibleDestinationsInterval();
 
-	// FIXME: Remove the signal-specific CSS styles
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
 		$(`#${destinationNamePrefix}${i}`).val("");
-		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
-		$(`#${destinationNamePrefix}${i}`)[0].setAttribute("class", "flagThemeBlank");
-		$(`#${destinationNamePrefix}${i}`).empty();
+		$(`#${destinationNamePrefix}${i}`).attr("class", "flagThemeBlank");
 	}
 }
 
 function setDestinationButton(choice, route) {
-	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
-	//#DiceAdd
-	if(choice < 12){ // Dont execute childnode validation -> buttons above id 7 doesnt exist -> Typeerror
-		if(!$(`#${destinationNamePrefix}${choice}`)[0].hasChildNodes()){
-			let destination = destinationSignal;
-			if(isNaN(destinationSignal[destinationSignal.length - 1])){
-				destination = destinationSignal.substring(0, destinationSignal.length -1 );
-			}
-			console.log(destination);
-			$(`#${destinationNamePrefix}${choice}`)[0].setAttribute("class", signalToFlagFull[destination]);
-		}
-	}
+	const destination = destinationSignal.replace(/(a|b)$/, '');
 
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
+	$(`#${destinationNamePrefix}${choice}`).attr("class", signalFlagMap[destination]);
 }
 
 function setDestinationButtonAvailable(choice, route) {
 	setDestinationButton(choice, route);
-	$(`#${destinationNamePrefix}${choice}`).prop('disabled', false);
 	$(`#${destinationNamePrefix}${choice}`).removeClass("flagThemeDisabled");
 }
 
 function setDestinationButtonUnavailable(choice, route) {
 	setDestinationButton(choice, route);
-	$(`#${destinationNamePrefix}${choice}`).prop('disabled', true);
 	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
 }
 
@@ -150,8 +135,6 @@ const speedButtons = [
 ];
 
 function disableSpeedButtons() {
-	$('#destination').html("");
-
 	$('#speedForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
@@ -159,13 +142,19 @@ function disableSpeedButtons() {
 }
 
 function enableSpeedButtons(destination) {
-	destination = destination.replace(/(a|b)$/, '');
-	console.log(destination);
-	$('#destination')[0].setAttribute("class", signalToFlagFull[destination]);
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
 	});
+}
+
+function clearChosenDestination() {
+	$('#destination').html("");
+}
+
+function setChosenDestination(destination) {
+	destination = destination.replace(/(a|b)$/, '');
+	$('#destination').attr("class", signalFlagMap[destination]);
 }
 
 function disableReachedDestinationButton() {
@@ -571,12 +560,15 @@ class Driver {
 			.then(() => disableAllDestinationButtons())
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => this.setTrainSpeedPromise(0))
-			.then(() => enableSpeedButtons(destinationSignal))         // 5. Show the possible train speeds to the driver
+			.then(() => setChosenDestination())                        // 5. Show the chosen destination and possible train speeds to the driver
+			.then(() => enableSpeedButtons(destinationSignal))
 			.then(() => this.enableReachedDestinationButtonPromise())  // 6. Start monitoring whether the train has reached the destination
 
 			.then(() => this.driveRoutePromise())                      // 7. Start the manual driving mode for the granted route
 
 			.then(() => disableSpeedButtons())                         // 8. Prevent the driver from driving past the destination
+			.then(() => clearChosenDestination())
+
 			.then(() => {
 				if (!this.hasValidTrainSession) {                      // 9. Check whether the safety layer had to force the train to stop
 					this.clearDestinationReachedInterval();
@@ -626,6 +618,8 @@ function endGameLogic() {
 	disableAllDestinationButtons();
 	disableReachedDestinationButton();
 	disableSpeedButtons();
+	clearChosenDestination();
+
 	$('#trainSelection').show();
 	driver.updateTrainAvailability();
 }
@@ -654,11 +648,11 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
-	// Hide the train driving buttons (destinations and speed selections)
+	// Hide the train driving buttons (destinations selections)
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
+	clearChosenDestination();
 	disableReachedDestinationButton();
-	disableSpeedButtons();
 
 	// Handle train selection
 	$('.selectTrainButton').click(function (event) {
@@ -667,12 +661,14 @@ function initialise() {
 		startGameLogic();
 	});
 
-	// Set the possible destinations for the SWTbahn platform. #RouteTableInit
+	// Set the possible destinations for the SWTbahn platform.
 	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
 
+	// Set the signal to flag mapping.
+	signalFlagMap = signalFlagMapSwtbahnFull;
 
 
 	// Initialise the click handler of each destination button.
@@ -744,7 +740,7 @@ function pageRefreshWarning(event) {
 
 	// Most web browsers will display a generic message instead!!
 	const message = "Are you sure you want to refresh or leave this page? " +
-		"Leaving this page without ending your game will prevent others from grabbing your train 😕";
+		            "Leaving this page without ending your game will prevent others from grabbing your train 😕";
 	return event.returnValue = message;
 }
 
