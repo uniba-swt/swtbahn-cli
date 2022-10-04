@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.6)
 project(swtbahn-cli)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "-Wall -Wno-gnu-folding-constant")
+set(CMAKE_C_FLAGS "-g -Wall -Wno-gnu-folding-constant")
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
-include(FindPkgConfig)
+find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
@@ -19,51 +19,29 @@ pkg_check_modules(CMOCKA cmocka REQUIRED)
 include_directories(${CMOCKA_INCLUDE_DIRS})
 link_directories(${CMOCKA_LIBRARY_DIRS})
 
-# Include bibib libraries. Relies on Bidib having been installed prior.
-pkg_check_modules(libbidib REQUIRED IMPORTED_TARGET bidib)
-pkg_check_modules(libbidib_static REQUIRED IMPORTED_TARGET bidib_static)
-include_directories(${LIBBIDIB_INCLUDE_DIRS})
+# Include BiDiB library that have been installed
+pkg_check_modules(BIDIB bidib REQUIRED)
+include_directories(${BIDIB_INCLUDE_DIRS})
+link_directories(${BIDIB_LIBRARY_DIRS})
+
+pkg_check_modules(ONION onion REQUIRED)
+include_directories(${ONION_INCLUDE_DIRS})
+link_directories(${ONION_LIBRARY_DIRS})
 
 IF (APPLE)
-	set(LIBRARY_DIR /usr/local/Cellar)
+	pkg_check_modules(LIBGCRYPT libgcrypt REQUIRED)
+	include_directories(${LIBGCRYPT_INCLUDE_DIRS})
+	link_directories(${LIBGCRYPT_LIBRARY_DIRS})
 
-	# Manually add the include and library directories for libgcrypt
-	include_directories(${LIBRARY_DIR}/libgcrypt/1.10.1/include)
-	link_directories(${LIBRARY_DIR}/libgcrypt/1.10.1/lib)
-
-	# Manually add the include and library directories for yaml
-	include_directories(${LIBRARY_DIR}/libyaml/0.2.5/include)
-	link_directories(${LIBRARY_DIR}/libyaml/0.2.5/lib)
+	pkg_check_modules(YAML yaml-0.1 REQUIRED)
+	include_directories(${YAML_INCLUDE_DIRS})
+	link_directories(${YAML_LIBRARY_DIRS})
 
 	# Manually add the include and library directories for libev
 	set(LINK_EV ev)
-	include_directories(${LIBRARY_DIR}/libev/4.33/include)
-	link_directories(${LIBRARY_DIR}/libev/4.33/lib)
-	
-	# Manually add the include and library directories for onion
-	set(LIBRARY_DIR /Users/eugeneyip/Documents/SWTbahn/Software)
-	include_directories(${LIBRARY_DIR}/onion/src)
-	link_directories(${LIBRARY_DIR}/onion/bin/src/onion)
-
-	set(LIBONION_DIR ${LIBRARY_DIR}/onion)
-	add_library(onion_static STATIC IMPORTED)
-	set_target_properties(onion_static PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-		${LIBONION_DIR}/src)
-	set_target_properties(onion_static PROPERTIES IMPORTED_LOCATION
-		${LIBONION_DIR}/bin/src/onion/libonion_static${CMAKE_STATIC_LIBRARY_SUFFIX})
-
-	add_library(onion SHARED IMPORTED)
-	set_target_properties(onion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-		${LIBONION_DIR}/src)
-	set_target_properties(onion PROPERTIES IMPORTED_LOCATION
-		${LIBONION_DIR}/bin/src/onion/libonion${CMAKE_SHARED_LIBRARY_SUFFIX})
-	
-
-ELSE ()
-	pkg_check_modules(libonion REQUIRED IMPORTED_TARGET onion)
-	pkg_check_modules(libonion_static REQUIRED IMPORTED_TARGET onion_static)
-	include_directories(${LIBONION_INCLUDE_DIRS})
-
+	set(LIB_EV_DIR /usr/local/Cellar/libev/4.33)
+	include_directories(${LIB_EV_DIR}/include)
+	link_directories(${LIB_EV_DIR}/lib)
 ENDIF (APPLE)
 
 file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
@@ -71,6 +49,9 @@ file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines;${CMAKE_CURRENT_BINARY_DIR}/interlockers")
 
 
+# - - - - - - - - - - - - -
+ # ADJUSTMENT SECTION BEGIN
+ # - - - - - - - - - - - - -
 
 set(FOREC_MAIN dyn_containers)
 set(FOREC_SRC ${CMAKE_SOURCE_DIR}/src)
@@ -93,10 +74,10 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/interlockers"
 )
 
-
 # - - - - - - - - - - - - -
 # ADJUSTMENT SECTION END
 # - - - - - - - - - - - - -
+
 
 add_library(${FOREC_MAIN} SHARED ${SRCFILES} ${FOREC_MAIN}.c)
 target_include_directories(${FOREC_MAIN} PRIVATE src)

@@ -72,6 +72,31 @@ static void type_none(void **state) {
 	assert_false(signal_type);
 }
 
+static void main_segments(void **state) {
+	char *segments[1024];
+	int count = config_get_array_string_value("block", "block14", "main_segments", segments);
+	assert_non_null(segments);
+	assert_int_equal(1, count);
+	assert_string_equal("seg63", segments[0]);
+
+	count = config_get_array_string_value("block", "block19", "main_segments", segments);
+	assert_non_null(segments);
+	assert_int_equal(2, count);
+	assert_string_equal("seg82a", segments[0]);
+	assert_string_equal("seg82b", segments[1]);
+}
+
+static void overlaps(void **state) {
+	char *overlaps[1024];
+	const int count = config_get_array_string_value("block", "block1", "overlaps", overlaps);
+	
+	assert_non_null(overlaps);
+	assert_int_equal(2, count);
+	assert_string_equal("seg1", overlaps[0]);
+	assert_string_equal("seg3", overlaps[1]);
+}
+
+
 int main(int argc, char **argv) {
 	openlog("swtbahn", 0, LOG_LOCAL0);
 	syslog(LOG_INFO, "server_bahn_util_tests: %s", "Bahn util tests started");
@@ -80,7 +105,9 @@ int main(int argc, char **argv) {
 			cmocka_unit_test(no_parser_errors),
 			cmocka_unit_test(type_segment),
 			cmocka_unit_test(type_signal),
-			cmocka_unit_test(type_none)
+			cmocka_unit_test(type_none),
+			cmocka_unit_test(main_segments),
+			cmocka_unit_test(overlaps)
 	};
 	
 	test_setup();

@@ -4,7 +4,7 @@
 <head>
     <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
 
@@ -87,9 +87,45 @@
     <label>to</label>
     <input type="text" id=signalIdTo value="signal" />
     <button id=requestRouteButton>Request</button>
-    <button id=driveRouteButton>Drive Route</button>
+    <button id=automaticDriveRouteButton>Automatic Drive Route</button>
+    <button id=manualDriveRouteButton>Manual Drive Route</button>
     <span id=routeResponse></span>
     <br />
+    <br />
+    
+    <label>Grabbed statuses:</label>
+    <ul>
+        <li>
+            cargo_db 
+            <input type="text" id=dccSpeed_cargo_db /> 
+            <button id=driveTrainButton_cargo_db>Drive</button> 
+            <button id=releaseTrainButton_cargo_db>Release</button>
+        </li>
+        <li>
+            cargo_green 
+            <input type="text" id=dccSpeed_cargo_green /> 
+            <button id=driveTrainButton_cargo_green>Drive</button> 
+            <button id=releaseTrainButton_cargo_green>Release</button>
+        <li>
+            cargo_bayern 
+            <input type="text" id=dccSpeed_cargo_bayern /> 
+            <button id=driveTrainButton_cargo_bayern>Drive</button> 
+            <button id=releaseTrainButton_cargo_bayern>Release</button>
+        </li>
+        <li>
+            regional_odeg 
+            <input type="text" id=dccSpeed_regional_odeg /> 
+            <button id=driveTrainButton_regional_odeg>Drive</button> 
+            <button id=releaseTrainButton_regional_odeg>Release</button>
+        </li>
+        <li>
+            regional_brengdirect
+            <input type="text" id=dccSpeed_regional_brengdirec t/> 
+            <button id=driveTrainButton_regional_brengdirect>Drive</button> 
+            <button id=releaseTrainButton_regional_brengdirect>Release</button>
+        </li>
+    </ul>
+    
     <br />
         
 
@@ -242,6 +278,10 @@
     <br />
     <br />
     
+    <label>Granted routes:</label>
+    <ul id=grantedRoutes></ul>
+    
+    <br />
 
     <h1>Custom Engines and Interlockers</h1>
     
@@ -277,7 +317,7 @@
     <br />
     
     <label>Interlocker in use:</label>
-	<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
+    <span id="interlockerInUse">libinterlocker_default (unremovable)</span>
     <br />
     <br />
 </body>

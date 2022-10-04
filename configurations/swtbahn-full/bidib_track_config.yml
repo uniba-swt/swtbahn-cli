@@ -131,6 +131,9 @@ boards:
       - id: seg91a
         address: 0x2f
         length: 76.0cm
+    reversers:
+      - id: reverser
+        cv: 30051
   - id: slave
     segments:
       - id: seg8

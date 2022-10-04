@@ -160,7 +160,7 @@ $(document).ready(
 			}
 		});
 
-		speeds = [
+		const speeds = [
 			"0",
 			"10",
 			"20",
@@ -372,9 +372,7 @@ $(document).ready(
 			});
 		} */
 
-		$('#driveRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').val();
+		function driveRoute(routeId, mode) {
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -388,7 +386,12 @@ $(document).ready(
 					type: 'POST',
 					url: '/driver/drive-route',
 					crossDomain: true,
-					data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
+					data: { 
+						'session-id': sessionId, 
+						'grab-id': grabId, 
+						'route-id': routeId,
+						'mode': mode
+					},
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$('#routeResponse').text(responseData);
@@ -408,8 +411,20 @@ $(document).ready(
 				$('#routeResponse').parent().addClass('alert-danger');
 				$('#routeResponse').text('You must have a grabbed train!');
 			}
+		}
+
+		$('#automaticDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "automatic");
 		});
 
+		$('#manualDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "manual");
+		});
+		
 
 		// Custom Engines
 		$('#uploadEngineButton').click(function () {
@@ -517,6 +532,97 @@ $(document).ready(
 			});
 		});
 
+
+		// Admin control of grabbed trains and train speed
+
+		function updateTrainGrabbedState() {
+			return $.ajax({
+				type: 'POST',
+				url: '/monitor/trains',
+				crossDomain: true,
+				data: null,
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					const trains = responseData.split(/\r?\n|\r|\n/g);
+					trains.forEach((train) => {
+						const trainId = train.match(/^\w+_\w+/g)[0];
+						const isGrabbed = train.includes('yes');
+						
+						if (isGrabbed) {
+							$(`#releaseTrainButton_${trainId}`).show();
+						} else {
+							$(`#releaseTrainButton_${trainId}`).hide();
+						}
+					});
+				},
+				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+				}
+			});
+		}
+
+		const trainStatusTimeout = 500;
+		const trainStatusInterval = setInterval(() => {
+			updateTrainGrabbedState();
+		}, trainStatusTimeout);
+
+		function adminSetTrainSpeed(trainId, speed) {
+			return $.ajax({
+				type: 'POST',
+				url: '/admin/set-dcc-train-speed',
+				crossDomain: true,
+				data: {
+					'train': trainId,
+					'speed': speed,
+					'track-output': trackOutput
+				},
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					// Do nothing
+				},
+				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+				}
+			});
+		}
+		
+		function adminReleaseTrain(trainId) {
+			return $.ajax({
+				type: 'POST',
+				url: '/admin/release-train',
+				crossDomain: true,
+				data: {
+					'train': trainId
+				},
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					// Do nothing
+				},
+				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+				}
+			});
+		}
+
+		const trainIds = [
+			'cargo_db',
+			'cargo_green',
+			'cargo_bayern',
+			'regional_odeg',
+			'regional_brengdirect'
+		];
+		
+		trainIds.forEach((trainId) => {
+			$(`#driveTrainButton_${trainId}`).click(function () {
+				const speed = $(`#dccSpeed_${trainId}`).val();
+				adminSetTrainSpeed(trainId, speed);
+			});
+			
+			$(`#releaseTrainButton_${trainId}`).click(function () {
+				adminReleaseTrain(trainId);
+			});
+		});
+		
 
 		// Controller
 		
@@ -843,6 +949,54 @@ $(document).ready(
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
 
+
+		// Admin control of granted routes
+		
+		function adminReleaseRoute(routeId) {
+			$('#routeId').val(routeId);
+			$('#releaseRouteButton').click();
+		}
+		
+		function updateGrantedRoutes(htmlElement) {
+			return $.ajax({
+				type: 'POST',
+				url: '/monitor/granted-routes',
+				crossDomain: true,
+				data: null,
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					htmlElement.empty();
+					
+					if (responseData.includes('No granted routes')) {
+						htmlElement.html('<li>No granted routes</li>');
+						return;
+					}			
+					
+					const routes = responseData.split(/\r?\n|\r|\n/g);
+					routes.forEach((route) => {
+						const routeId = route.match(/\d+/g)[0];
+						const trainId = route.match(/\w+_\w+$/g)[0];
+						
+						const routeText = `route ${routeId} granted to ${trainId}`;
+						const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
+						htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
+					});
+					
+					$('.grantedRoute').click(function (event) {
+						adminReleaseRoute(event.currentTarget.value);
+					});
+				},
+				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+				}
+			});
+		}
+		
+		const grantedRoutesTimeout = 500;
+		const grantedRoutesInterval = setInterval(() => {
+			updateGrantedRoutes($('#grantedRoutes'));
+		}, grantedRoutesTimeout);
+		
 	}
 );
 

@@ -41,7 +41,7 @@ typedef struct {
 } t_interlocker_data;
 
 
-void free_all_interlockers(void);
+void release_all_interlockers(void);
 
 /**
  * Loads the default interlocker
@@ -50,7 +50,25 @@ void free_all_interlockers(void);
 const int load_default_interlocker_instance();
 
 /**
-  * Finds and grants a requested train route.
+ * Finds conflicting routes that have been granted.
+ * 
+ * @param ID of route for which conflicts should be checked
+ * @return GArray of granted route conflicts
+ */
+GArray *get_granted_route_conflicts(const char *route_id);
+
+/**
+ * Determines whether a route is physically ready for use:
+ * All route signals are in the Stop aspect and all blocks 
+ * are unoccupied.
+ * 
+ * @param ID of route for which clearance should be checked
+ * @return true if clear, otherwise false
+ */
+const bool get_route_is_clear(const char *route_id);
+
+/**
+  * Finds and grants a requested train route using an external algorithm.
   * A requested route is defined by a pair of source and destination signals. 
   * 
   * @param name of requesting train
@@ -62,7 +80,31 @@ GString *grant_route(const char *train_id,
                      const char *source_id, 
                      const char *destination_id);
 
+/**
+  * Grants a requested train route using an internal algorithm.
+  * 
+  * @param name of requesting train
+  * @param ID of the requested route
+  * @return short description of grant success or error
+  */ 
+const char *grant_route_id(const char *train_id, 
+                           const char *route_id);
+
+/**
+  * Releases the requested route id.
+  * 
+  * @param ID of the requested route
+  */ 
 void release_route(const char *route_id);
+
+/**
+ * Requests the reverser state to be updated and waits
+ * for the update to complete. The waiting is bounded by 
+ * a maximum number of retries.
+ * 
+ * @return true if the update was successful, otherwise false
+ */
+const bool reversers_state_update(void);
 
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                               onion_response *res);

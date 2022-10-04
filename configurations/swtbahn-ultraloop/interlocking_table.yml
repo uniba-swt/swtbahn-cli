@@ -6,37 +6,37 @@ interlocking-table:
     orientation: clockwise
     path:
       # point4.reverse -> block1
+      - id: seg17
       - id: seg29
       - id: seg30
     sections:
       - id: block1
-    length: 0.00cm
+    length: 1.00cm
     signals:
       - id: signal5
       - id: signal4
     points:
-      - id: point4
+      - id: point2
         position: reverse
     conflicts:
       - id: 1
   - id: 1 #route1
-    source: signal6
-    destination: signal7
+    source: signal3a
+    destination: signal6
     orientation: anticlockwise
     path:
-      # point4.reverse -> block3
+      # block -> point4.reverse
       - id: seg29
       - id: seg17
       - id: seg18
-      - id: seg19
     sections:
-      - id: block3
-    length: 0.00cm
+      - id: block1
+    length: 2.00cm
     signals:
+      - id: signal3a
       - id: signal6
-      - id: signal7
     points:
-      - id: point4
+      - id: point2
         position: reverse
     conflicts:
       - id: 0
