@@ -28,10 +28,6 @@ function unpackRoute(route) {
 	return null;
 }
 
-// Style classes for the destination buttons
-const destinationDisabledButtonStyle = 'btn-outline-secondary';
-const destinationEnabledButtonStyle = 'btn-dark';
-
 function disableAllDestinationButtons() {
 	driver.clearUpdatePossibleDestinationsInterval();
 
@@ -39,8 +35,6 @@ function disableAllDestinationButtons() {
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
 		$(`#${destinationNamePrefix}${i}`).val("");
 		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
-		$(`#${destinationNamePrefix}${i}`).removeClass(destinationEnabledButtonStyle);
-		$(`#${destinationNamePrefix}${i}`).addClass(destinationDisabledButtonStyle);
 		$(`#${destinationNamePrefix}${i}`)[0].setAttribute("class", "flagThemeBlank");
 		$(`#${destinationNamePrefix}${i}`).empty();
 	}
@@ -70,11 +64,13 @@ function setDestinationButton(choice, route) {
 function setDestinationButtonAvailable(choice, route) {
 	setDestinationButton(choice, route);
 	$(`#${destinationNamePrefix}${choice}`).prop('disabled', false);
+	$(`#${destinationNamePrefix}${choice}`).removeClass("flagThemeDisabled");
 }
 
 function setDestinationButtonUnavailable(choice, route) {
 	setDestinationButton(choice, route);
 	$(`#${destinationNamePrefix}${choice}`).prop('disabled', true);
+	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
 }
 
 // Periodically update the availability of a blocks possible destinations.
@@ -165,7 +161,6 @@ function disableSpeedButtons() {
 }
 
 function enableSpeedButtons(destination) {
-	console.log(destination);
 	if (isNaN(destination[-1])){
 		destination = destination.substring(0, destination.length - 1);
 	}
