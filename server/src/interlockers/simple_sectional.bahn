@@ -55,13 +55,13 @@ def route_is_grantable(string route_id, string train_id): bool
         # the conflicting route. If the conflicting route has
         # not been granted, the train ID would be empty
         string conflict_train_id = get config route.train conflict_id
+        
         # Route ID is not grantable if a conflicting route 
         # has already been granted to a train
         if conflict_train_id != ""
-        	# Check if route_id is grantable under 
+        	# Check whether route_id is grantable under the
         	# sectional route release strategy 
-            bool check_res = sectional_check_route_is_okay(route_id, conflict_id)
-            if check_res == false
+            if !is_sectional_route_okay(route_id, conflict_id)
                 return false
             end
         end
@@ -74,43 +74,42 @@ end
 # For requested route requested_route_id and already granted route granted_route_id,
 # performs sectional interlocking check.
 # Returns true if requested_route_id is good-to-grant, otherwise returns false. 
-def sectional_check_route_is_okay(string requested_route_id, string granted_route_id) : bool
-	# First need to determine the intersection of the segments 
-	# in the path of the two routes.
+def is_sectional_route_okay(string requested_route_id, string granted_route_id) : bool
+	# 1. Determine the segments where the two routes intersect.
     string requested_path[] = get config route.path requested_route_id
     string granted_path[] = get config route.path granted_route_id
+    
     for string requested_item in requested_path
-        bool requested_item_is_seg = is requested_item a_segment
-        # Check for matching segment IDs between requested and granted path
-        if requested_item_is_seg
+        # Check for matching segment IDs between the requested and granted paths
+        if (is requested_item a_segment)
             for string granted_item in granted_path
                 if requested_item == granted_item
                     # Matching segments -> critical section
-                    # Check if any signals guarding entry to the critical section
+                    # Check whether any signals guarding entry into the critical section
                     # are in aspect GO or SHUNT. If so, return false.
-                    bool any_active_guards = check_entry_signals_is_go_or_shunt_brute_force(requested_item)
-                    if any_active_guards
+                    if is_entry_signals_go_or_shunt_brute_force(requested_item)
                         return false
                     end
-                    # Check if any segment between the critical section and the
-                    # last signal in route_id2-path before the critical section
-                    # is occupied. If so, return false.
-                    bool has_occupied_seg = check_occupancy_from_preceding_signal_to(granted_item, granted_route_id)
-                    if has_occupied_seg
+                    
+                    # In the path of granted_route_id, check whether any segments between
+                    # the critical section and the signal before the critical section 
+                    # are occupied. If so, return false.
+                    if is_occupied_from_preceding_signal_to(granted_item, granted_route_id)
                         return false
                     end
                 end
             end
         end
     end
+    
     return true
 end
 
 
-# Checks if any segment between the segment element_id and the
-# last signal in route_id-path before element_id is occupied. 
+# In the given route ID, checks whether any segment between the 
+# seg_id and the signal preceding seg_id is occupied. 
 # If so, returns false. Otherwise returns true.
-def check_occupancy_from_preceding_signal_to(string seg_id, string route_id): bool
+def is_occupied_from_preceding_signal_to(string seg_id, string route_id): bool
     if route_id == "" || seg_id == ""
         return false
     end
@@ -160,9 +159,10 @@ def check_occupancy_from_preceding_signal_to(string seg_id, string route_id): bo
     return false
 end
 
+
 # For a given segment, determines if any signals guarding entry
 # to it are in aspect GO or SHUNT. If so, returns true. Else returns false.
-def check_entry_signals_is_go_or_shunt_brute_force(string seg_id) : bool
+def is_entry_signals_go_or_shunt_brute_force(string seg_id) : bool
 	# Initialise string array. Not sure if the empty elements are necessary, as the size seems
 	# to always be set to 1024 internally when translated to SCTX and C. 
 	# But not taking any chances, so init with longest+1 empty strings. 
@@ -348,8 +348,6 @@ def check_entry_signals_is_go_or_shunt_brute_force(string seg_id) : bool
 end
 
 
-
-
 # Returns whether route ID is physically ready for use:
 # All route signals are in Stop aspect, all possible entries
 # into the route are protected by signals in the Stop aspect,
@@ -456,5 +454,4 @@ def drive_route(string route_id, string train_id, string segment_ids[])
         end
     end
 end
-
 
