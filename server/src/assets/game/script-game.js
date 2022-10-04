@@ -733,14 +733,8 @@ function initialise() {
 	});
 }
 
-/*function debugDestinationFlags() {
-    $('#trainSelection').hide();
-	$('#destinationsForm').show();
-}*/
-
 $(document).ready(() => {
 	initialise();
-//	debugDestinationFlags();
 });
 
 /*************************************
