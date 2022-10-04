@@ -1,4 +1,4 @@
-{
+const signalFlagMapSwtbahnFull = {
     "signal4": "flagThemeBlack flagOutline flagOne",
     "signal18": "flagThemeBlack flagOutline flagTwo",
     "signal51": "flagThemeBlack flagOutline flagThree",
@@ -39,4 +39,4 @@
     "signal31": "flagThemeRed flagOutline flagThree",
     "signal29": "flagThemeRed flagOutline flagFour",
     "signal27": "flagThemeRed flagOutline flagFive"
-}
+};
