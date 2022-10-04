@@ -1,254 +1,38 @@
 {
-    "signal4": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal18": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal51": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal14": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "4",
-        "numberClass": "fourth-face"
-    },
-    "signal5": {
-        "fillColor": "black",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-black",
-        "number": "5",
-        "numberClass": "fifth-face"
-    },
-    "signal49": {
-        "fillColor": "white",
-        "backgroundColor": "black",
-        "cssClassForColor": "bg-black-white",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal47": {
-        "fillColor": "white",
-        "backgroundColor": "black",
-        "cssClassForColor": "bg-black-white",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal45": {
-        "fillColor": "white",
-        "backgroundColor": "black",
-        "cssClassForColor": "bg-black-white",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal28": {
-        "fillColor": "white",
-        "backgroundColor": "red",
-        "cssClassForColor": "bg-red-white",
-        "number": "4",
-        "numberClass": "fourth-face"
-    },
-    "signal43": {
-        "fillColor": "white",
-        "backgroundColor": "black",
-        "cssClassForColor": "bg-black-white",
-        "number": "5",
-        "numberClass": "fifth-face"
-    },
-    "signal21": {
-        "fillColor": "white",
-        "backgroundColor": "black",
-        "cssClassForColor": "bg-black-white",
-        "number": "6",
-        "numberClass": "sixth-face"
-    },
-    "signal50": {
-        "fillColor": "white",
-        "backgroundColor": "blue",
-        "cssClassForColor": "bg-blue-white",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal48": {
-        "fillColor": "white",
-        "backgroundColor": "blue",
-        "cssClassForColor": "bg-blue-white",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal44": {
-        "fillColor": "white",
-        "backgroundColor": "blue",
-        "cssClassForColor": "bg-blue-white",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal46": {
-        "fillColor": "white",
-        "backgroundColor": "blue",
-        "cssClassForColor": "bg-blue-white",
-        "number": "4",
-        "numberClass": "fourth-face"
-    },
-    "signal22": {
-        "fillColor": "white",
-        "backgroundColor": "blue",
-        "cssClassForColor": "bg-blue-white",
-        "number": "5",
-        "numberClass": "fifth-face"
-    },
-    "signal35": {
-        "fillColor": "blue",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-blue",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal53": {
-        "fillColor": "blue",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-blue",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal7": {
-        "fillColor": "blue",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-blue",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal36": {
-        "fillColor": "blue",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-blue",
-        "number": "4",
-        "numberClass": "fourth-face"
-    },
-    "signal23": {
-        "fillColor": "red",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-red",
-        "number": "5",
-        "numberClass": "fifth-face"
-    },
-    "signal8": {
-        "fillColor": "blue",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-blue",
-        "number": "6",
-        "numberClass": "sixth-face"
-    },
-    "signal42": {
-        "fillColor": "green",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-green",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal40": {
-        "fillColor": "green",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-green",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal37": {
-        "fillColor": "green",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-green",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal9": {
-        "fillColor": "green",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-green",
-        "number": "5",
-        "numberClass": "fifth-face"
-    },
-    "signal41": {
-        "fillColor": "white",
-        "backgroundColor": "green",
-        "cssClassForColor": "bg-green-white",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal34": {
-        "fillColor": "white",
-        "backgroundColor": "green",
-        "cssClassForColor": "bg-green-white",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal11": {
-        "fillColor": "white",
-        "backgroundColor": "green",
-        "cssClassForColor": "bg-green-white",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal32": {
-        "fillColor": "white",
-        "backgroundColor": "red",
-        "cssClassForColor": "bg-red-white",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal24": {
-        "fillColor": "red",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-red",
-        "number": "4",
-        "numberClass": "fourth-face"
-    },
-    "signal30": {
-        "fillColor": "white",
-        "backgroundColor": "red",
-        "cssClassForColor": "bg-red-white",
-        "number": "3",
-        "numberClass": "third-face"
-    },
-    "signal1": {
-        "fillColor": "white",
-        "backgroundColor": "red",
-        "cssClassForColor": "bg-red-white",
-        "number": "5",
-        "numberClass": "fifth-face"
-    },
-    "signal26": {
-        "fillColor": "red",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-red",
-        "number": "1",
-        "numberClass": "one-face"
-    },
-    "signal15": {
-        "fillColor": "red",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-red",
-        "number": "2",
-        "numberClass": "second-face"
-    },
-    "signal31": {
-        "fillColor": "red",
-        "backgroundColor": "white",
-        "cssClassForColor": "bg-white-red",
-        "number": "3",
-        "numberClass": "third-face"
-    }
+    "signal4": "flagThemeBlack flagOutline flagOne",
+    "signal18": "flagThemeBlack flagOutline flagTwo",
+    "signal51": "flagThemeBlack flagOutline flagThree",
+    "signal14": "flagThemeBlack flagOutline flagFour",
+    "signal5": "flagThemeBlack flagOutline flagFive",
+    "signal49": "flagThemeBlack flagFilled flagOne",
+    "signal47": "flagThemeBlack flagFilled flagTwo",
+    "signal45": "flagThemeBlack flagFilled flagThree",
+    "signal28": "flagThemeRed flagFilled flagFour",
+    "signal43": "flagThemeBlack flagFilled flagFive",
+    "signal21": "flagThemeBlack flagFilled flagSix",
+    "signal50": "flagThemeBlue flagFilled flagOne",
+    "signal48": "flagThemeBlue flagFilled flagTwo",
+    "signal44": "flagThemeBlue flagFilled flagThree",
+    "signal46": "flagThemeBlue flagFilled flagFour",
+    "signal22": "flagThemeBlue flagFilled flagFive",
+    "signal35": "flagThemeBlue flagOutline flagOne",
+    "signal53": "flagThemeBlue flagOutline flagTwo",
+    "signal7": "flagThemeBlue flagOutline flagThree",
+    "signal36": "flagThemeBlue flagOutline flagFour",
+    "signal23": "flagThemeRed flagOutline flagFive",
+    "signal8": "flagThemeBlue flagOutline flagSix",
+    "signal42": "flagThemeGreen flagOutline flagOne",
+    "signal40": "flagThemeGreen flagOutline flagTwo",
+    "signal37": "flagThemeGreen flagOutline flagThree",
+    "signal9": "flagThemeGreen flagOutline flagFive",
+    "signal41": "flagThemeGreen flagFilled flagOne",
+    "signal34": "flagThemeGreen flagFilled flagTwo",
+    "signal11": "flagThemeGreen flagFilled flagThree",
+    "signal32": "flagThemeRed flagFilled flagOne",
+    "signal24": "flagThemeRed flagOutline flagFour",
+    "signal30": "flagThemeRed flagFilled flagThree",
+    "signal1": "flagThemeRed flagFilled flagFive",
+    "signal26": "flagThemeRed flagOutline flagOne",
+    "signal15": "flagThemeRed flagOutline flagTwo",
+    "signal31": "flagThemeRed flagOutline flagThree"
 }

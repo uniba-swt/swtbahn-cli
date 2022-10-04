@@ -2,18 +2,7 @@ import json
 import csv
 
 def numberToWord(number):
-    if number == 1:
-        return "one"
-    elif number == 2:
-        return "second"
-    elif number == 3:
-        return "third"
-    elif number == 4:
-        return "fourth"
-    elif number == 5:
-        return "fifth"
-    elif number == 6:
-        return "sixth"
+    return ["Zero", "One", "Two", "Three", "Four", "Five", "Six"][int(number)]
 
 # Load Match to Signal into File
 with open("SignalToFlag.csv", "r") as f:
@@ -22,37 +11,35 @@ with open("SignalToFlag.csv", "r") as f:
     for row in reader:
         signal = row[0]
         colorDefinition = row[1]
-        backgroundColor = None
-        fillColor = "white"
-        borderColor = None
-        print(colorDefinition)
         number = colorDefinition[-1]
+
+        endString = "flagTheme"
+
         if colorDefinition[0] == "b":
-            backgroundColor = "blue"
-            borderColor = "blue"
+            color = "Blue"
         elif colorDefinition[0] == "g":
-            backgroundColor = "green"
-            borderColor = "green"
+            color = "Green"
         elif colorDefinition[0] == "r":
-            backgroundColor = "red"
-            borderColor = "red"
+            color = "Red"
         elif colorDefinition[0] == "s":
-            backgroundColor = "black"
-            borderColor = "black"
+            color = "Black"
+
+        endString = endString + color + " "
+
+
         if colorDefinition[1] == "w":
-            fillColor = backgroundColor
-            backgroundColor = "white"
+            endString = endString + "flagOutline "
+        else:
+            endString = endString + "flagFilled "
+
 
         if number == 6:
             number = 0
 
+        endString = endString + "flag" + numberToWord(number)
+        print(endString)
         signalName = "signal{}".format(str(signal))
-        jsonString[signalName] = {}
-        jsonString[signalName]["fillColor"] = fillColor
-        jsonString[signalName]["backgroundColor"] = backgroundColor
-        jsonString[signalName]["cssClassForColor"] = "bg-{}-{}".format(backgroundColor, fillColor)
-        jsonString[signalName]["number"] = number
-        jsonString[signalName]["numberClass"] = "{}-face".format(numberToWord(int(number)))
+        jsonString[signalName] = endString
 
     with open("SignalFlag.json", "w") as file:
         jsonString = json.dumps(jsonString, indent=4)
