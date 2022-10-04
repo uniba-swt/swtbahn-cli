@@ -1,4 +1,4 @@
-var driver = null;           // Train driver logic.
+  var driver = null;           // Train driver logic.
 var serverAddress = ""; //= "http://141.13.32.44:8080"; // The address of the server.
 
 
@@ -167,7 +167,7 @@ function disableSpeedButtons() {
 function enableSpeedButtons(destination) {
 	console.log(destination);
 	if (isNaN(destination[-1])){
-		destination = destination.substring(0, destination.length() - 1);
+		destination = destination.substring(0, destination.length - 1);
 	}
 	$('#destination')[0].setAttribute("class", signalToFlagFull[destination]);
 	$('#speedForm').show();
