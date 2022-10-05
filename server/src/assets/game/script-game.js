@@ -617,7 +617,7 @@ function startGameLogic() {
 
 // Update the user interface for driving when the user decides to release their train
 function endGameLogic() {
-	$('#endGameButton').hide();
+	$('#endGameButtonBox').hide();
 	$('#destinationsForm').hide();
 	driver.clearUpdatePossibleDestinationsInterval();
 	driver.clearDestinationReachedInterval();
@@ -657,7 +657,7 @@ function initialise() {
 	//-----------------------------------------------------
 
 	// Hide the train driving buttons (destination selections)
-	$('#endGameButton').hide();
+	$('#endGameButtonBox').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
 	disableReachedDestinationButton();
@@ -704,7 +704,7 @@ function initialise() {
 		speedButton.click(function () {
 			driver.setTrainSpeedPromise(speedButton.val());
 			if (!driver.endGameButtonIsPersistent) {
-				$('#endGameButton').hide();
+				$('#endGameButtonBox').hide();
 
 				// The page cannot be refreshed without ill consequences.
 				// The train might not stop sensibly on the main segment of the destination
@@ -713,7 +713,7 @@ function initialise() {
 		});
 	});
 
-	$('#endGameButton').click(function () {
+	$('#endGameButtonBox').click(function () {
 		if (!driver.hasValidTrainSession) {
 			endGameLogic();
 			return;
