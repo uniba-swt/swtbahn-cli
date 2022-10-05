@@ -612,6 +612,8 @@ function startGameLogic() {
 
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
+		.then(() => $('#endGameButtonPlaceholder').show())
+		.then(() => $('#trainheader').show())
 		.then(() => $('#endGameButton').show())
 		.then(() => driver.updateCurrentBlockPromise())
 		.then(() => updatePossibleDestinations(driver.currentBlock))
@@ -631,7 +633,8 @@ function endGameLogic() {
 	clearChosenDestination();
 
 	$('#trainSelection').show();
-	hideTrainHeader();
+	$('#trainheader').hide();
+	$('#endGameButtonPlaceholder').hide();
 	driver.updateTrainAvailability();
 }
 
