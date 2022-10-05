@@ -59,10 +59,10 @@ function setDestinationButtonUnavailable(choice, route) {
 function showTrainHeader(trainId){
 	console.log(trainId);
 	switch(trainId){
-		case "cargo-db":
+		case "cargo_db":
 			$("#trainheader").prepend("<img class='img-fluid' src='train-cargo-db.jpg'>");
 			break;
-		case "cargo-green":
+		case "cargo_green":
 			$("#trainheader").prepend("<img class='img-fluid' src='train-cargo-green.jpg'>");
 			break;
 		default:
