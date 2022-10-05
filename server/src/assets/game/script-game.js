@@ -56,7 +56,7 @@ function setDestinationButtonUnavailable(choice, route) {
 	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
 }
 
-function showTrainHeader(){
+function showTrainHeader(trainId){
 	switch(trainId){
 		case "cargo-db":
 			$("#trainheader").prepend("<img class='img-fluid' src='train-cargo-db.jpg'>");
@@ -80,7 +80,6 @@ function hideTrainHeader(){
 function updatePossibleDestinations(blockId) {
 	// Show the form that contains all the destination buttons
 	$('#destinationsForm').show();
-	showTrainHeader();
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
@@ -669,6 +668,7 @@ function initialise() {
 	$('.selectTrainButton').click(function (event) {
 		let trainId = event.currentTarget.id;
 		driver.trainId = trainId;
+		showTrainHeader(trainId);
 		startGameLogic();
 	});
 
