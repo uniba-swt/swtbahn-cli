@@ -60,19 +60,19 @@ function showTrainHeader(trainId){
 	console.log(trainId);
 	switch(trainId){
 		case "cargo_db":
-			$("#trainheader").appendChild("<img id='trainHeaderView' class='img-fluid' src='train-cargo-db.jpg'>");
+			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-cargo-db.jpg'>");
 			break;
 		case "cargo_green":
-			$("#trainheader").appendChild("<img id='trainHeaderView' class='img-fluid' src='train-cargo-green.jpg'>");
+			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-cargo-green.jpg'>");
 			break;
 		default:
-			$("#trainheader").appendChild("<img id='trainHeaderView' class='img-fluid' src='train-regional-odeg.jpg'>");
+			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-regional-odeg.jpg'>");
 			break;
 	}
 }
 
 function hideTrainHeader(){
-	$("#trainheader").removeChild(0);
+	$("#trainheader").removeChild($('#trainHeaderView'));
 }
 
 // Periodically update the availability of a blocks possible destinations.
