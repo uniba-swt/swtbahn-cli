@@ -567,7 +567,6 @@ class Driver {
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
-			.then(() => hideTrainHeader())
 			.then(() => disableAllDestinationButtons())
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => this.setTrainSpeedPromise(0))
@@ -632,6 +631,7 @@ function endGameLogic() {
 	clearChosenDestination();
 
 	$('#trainSelection').show();
+	$('#trainheader').hide();
 	driver.updateTrainAvailability();
 }
 
@@ -734,6 +734,7 @@ function initialise() {
 		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 	});
 }
+
 
 $(document).ready(() => {
 	initialise();
