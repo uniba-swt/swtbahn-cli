@@ -57,7 +57,7 @@ function setDestinationButtonUnavailable(choice, route) {
 }
 
 function showTrainHeader(trainId){
-	console.log(trainId);
+	$("#trainheader").empty();
 	switch(trainId){
 		case "cargo_db":
 			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-cargo-db.jpg'>");
@@ -69,10 +69,6 @@ function showTrainHeader(trainId){
 			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-regional-odeg.jpg'>");
 			break;
 	}
-}
-
-function hideTrainHeader(){
-	$("#trainheader").empty();
 }
 
 // Periodically update the availability of a blocks possible destinations.
