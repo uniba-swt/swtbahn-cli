@@ -447,7 +447,7 @@ class Driver {
 					if(segment == this.routeDetails["segment"]) {
 						this.clearDestinationReachedInterval();
 						this.endGameButtonIsPersistent = true;
-						$('#endGameButtonBox').show();
+						$('#endGameButton').show();
 						$('#destinationReachedForm').show();
 						$('#destinationReached').prop('disabled', false);
 
@@ -609,7 +609,7 @@ function startGameLogic() {
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
 		.then(() => $('#trainheader').show())
-		.then(() => $('#endGameButtonBox').show())
+		.then(() => $('#endGameButton').show())
 		.then(() => driver.updateCurrentBlockPromise())
 		.then(() => updatePossibleDestinations(driver.currentBlock))
 		.always(() => driver.clearTrainAvailabilityInterval());
@@ -617,7 +617,7 @@ function startGameLogic() {
 
 // Update the user interface for driving when the user decides to release their train
 function endGameLogic() {
-	$('#endGameButtonBox').hide();
+	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	driver.clearUpdatePossibleDestinationsInterval();
 	driver.clearDestinationReachedInterval();
@@ -657,7 +657,7 @@ function initialise() {
 	//-----------------------------------------------------
 
 	// Hide the train driving buttons (destination selections)
-	$('#endGameButtonBox').hide();
+	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
 	disableReachedDestinationButton();
@@ -704,7 +704,7 @@ function initialise() {
 		speedButton.click(function () {
 			driver.setTrainSpeedPromise(speedButton.val());
 			if (!driver.endGameButtonIsPersistent) {
-				$('#endGameButtonBox').hide();
+				$('#endGameButton').hide();
 
 				// The page cannot be refreshed without ill consequences.
 				// The train might not stop sensibly on the main segment of the destination
@@ -713,7 +713,7 @@ function initialise() {
 		});
 	});
 
-	$('#endGameButtonBox').click(function () {
+	$('#endGameButton').click(function () {
 		if (!driver.hasValidTrainSession) {
 			endGameLogic();
 			return;
