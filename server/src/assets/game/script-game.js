@@ -57,6 +57,7 @@ function setDestinationButtonUnavailable(choice, route) {
 }
 
 function showTrainHeader(trainId){
+	console.log(trainId);
 	switch(trainId){
 		case "cargo-db":
 			$("#trainheader").prepend("<img class='img-fluid' src='train-cargo-db.jpg'>");
