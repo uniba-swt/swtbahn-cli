@@ -734,14 +734,9 @@ function initialise() {
 		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 	});
 }
-function debugDestinationFlags() {
-    $('#trainSelection').hide();
-	$('#destinationsForm').show();
-}
 
 $(document).ready(() => {
 	initialise();
-	debugDestinationFlags();
 });
 
 /*************************************
