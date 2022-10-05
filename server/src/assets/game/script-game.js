@@ -447,7 +447,7 @@ class Driver {
 					if(segment == this.routeDetails["segment"]) {
 						this.clearDestinationReachedInterval();
 						this.endGameButtonIsPersistent = true;
-						$('#endGameButton').show();
+						$('#endGameButtonBox').show();
 						$('#destinationReachedForm').show();
 						$('#destinationReached').prop('disabled', false);
 
@@ -609,7 +609,7 @@ function startGameLogic() {
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
 		.then(() => $('#trainheader').show())
-		.then(() => $('#endGameButton').show())
+		.then(() => $('#endGameButtonBox').show())
 		.then(() => driver.updateCurrentBlockPromise())
 		.then(() => updatePossibleDestinations(driver.currentBlock))
 		.always(() => driver.clearTrainAvailabilityInterval());
