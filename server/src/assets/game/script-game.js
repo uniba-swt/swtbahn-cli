@@ -56,13 +56,31 @@ function setDestinationButtonUnavailable(choice, route) {
 	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
 }
 
+function showTrainHeader(){
+	switch(trainId){
+		case "cargo-db":
+			$("#trainheader").prepend("<img class='img-fluid' src='train-cargo-db.jpg'>");
+			break;
+		case "cargo-green":
+			$("#trainheader").prepend("<img class='img-fluid' src='train-cargo-green.jpg'>");
+			break;
+		default:
+			$("#trainheader").prepend("<img class='img-fluid' src='train-regional-odeg.jpg'>");
+			break;
+	}
+}
+
+function hideTrainHeader(){
+	$("#trainheader").empty();
+}
+
 // Periodically update the availability of a blocks possible destinations.
 // Update can be stopped by cancelling updatePossibleDestinationsInterval,
 // e.g., when disabling the destination buttons or ending the game.
 function updatePossibleDestinations(blockId) {
 	// Show the form that contains all the destination buttons
 	$('#destinationsForm').show();
-
+	showTrainHeader();
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
@@ -549,6 +567,7 @@ class Driver {
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
+			.then(() => hideTrainHeader())
 			.then(() => disableAllDestinationButtons())
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => this.setTrainSpeedPromise(0))
@@ -715,9 +734,14 @@ function initialise() {
 		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 	});
 }
+function debugDestinationFlags() {
+    $('#trainSelection').hide();
+	$('#destinationsForm').show();
+}
 
 $(document).ready(() => {
 	initialise();
+	debugDestinationFlags();
 });
 
 /*************************************
