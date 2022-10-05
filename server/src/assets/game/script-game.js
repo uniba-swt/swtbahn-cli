@@ -72,7 +72,7 @@ function showTrainHeader(trainId){
 }
 
 function hideTrainHeader(){
-	$("#trainheader").removeChild($('#trainHeaderView'));
+	$("#trainheader").empty();
 }
 
 // Periodically update the availability of a blocks possible destinations.
@@ -631,7 +631,7 @@ function endGameLogic() {
 	clearChosenDestination();
 
 	$('#trainSelection').show();
-	$('#trainheader').hide();
+	hideTrainHeader();
 	driver.updateTrainAvailability();
 }
 
