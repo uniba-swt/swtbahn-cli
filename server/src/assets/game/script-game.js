@@ -57,7 +57,6 @@ function setDestinationButtonUnavailable(choice, route) {
 }
 
 function showTrainHeader(trainId){
-	$('#trainheader')[0]  .setAttribute("style", "");
 	console.log(trainId);
 	switch(trainId){
 		case "cargo_db":
