@@ -3,17 +3,6 @@ body {
   margin: 0 20px;
 }
 
-#swtLogo {
-  background-image: url("swtbahn-logo.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: auto 100px;
-  line-height: 100px;
-  color: #054479;
-  height: 100px;
-  width: 100%;
-}
-
 #trainSelection{
   display: flex;
   flex-direction: row;

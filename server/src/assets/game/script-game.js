@@ -1,5 +1,5 @@
 var driver = null;           // Train driver logic.
-var serverAddress = ""; //= "http://141.13.32.44:8080"; // The address of the server.
+var serverAddress = "";      // The base address of the server.
 
 
 /**************************************************
@@ -56,19 +56,9 @@ function setDestinationButtonUnavailable(choice, route) {
 	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
 }
 
-function showTrainHeader(trainId){
-	$("#trainheader").empty();
-	switch(trainId){
-		case "cargo_db":
-			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-cargo-db.jpg'>");
-			break;
-		case "cargo_green":
-			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-cargo-green.jpg'>");
-			break;
-		default:
-			$("#trainheader").append("<img id='trainHeaderView' class='img-fluid' src='train-regional-odeg.jpg'>");
-			break;
-	}
+function setChosenTrain(trainId) {
+	const imageName = `train-${trainId.replace("_", "-")}.jpg`
+	$("#chosenTrain").attr("src", imageName);
 }
 
 // Periodically update the availability of a blocks possible destinations.
@@ -608,7 +598,7 @@ function startGameLogic() {
 
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
-		.then(() => $('#trainheader').show())
+		.then(() => $('#chosenTrain').show())
 		.then(() => $('#endGameButton').show())
 		.then(() => driver.updateCurrentBlockPromise())
 		.then(() => updatePossibleDestinations(driver.currentBlock))
@@ -628,7 +618,7 @@ function endGameLogic() {
 	clearChosenDestination();
 
 	$('#trainSelection').show();
-	$('#trainheader').hide();
+	$('#chosenTrain').hide();
 	driver.updateTrainAvailability();
 }
 
@@ -666,7 +656,7 @@ function initialise() {
 	$('.selectTrainButton').click(function (event) {
 		let trainId = event.currentTarget.id;
 		driver.trainId = trainId;
-		showTrainHeader(trainId);
+		setChosenTrain(trainId);
 		startGameLogic();
 	});
 
