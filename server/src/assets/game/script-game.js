@@ -634,11 +634,14 @@ function initialise() {
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		null                                      // trainId
 	);
+	
+	// Hide the chosen train.
+	$('#chosenTrain').hide();
 
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
 
-	// Update all train selections
+	// Update all train selections.
 	driver.updateTrainAvailability();
 
 
@@ -646,13 +649,13 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
-	// Hide the train driving buttons (destination selections)
+	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
 	disableReachedDestinationButton();
 
-	// Handle train selection
+	// Handle train selection.
 	$('.selectTrainButton').click(function (event) {
 		let trainId = event.currentTarget.id;
 		driver.trainId = trainId;

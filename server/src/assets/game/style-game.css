@@ -37,9 +37,6 @@ body {
   }
 }
 
-#chosenDestination {
-  height: 100px;
-}
 
 /* Hide the SVG template for the destination flags */
 #svgDef {
@@ -49,6 +46,7 @@ body {
 
 svg.flag {
   width: 20%;
+  height: auto;
   padding-right: 5%;
 }
 
