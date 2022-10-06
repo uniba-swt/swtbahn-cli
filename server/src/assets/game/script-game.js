@@ -1,5 +1,5 @@
 var driver = null;           // Train driver logic.
-var serverAddress = ""; //= "http://141.13.32.44:8080"; // The address of the server.
+var serverAddress = "";      // The base address of the server.
 
 
 /**************************************************
@@ -56,13 +56,17 @@ function setDestinationButtonUnavailable(choice, route) {
 	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
 }
 
+function setChosenTrain(trainId) {
+	const imageName = `train-${trainId.replace("_", "-")}.jpg`
+	$("#chosenTrain").attr("src", imageName);
+}
+
 // Periodically update the availability of a blocks possible destinations.
 // Update can be stopped by cancelling updatePossibleDestinationsInterval,
 // e.g., when disabling the destination buttons or ending the game.
 function updatePossibleDestinations(blockId) {
 	// Show the form that contains all the destination buttons
 	$('#destinationsForm').show();
-
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
@@ -210,6 +214,16 @@ function setResponseSuccess(responseId, message) {
 		$(responseId).parent().removeClass('alert-danger-blink');
 		$(responseId).parent().addClass('alert-success');
 	});
+}
+
+function setModalDanger(modalId, responseId, message) {
+	$(responseId).html(message);
+	let modalElement = document.getElementById(modalId.replace('#', ''));
+	let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+	modal.show();
+
+	// FIXME: Replace with better game sounds.
+	speak('STOP, NEIN, ACHTUNG!');
 }
 
 
@@ -510,7 +524,7 @@ class Driver {
 				} else if (!this.hasRouteGranted) {
 					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 				} else {
-					setResponseDanger('#serverResponse', '👎 You did not stop your train before the destination signal!');
+					setModalDanger('#serverModal', '#serverModalResponse', '👎 You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
@@ -594,6 +608,7 @@ function startGameLogic() {
 
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
+		.then(() => $('#chosenTrain').show())
 		.then(() => $('#endGameButton').show())
 		.then(() => driver.updateCurrentBlockPromise())
 		.then(() => updatePossibleDestinations(driver.currentBlock))
@@ -613,6 +628,7 @@ function endGameLogic() {
 	clearChosenDestination();
 
 	$('#trainSelection').show();
+	$('#chosenTrain').hide();
 	driver.updateTrainAvailability();
 }
 
@@ -628,11 +644,14 @@ function initialise() {
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		null                                      // trainId
 	);
+	
+	// Hide the chosen train.
+	$('#chosenTrain').hide();
 
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
 
-	// Update all train selections
+	// Update all train selections.
 	driver.updateTrainAvailability();
 
 
@@ -640,16 +659,17 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
-	// Hide the train driving buttons (destination selections)
+	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
 	disableReachedDestinationButton();
 
-	// Handle train selection
+	// Handle train selection.
 	$('.selectTrainButton').click(function (event) {
 		let trainId = event.currentTarget.id;
 		driver.trainId = trainId;
+		setChosenTrain(trainId);
 		startGameLogic();
 	});
 
@@ -715,6 +735,7 @@ function initialise() {
 		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 	});
 }
+
 
 $(document).ready(() => {
 	initialise();
