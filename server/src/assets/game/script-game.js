@@ -221,6 +221,9 @@ function setModalDanger(modalId, responseId, message) {
 	let modalElement = document.getElementById(modalId.replace('#', ''));
 	let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 	modal.show();
+
+	// FIXME: Replace with better game sounds.
+	speak('STOP, NEIN, ACHTUNG!');
 }
 
 
