@@ -216,6 +216,13 @@ function setResponseSuccess(responseId, message) {
 	});
 }
 
+function setModalDanger(modalId, responseId, message) {
+	$(responseId).html(message);
+	let modalElement = document.getElementById(modalId.replace('#', ''));
+	let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+	modal.show();
+}
+
 
 /**************************************************
  * Driver class that controls the driving of a
@@ -514,7 +521,7 @@ class Driver {
 				} else if (!this.hasRouteGranted) {
 					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 				} else {
-					setResponseDanger('#serverResponse', '👎 You did not stop your train before the destination signal!');
+					setModalDanger('#serverModal', '#serverModalResponse', '👎 You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
