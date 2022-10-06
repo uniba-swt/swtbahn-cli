@@ -3,7 +3,7 @@ body {
   margin: 0 20px;
 }
 
-#trainSelection{
+#trainSelection {
   display: flex;
   flex-direction: row;
   justify-content: center;
