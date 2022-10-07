@@ -59,8 +59,8 @@ def route_is_grantable(string route_id, string train_id): bool
         # Route ID is not grantable if a conflicting route 
         # has already been granted to a train
         if conflict_train_id != ""
-        	# Check whether route_id is grantable under the
-        	# sectional route release strategy 
+            # Check whether route_id is grantable under the
+            # sectional route release strategy 
             if !is_sectional_route_okay(route_id, conflict_id)
                 return false
             end
@@ -75,7 +75,7 @@ end
 # performs sectional interlocking check.
 # Returns true if requested_route_id is good-to-grant, otherwise returns false. 
 def is_sectional_route_okay(string requested_route_id, string granted_route_id) : bool
-	# 1. Determine the segments where the two routes intersect.
+    # 1. Determine the segments where the two routes intersect.
     string requested_path[] = get config route.path requested_route_id
     string granted_path[] = get config route.path granted_route_id
     
@@ -117,18 +117,17 @@ def is_occupied_from_preceding_signal_to(string seg_id, string route_id): bool
     string route_path[] = get config route.path route_id
     int seg_id_occurrences_counter = 0
     int seg_id_index_in_path = 0
-    int loop_counter = 0
+    int current_path_index = 0
     int preceding_signal_index_in_path = 0
-    for string path_item in route_path
+    for string path_item in route_path0
         if path_item == seg_id
             seg_id_occurrences_counter = seg_id_occurrences_counter + 1
-            seg_id_index_in_path = loop_counter
+            seg_id_index_in_path = current_path_index
         end
-        bool path_item_is_signal = is path_item a_signal 
-        if path_item_is_signal && seg_id_index_in_path == 0
-            preceding_signal_index_in_path = loop_counter
+        if (is path_item a_signal) && seg_id_index_in_path == 0
+            preceding_signal_index_in_path = current_path_index
         end
-        loop_counter = loop_counter + 1
+        current_path_index = current_path_index + 1
     end
     # if seg_id_occurrences_counter is == 0, seg_id did not occur in the route.
     # if seg_id_occurrences_counter is > 1, seg_id appeared twice 
@@ -142,19 +141,17 @@ def is_occupied_from_preceding_signal_to(string seg_id, string route_id): bool
         # If seg_id does not occur, no entry signal to its section can be GO or SHUNT. 
         return false
     end
-    int loop_counter_2 = 0
+    int current_path_index_2 = 0
     for string path_item_2 in route_path
         # If path items between the most recent signal before intersection
         # and occurrence of intersection 
-        if loop_counter_2 > preceding_signal_index_in_path && loop_counter_2 <= seg_id_index_in_path
+        if current_path_index_2 > preceding_signal_index_in_path && current_path_index_2 <= seg_id_index_in_path
             # check for occupancy
-            bool path_item_is_seg = is path_item_2 a_segment
-            bool path_item_is_occupied = is path_item_2 occupied
-            if path_item_is_seg && path_item_is_occupied
+            if (is path_item_2 a_segment) && (is path_item_2 occupied)
                 return true
             end
         end
-        loop_counter_2 = loop_counter_2 + 1
+        current_path_index_2 = current_path_index_2 + 1
     end
     return false
 end
@@ -163,11 +160,11 @@ end
 # For a given segment, determines if any signals guarding entry
 # to it are in aspect GO or SHUNT. If so, returns true. Else returns false.
 def is_entry_signals_go_or_shunt_brute_force(string seg_id) : bool
-	# Initialise string array. Not sure if the empty elements are necessary, as the size seems
-	# to always be set to 1024 internally when translated to SCTX and C. 
-	# But not taking any chances, so init with longest+1 empty strings. 
-	string guarding_signals[] = {"","","","","","","","","","","","","",""}
-	if seg_id == "seg1" || seg_id == "seg2" || seg_id == "seg3" # block 1
+    # Initialise string array. Not sure if the empty elements are necessary, as the size seems
+    # to always be set to 1024 internally when translated to SCTX and C. 
+    # But not taking any chances, so init with longest+1 empty strings. 
+    string guarding_signals[] = {"","","","","","","","","","","","","",""}
+    if seg_id == "seg1" || seg_id == "seg2" || seg_id == "seg3" # block 1
         guarding_signals = {"signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41"}
     end
     if seg_id == "seg6" || seg_id == "seg7a" || seg_id == "seg7b" || seg_id == "seg8" # block 2
@@ -335,7 +332,7 @@ def is_entry_signals_go_or_shunt_brute_force(string seg_id) : bool
     end
     # Check length (shouldn't be necessary, but precaution.)
     if guarding_signals.len == 0
-    	return false
+        return false
     end
     # Check the state of all guarding signals.
     for string sig in guarding_signals
@@ -377,9 +374,7 @@ def route_is_clear(string route_id): bool
     # 2. Iterate through the segments and signals
     for string item_id in item_ids
         # 3. If the item is a segment, check whether it is occupied
-        bool is_a_segment = is item_id a_segment
-        bool is_occupied = is item_id occupied
-        if is_a_segment && is_occupied
+        if (is item_id a_segment) && (is item_id occupied)
             return false
         end
     end
