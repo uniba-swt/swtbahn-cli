@@ -2,17 +2,19 @@
 <html lang="en">
 
 <head>
-	<link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
+	<link rel="icon" type="image/png" id="favIcon" href="../favicon.jpg" />
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" />
 
 	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
 
 	<link rel="stylesheet" href="style-game.css" />
 
 	<script src="destinations-swtbahn-ultraloop.js"></script>
 	<script src="destinations-swtbahn-standard.js"></script>
 	<script src="destinations-swtbahn-full.js"></script>
+	<script src="flags-swtbahn-full.js"></script>
 	<script src="script-game.js"></script>
 
 	<title>SWTbahn Driver Client</title>
@@ -20,15 +22,57 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
+<svg id="svgDef">
+	<style>
+		rect {
+			stroke-width: 18px;
+			stroke: var(--flag-stroke);
+			fill: var(--flag-fill);
+		}
+		
+		circle.topLeft {
+			fill: var(--flag-topLeft-fill);
+		}
+		
+		circle.topRight {
+			fill: var(--flag-topRight-fill);
+		}
+		
+		circle.centre {
+			fill: var(--flag-centre-fill);
+		}
+		
+		circle.bottomLeft {
+			fill: var(--flag-bottomLeft-fill);
+		}
+		
+		circle.bottomRight {
+			fill: var(--flag-bottomRight-fill);
+		}
+	</style>
+	
+	<symbol id="flagDef">
+		<rect width="100" height="100"></rect>
+		<circle class="topLeft" cx="25" cy="25" r="10"></circle>
+		<circle class="topRight" cx="75" cy="25" r="10"></circle>
+		<circle class="centre" cx="50" cy="50" r="10"></circle>
+		<circle class="bottomLeft" cx="25" cy="75" r="10"></circle>
+		<circle class="bottomRight" cx="75" cy="75" r="10"></circle>
+	</symbol>
+</svg>
+
 <body>
 	<div class="row">
-		<div id="swtLogo"></div>
+		<div class="col p-2">
+			<img class="img-fluid" src="../swtbahn-logo.png">
+		</div>
+		<div class="col p-2 d-flex justify-content-end align-items-end">
+			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">End Game</button>
+		</div>
 	</div>
 	
 	<div class="row">
-		<div class="col-2">
-			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">End Game</button>
-		</div>
+		<img id="chosenTrain" class="col pt-2 img-fluid" src=""></img>
 	</div>
 	
 	<hr />
@@ -75,30 +119,76 @@
 			<span id="serverResponse"></span>
 		</div>
 	</div>
+	
+	<div id="serverModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabel">Driving Infringement!</h5>
+				</div>
+				<div id="serverModalResponse" class="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Understood</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<form id="destinationsForm">
-		<label class="col-auto col-form-label-lg me-md-5"><b>Possible destinations:</b></label>
+		<label class="col-form-label-lg me-md-5"><b>Possible destinations:</b></label>
 		<div class="input-group row">
 			<div id="possibleDestinations" class="col">
-				<button id="destination0" type="button" class="btn btn-lg col-2 me-md-5" value="">0</button>
-				<button id="destination1" type="button" class="btn btn-lg col-2 me-md-5" value="">1</button>
-				<button id="destination2" type="button" class="btn btn-lg col-2 me-md-5" value="">2</button>
-				<button id="destination3" type="button" class="btn btn-lg col-2 me-md-5" value="">3</button>
-				
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination0" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination1" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination2" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination3" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+								
 				<div class="m-4"></div>
 
-				<button id="destination4" type="button" class="btn btn-lg col-2 me-md-5" value="">4</button>
-				<button id="destination5" type="button" class="btn btn-lg col-2 me-md-5" value="">5</button>
-				<button id="destination6" type="button" class="btn btn-lg col-2 me-md-5" value="">6</button>
-				<button id="destination7" type="button" class="btn btn-lg col-2 me-md-5" value="">7</button>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination4" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination5" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination6" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination7" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<div class="m-4"></div>
+
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination8" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination9" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination10" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination11" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
 			</div>
 		</div>
 	</form>
 
 	<form id="speedForm">
-		<div class="row">
-			<label class="col-auto col-form-label-lg me-md-5"><b>Destination: </b></label>
-			<div id="destination" class="col-auto col-form-label-lg"></div>
+		<div id="chosenDestination" class="row pt-4">
+			<label class="col-auto col-form-label-lg me-md-5 align-self-center"><b>Destination: </b></label>
+			<svg class="flag" viewBox="0 0 100 100">
+				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
+			</svg>
 		</div>
 		
 		<label class="col-auto col-form-label-lg me-md-5"><b>Speed:</b></label>
@@ -122,5 +212,6 @@
 			</div>
 		</div>
 	</form>
+</body>
 
 </html>

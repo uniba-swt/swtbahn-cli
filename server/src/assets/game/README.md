@@ -70,6 +70,7 @@ manner:
   - `destinations-swtbahn-full.js`
   - `destinations-swtbahn-standard.js`
   - `destinations-swtbahn-ultraloop.js`
+  - `flags-swtbahn-full.js`
   - `script-game.js`
 - View
   - `driver-game.html`
@@ -77,8 +78,9 @@ manner:
 
 ### Model and Controller
 The destinations possible from an ordinary block are stored as a JSON lookup table in 
-the `destinations-swtbahn-*.js` files, specific to each SWTbahn platform. These tables
-are used in `script-game.js`.
+the `destinations-swtbahn-*.js` files, specific to each SWTbahn platform. The flags 
+associated with each destination are stored as a JSON lookup table in the `flags-swtbahn-*.js`
+files. These tables are used in `script-game.js`.
 
 The game logic and behaviour are defined in `script-game.js` and is organised 
 roughly into the following responsibilities:
@@ -87,6 +89,7 @@ roughly into the following responsibilities:
   - Speed buttons
   - Destination reached button
   - Alert box with speech feedback
+  - Modal dialog with speech feedback
 - Helper functions to update the possible destinations from a given block and to update their availability
 - Driver class for train and driving related behaviour
   - Get the train's current block
@@ -135,7 +138,7 @@ error that needs to be caught and handled.
 ### View
 The structural elements of the game client are defined in `driver-game.html` and
 is styled, themed, and laid out using [Bootstrap](https://getbootstrap.com).
-Additional styling that cannot be accomplised alone by Boostrap is supplemented 
-by `style-game.css`, e.g., the SWTbahn logo, train details, and the alert box 
-fade animation.
+Additional styling that cannot be accomplished alone by Boostrap is supplemented 
+by `style-game.css`, e.g., the train details, the alert box fade animation, and the
+destination flags.
 

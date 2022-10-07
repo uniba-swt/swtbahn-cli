@@ -1,15 +1,16 @@
 var driver = null;           // Train driver logic.
-var serverAddress = ""; //= "http://141.13.32.44:8080"; // The address of the server.
+var serverAddress = "";      // The base address of the server.
 
 
 /**************************************************
  * Destination related information and UI elements
  */
 
-const numberOfDestinationsMax = 8;            // Maximum destinations to display
+const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
 var allPossibleDestinations = null;           // Platform specific lookup table for destinations
+var signalFlagMap = null;                     // Platform specific lookup table for signal flags
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -27,40 +28,37 @@ function unpackRoute(route) {
 	return null;
 }
 
-// Style classes for the destination buttons
-const destinationDisabledButtonStyle = 'btn-outline-secondary';
-const destinationEnabledButtonStyle = 'btn-dark';
-
 function disableAllDestinationButtons() {
 	driver.clearUpdatePossibleDestinationsInterval();
 
-	// FIXME: Remove the signal-specific CSS styles
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
 		$(`#${destinationNamePrefix}${i}`).val("");
-		$(`#${destinationNamePrefix}${i}`).prop('disabled', true);
-		$(`#${destinationNamePrefix}${i}`).removeClass(destinationEnabledButtonStyle);
-		$(`#${destinationNamePrefix}${i}`).addClass(destinationDisabledButtonStyle);
+		$(`#${destinationNamePrefix}${i}`).attr("class", "flagThemeBlank");
 	}
 }
 
 function setDestinationButton(choice, route) {
-	// FIXME: Use signal-specific styles
 	const [destinationSignal, routeDetails] = unpackRoute(route);
-	
+	const destination = destinationSignal.replace(/(a|b)$/, '');
+
 	// Route details are stored in the value parameter of the destination button
 	$(`#${destinationNamePrefix}${choice}`).val(JSON.stringify(route));
-	$(`#${destinationNamePrefix}${choice}`).addClass(destinationEnabledButtonStyle);
-	$(`#${destinationNamePrefix}${choice}`).removeClass(destinationDisabledButtonStyle);
+	$(`#${destinationNamePrefix}${choice}`).attr("class", signalFlagMap[destination]);
 }
 
-function setDestinationButtonAvailable(choice, route) {	
+function setDestinationButtonAvailable(choice, route) {
 	setDestinationButton(choice, route);
-	$(`#${destinationNamePrefix}${choice}`).prop('disabled', false);
+	$(`#${destinationNamePrefix}${choice}`).removeClass("flagThemeDisabled");
 }
 
 function setDestinationButtonUnavailable(choice, route) {
 	setDestinationButton(choice, route);
-	$(`#${destinationNamePrefix}${choice}`).prop('disabled', true);
+	$(`#${destinationNamePrefix}${choice}`).addClass("flagThemeDisabled");
+}
+
+function setChosenTrain(trainId) {
+	const imageName = `train-${trainId.replace("_", "-")}.jpg`
+	$("#chosenTrain").attr("src", imageName);
 }
 
 // Periodically update the availability of a blocks possible destinations.
@@ -69,19 +67,18 @@ function setDestinationButtonUnavailable(choice, route) {
 function updatePossibleDestinations(blockId) {
 	// Show the form that contains all the destination buttons
 	$('#destinationsForm').show();
-	
 	disableAllDestinationButtons();
-	
+
 	// Set up a timer interval to periodically update the availability
 	const updatePossibleDestinationsTimeout = 500;
 	driver.updatePossibleDestinationsInterval = setInterval(() => {
 		console.log("Checking available destinations ...");
-		
+
 		const routes = getDestinations(blockId);
 		if (routes == null) {
 			return;
 		}
-		
+
 		Object.keys(routes).forEach((destinationSignal, choice) => {
 			const route = { };
 			route[destinationSignal] = routes[destinationSignal];
@@ -95,7 +92,7 @@ function updatePossibleDestinations(blockId) {
 				// route is unavailable
 				() => setDestinationButtonUnavailable(choice, route)
 			);
-		});	
+		});
 	}, updatePossibleDestinationsTimeout);
 }
 
@@ -126,14 +123,14 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 			setResponseDanger('#serverResponse', '😢 There was a problem checking the destinations');
 		}
 	});
-	
+
 }
 
 
 /**************************************************
  * Train speed UI elements
  */
- 
+
 const speedButtons = [
 	"stop",
 	"slow",
@@ -142,8 +139,6 @@ const speedButtons = [
 ];
 
 function disableSpeedButtons() {
-	$('#destination').html("");
-	
 	$('#speedForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
@@ -151,12 +146,19 @@ function disableSpeedButtons() {
 }
 
 function enableSpeedButtons(destination) {
-	$('#destination').html(destination);
-	
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
 	});
+}
+
+function clearChosenDestination() {
+	$('#destination').attr("class", "flagThemeBlank");
+}
+
+function setChosenDestination(destination) {
+	destination = destination.replace(/(a|b)$/, '');
+	$('#destination').attr("class", signalFlagMap[destination]);
 }
 
 function disableReachedDestinationButton() {
@@ -173,10 +175,10 @@ var responseTimer = null;
 
 function setResponse(responseId, message, callback) {
 	clearTimeout(responseTimer);
-	
+
 	$(responseId).text(message);
 	callback();
-	
+
 	$(responseId).parent().fadeIn("fast");
 	const responseTimeout = 7000;
 	responseTimer = setTimeout(() => {
@@ -201,7 +203,7 @@ function setResponseDanger(responseId, message) {
 		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
 	});
-	
+
 	// FIXME: Replace with better game sounds.
 	speak('STOP, NEIN, ACHTUNG!');
 }
@@ -214,12 +216,22 @@ function setResponseSuccess(responseId, message) {
 	});
 }
 
+function setModalDanger(modalId, responseId, message) {
+	$(responseId).html(message);
+	let modalElement = document.getElementById(modalId.replace('#', ''));
+	let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+	modal.show();
+
+	// FIXME: Replace with better game sounds.
+	speak('STOP, NEIN, ACHTUNG!');
+}
+
 
 /**************************************************
  * Driver class that controls the driving of a
  * train and the UI elements
  */
- 
+
 class Driver {
 	// Server and train details
 	sessionId = null;
@@ -233,12 +245,12 @@ class Driver {
 	drivingIsForwards = null;
 	currentBlock = null;
 	endGameButtonIsPersistent = null;
-	
+
 	// Timer intervals
 	trainAvailabilityInterval = null;
 	updatePossibleDestinationsInterval = null;
 	destinationReachedInterval = null;
-	
+
 	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
 		this.trackOutput = trackOutput;
@@ -250,40 +262,40 @@ class Driver {
 		this.drivingIsForwards = null;
 		this.currentBlock = null;
 		this.endGameButtonIsPersistent = false;
-		
+
 		this.trainAvailabilityInterval = null;
 		this.updatePossibleDestinationsInterval = null;
 		this.destinationReachedInterval = null;
 	}
-	
+
 	reset() {
 		this.sessionId = 0;
 		this.grabId = -1;
 	}
-	
+
 	get hasValidTrainSession() {
 		return (this.sessionId != 0 && this.grabId != -1)
 	}
-	
+
 	get hasRouteGranted() {
 		return (this.routeDetails != null);
 	}
-	
+
 	clearTrainAvailabilityInterval() {
 		console.log("clearTrainAvailabilityInterval");
 		clearInterval(this.trainAvailabilityInterval);
 	}
-	
+
 	clearUpdatePossibleDestinationsInterval() {
 		console.log("clearUpdatePossibleDestinationsInterval");
 		clearInterval(this.updatePossibleDestinationsInterval);
 	}
-	
+
 	clearDestinationReachedInterval() {
 		console.log("clearDestinationReachedInterval");
 		clearInterval(this.destinationReachedInterval);
 	}
-	
+
 	// Server request for the train's current block
 	updateCurrentBlockPromise() {
 		return $.ajax({
@@ -303,7 +315,7 @@ class Driver {
 			}
 		});
 	}
-	
+
 	// Server request for a train's status and then execute the callback handlers
 	trainIsAvailablePromise(trainId, success, error) {
 		return $.ajax({
@@ -324,7 +336,7 @@ class Driver {
 			}
 		});
 	}
-	
+
 	// Update the styling of the train selection buttons based on the train availabilities
 	updateTrainAvailability() {
 		$('.selectTrainButton').prop("disabled", true);
@@ -336,22 +348,14 @@ class Driver {
 			$('.selectTrainButton').each((index, obj) => {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
-					trainId, 
-					() => {
-						if ($(obj).prop("disabled") == true) {
-							$(obj).prop("disabled", false)
-						}
-					},
-					() => {
-						if ($(obj).prop("disabled") == false) {
-							$(obj).prop("disabled", true)
-						}
-					}
+					trainId,
+					() => $(obj).prop("disabled", false),
+					() => $(obj).prop("disabled", true)
 				);
 			})
 		}, trainAvailabilityTimeout);
 	}
-	
+
 	// Server request to grab a train
 	grabTrainPromise() {
 		return $.ajax({
@@ -375,7 +379,7 @@ class Driver {
 			}
 		});
 	}
-	
+
 	// Server request for the train's physical driving direction of its granted route
 	updateDrivingDirectionPromise() {
 		return $.ajax({
@@ -418,7 +422,7 @@ class Driver {
 	// Server request for the train's current segment and then determine 
 	// whether to show the destination reached button
 	enableReachedDestinationButtonPromise() {
-		const destinationReachedTimeout = 500; 
+		const destinationReachedTimeout = 500;
 		this.destinationReachedInterval = setInterval(() => {
 			return $.ajax({
 				type: 'POST',
@@ -432,7 +436,7 @@ class Driver {
 					const matches = /on segment: (.*?) -/g.exec(responseData); // Get all Segment IDS as String
 					const segmentIDs = matches[1];
 					const segments = segmentIDs.split(", "); // Splits them into Array
-					
+
 					// Show the destination reached button when the train is only on the
 					// main segment of the destination
 					if (segments.length != 1) {
@@ -463,7 +467,7 @@ class Driver {
 			url: serverAddress + '/driver/release-train',
 			crossDomain: true,
 			data: {
-				'session-id': this.sessionId, 
+				'session-id': this.sessionId,
 				'grab-id': this.grabId
 			},
 			dataType: 'text',
@@ -477,7 +481,7 @@ class Driver {
 			}
 		});
 	}
-	
+
 	// Server request for a specific route ID
 	requestRouteIdPromise(routeDetails) {
 		return $.ajax({
@@ -508,8 +512,8 @@ class Driver {
 			url: serverAddress + '/driver/drive-route',
 			crossDomain: true,
 			data: {
-				'session-id': this.sessionId, 
-				'grab-id': this.grabId, 
+				'session-id': this.sessionId,
+				'grab-id': this.grabId,
 				'route-id': this.routeDetails["route-id"],
 				'mode': 'manual'
 			},
@@ -520,7 +524,7 @@ class Driver {
 				} else if (!this.hasRouteGranted) {
 					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 				} else {
-					setResponseDanger('#serverResponse', '👎 You did not stop your train before the destination signal!');
+					setModalDanger('#serverModal', '#serverModalResponse', '👎 You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
@@ -528,13 +532,13 @@ class Driver {
 			}
 		});
 	}
-	
+
 	// Server request to release the granted route
 	releaseRoutePromise() {
 		if (!this.hasRouteGranted) {
 			return;
 		}
-		
+
 		return $.ajax({
 			type: 'POST',
 			url: serverAddress + '/controller/release-route',
@@ -555,19 +559,22 @@ class Driver {
 		}
 
 		const [destinationSignal, routeDetails] = unpackRoute(route);
-		
+
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
 			.then(() => disableAllDestinationButtons())
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => this.setTrainSpeedPromise(0))
-			.then(() => enableSpeedButtons(destinationSignal))         // 5. Show the possible train speeds to the driver
+			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver
+			.then(() => enableSpeedButtons(destinationSignal))
 			.then(() => this.enableReachedDestinationButtonPromise())  // 6. Start monitoring whether the train has reached the destination
-			
+
 			.then(() => this.driveRoutePromise())                      // 7. Start the manual driving mode for the granted route
-			
+
 			.then(() => disableSpeedButtons())                         // 8. Prevent the driver from driving past the destination
+			.then(() => clearChosenDestination())
+
 			.then(() => {
 				if (!this.hasValidTrainSession) {                      // 9. Check whether the safety layer had to force the train to stop
 					this.clearDestinationReachedInterval();
@@ -583,8 +590,8 @@ class Driver {
 
 
 /*************************************************************
- * UI update for client initialisation and game start and end 
- * (train grab and release) 
+ * UI update for client initialisation and game start and end
+ * (train grab and release)
  */
 
 // Update the user interface for driving when the user decides to grab a train
@@ -596,11 +603,12 @@ function startGameLogic() {
 		setResponseDanger('#serverResponse', 'You are already driving a train!')
 		return;
 	}
-	
+
 	setResponseSuccess('#serverResponse', '⏳ Waiting ...');
-	
+
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
+		.then(() => $('#chosenTrain').show())
 		.then(() => $('#endGameButton').show())
 		.then(() => driver.updateCurrentBlockPromise())
 		.then(() => updatePossibleDestinations(driver.currentBlock))
@@ -617,12 +625,15 @@ function endGameLogic() {
 	disableAllDestinationButtons();
 	disableReachedDestinationButton();
 	disableSpeedButtons();
+	clearChosenDestination();
+
 	$('#trainSelection').show();
+	$('#chosenTrain').hide();
 	driver.updateTrainAvailability();
 }
 
 // Asynchronous wait for a duration in milliseconds.
-function wait(duration) { 
+function wait(duration) {
 	return new Promise(resolve => setTimeout(resolve, duration));
 }
 
@@ -634,10 +645,13 @@ function initialise() {
 		null                                      // trainId
 	);
 	
+	// Hide the chosen train.
+	$('#chosenTrain').hide();
+
 	// Hide the alert box for displaying server messages.
 	$('#serverResponse').parent().hide();
-	
-	// Update all train selections
+
+	// Update all train selections.
 	driver.updateTrainAvailability();
 
 
@@ -645,25 +659,29 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
-	// Hide the train driving buttons (destinations and speed selections)
-	$('#endGameButton').hide();	
+	// Hide the train driving buttons (destination selections).
+	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
+	clearChosenDestination();
 	disableReachedDestinationButton();
-	disableSpeedButtons();
 
-	// Handle train selection
+	// Handle train selection.
 	$('.selectTrainButton').click(function (event) {
 		let trainId = event.currentTarget.id;
 		driver.trainId = trainId;
+		setChosenTrain(trainId);
 		startGameLogic();
 	});
-	
+
 	// Set the possible destinations for the SWTbahn platform.
 	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
-	
+
+	// Set the signal to flag mapping.
+	signalFlagMap = signalFlagMapSwtbahnFull;
+
 	// Initialise the click handler of each destination button.
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
 		const destinationButton = $(`#${destinationNamePrefix}${i}`);
@@ -672,17 +690,17 @@ function initialise() {
 			driver.driveToPromise(route);
 		});
 	}
-	
+
 	disableReachedDestinationButton();
-	
+
 	// Initialise the click handler of the destination reached button.
 	$("#destinationReached").click(function () {
 		driver.setTrainSpeedPromise(0);
 		driver.releaseRoutePromise();
 	});
-	
+
 	disableSpeedButtons();
-	
+
 	// Initialise the click handler of each speed button.
 	speedButtons.forEach(speed => {
 		const speedButton = $(`#${speed}`);
@@ -690,7 +708,7 @@ function initialise() {
 			driver.setTrainSpeedPromise(speedButton.val());
 			if (!driver.endGameButtonIsPersistent) {
 				$('#endGameButton').hide();
-				
+
 				// The page cannot be refreshed without ill consequences.
 				// The train might not stop sensibly on the main segment of the destination
 				$(window).bind("beforeunload", pageRefreshWarning);
@@ -703,9 +721,9 @@ function initialise() {
 			endGameLogic();
 			return;
 		}
-		
+
 		setResponseSuccess('#serverResponse', '⏳ Waiting ...');
-					
+
 		driver.setTrainSpeedPromise(0)
 			.then(() => wait(500))
 			.then(() => driver.releaseRoutePromise())
@@ -718,9 +736,10 @@ function initialise() {
 	});
 }
 
-$(document).ready(
-	() => initialise()
-);
+
+$(document).ready(() => {
+	initialise();
+});
 
 /*************************************
  * Handlers for page refresh or close
@@ -730,10 +749,10 @@ $(document).ready(
 function pageRefreshWarning(event) {
 	event.preventDefault();
 	console.log("Before unloading");
-	
+
 	// Most web browsers will display a generic message instead!!
-	const message = "Are you sure you want to refresh or leave this page? " + 
-					"Leaving this page without ending your game will prevent others from grabbing your train 😕";
+	const message = "Are you sure you want to refresh or leave this page? " +
+	                "Leaving this page without ending your game will prevent others from grabbing your train 😕";
 	return event.returnValue = message;
 }
 
