@@ -119,7 +119,7 @@ def is_occupied_from_preceding_signal_to(string seg_id, string route_id): bool
     int seg_id_index_in_path = 0
     int current_path_index = 0
     int preceding_signal_index_in_path = 0
-    for string path_item in route_path0
+    for string path_item in route_path
         if path_item == seg_id
             seg_id_occurrences_counter += 1
             seg_id_index_in_path = current_path_index
