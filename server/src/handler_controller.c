@@ -26,6 +26,7 @@
  *
  */
 
+#include <sys/syslog.h>
 #include <unistd.h>
 #include <onion/onion.h>
 #include <bidib/bidib.h>
@@ -38,6 +39,7 @@
 #include "param_verification.h"
 #include "interlocking.h"
 #include "bahn_data_util.h"
+#include "check_route_sectional.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -177,6 +179,29 @@ const bool get_route_is_clear(const char *route_id) {
 	return true;
 }
 
+bool check_route_sectional_test(char *train_id, char *route_id) {
+	// Uses check_route_sectional
+	
+	// 1. set inputs/context for check
+	
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	bahn_data_util_init_cached_track_state();
+	char checker_output[1024];
+	int i = -1;
+	check_route_sectional_tick_data check_input_data = {route_id, NULL, train_id, checker_output, i};
+	// 2. Reset -> once should be often enough
+	check_route_sectional_reset(&check_input_data);
+	
+	// 3. Do ticks until check has terminated
+	do {
+		check_route_sectional_tick(&check_input_data);
+	} while (check_input_data.terminated != 1);
+	
+	// 4. Debug-Print output
+	syslog_server(LOG_NOTICE, "Check sectional output: %s", check_input_data.out);
+	return false;
+}
 
 GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {
@@ -194,7 +219,7 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
                                                    source_id, destination_id, 
                                                    train_id);
 
-	struct t_interlocker_instance_io interlocker_instance_io;	
+	struct t_interlocker_instance_io interlocker_instance_io;
 	do {
 		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
