@@ -200,6 +200,8 @@ bool check_route_sectional_test(char *train_id, char *route_id) {
 	
 	// 4. Debug-Print output
 	syslog_server(LOG_NOTICE, "Check sectional output: %s", check_input_data.out);
+	pthread_mutex_unlock(&interlocker_mutex);
+	
 	return false;
 }
 

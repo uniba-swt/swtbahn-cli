@@ -1,4 +1,5 @@
 #include "obj/tick_wrapper.h"
+
 /*
  * Automatically generated C code by
  * KIELER SCCharts - The Key to Efficient Modeling
@@ -3702,7 +3703,6 @@ typedef struct {
 } check_route_sectional_TickData;
 
 
-static void check_route_sectional(check_route_sectional_TickData*context);
 void intern_check_route_sectional_reset(check_route_sectional_TickData*context);
 void intern_check_route_sectional_tick(check_route_sectional_TickData*context);
 
