@@ -80,6 +80,13 @@ function updateGrantedRoutes(htmlElement) {
 	});
 }
 
+// Admin control of granted routes
+function adminReleaseRoute(routeId) {
+	$('#routeId').val(routeId);
+	$('#releaseRouteButton').click();
+}
+
+
 $(document).ready(
 	function () {
 
@@ -979,14 +986,6 @@ $(document).ready(
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
 
-
-		// Admin control of granted routes
-		
-		function adminReleaseRoute(routeId) {
-			$('#routeId').val(routeId);
-			$('#releaseRouteButton').click();
-		}
-		
 	}
 );
 
