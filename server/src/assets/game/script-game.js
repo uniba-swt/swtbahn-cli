@@ -439,12 +439,15 @@ class Driver {
 
 					// Show the destination reached button when the train is only on the
 					// main segment of the destination
-					if (segments.length != 1) {
-						return;
-					}
 					// Take into account that a main segment could be split into a/b segments
-					const segment = segments[0].replace(/(a|b)$/, '');
-					if(segment == this.routeDetails["segment"]) {
+					for (let index in segments) {
+						segments[index] = segments[index].replace(/(a|b)$/, '');
+						if (segments[index] != this.routeDetails["segment"]) {
+							return;
+						}
+					}
+					
+					if(segments[0] == this.routeDetails["segment"]) {
 						this.clearDestinationReachedInterval();
 						this.endGameButtonIsPersistent = true;
 						$('#endGameButton').show();
@@ -559,7 +562,8 @@ class Driver {
 		}
 
 		const [destinationSignal, routeDetails] = unpackRoute(route);
-
+        console.log(routeDetails);
+        
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
