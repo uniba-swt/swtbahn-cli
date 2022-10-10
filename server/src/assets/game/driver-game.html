@@ -84,7 +84,7 @@
 				<h5 class="card-title">Cargo DB</h5>
 				<p class="card-text">Lorem ipsum</p>
 				<button class="selectTrainButton btn btn-primary" id="cargo_db">
-					Drive this train
+					Fahre diesen Zug
 				</button>
 			</div>
 		</div>
@@ -95,7 +95,7 @@
 				<h5 class="card-title">Cargo Green</h5>
 				<p class="card-text">Lorem ipsum</p>
 				<button class="selectTrainButton btn btn-primary" id="cargo_green">
-					Drive this train
+					Fahre diesen Zug
 				</button>
 			</div>
 		 </div>
@@ -106,7 +106,7 @@
 				<h5 class="card-title">Regional ODEG</h5>
 				<p class="card-text">Lorem ipsum</p>
 				<button class="selectTrainButton btn btn-primary" id="regional_odeg">
-					Drive this train
+					Fahre diesen Zug
 				</button>
 			</div>
 		</div>
@@ -124,18 +124,18 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabel">Driving Infringement!</h5>
+					<h5 class="modal-title" id="staticBackdropLabel">Fahrt nicht zulässig!</h5>
 				</div>
 				<div id="serverModalResponse" class="modal-body"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Understood</button>
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Verstanden</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<form id="destinationsForm">
-		<label class="col-form-label-lg me-md-5"><b>Possible destinations:</b></label>
+		<label class="col-form-label-lg me-md-5"><b>Mögliche Ziele:</b></label>
 		<div class="input-group row">
 			<div id="possibleDestinations" class="col">
 				<svg class="flag" viewBox="0 0 100 100">
@@ -185,30 +185,30 @@
 
 	<form id="speedForm">
 		<div id="chosenDestination" class="row pt-4">
-			<label class="col-auto col-form-label-lg me-md-5 align-self-center"><b>Destination: </b></label>
+			<label class="col-auto col-form-label-lg me-md-5 align-self-center"><b>Ziel: </b></label>
 			<svg class="flag" viewBox="0 0 100 100">
 				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
 			</svg>
 		</div>
 		
-		<label class="col-auto col-form-label-lg me-md-5"><b>Speed:</b></label>
+		<label class="col-auto col-form-label-lg me-md-5"><b>Geschwindigkeit:</b></label>
 		<div class="input-group row">
 			<div class="col">
 				<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">Stop</button>
 				<div class="btn-group" role="group">
-					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">Slow</button>
+					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">Langsam</button>
 					<button id="normal" type="button" class="btn btn-secondary btn-lg" value="40">Normal</button>
-					<button id="fast" type="button" class="btn btn-success btn-lg" value="60">Fast</button>
+					<button id="fast" type="button" class="btn btn-success btn-lg" value="60">Schnell</button>
 				</div>
 			</div>
 		</div>
 	</form>
 
 	<form id="destinationReachedForm">
-		<label class="col-auto col-form-label-lg me-md-5"><b>Stopped at destination?</b></label>
+		<label class="col-auto col-form-label-lg me-md-5"><b>Ziel erreicht</b></label>
 		<div class="input-group row">
 			<div class="col">
-				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5">Yes</button>
+				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5">stoppen?</button>
 			</div>
 		</div>
 	</form>

@@ -1,5 +1,6 @@
 from csv import reader
-import json, yaml
+import json
+import yaml
 
 interlockingTableFile = "./interlocking_table.yml"
 configuratonBahnFile = "./extras_config.yml"
