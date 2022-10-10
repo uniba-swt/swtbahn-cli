@@ -419,7 +419,7 @@ class Driver {
 		});
 	}
 
-	// Server request for the train's current segment and then determine 
+	// Server request for the train's current segment and then determine
 	// whether to show the destination reached button
 	enableReachedDestinationButtonPromise() {
 		const destinationReachedTimeout = 500;
@@ -648,7 +648,7 @@ function initialise() {
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		null                                      // trainId
 	);
-	
+
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
 
@@ -742,6 +742,7 @@ function initialise() {
 
 
 $(document).ready(() => {
+	$('[lang="en"]').hide();
 	initialise();
 });
 
@@ -756,7 +757,7 @@ function pageRefreshWarning(event) {
 
 	// Most web browsers will display a generic message instead!!
 	const message = "Are you sure you want to refresh or leave this page? " +
-	                "Leaving this page without ending your game will prevent others from grabbing your train 😕";
+		"Leaving this page without ending your game will prevent others from grabbing your train 😕";
 	return event.returnValue = message;
 }
 

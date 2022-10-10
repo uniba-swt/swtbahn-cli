@@ -1,11 +1,11 @@
 from csv import reader
-import json, yaml
+import json
+import yaml
 
-interlockingTableFile = "./interlocking_table.yml"
-configuratonBahnFile = "./extras_config.yml"
+interlockingTableFile = "../../../../../configurations/swtbahn-full/interlocking_table.yml"
+configuratonBahnFile = "../../../../../configurations/swtbahn-full/extras_config.yml"
 blacklistFile = "./blacklist.txt"
 groupingFile = "./SignalToFlag.csv"
-
 interlockingTable = json.loads(json.dumps(yaml.safe_load(open(interlockingTableFile))))
 configuratonBahn = json.loads(json.dumps(yaml.safe_load(open(configuratonBahnFile))))
 
@@ -23,7 +23,7 @@ for blockType in blocktypes:
         try:
             signals = block["signals"]
         except KeyError:
-            print("Block {} has no signals".format(block["id"]))
+#            print("Block {} has no signals".format(block["id"]))
             signals = []
         routes = []
         for signal in signals:
@@ -45,6 +45,8 @@ for blockType in blocktypes:
                                  print("Route Beibehalten")
                             elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]):
                                 routeID = route["id"]
+
+                print("{} -> {} | {}".format(signal, destination, routeID))
                 if routeID not in blacklist:
                     routes.append(routeID)
                 else:
@@ -71,13 +73,13 @@ for blockType in blocktypes:
                         segments.append(segment)
                     break
             if len(segments) == 1:
-                print("Segment: {} at Block {}".format(segments[0], lastBlock))
+#                print("Segment: {} at Block {}".format(segments[0], lastBlock))
                 stopSegment = segments[0]
             elif len(segments) == 2:
                 if segments[0][0:-1] == segments[1][0:-1]:
-                    print(segments)
+ #                   print(segments)
                     stopSegment = segments[0][0:-1]
-                    print(stopSegment)
+#                    print(stopSegment)
                 else:
                     print("Error Segment {} and Segment {} are not the same. Block {}".format(segments[0], segments[1], block["id"]))
                     isError = True
@@ -104,17 +106,12 @@ for block in originalResultData:
     with open(groupingFile, "r") as csvFile:
         csv_reader = reader(csvFile)
         for row in csv_reader:
-            oneDigital = False
-            if len(row[0]) == 1:
-                oneDigital = True
             signal = "signal" + row[0]
             if signal in destinations:
-                if oneDigital:
-                    for destination in destinations:
-                        if destination[:-1] is signal:
-                            destinationsSorted.append(signal)
-                else:
-                    destinationsSorted.append(signal)
+                destinationsSorted.append(signal)
+            signal = signal + "a"
+            if signal in destinations:
+                destinationsSorted.append(signal)
 
     resultData[block] = {}
     for destination in destinationsSorted:
@@ -124,5 +121,7 @@ for block in originalResultData:
         resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
         resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
 
-with open("output.json", "w") as file:
+with open("../destinations-swtbahn-full.js", "w") as file:
+    file.write("const allPossibleDestinationsSwtbahnFull = ")
     file.write(json.dumps(resultData, indent=2))
+    file.write(";")
