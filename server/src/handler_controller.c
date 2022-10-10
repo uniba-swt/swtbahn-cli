@@ -127,7 +127,12 @@ void release_all_interlockers(void) {
 
 GArray *get_granted_route_conflicts(const char *route_id) {
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-
+	
+	if (check_route_sectional_test("", route_id)) {
+		return conflict_route_ids;
+		//TODO: Only do this when using the sectional interlocker.
+	}
+	
 	char *conflict_routes[1024];
 	const size_t conflict_routes_len = config_get_array_string_value("route", route_id, "conflicts", conflict_routes);	
 	for (size_t i = 0; i < conflict_routes_len; i++) {
@@ -199,10 +204,11 @@ bool check_route_sectional_test(char *train_id, char *route_id) {
 	} while (check_input_data.terminated != 1);
 	
 	// 4. Debug-Print output
-	syslog_server(LOG_NOTICE, "Check sectional output: %s", check_input_data.out);
+	//syslog_server(LOG_WARNING, "Check sectional output: %s", check_input_data.out);
+	bool ret = strcmp(check_input_data.out, route_id) == 0;
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	return false;
+	return ret;
 }
 
 GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {

@@ -67,6 +67,8 @@ GArray *get_granted_route_conflicts(const char *route_id);
  */
 const bool get_route_is_clear(const char *route_id);
 
+bool check_route_sectional_test(char *train_id, char *route_id);
+
 /**
   * Finds and grants a requested train route using an external algorithm.
   * A requested route is defined by a pair of source and destination signals. 

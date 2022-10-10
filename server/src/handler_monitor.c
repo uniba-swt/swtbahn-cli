@@ -595,8 +595,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 			sprintf_garray_char(route_str, granted_route_conflicts);
 			g_array_free(granted_route_conflicts, true);
 			g_string_append_printf(route_str, "\n  route clear: %s", 
-			                       check_route_sectional_test(route_id) ? "yes": "no");
-			//                       get_route_is_clear(route_id) ? "yes": "no");
+			                       get_route_is_clear(route_id) ? "yes": "no");
 			g_string_append_printf(route_str, "\n  granted train: %s", 
 			                       route->train == NULL ? "none" : route->train);
 			
