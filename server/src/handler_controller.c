@@ -272,7 +272,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	}
 	
 	// Check whether the route is physically available
-	if (!get_route_is_clear(route_id)) {
+	
+	//if (!get_route_is_clear(route_id)) {
+	if (!check_route_sectional_test(route_id, train_id)) {
 		return "not_clear";
 	}
 	
