@@ -5,7 +5,7 @@ def numberToWord(number):
     return ["Zero", "One", "Two", "Three", "Four", "Five", "Six"][int(number)]
 
 # Load Match to Signal into File
-with open("SignalToFlag.csv", "r") as f:
+with open("flags-swtbahn-full.csv", "r") as f:
     reader = csv.reader(f)
     jsonString = {}
     for row in reader:
@@ -39,7 +39,8 @@ with open("SignalToFlag.csv", "r") as f:
         signalName = "signal{}".format(str(signal))
         jsonString[signalName] = endString
 
-    with open("SignalFlag.json", "w") as file:
-        jsonString = json.dumps(jsonString, indent=4)
-        file.write(jsonString)
+    with open("../flags-swtbahn-full.js", "w") as file:
+        file.write("const signalFlagMapSwtbahnFull = ")
+        file.write(json.dumps(jsonString, indent=2))
+        file.write(";")
 
