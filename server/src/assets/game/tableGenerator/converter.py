@@ -1,8 +1,10 @@
+from csv import reader
 import json, yaml
 
 interlockingTableFile = "./interlocking_table.yml"
 configuratonBahnFile = "./extras_config.yml"
 blacklistFile = "./blacklist.txt"
+groupingFile = "./SignalToFlag.csv"
 
 interlockingTable = json.loads(json.dumps(yaml.safe_load(open(interlockingTableFile))))
 configuratonBahn = json.loads(json.dumps(yaml.safe_load(open(configuratonBahnFile))))
@@ -89,6 +91,38 @@ for blockType in blocktypes:
             resultData[block["id"]][destination]["orientation"] = orientation
             resultData[block["id"]][destination]["block"] = lastBlock
             resultData[block["id"]][destination]["segment"] = stopSegment
+
+# Sort
+originalResultData = resultData
+resultData = {}
+for block in originalResultData:
+    destinations = []
+    for destination in originalResultData[block]:
+        destinations.append(destination)
+    destinationsSorted = []
+
+    with open(groupingFile, "r") as csvFile:
+        csv_reader = reader(csvFile)
+        for row in csv_reader:
+            oneDigital = False
+            if len(row[0]) == 1:
+                oneDigital = True
+            signal = "signal" + row[0]
+            if signal in destinations:
+                if oneDigital:
+                    for destination in destinations:
+                        if destination[:-1] is signal:
+                            destinationsSorted.append(signal)
+                else:
+                    destinationsSorted.append(signal)
+
+    resultData[block] = {}
+    for destination in destinationsSorted:
+        resultData[block][destination] = {}
+        resultData[block][destination]["route-id"] = originalResultData[block][destination]["route-id"]
+        resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
+        resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
+        resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
 
 with open("output.json", "w") as file:
     file.write(json.dumps(resultData, indent=2))
