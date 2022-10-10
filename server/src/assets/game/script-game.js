@@ -569,6 +569,7 @@ class Driver {
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
 			.then(() => disableAllDestinationButtons())
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
+			.then(() => wait(1))
 			.then(() => this.setTrainSpeedPromise(0))
 			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver
 			.then(() => enableSpeedButtons(destinationSignal))
