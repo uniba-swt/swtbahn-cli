@@ -541,16 +541,16 @@ class Driver {
 		if (!this.hasRouteGranted) {
 			return;
 		}
+		
+		const routeId = this.routeDetails["route-id"];
+		this.routeDetails = null;
 
 		return $.ajax({
 			type: 'POST',
 			url: serverAddress + '/controller/release-route',
 			crossDomain: true,
-			data: { 'route-id': this.routeDetails["route-id"] },
-			dataType: 'text',
-			success: (responseData, textStatus, jqXHR) => {
-				this.routeDetails = null;
-			}
+			data: { 'route-id': routeId },
+			dataType: 'text'
 		});
 	}
 
