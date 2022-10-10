@@ -5,7 +5,7 @@ import yaml
 interlockingTableFile = "../../../../../configurations/swtbahn-full/interlocking_table.yml"
 configuratonBahnFile = "../../../../../configurations/swtbahn-full/extras_config.yml"
 blacklistFile = "./blacklist.txt"
-groupingFile = "./SignalToFlag.csv"
+groupingFile = "./flags-swtbahn-full.csv"
 interlockingTable = json.loads(json.dumps(yaml.safe_load(open(interlockingTableFile))))
 configuratonBahn = json.loads(json.dumps(yaml.safe_load(open(configuratonBahnFile))))
 
