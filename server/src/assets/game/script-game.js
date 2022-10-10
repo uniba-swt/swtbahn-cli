@@ -738,6 +738,7 @@ function initialise() {
 
 
 $(document).ready(() => {
+	$('[lang="en"]').hide();
 	initialise();
 });
 
