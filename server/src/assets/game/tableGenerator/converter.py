@@ -105,17 +105,9 @@ for block in originalResultData:
     with open(groupingFile, "r") as csvFile:
         csv_reader = reader(csvFile)
         for row in csv_reader:
-            oneDigital = False
-            if len(row[0]) == 1:
-                oneDigital = True
             signal = "signal" + row[0]
             if signal in destinations:
-                if oneDigital:
-                    for destination in destinations:
-                        if destination[:-1] is signal:
-                            destinationsSorted.append(signal)
-                else:
-                    destinationsSorted.append(signal)
+                destinationsSorted.append(signal)
 
     resultData[block] = {}
     for destination in destinationsSorted:
