@@ -120,7 +120,7 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 			}
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			setResponseDanger('#serverResponse', '😢 Leider trat ein Problem beim Überprüfen möglicher Routen auf!');
+			setResponseDanger('#serverResponse', '😢 There was a problem checking the destinations');
 		}
 	});
 
@@ -311,7 +311,7 @@ class Driver {
 				this.currentBlock =  regexMatch[1];
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Zug konnte nicht gefunden werden');
+				setResponseDanger('#serverResponse', '😢 Could not find your train');
 			}
 		});
 	}
@@ -372,10 +372,10 @@ class Driver {
 				this.sessionId = responseDataSplit[0];
 				this.grabId = responseDataSplit[1];
 
-				setResponseSuccess('#serverResponse', '😁 Dein Zug ist bereit');
+				setResponseSuccess('#serverResponse', '😁 Your train is ready');
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Es trat ein Problem beim Starten des Zuges auf');
+				setResponseDanger('#serverResponse', '😢 There was a problem starting your train');
 			}
 		});
 	}
@@ -395,7 +395,7 @@ class Driver {
 				this.drivingIsForwards = responseData.includes("forwards");
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Zug konnte nicht gefunden werden');
+				setResponseDanger('#serverResponse', '😢 Could not find your train');
 			}
 		});
 	}
@@ -414,12 +414,12 @@ class Driver {
 			},
 			dataType: 'text',
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Es trat ein Problem beim Festsetzen der Geschwindigkeit auf!');
+				setResponseDanger('#serverResponse', '😢 There was a problem setting the speed of your train');
 			}
 		});
 	}
 
-	// Server request for the train's current segment and then determine 
+	// Server request for the train's current segment and then determine
 	// whether to show the destination reached button
 	enableReachedDestinationButtonPromise() {
 		const destinationReachedTimeout = 500;
@@ -477,7 +477,7 @@ class Driver {
 				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '🤔 Es trat ein Problem beim Beenden deiner Session auf!');
+				setResponseDanger('#serverResponse', '🤔 There was a problem ending your turn');
 			}
 		});
 	}
@@ -496,7 +496,7 @@ class Driver {
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
 				this.routeDetails = routeDetails;
-				setResponseSuccess('#serverResponse', '🥳 Starte deinem Zug zu einem von dir gewählten Ziel!');
+				setResponseSuccess('#serverResponse', '🥳 Start driving your train to your chosen destination');
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
@@ -522,13 +522,13 @@ class Driver {
 				if (!this.hasValidTrainSession) {
 					// Ignore, end game was called
 				} else if (!this.hasRouteGranted) {
-					setResponseSuccess('#serverResponse', '🥳 Du hast dein Zug zu dem Ziel gefahren!');
+					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
 				} else {
-					setModalDanger('#serverModal', '#serverModalResponse', '👎 Du hast deinen Zug leider nicht vor dem Zielsignal gestoppt! <br/><br/> GLücklicherweise konnten wir den Zug noch aufhalten bevor es zu einer Kollision mit einem anderen Z8ug kommen konnte oder zu Beschädigungen an den Schienen..');
+					setModalDanger('#serverModal', '#serverModalResponse', '👎 You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Das aktuelle Ziel ist aktuell nicht verfügbar');
+				setResponseDanger('#serverResponse', '😢 Route to your chosen destination is unavailable');
 			}
 		});
 	}
@@ -554,7 +554,7 @@ class Driver {
 	// Manage the business logic of manually driving a granted route
 	driveToPromise(route) {
 		if (!this.hasValidTrainSession) {
-			setResponseDanger('#serverResponse', 'Dein Zug konnte nicht gefunden werden 😢');
+			setResponseDanger('#serverResponse', 'Your train could not be found 😢');
 			return;
 		}
 
@@ -578,7 +578,7 @@ class Driver {
 			.then(() => {
 				if (!this.hasValidTrainSession) {                      // 9. Check whether the safety layer had to force the train to stop
 					this.clearDestinationReachedInterval();
-					throw new Error("Spiel wurde beendet");
+					throw new Error("Game has ended");
 				}
 			})
 			.then(() => disableReachedDestinationButton())             // 10. Remove the destination reached button
@@ -600,11 +600,11 @@ function startGameLogic() {
 	speak("");
 
 	if (driver.hasValidTrainSession) {
-		setResponseDanger('#serverResponse', 'Du fährst schon einen Zug!')
+		setResponseDanger('#serverResponse', 'You are already driving a train!')
 		return;
 	}
 
-	setResponseSuccess('#serverResponse', '⏳ Warten ...');
+	setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
@@ -644,7 +644,7 @@ function initialise() {
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		null                                      // trainId
 	);
-	
+
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
 
@@ -722,7 +722,7 @@ function initialise() {
 			return;
 		}
 
-		setResponseSuccess('#serverResponse', '⏳ Warten ...');
+		setResponseSuccess('#serverResponse', '⏳ Waiting ...');
 
 		driver.setTrainSpeedPromise(0)
 			.then(() => wait(500))
@@ -732,7 +732,7 @@ function initialise() {
 				endGameLogic();
 			});
 
-		setResponseSuccess('#serverResponse', '😀 Danke fürs Spielen');
+		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
 	});
 }
 
@@ -752,7 +752,7 @@ function pageRefreshWarning(event) {
 
 	// Most web browsers will display a generic message instead!!
 	const message = "Are you sure you want to refresh or leave this page? " +
-	                "Leaving this page without ending your game will prevent others from grabbing your train 😕";
+		"Leaving this page without ending your game will prevent others from grabbing your train 😕";
 	return event.returnValue = message;
 }
 
