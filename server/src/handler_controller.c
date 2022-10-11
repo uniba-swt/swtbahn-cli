@@ -134,7 +134,7 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 		// When route is available according to check_route_sectional, directly return
 		// with empty conflict_route_ids collection. Otherwise continue
 		// with 'standard' check.
-		if (check_route_sectional("", route_id)) {
+		if (check_route_sectional(route_id)) {
 			return conflict_route_ids;
 		}
 	}
@@ -190,13 +190,13 @@ const bool get_route_is_clear(const char *route_id) {
 	return true;
 }
 
-bool check_route_sectional(char *train_id, char *route_id) {
+bool check_route_sectional(char *route_id) {
 	// 1. set inputs/context for check
 	pthread_mutex_lock(&interlocker_mutex);
 	bahn_data_util_init_cached_track_state();
 	char checker_output[1024];
 	int i = -1;
-	check_route_sectional_tick_data check_input_data = {route_id, NULL, train_id, checker_output, i};
+	check_route_sectional_tick_data check_input_data = {route_id, NULL, NULL, checker_output, i};
 	// 2. Reset -> once should be often enough
 	check_route_sectional_reset(&check_input_data);
 	
@@ -279,9 +279,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	}
 	
 	// Check whether the route is physically available
-	
-	//if (!get_route_is_clear(route_id)) {
-	if (!check_route_sectional(route_id, train_id)) {
+	if (!get_route_is_clear(route_id)) {
 		return "not_clear";
 	}
 	
