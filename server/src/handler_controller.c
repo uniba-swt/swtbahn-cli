@@ -128,9 +128,15 @@ void release_all_interlockers(void) {
 GArray *get_granted_route_conflicts(const char *route_id) {
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
 	
-	if (check_route_sectional_test("", route_id)) {
-		return conflict_route_ids;
-		//TODO: Only do this when using the sectional interlocker.
+	// When a sectional interlocker is in use, use the check_route_sectional to
+	// check for route availability.
+	if (g_strv_contains(selected_interlocker_name, "sectional")) {
+		// When route is available according to check_route_sectional, directly return
+		// with empty conflict_route_ids collection. Otherwise continue
+		// with 'standard' check.
+		if (check_route_sectional("", route_id)) {
+			return conflict_route_ids;
+		}
 	}
 	
 	char *conflict_routes[1024];
@@ -184,12 +190,8 @@ const bool get_route_is_clear(const char *route_id) {
 	return true;
 }
 
-bool check_route_sectional_test(char *train_id, char *route_id) {
-	// Uses check_route_sectional
-	
+bool check_route_sectional(char *train_id, char *route_id) {
 	// 1. set inputs/context for check
-	
-	
 	pthread_mutex_lock(&interlocker_mutex);
 	bahn_data_util_init_cached_track_state();
 	char checker_output[1024];
@@ -203,8 +205,7 @@ bool check_route_sectional_test(char *train_id, char *route_id) {
 		check_route_sectional_tick(&check_input_data);
 	} while (check_input_data.terminated != 1);
 	
-	// 4. Debug-Print output
-	//syslog_server(LOG_WARNING, "Check sectional output: %s", check_input_data.out);
+	// Iff route_id is returned, route is available (thus return true)
 	bool ret = strcmp(check_input_data.out, route_id) == 0;
 	pthread_mutex_unlock(&interlocker_mutex);
 	
@@ -280,7 +281,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	// Check whether the route is physically available
 	
 	//if (!get_route_is_clear(route_id)) {
-	if (!check_route_sectional_test(route_id, train_id)) {
+	if (!check_route_sectional(route_id, train_id)) {
 		return "not_clear";
 	}
 	
