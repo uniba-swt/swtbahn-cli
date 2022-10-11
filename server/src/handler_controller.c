@@ -130,7 +130,8 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 	
 	// When a sectional interlocker is in use, use the check_route_sectional to
 	// check for route availability.
-	if (g_strv_contains(selected_interlocker_name, "sectional")) {
+	
+	if (g_strrstr(selected_interlocker_name->str,"sectional") != NULL) {
 		// When route is available according to check_route_sectional, directly return
 		// with empty conflict_route_ids collection. Otherwise continue
 		// with 'standard' check.
