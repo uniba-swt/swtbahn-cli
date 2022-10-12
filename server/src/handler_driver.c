@@ -91,10 +91,7 @@ bool train_grabbed(const char *train) {
 
 static bool train_is_on_tracks(const char *train_id) {
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
-	bool ret = false;
-	if (train_position_query.length > 0) {
-		ret = true;
-	}
+	bool ret = train_position_query.length > 0;
 	bidib_free_train_position_query(train_position_query);
 	return ret;
 }
