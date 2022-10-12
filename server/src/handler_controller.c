@@ -38,6 +38,7 @@
 #include "param_verification.h"
 #include "interlocking.h"
 #include "bahn_data_util.h"
+#include "check_route_sectional/check_route_sectional.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -125,7 +126,19 @@ void release_all_interlockers(void) {
 
 GArray *get_granted_route_conflicts(const char *route_id) {
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-
+	
+	// When a sectional interlocker is in use, use the route_has_no_sectional_conflicts to
+	// check for route availability.
+	
+	if (g_strrstr(selected_interlocker_name->str,"sectional") != NULL) {
+		// When route has no sectional conflicts, directly return
+		// with empty conflict_route_ids collection. Otherwise continue
+		// with standard check.
+		if (route_has_no_sectional_conflicts(route_id)) {
+			return conflict_route_ids;
+		}
+	}
+	
 	char *conflict_routes[1024];
 	const size_t conflict_routes_len = config_get_array_string_value("route", route_id, "conflicts", conflict_routes);	
 	for (size_t i = 0; i < conflict_routes_len; i++) {
@@ -177,6 +190,28 @@ const bool get_route_is_clear(const char *route_id) {
 	return true;
 }
 
+bool route_has_no_sectional_conflicts(const char *route_id) {
+	// 1. set inputs/context for check
+	pthread_mutex_lock(&interlocker_mutex);
+	bahn_data_util_init_cached_track_state();
+	char checker_output[1024];
+	char* route_id_copy = strdup(route_id);
+	check_route_sectional_tick_data check_input_data = {route_id_copy, NULL, NULL, checker_output, -1};
+	
+	// 2. Reset execution context and set new input
+	check_route_sectional_reset(&check_input_data);
+	
+	// 3. Do ticks until check has terminated
+	do {
+		check_route_sectional_tick(&check_input_data);
+	} while (check_input_data.terminated != 1);
+	
+	// Iff route_id is returned, route is available (thus return true)
+	bool ret = strcmp(check_input_data.out, route_id) == 0;
+	pthread_mutex_unlock(&interlocker_mutex);
+	free (route_id_copy);
+	return ret;
+}
 
 GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {
@@ -194,7 +229,7 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
                                                    source_id, destination_id, 
                                                    train_id);
 
-	struct t_interlocker_instance_io interlocker_instance_io;	
+	struct t_interlocker_instance_io interlocker_instance_io;
 	do {
 		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],

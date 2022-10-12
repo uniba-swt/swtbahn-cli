@@ -44,7 +44,7 @@ IF (APPLE)
 	link_directories(${LIB_EV_DIR}/lib)
 ENDIF (APPLE)
 
-file(GLOB SRCFILES "src/*.c" "src/parsers/*.c")
+file(GLOB SRCFILES "src/*.c" "src/parsers/*.c" "src/check_route_sectional/*.c")
 
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/engines;${CMAKE_CURRENT_BINARY_DIR}/interlockers")
 
