@@ -26,7 +26,6 @@
  *
  */
 
-#include <sys/syslog.h>
 #include <unistd.h>
 #include <onion/onion.h>
 #include <bidib/bidib.h>
