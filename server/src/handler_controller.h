@@ -76,7 +76,7 @@ const bool get_route_is_clear(const char *route_id);
  * @return true if route_id is safe to grant under sectional conflict checking view
  * @return false if route_id is not safe to grant under sectional conflict checking view
  */
-bool check_route_sectional(char *route_id);
+bool route_has_no_sectional_conflicts(const char *route_id);
 
 /**
   * Finds and grants a requested train route using an external algorithm.
