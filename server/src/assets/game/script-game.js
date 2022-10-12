@@ -743,10 +743,14 @@ function initialise() {
 
 
 $(document).ready(() => {
-	$('[lang="en"]').hide();
+	$('[lang="en"]').hide()
 	initialise();
 });
 
+$(document).on("click", "#changeLang", function(){
+	$('[lang="en"]').toggle();
+	$('[lang="de"]').toggle();
+});
 /*************************************
  * Handlers for page refresh or close
  */
