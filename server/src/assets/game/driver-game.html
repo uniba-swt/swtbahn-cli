@@ -11,10 +11,11 @@
 
 	<link rel="stylesheet" href="style-game.css" />
 
-	<script src="destinations-swtbahn-ultraloop.js"></script>
-	<script src="destinations-swtbahn-standard.js"></script>
-	<script src="destinations-swtbahn-full.js"></script>
-	<script src="flags-swtbahn-full.js"></script>
+	<script src="destinations-swtbahn-ultraloop.json"></script>
+	<script src="destinations-swtbahn-standard.json"></script>
+	<script src="destinations-swtbahn-full.json"></script>
+	<script src="flags-swtbahn-full.json"></script>
+	
 	<script src="script-game.js"></script>
 
 	<title>SWTbahn Driver Client</title>
@@ -67,9 +68,14 @@
 			<img class="img-fluid" src="../swtbahn-logo.png">
 		</div>
 		<div class="col p-2 d-flex justify-content-end align-items-end">
-			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">
+			<button id="endGameButton" type="button" class="btn btn-primary me-2">
 				<span lang="de">Beenden</span>
 				<span lang="en">End Trip</span>
+			</button>
+			
+			<button id="changeLang" class="btn btn-outline-primary">
+				<span lang="en">🇬🇧</span>
+				<span lang="de">🇩🇪</span>
 			</button>
 		</div>
 	</div>
@@ -147,10 +153,12 @@
 	</div>
 
 	<form id="destinationsForm">
-		<label class="col-form-label-lg me-md-5"><b>
-			<span lang="de">Mögliche Ziele:</span>
-			<span lang="en">Possible destinations:</span>
-		</b></label>
+		<label class="col-form-label-lg me-md-5">
+			<b>
+				<span lang="de">Mögliche Ziele:</span>
+				<span lang="en">Possible destinations:</span>
+			</b>
+		</label>
 		<div class="input-group row">
 			<div id="possibleDestinations" class="col">
 				<svg class="flag" viewBox="0 0 100 100">
@@ -215,11 +223,11 @@
 		</b></label>
 		<div class="input-group row">
 			<div class="col">
-				<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
-					<span lang="de">Stop</span>
-					<span lang="en">Stop</span>
-				</button>
 				<div class="btn-group" role="group">
+					<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
+						<span lang="de">Stop</span>
+						<span lang="en">Stop</span>
+					</button>
 					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">
 						<span lang="de">Langsam</span>
 						<span lang="en">Slow</span>
@@ -252,17 +260,5 @@
 		</div>
 	</form>
 </body>
-
-<footer class="fixed-bottom d-flex bg-light">
-	<div class="d-flex col align-items-end justify-content-end">
-
-		<button id="changeLang" class="btn-hidden btn bg-light" style="max-width: 50px;">
-			<img lang="en" class="img-fluid " src="germanflag.png">
-			<img lang="de" class="img-fluid " src="usflag.png">
-		</button>
-
-	</div>
-
-</footer>
 
 </html>

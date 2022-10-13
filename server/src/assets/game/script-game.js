@@ -664,6 +664,15 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
+	// Set the initial language.
+	$('[lang="en"]').hide()
+	
+	// Handle language selection.
+	$('#changeLang').click(function () {
+		$('[lang="en"]').toggle();
+		$('[lang="de"]').toggle();
+	});
+
 	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
@@ -743,14 +752,9 @@ function initialise() {
 
 
 $(document).ready(() => {
-	$('[lang="en"]').hide()
 	initialise();
 });
 
-$(document).on("click", "#changeLang", function(){
-	$('[lang="en"]').toggle();
-	$('[lang="de"]').toggle();
-});
 /*************************************
  * Handlers for page refresh or close
  */

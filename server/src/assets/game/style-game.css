@@ -11,13 +11,6 @@ body {
   height: 100%;
 }
 
-#trainDetails {
-  font-size: 29pt;
-  font-weight: bold;
-  color: #054479;
-  height: 100px;
-}
-
 #serverAlertBox {
   height: 70px;
 }
