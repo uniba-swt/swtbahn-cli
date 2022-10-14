@@ -671,7 +671,8 @@ function initialise() {
 
 	// Set the initial language.
 	$('[lang="en"]').hide();
-	language = 'en';
+	$('[lang="de"]').show();
+	language = 'de';
 	
 	// Handle language selection.
 	$('#changeLang').click(function () {
