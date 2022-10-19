@@ -506,7 +506,7 @@ class Driver {
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
-				setResponseDanger('#serverResponse', responseData.responseText);
+				setResponseDanger('#serverResponse', responseData.responseText); // FIXME: Add german translation
 			}
 		});
 	}
