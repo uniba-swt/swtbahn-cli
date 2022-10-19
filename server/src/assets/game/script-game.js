@@ -507,10 +507,10 @@ class Driver {
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
 				const germanTranslation = {
-					"no-interlocker": "Es wurde keine Interlocker ausgewählt<br />",
-					"no-routes": "Für die gewählte Strecke ist keine Route verfügbar<br />",
-					"no-grantable": "Die Route steht in Konflikt zu anderen Routen<br />",
-					"no-clear": "Die Route hat reservierte Schienen<br />",
+					"no-interlocker": "Es wurde keine Interlocker ausgewählt",
+					"no-routes": "Für die gewählte Strecke ist keine Route verfügbar",
+					"no-grantable": "Die Route steht in Konflikt zu anderen Routen \n",
+					"no-clear": "Die Route hat reservierte Schienen",
 					"default": "Route konnte nicht gewährt werden"
 				};
 				let msgDe = ""
