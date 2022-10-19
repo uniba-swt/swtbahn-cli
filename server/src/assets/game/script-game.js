@@ -506,7 +506,30 @@ class Driver {
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
-				setResponseDanger('#serverResponse', responseData.responseText); // FIXME: Add german translation
+				const germanTranslation = {
+					"no-interlocker": "Es wurde keine Interlocker ausgewählt",
+					"no-routes": "Für die gewählte Strecke ist keine Route verfügbar",
+					"no-grantable": "Die Route steht in Konflikt zu anderen Routen",
+					"no-clear": "Die Route hat reservierte Schienen",
+					"default": "Route konnte nicht gewährt werden"
+				};
+				let msgDe = ""
+				if(responseData.responseText.includes("interlocker")){
+					msgDe += germanTranslation["no-interlocker"];
+				}
+				if(responseData.responseText.includes("routes possible from")){
+					msgDe += germanTranslation["no-routes"];
+				}
+				if(responseData.responseText.includes("conflicts with others")){
+					msgDe += germanTranslation["no-grantable"];
+				}
+				if(responseData.responseText.includes("occupied")){
+					msgDe += germanTranslation["no-clear"];
+				}
+
+				msgDe += germanTranslation["default"];
+				setResponseDanger('#serverResponse', responseData.responseText, msgDe); // FIXME: Add german translation
+
 			}
 		});
 	}
