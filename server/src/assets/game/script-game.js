@@ -206,7 +206,7 @@ function setResponseDanger(responseId, messageEn, messageDe) {
 	});
 
 	// FIXME: Replace with better game sounds.
-	speak('STOP, STOP, STOP!');
+	speak('Attention, Danger!');
 }
 
 function setResponseSuccess(responseId, messageEn, messageDe) {
@@ -226,7 +226,7 @@ function setModalDanger(modalId, responseId, messageEn, messageDe) {
 	modal.show();
 
 	// FIXME: Replace with better game sounds.
-	speak('STOP, STOP, STOP!');
+	speak('Danger!');
 }
 
 
