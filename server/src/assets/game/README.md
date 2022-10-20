@@ -87,7 +87,7 @@ roughly into the following responsibilities:
 - Helper functions to hide and show different user interface elements
   - Destination buttons
   - Speed buttons
-  - Destination reached button
+  - Destination reached behaviour
   - Alert box with speech feedback
   - Modal dialog with speech feedback
 - Helper functions to update the possible destinations from a given block and to update their availability

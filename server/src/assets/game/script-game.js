@@ -672,6 +672,13 @@ class Driver {
 			setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			return;
 		}
+		
+		const lock = await Mutex.lock();
+		
+		if (this.hasRouteGranted) {
+			Mutex.unlock(lock);
+			return;
+		}
 
 		const [destinationSignal, routeDetails] = unpackRoute(route);
         console.log(routeDetails);
@@ -680,6 +687,7 @@ class Driver {
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
 			.then(() => disableAllDestinationButtons())
+			.then(() => Mutex.unlock(lock))
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => wait(1))
 			.then(() => this.setTrainSpeedPromise(0))
