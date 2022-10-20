@@ -667,7 +667,7 @@ class Driver {
 	}
 
 	// Manage the business logic of manually driving a granted route
-	driveToPromise(route) {
+	async driveToPromise(route) {
 		if (!this.hasValidTrainSession) {
 			setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			return;
