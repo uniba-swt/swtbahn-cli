@@ -146,8 +146,10 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 				electrically_reversed = 
 						(rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
 			}
+			bidib_free_id_list_query(rev_query);
 			break;
 		}
+		bidib_free_id_list_query(rev_query);
 	}
 	
 	const bool requested_forwards = electrically_reversed
