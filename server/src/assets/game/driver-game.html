@@ -207,17 +207,11 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabel">
-						<span lang="de">Fahrt nicht zulässig!</span>
-						<span lang="en">Driving Infrigment!</span>
-					</h5>
+					<h5 id="serverModalTitle" class="modal-title"></h5>
 				</div>
-				<div id="serverModalResponse" class="modal-body"></div>
+				<div id="serverModalBody" class="modal-body"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-light" data-bs-dismiss="modal">
-						<span lang="de">Verstanden</span>
-						<span lang="en">Understood"</span>
-					</button>
+					<button id="serverModalButton" type="button" class="btn btn-light btn-outline-dark" data-bs-dismiss="modal"></button>
 				</div>
 			</div>
 		</div>
@@ -316,20 +310,6 @@
 		</div>
 	</form>
 
-	<form id="destinationReachedForm">
-		<label class="col-auto col-form-label-lg me-md-5"><b>
-			<span lang="de">Ziel erreicht</span>
-			<span lang="en">Stopped at destination?</span>
-		</b></label>
-		<div class="input-group row">
-			<div class="col">
-				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5">
-					<span lang="de">Anhalten</span>
-					<span lang="en">Yes</span>
-				</button>
-			</div>
-		</div>
-	</form>
 </body>
 
 </html>

@@ -31,8 +31,18 @@ body {
 }
 
 #serverModal .modal-content {
+  color: black;
+  background-color: white;
+}
+
+#serverModal .modal-danger {
   color: white;
   background-color: Crimson;
+}
+
+#serverModal .modal-success {
+  color: white;
+  background-color: ForestGreen;
 }
 
 #serverModal .modal-header {
