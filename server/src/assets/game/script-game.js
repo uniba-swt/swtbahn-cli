@@ -120,7 +120,11 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 			}
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			setResponseDanger('#serverResponse', '😢 There was a problem checking the destinations', '😢 Es ist ein Problem beim Überprüfen der Ziele aufgetreten');
+			setResponseDanger('#serverResponse', 
+				'😢 There was a problem checking the destinations', 
+				'😢 Es ist ein Problem beim Überprüfen der Ziele aufgetreten',
+				'Sorry'
+			);
 		}
 	});
 
@@ -196,26 +200,24 @@ function speak(text) {
 	window.speechSynthesis.speak(msg);
 }
 
-function setResponseDanger(responseId, messageEn, messageDe) {
+function setResponseDanger(responseId, messageEn, messageDe, messageSpeak) {
 	setResponse(responseId, messageEn, messageDe, function() {
 		$(responseId).parent().addClass('alert-danger');
 		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
 	});
 
-	// FIXME: Replace with better game sounds.
-	speak('Attention, Danger!');
+	speak(messageSpeak);
 }
 
-function setResponseSuccess(responseId, messageEn, messageDe) {
+function setResponseSuccess(responseId, messageEn, messageDe, messageSpeak) {
 	setResponse(responseId, messageEn, messageDe, function() {
 		$(responseId).parent().removeClass('alert-danger');
 		$(responseId).parent().removeClass('alert-danger-blink');
 		$(responseId).parent().addClass('alert-success');
 	});
 
-	// FIXME: Replace with better game sounds.
-//	speak('JA, JA, JA!');
+	speak(messageSpeak);
 }
 
 const modalMessages = {
@@ -280,20 +282,18 @@ function setModal(message) {
 	modal.show();
 }
 
-function setModalDanger(message) {
+function setModalDanger(message, messageSpeak) {
 	setModal(message);
 	$('#serverModal .modal-content').addClass('modal-danger');
-
-	// FIXME: Replace with better game sounds.
-	speak('Danger!');
+	
+	speak(messageSpeak);
 }
 
-function setModalSuccess(message) {
+function setModalSuccess(message, messageSpeak) {
 	setModal(message);
 	$('#serverModal .modal-content').addClass('modal-success');
 
-	// FIXME: Replace with better game sounds.
-//	speak('JA, JA, JA!');
+	speak(messageSpeak);
 }
 
 /**************************************************
@@ -380,7 +380,11 @@ class Driver {
 				this.currentBlock =  regexMatch[1];
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden');
+				setResponseDanger('#serverResponse', 
+					'😢 Could not find your train', 
+					'😢 Dein Zug konnte nicht gefunden werden',
+					''
+				);
 			}
 		});
 	}
@@ -441,10 +445,14 @@ class Driver {
 				this.sessionId = responseDataSplit[0];
 				this.grabId = responseDataSplit[1];
 
-				setResponseSuccess('#serverResponse', '😁 Your train is ready', '😁 Dein Zug ist bereit');
+				setResponseSuccess('#serverResponse', '😁 Your train is ready', '😁 Dein Zug ist bereit', '');
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 There was a problem starting your train', '😢 Es ist ein Problem beim starten deines Zuges aufgetreten');
+				setResponseDanger('#serverResponse', 
+					'😢 There was a problem starting your train', 
+					'😢 Es ist ein Problem beim starten deines Zuges aufgetreten',
+					''
+				);
 			}
 		});
 	}
@@ -464,7 +472,7 @@ class Driver {
 				this.drivingIsForwards = responseData.includes("forwards");
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden');
+				setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			}
 		});
 	}
@@ -483,7 +491,11 @@ class Driver {
 			},
 			dataType: 'text',
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 There was a problem setting the speed of your train', '😢 Es ist ein Problem beim Einstellen der Geschwindigkeit deines Zuges aufgetreten');
+				setResponseDanger('#serverResponse', 
+					'😢 There was a problem setting the speed of your train', 
+					'😢 Es ist ein Problem beim Einstellen der Geschwindigkeit deines Zuges aufgetreten',
+					''
+				);
 			}
 		});
 	}
@@ -547,7 +559,11 @@ class Driver {
 				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '🤔 There was a problem ending your turn', '🤔 Es ist ein Problem beim Beenden deiner Runde aufgetreten');
+				setResponseDanger('#serverResponse', 
+					'🤔 There was a problem ending your turn', 
+					'🤔 Es ist ein Problem beim Beenden deiner Runde aufgetreten',
+					''
+				);
 			}
 		});
 	}
@@ -566,7 +582,11 @@ class Driver {
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
 				this.routeDetails = routeDetails;
-				setResponseSuccess('#serverResponse', '🥳 Start driving your train to your chosen destination', '🥳 Fahr deinen Zug zum ausgewählten Ziel');
+				setResponseSuccess('#serverResponse', 
+					'🥳 Start driving your train to your chosen destination', 
+					'🥳 Fahr deinen Zug zum ausgewählten Ziel',
+					''
+				);
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
@@ -591,7 +611,7 @@ class Driver {
 				} else {
 					msgDe = germanTranslation["default"];
 				}
-				setResponseDanger('#serverResponse', msgEn, msgDe);
+				setResponseDanger('#serverResponse', msgEn, msgDe, 'Sorry');
 			}
 		});
 	}
@@ -611,15 +631,19 @@ class Driver {
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
 				if (!this.hasValidTrainSession) {
-					// Ignore, end game was called
+					// Ignore, driver has ended their trip
 				} else if (!this.hasRouteGranted) {
-					setModalSuccess(modalMessages.drivingSuccess);
+					setModalSuccess(modalMessages.drivingSuccess, 'JUHUU!');
 				} else {
-					setModalDanger(modalMessages.drivingInfringement);
+					setModalDanger(modalMessages.drivingInfringement, 'STOP, STOP, STOP');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Route to your chosen destination is unavailable', '😢 Die Route zu deinem ausgewählten Ziel ist aktuell nicht verfügbar');
+				setResponseDanger('#serverResponse', 
+					'😢 Route to your chosen destination is unavailable', 
+					'😢 Die Route zu deinem ausgewählten Ziel ist aktuell nicht verfügbar',
+					'Sorry'
+				);
 			}
 		});
 	}
@@ -645,7 +669,7 @@ class Driver {
 	// Manage the business logic of manually driving a granted route
 	driveToPromise(route) {
 		if (!this.hasValidTrainSession) {
-			setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden');
+			setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			return;
 		}
 
@@ -693,7 +717,7 @@ function startGameLogic() {
 	speak("");
 
 	if (driver.hasValidTrainSession) {
-		setResponseDanger('#serverResponse', 'You are already driving a train!', 'Du fährst aktuell schon einen Zug!')
+		setResponseDanger('#serverResponse', 'You are already driving a train!', 'Du fährst aktuell schon einen Zug!', 'STOP!')
 		return;
 	}
 
@@ -835,7 +859,7 @@ function initialise() {
 				endGameLogic();
 			});
 
-		setResponseSuccess('#serverResponse', '😀 Thank you for playing', '😀 Danke fürs Spielen');
+		setResponseSuccess('#serverResponse', '😀 Thank you for playing', '😀 Danke fürs Spielen', 'Danke fürs Spielen');
 	});
 }
 
