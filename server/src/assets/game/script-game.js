@@ -506,30 +506,28 @@ class Driver {
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
+				
+				const msgEn = responseData.responseText;
 				const germanTranslation = {
 					"no-interlocker": "Es wurde keine Interlocker ausgewählt. ",
 					"no-routes": "Für die gewählte Strecke ist keine Route verfügbar. ",
-					"no-grantable": "Die Route steht in Konflikt zu anderen Routen. ",
-					"no-clear": "Die Route hat reservierte Schienen. ",
+					"not-grantable": "Die Route steht in Konflikt zu anderen Routen. ",
+					"not-clear": "Die Route hat reservierte Schienen. ",
 					"default": "Route konnte nicht gewährt werden."
 				};
 				let msgDe = ""
-				if(responseData.responseText.includes("interlocker")){
-					msgDe += germanTranslation["no-interlocker"];
+				if (msgEn.includes("No interlocker")) {
+					msgDe = germanTranslation["no-interlocker"];
+				} else if (msgEn.includes("No routes possible")) {
+					msgDe = germanTranslation["no-routes"];
+				} else if (msgEn.includes("Route found conflicts")) {
+					msgDe = germanTranslation["not-grantable"];
+				} else if (msgEn.includes("Route found has occupied tracks")) {
+					msgDe = germanTranslation["not-clear"];
+				} else {
+					msgDe = germanTranslation["default"];
 				}
-				if(responseData.responseText.includes("routes possible from")){
-					msgDe += germanTranslation["no-routes"];
-				}
-				if(responseData.responseText.includes("conflicts with others")){
-					msgDe += germanTranslation["no-grantable"];
-				}
-				if(responseData.responseText.includes("occupied")){
-					msgDe += germanTranslation["no-clear"];
-				}
-
-				msgDe += germanTranslation["default"];
-				setResponseDanger('#serverResponse', responseData.responseText, msgDe); // FIXME: Add german translation
-
+				setResponseDanger('#serverResponse', msgEn, msgDe);
 			}
 		});
 	}
