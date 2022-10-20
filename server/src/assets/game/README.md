@@ -109,7 +109,7 @@ roughly into the following responsibilities:
 
 JavaScript uses a single-threaded event-loop to execute function calls.
 A function is always executed to completion, without any interruption.
-Thus, busy-waiting statements, e.g., `while (flag)`, will block indefinitely
+Thus, busy-waiting statements, e.g., `flag = true; while (flag) { ... }`, will block indefinitely
 because `flag` cannot be changed to `false` by another function. When 
 communicating with a server, a synchronous request would block the JavaScript
 runtime until a response is received. Server communication can be 
@@ -126,6 +126,11 @@ for a promise to be fulfilled is easily achieved with a
 Note that, when the server returns an error, the promise becomes rejected and 
 the remainder of the promise chain is skipped. A rejected promise behaves as an
 error that needs to be caught and handled.
+
+A pitfall with asynchronous communication is that execution dependencies between
+asynchronous calls are not guaranteed to be respected. For example, if the user 
+is presented with multiple buttons that trigger some server operation and the operations
+should be executed one at a time, mutual exclusion of the asynchronous communication is needed.
 
 > When reviewing the code, always remember that functions execute to completion and
 > all of its contained promises (and asynchronous code) will only be executed at a later time.

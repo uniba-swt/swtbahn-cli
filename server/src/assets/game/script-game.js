@@ -1,6 +1,6 @@
 var driver = null;           // Train driver logic.
 var serverAddress = "";      // The base address of the server.
-
+var language = "";           // User interface language.
 
 /**************************************************
  * Destination related information and UI elements
@@ -120,7 +120,11 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 			}
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			setResponseDanger('#serverResponse', '😢 There was a problem checking the destinations');
+			setResponseDanger('#serverResponse', 
+				'😢 There was a problem checking the destinations', 
+				'😢 Es ist ein Problem beim Überprüfen der Ziele aufgetreten',
+				'Sorry'
+			);
 		}
 	});
 
@@ -161,10 +165,8 @@ function setChosenDestination(destination) {
 	$('#destination').attr("class", signalFlagMap[destination]);
 }
 
-function disableReachedDestinationButton() {
-	$('#destinationReachedForm').hide();
-	$('#destinationReached').prop('disabled', true);
-	driver.endGameButtonIsPersistent = false;
+function disableDestinationReached() {
+	driver.isDestinationReached = false;
 }
 
 
@@ -173,9 +175,10 @@ function disableReachedDestinationButton() {
  */
 var responseTimer = null;
 
-function setResponse(responseId, message, callback) {
+function setResponse(responseId, messageEn, messageDe, callback) {
 	clearTimeout(responseTimer);
 
+	const message = (language == 'en') ? messageEn : messageDe;
 	$(responseId).text(message);
 	callback();
 
@@ -197,35 +200,101 @@ function speak(text) {
 	window.speechSynthesis.speak(msg);
 }
 
-function setResponseDanger(responseId, message) {
-	setResponse(responseId, message, function() {
+function setResponseDanger(responseId, messageEn, messageDe, messageSpeak) {
+	setResponse(responseId, messageEn, messageDe, function() {
 		$(responseId).parent().addClass('alert-danger');
 		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
 	});
 
-	// FIXME: Replace with better game sounds.
-	speak('STOP, NEIN, ACHTUNG!');
+	speak(messageSpeak);
 }
 
-function setResponseSuccess(responseId, message) {
-	setResponse(responseId, message, function() {
+function setResponseSuccess(responseId, messageEn, messageDe, messageSpeak) {
+	setResponse(responseId, messageEn, messageDe, function() {
 		$(responseId).parent().removeClass('alert-danger');
 		$(responseId).parent().removeClass('alert-danger-blink');
 		$(responseId).parent().addClass('alert-success');
 	});
+
+	speak(messageSpeak);
 }
 
-function setModalDanger(modalId, responseId, message) {
-	$(responseId).html(message);
-	let modalElement = document.getElementById(modalId.replace('#', ''));
+const modalMessages = {
+	drivingInfringement: {
+		title: {
+			de: '👎 Fahrt nicht zulässig!',
+			en: '👎 Driving Infringement!'
+		},
+		body: {
+			de: 'Du hast deinen Zug nicht vor dem Zielsignal gestoppt! <br/><br/> Glücklicherweise konnten wir deinen Zug stoppen, bevor dieser mit einem anderen kollidieren oder die Schienen beschädigen konnte.',
+			en: 'You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.'
+		},
+		button: {
+			de: 'Verstanden',
+			en: 'Understood'
+		}
+	},
+	drivingContinue: {
+		title: {
+			de: 'Fahr weiter',
+			en: 'Continue Driving'
+		},
+		body: {
+			de: 'Du hast dein Ziel noch nicht erreicht. Bitte fahr weiter 😀',
+			en: 'You have not yet reached your destination. Please continue driving 😀'
+		},
+		button: {
+			de: 'Verstanden',
+			en: 'Understood'
+		}
+	},
+	drivingSuccess: {
+		title: {
+			de: 'Ziel erreicht!',
+			en: 'Destination Reached!'
+		},
+		body: {
+			de: '🥳 Du hast deinen Zug zur deiner ausgewählten Station gefahren',
+			en: '🥳 You drove your train to your chosen destination!'
+		},
+		button: {
+			de: 'Super!',
+			en: 'Awesome!'
+		}
+	}
+};
+
+function setModal(message) {
+	$('#serverModal .modal-content').removeClass('modal-danger');
+	$('#serverModal .modal-content').removeClass('modal-success');
+
+	const title = (language == 'en') ? message.title.en : message.title.de;
+	const body = (language == 'en') ? message.body.en : message.body.de;
+	const button = (language == 'en') ? message.button.en : message.button.de;
+
+	$('#serverModalTitle').text(title);
+	$('#serverModalBody').html(body);
+	$('#serverModalButton').text(button);
+	
+	let modalElement = document.getElementById('serverModal');
 	let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 	modal.show();
-
-	// FIXME: Replace with better game sounds.
-	speak('STOP, NEIN, ACHTUNG!');
 }
 
+function setModalDanger(message, messageSpeak) {
+	setModal(message);
+	$('#serverModal .modal-content').addClass('modal-danger');
+	
+	speak(messageSpeak);
+}
+
+function setModalSuccess(message, messageSpeak) {
+	setModal(message);
+	$('#serverModal .modal-content').addClass('modal-success');
+
+	speak(messageSpeak);
+}
 
 /**************************************************
  * Driver class that controls the driving of a
@@ -244,7 +313,7 @@ class Driver {
 	routeDetails = null;
 	drivingIsForwards = null;
 	currentBlock = null;
-	endGameButtonIsPersistent = null;
+	isDestinationReached = null;
 
 	// Timer intervals
 	trainAvailabilityInterval = null;
@@ -261,7 +330,7 @@ class Driver {
 		this.routeDetails = null;
 		this.drivingIsForwards = null;
 		this.currentBlock = null;
-		this.endGameButtonIsPersistent = false;
+		this.isDestinationReached = false;
 
 		this.trainAvailabilityInterval = null;
 		this.updatePossibleDestinationsInterval = null;
@@ -311,7 +380,11 @@ class Driver {
 				this.currentBlock =  regexMatch[1];
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Could not find your train');
+				setResponseDanger('#serverResponse', 
+					'😢 Could not find your train', 
+					'😢 Dein Zug konnte nicht gefunden werden',
+					''
+				);
 			}
 		});
 	}
@@ -372,10 +445,14 @@ class Driver {
 				this.sessionId = responseDataSplit[0];
 				this.grabId = responseDataSplit[1];
 
-				setResponseSuccess('#serverResponse', '😁 Your train is ready');
+				setResponseSuccess('#serverResponse', '😁 Your train is ready', '😁 Dein Zug ist bereit', '');
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 There was a problem starting your train');
+				setResponseDanger('#serverResponse', 
+					'😢 There was a problem starting your train', 
+					'😢 Es ist ein Problem beim starten deines Zuges aufgetreten',
+					''
+				);
 			}
 		});
 	}
@@ -395,7 +472,7 @@ class Driver {
 				this.drivingIsForwards = responseData.includes("forwards");
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Could not find your train');
+				setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			}
 		});
 	}
@@ -414,14 +491,18 @@ class Driver {
 			},
 			dataType: 'text',
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 There was a problem setting the speed of your train');
+				setResponseDanger('#serverResponse', 
+					'😢 There was a problem setting the speed of your train', 
+					'😢 Es ist ein Problem beim Einstellen der Geschwindigkeit deines Zuges aufgetreten',
+					''
+				);
 			}
 		});
 	}
 
 	// Server request for the train's current segment and then determine
 	// whether to show the destination reached button
-	enableReachedDestinationButtonPromise() {
+	enableDestinationReachedPromise() {
 		const destinationReachedTimeout = 500;
 		this.destinationReachedInterval = setInterval(() => {
 			return $.ajax({
@@ -442,21 +523,19 @@ class Driver {
 					// Take into account that a main segment could be split into a/b segments
 					for (let index in segments) {
 						segments[index] = segments[index].replace(/(a|b)$/, '');
-						if (segments[index] != this.routeDetails["segment"]) {
+						if (segments[index] != this.routeDetails['segment']) {
 							return;
 						}
 					}
 					
-					if(segments[0] == this.routeDetails["segment"]) {
+					if(segments[0] == this.routeDetails['segment']) {
 						this.clearDestinationReachedInterval();
-						this.endGameButtonIsPersistent = true;
+						this.isDestinationReached = true;
 						$('#endGameButton').show();
-						$('#destinationReachedForm').show();
-						$('#destinationReached').prop('disabled', false);
 
 						// The page can be refreshed without ill consequences.
 						// The train will stop sensibly on the main segment of the destination
-						$(window).unbind("beforeunload", pageRefreshWarning);
+						$(window).unbind('beforeunload', pageRefreshWarning);
 					}
 				}
 			});
@@ -480,7 +559,11 @@ class Driver {
 				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '🤔 There was a problem ending your turn');
+				setResponseDanger('#serverResponse', 
+					'🤔 There was a problem ending your turn', 
+					'🤔 Es ist ein Problem beim Beenden deiner Runde aufgetreten',
+					''
+				);
 			}
 		});
 	}
@@ -494,16 +577,41 @@ class Driver {
 			data: {
 				'session-id': this.sessionId,
 				'grab-id': this.grabId,
-				'route-id': routeDetails["route-id"]
+				'route-id': routeDetails['route-id']
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
 				this.routeDetails = routeDetails;
-				setResponseSuccess('#serverResponse', '🥳 Start driving your train to your chosen destination');
+				setResponseSuccess('#serverResponse', 
+					'🥳 Start driving your train to your chosen destination', 
+					'🥳 Fahr deinen Zug zum ausgewählten Ziel',
+					''
+				);
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
-				setResponseDanger('#serverResponse', responseData.responseText);
+				
+				const msgEn = responseData.responseText;
+				const germanTranslation = {
+					"no-interlocker": "Es wurde keine Interlocker ausgewählt. ",
+					"no-routes": "Für die gewählte Strecke ist keine Route verfügbar. ",
+					"not-grantable": "Die Route steht in Konflikt zu anderen Routen. ",
+					"not-clear": "Die Route hat reservierte Schienen. ",
+					"default": "Route konnte nicht gewährt werden."
+				};
+				let msgDe = ""
+				if (msgEn.startsWith("No interlocker")) {
+					msgDe = germanTranslation["no-interlocker"];
+				} else if (msgEn.startsWith("No routes possible")) {
+					msgDe = germanTranslation["no-routes"];
+				} else if (msgEn.startsWith("Route found conflicts")) {
+					msgDe = germanTranslation["not-grantable"];
+				} else if (msgEn.startsWith("Route found has occupied tracks")) {
+					msgDe = germanTranslation["not-clear"];
+				} else {
+					msgDe = germanTranslation["default"];
+				}
+				setResponseDanger('#serverResponse', msgEn, msgDe, 'Sorry');
 			}
 		});
 	}
@@ -523,15 +631,19 @@ class Driver {
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
 				if (!this.hasValidTrainSession) {
-					// Ignore, end game was called
+					// Ignore, driver has ended their trip
 				} else if (!this.hasRouteGranted) {
-					setResponseSuccess('#serverResponse', '🥳 You drove your train to your chosen destination');
+					setModalSuccess(modalMessages.drivingSuccess, 'JUHUU!');
 				} else {
-					setModalDanger('#serverModal', '#serverModalResponse', '👎 You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.');
+					setModalDanger(modalMessages.drivingInfringement, 'STOP, STOP, STOP');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', '😢 Route to your chosen destination is unavailable');
+				setResponseDanger('#serverResponse', 
+					'😢 Route to your chosen destination is unavailable', 
+					'😢 Die Route zu deinem ausgewählten Ziel ist aktuell nicht verfügbar',
+					'Sorry'
+				);
 			}
 		});
 	}
@@ -557,7 +669,7 @@ class Driver {
 	// Manage the business logic of manually driving a granted route
 	driveToPromise(route) {
 		if (!this.hasValidTrainSession) {
-			setResponseDanger('#serverResponse', 'Your train could not be found 😢');
+			setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			return;
 		}
 
@@ -573,7 +685,7 @@ class Driver {
 			.then(() => this.setTrainSpeedPromise(0))
 			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver
 			.then(() => enableSpeedButtons(destinationSignal))
-			.then(() => this.enableReachedDestinationButtonPromise())  // 6. Start monitoring whether the train has reached the destination
+			.then(() => this.enableDestinationReachedPromise())        // 6. Start monitoring whether the train has reached the destination
 
 			.then(() => this.driveRoutePromise())                      // 7. Start the manual driving mode for the granted route
 
@@ -586,7 +698,7 @@ class Driver {
 					throw new Error("Game has ended");
 				}
 			})
-			.then(() => disableReachedDestinationButton())             // 10. Remove the destination reached button
+			.then(() => disableDestinationReached())                   // 10. Remove the destination reached behaviour
 			.then(() => this.updateCurrentBlockPromise())              // 11. Show the next possible destinations
 			.then(() => updatePossibleDestinations(driver.currentBlock))
 			.catch(() => { });                                         // 12. Execution skips to here if the safety layer was triggered (step 9)
@@ -605,11 +717,11 @@ function startGameLogic() {
 	speak("");
 
 	if (driver.hasValidTrainSession) {
-		setResponseDanger('#serverResponse', 'You are already driving a train!')
+		setResponseDanger('#serverResponse', 'You are already driving a train!', 'Du fährst aktuell schon einen Zug!', 'STOP!')
 		return;
 	}
 
-	setResponseSuccess('#serverResponse', '⏳ Waiting ...');
+	setResponseSuccess('#serverResponse', '⏳ Waiting ...', '⏳ Warten ...');
 
 	driver.grabTrainPromise()
 		.then(() => $('#trainSelection').hide())
@@ -628,7 +740,7 @@ function endGameLogic() {
 	driver.clearDestinationReachedInterval();
 	driver.reset();
 	disableAllDestinationButtons();
-	disableReachedDestinationButton();
+	disableDestinationReached();
 	disableSpeedButtons();
 	clearChosenDestination();
 
@@ -664,11 +776,23 @@ function initialise() {
 	// Attach button behaviours
 	//-----------------------------------------------------
 
+	// Set the initial language.
+	$('span:lang(en)').hide();
+	$('span:lang(de)').show();
+	language = 'de';
+	
+	// Handle language selection.
+	$('#changeLang').click(function () {
+		$('span:lang(en)').toggle();
+		$('span:lang(de)').toggle();
+		language = (language == 'en') ? 'de' : 'en';
+	});
+
 	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
-	disableReachedDestinationButton();
+	disableDestinationReached();
 
 	// Handle train selection.
 	$('.selectTrainButton').click(function (event) {
@@ -696,14 +820,6 @@ function initialise() {
 		});
 	}
 
-	disableReachedDestinationButton();
-
-	// Initialise the click handler of the destination reached button.
-	$("#destinationReached").click(function () {
-		driver.setTrainSpeedPromise(0);
-		driver.releaseRoutePromise();
-	});
-
 	disableSpeedButtons();
 
 	// Initialise the click handler of each speed button.
@@ -711,12 +827,18 @@ function initialise() {
 		const speedButton = $(`#${speed}`);
 		speedButton.click(function () {
 			driver.setTrainSpeedPromise(speedButton.val());
-			if (!driver.endGameButtonIsPersistent) {
+			if (!driver.isDestinationReached) {
 				$('#endGameButton').hide();
 
+				if (speedButton.val() == '0') {
+					setModal(modalMessages.drivingContinue);
+				}
+				
 				// The page cannot be refreshed without ill consequences.
 				// The train might not stop sensibly on the main segment of the destination
 				$(window).bind("beforeunload", pageRefreshWarning);
+			} else if (speedButton.val() == '0') {
+				driver.releaseRoutePromise();
 			}
 		});
 	});
@@ -727,7 +849,7 @@ function initialise() {
 			return;
 		}
 
-		setResponseSuccess('#serverResponse', '⏳ Waiting ...');
+		setResponseSuccess('#serverResponse', '⏳ Waiting ...', '⏳ Warten ...');
 
 		driver.setTrainSpeedPromise(0)
 			.then(() => wait(500))
@@ -737,20 +859,15 @@ function initialise() {
 				endGameLogic();
 			});
 
-		setResponseSuccess('#serverResponse', '😀 Thank you for playing');
+		setResponseSuccess('#serverResponse', '😀 Thank you for playing', '😀 Danke fürs Spielen', 'Danke fürs Spielen');
 	});
 }
 
 
 $(document).ready(() => {
-	$('[lang="en"]').hide()
 	initialise();
 });
 
-$(document).on("click", "#changeLang", function(){
-	$('[lang="en"]').toggle();
-	$('[lang="de"]').toggle();
-});
 /*************************************
  * Handlers for page refresh or close
  */

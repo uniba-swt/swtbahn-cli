@@ -121,7 +121,7 @@ for block in originalResultData:
         resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
         resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
 
-with open("../destinations-swtbahn-full.js", "w") as file:
+with open("../destinations-swtbahn-full.json", "w") as file:
     file.write("const allPossibleDestinationsSwtbahnFull = ")
     file.write(json.dumps(resultData, indent=2))
     file.write(";")
