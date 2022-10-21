@@ -70,7 +70,7 @@ function updatePossibleDestinations(blockId) {
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
-	const updatePossibleDestinationsTimeout = 500;
+	const updatePossibleDestinationsTimeout = 1000;
 	driver.updatePossibleDestinationsInterval = setInterval(() => {
 		console.log("Checking available destinations ...");
 
@@ -503,7 +503,7 @@ class Driver {
 	// Server request for the train's current segment and then determine
 	// whether to show the destination reached button
 	enableDestinationReachedPromise() {
-		const destinationReachedTimeout = 500;
+		const destinationReachedTimeout = 100;
 		this.destinationReachedInterval = setInterval(() => {
 			return $.ajax({
 				type: 'POST',
@@ -633,7 +633,7 @@ class Driver {
 				if (!this.hasValidTrainSession) {
 					// Ignore, driver has ended their trip
 				} else if (!this.hasRouteGranted) {
-					setModalSuccess(modalMessages.drivingSuccess, 'JUHUU!');
+					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
 				} else {
 					setModalDanger(modalMessages.drivingInfringement, 'STOP, STOP, STOP');
 				}
@@ -823,8 +823,14 @@ function initialise() {
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
 		const destinationButton = $(`#${destinationNamePrefix}${i}`);
 		destinationButton.click(function () {
-			const route = JSON.parse(destinationButton.val());
-			driver.driveToPromise(route);
+			// Should check if button is enabled here
+			if (destinationButton.hasClass("flagThemeDisabled")) {
+				console.log("Route Driving was not attempted as its disabled");
+				setResponseDanger('#serverResponse', "This route is not available", "Diese Route ist zurzeit leider nicht verfügbar", 'Sorry');
+			} else {
+				const route = JSON.parse(destinationButton.val());
+				driver.driveToPromise(route);
+			}
 		});
 	}
 
