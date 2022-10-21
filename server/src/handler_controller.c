@@ -52,50 +52,50 @@ static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] 
 static GString *selected_interlocker_name;
 static int selected_interlocker_instance = -1;
 
-static const char* block1[13] = {"signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41"};
-static const char* block2[13] = {"signal8", "signal4a", "", "", "", "", "", "", "", "", "", "", ""};
-static const char* block3[13] =  {"signal7a", "signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "signal1", "signal11", "signal15", "signal26", "signal28", "signal30"};
-static const char* block4[13] = {"signal1", "signal9", "signal15", "signal26", "", "", "", "", "", "", "", "", ""};
-static const char* block5[13] = {"signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "signal19", "signal45", "signal47", "signal49", "signal51", ""};
-static const char* block6[13] = {"signal4a", "signal18a", "signal21", "signal43", "", "", "", "", "", "", "", "", ""};
-static const char* block7[13] = {"signal8", "signal20", "signal23", "signal36", "", "", "", "", "", "", "", "", ""};
-static const char* block8and15[13] = {"signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "signal1", "signal15", "signal26", "signal28", "signal30", "", ""};
-static const char* block9[13] = {"signal9", "signal24", "signal37", "signal1", "signal15", "signal26", "", "", "", "", "", "", ""};
-static const char* block10[13] = {"signal15", "signal26", "signal28", "signal30", "signal9", "signal24", "signal37", "signal39", "signal41", "", "", "", ""};
-static const char* block11[13] = {"signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "", "", "", "", "", ""};
-static const char* block12to13[13] = {"signal9", "signal24", "signal32", "signal37", "signal39", "signal41", "", "", "", "", "", "", ""};
-static const char* block14[13] = {"signal8", "signal23", "signal36", "signal15", "signal26", "signal28", "signal30", "", "", "", "", "", ""};
-static const char* block16to17[13] = {"signal15", "signal26", "signal28", "signal30", "", "", "", "", "", "", "", "", ""};
-static const char* block18[13] = {"signal20", "", "", "", "", "", "", "", "", "", "", "", ""};
-static const char* block19to22[13] = {"signal8", "signal23", "signal36", "signal4a", "signal18a", "", "", "", "", "", "", "", ""};
-static const char* p1[13] = {"signal4a", "signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "", "", "", "", "", ""};
-static const char* p2[13] = {"signal4a", "signal5", "signal19", "signal45", "signal47", "signal49", "", "", "", "", "", "", ""};
-static const char* p3[13] = {"signal7a", "signal8", "signal22a", "signal46a", "signal48a", "signal50a", "", "", "", "", "", "", ""};
-static const char* p4[13] = {"signal7a", "signal8", "signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "", "", "", "", ""};
-static const char* p5[13] = {"signal1", "signal9", "signal11", "signal15", "signal26", "signal28", "signal30", "", "", "", "", "", ""};
-static const char* p6to7[13] = {"signal1", "signal9", "signal14", "signal15", "signal24", "signal26", "signal37", "", "", "", "", "", ""};
-static const char* p8to9[13] = {"signal4a", "signal18a", "signal19", "signal45", "signal47", "signal49", "signal51", "", "", "", "", "", ""};
-static const char* p10[13] = {"signal20", "signal21", "signal43", "", "", "", "", "", "", "", "", "", ""};
-static const char* p11[13] = {"signal8", "signal22a", "signal23", "signal36", "signal46a", "signal48a", "signal50a", "", "", "", "", "", ""};
-static const char* p12[13] = {"signal8", "signal22a", "signal23", "signal35a", "signal36", "signal46a", "signal48a", "signal50a", "signal53a", "", "", "", ""};
-static const char* p13[13] = {"signal22a", "signal23", "signal35a", "signal36", "signal46a", "signal48a", "signal50a", "signal53a", "", "", "", "", ""};
-static const char* p14[13] = {"signal1", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "", "", "", "", "", ""};
-static const char* p15to16[13] = {"signal1", "signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "", "", "", "", ""};
-static const char* p17[13] = {"signal1", "signal9", "signal15", "signal24", "signal26", "signal37", "", "", "", "", "", "", ""};
-static const char* p18a[13] = {"signal9", "signal14", "signal15", "signal24", "signal32", "signal37", "signal39", "signal41", "", "", "", "", ""};
-static const char* p18b[13] = {"signal9", "signal14", "signal15", "signal24", "signal26", "signal32", "signal37", "signal39", "signal41", "", "", "", ""};
-static const char* p19[13] = {"signal9", "signal15", "signal24", "signal26", "signal32", "signal37", "signal39", "signal41", "", "", "", "", ""};
-static const char* p20to21[13] = {"signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "signal39", "signal41", "", "", "", ""};
-static const char* p22[13] = {"signal9", "signal24", "signal28", "signal30", "signal32", "signal37", "signal39", "signal41", "", "", "", "", ""};
-static const char* p23[13] = {"signal15", "signal26", "signal28", "signal30", "signal32", "", "", "", "", "", "", "", ""};
-static const char* p24[13] = {"signal8", "signal23", "signal35a", "signal36", "signal53a", "", "", "", "", "", "", "", ""};
-static const char* p25[13] = {"signal15", "signal26", "signal28", "signal30", "signal39", "signal41", "", "", "", "", "", "", ""};
-static const char* p26[13] = {"signal4a", "signal18a", "signal45", "signal47", "signal49", "", "", "", "", "", "", "", ""};
-static const char* p27[13] = {"signal8", "signal23", "signal36", "signal46a", "signal48a", "signal50a", "", "", "", "", "", "", ""};
-static const char* p28[13] = {"signal4a", "signal18a", "signal47", "signal49", "", "", "", "", "", "", "", "", ""};
-static const char* p29[13] = {"signal8", "signal23", "signal36", "signal48a", "signal50a", "", "", "", "", "", "", "", ""};
-static const char* crossing1[13] = {"signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal32", "signal37", "signal39", "signal41", "", "", ""};
-static const char* crossing2[13] = {"signal9", "signal14", "signal15", "signal24", "signal26", "signal37", "", "", "", "", "", "", ""};
+static const char* block1[14] = {"signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* block2[3] = {"signal8", "signal4a", "_end_"};
+static const char* block3[14] =  {"signal7a", "signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "signal1", "signal11", "signal15", "signal26", "signal28", "signal30", "_end_"};
+static const char* block4[5] = {"signal1", "signal9", "signal15", "signal26", "_end_"};
+static const char* block5[13] = {"signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "signal19", "signal45", "signal47", "signal49", "signal51", "_end_"};
+static const char* block6[5] = {"signal4a", "signal18a", "signal21", "signal43", "_end_"};
+static const char* block7[5] = {"signal8", "signal20", "signal23", "signal36", "_end_"};
+static const char* block8and15[12] = {"signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "signal1", "signal15", "signal26", "signal28", "signal30", "_end_"};
+static const char* block9[7] = {"signal9", "signal24", "signal37", "signal1", "signal15", "signal26", "_end_"};
+static const char* block10[10] = {"signal15", "signal26", "signal28", "signal30", "signal9", "signal24", "signal37", "signal39", "signal41", "_end_"};
+static const char* block11[8] = {"signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* block12to13[7] = {"signal9", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* block14[8] = {"signal8", "signal23", "signal36", "signal15", "signal26", "signal28", "signal30", "_end_"};
+static const char* block16to17[5] = {"signal15", "signal26", "signal28", "signal30", "_end_"};
+static const char* block18[2] = {"signal20", "_end_"};
+static const char* block19to22[6] = {"signal8", "signal23", "signal36", "signal4a", "signal18a", "_end_"};
+static const char* p1[8] = {"signal4a", "signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "_end_"};
+static const char* p2[7] = {"signal4a", "signal5", "signal19", "signal45", "signal47", "signal49", "_end_"};
+static const char* p3[7] = {"signal7a", "signal8", "signal22a", "signal46a", "signal48a", "signal50a", "_end_"};
+static const char* p4[9] = {"signal7a", "signal8", "signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "_end_"};
+static const char* p5[8] = {"signal1", "signal9", "signal11", "signal15", "signal26", "signal28", "signal30", "_end_"};
+static const char* p6to7[8] = {"signal1", "signal9", "signal14", "signal15", "signal24", "signal26", "signal37", "_end_"};
+static const char* p8to9[8] = {"signal4a", "signal18a", "signal19", "signal45", "signal47", "signal49", "signal51", "_end_"};
+static const char* p10[4] = {"signal20", "signal21", "signal43", "_end_"};
+static const char* p11[8] = {"signal8", "signal22a", "signal23", "signal36", "signal46a", "signal48a", "signal50a", "_end_"};
+static const char* p12[10] = {"signal8", "signal22a", "signal23", "signal35a", "signal36", "signal46a", "signal48a", "signal50a", "signal53a", "_end_"};
+static const char* p13[9] = {"signal22a", "signal23", "signal35a", "signal36", "signal46a", "signal48a", "signal50a", "signal53a", "_end_"};
+static const char* p14[8] = {"signal1", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "_end_"};
+static const char* p15to16[9] = {"signal1", "signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "_end_"};
+static const char* p17[7] = {"signal1", "signal9", "signal15", "signal24", "signal26", "signal37", "_end_"};
+static const char* p18a[9] = {"signal9", "signal14", "signal15", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* p18b[10] = {"signal9", "signal14", "signal15", "signal24", "signal26", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* p19[9] = {"signal9", "signal15", "signal24", "signal26", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* p20to21[10] = {"signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "signal39", "signal41", "_end_"};
+static const char* p22[9] = {"signal9", "signal24", "signal28", "signal30", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* p23[6] = {"signal15", "signal26", "signal28", "signal30", "signal32", "_end_"};
+static const char* p24[6] = {"signal8", "signal23", "signal35a", "signal36", "signal53a", "_end_"};
+static const char* p25[7] = {"signal15", "signal26", "signal28", "signal30", "signal39", "signal41", "_end_"};
+static const char* p26[6] = {"signal4a", "signal18a", "signal45", "signal47", "signal49", "_end_"};
+static const char* p27[7] = {"signal8", "signal23", "signal36", "signal46a", "signal48a", "signal50a", "_end_"};
+static const char* p28[5] = {"signal4a", "signal18a", "signal47", "signal49", "_end_"};
+static const char* p29[6] = {"signal8", "signal23", "signal36", "signal48a", "signal50a", "_end_"};
+static const char* crossing1[11] = {"signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal32", "signal37", "signal39", "signal41", "_end_"};
+static const char* crossing2[7] = {"signal9", "signal14", "signal15", "signal24", "signal26", "signal37", "_end_"};
 
 static const char** guarding_signals_mapping[44] = {block1, block2, block3, block4, block5, block6, block7, block8and15, block9, block10, block11, block12to13, block14, block16to17, block18, block19to22, p1, p2, p3, p4, p5, p6to7, p8to9, p10, p11, p12, p13, p14, p15to16, p17, p18a, p18b, p19, p20to21, p22, p23, p24, p25, p26, p27, p28, p29, crossing1, crossing2};
 
@@ -278,9 +278,9 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 	if (guarding_signals_elem == NULL) {
 		return false;
 	}
-	for (size_t sig_i = 0; sig_i < 13; ++sig_i) {
+	for (size_t sig_i = 0; sig_i < 14; ++sig_i) {
 		const char* guarding_signal_item = guarding_signals_elem[sig_i];
-		if (strcmp(guarding_signal_item, "")) {
+		if (strcmp(guarding_signal_item, "_end_")) {
 			break;
 		}
 		if (guarding_signal_item != NULL) {
