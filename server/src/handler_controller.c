@@ -39,6 +39,7 @@
 #include "interlocking.h"
 #include "bahn_data_util.h"
 #include "check_route_sectional/check_route_sectional.h"
+#include "check_route_sectional/check_route_sectional_direct.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -51,53 +52,6 @@ static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] 
 
 static GString *selected_interlocker_name;
 static int selected_interlocker_instance = -1;
-
-static const char* block1[14] = {"signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* block2[3] = {"signal8", "signal4a", "_end_"};
-static const char* block3[14] =  {"signal7a", "signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "signal1", "signal11", "signal15", "signal26", "signal28", "signal30", "_end_"};
-static const char* block4[5] = {"signal1", "signal9", "signal15", "signal26", "_end_"};
-static const char* block5[13] = {"signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "signal19", "signal45", "signal47", "signal49", "signal51", "_end_"};
-static const char* block6[5] = {"signal4a", "signal18a", "signal21", "signal43", "_end_"};
-static const char* block7[5] = {"signal8", "signal20", "signal23", "signal36", "_end_"};
-static const char* block8and15[12] = {"signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "signal1", "signal15", "signal26", "signal28", "signal30", "_end_"};
-static const char* block9[7] = {"signal9", "signal24", "signal37", "signal1", "signal15", "signal26", "_end_"};
-static const char* block10[10] = {"signal15", "signal26", "signal28", "signal30", "signal9", "signal24", "signal37", "signal39", "signal41", "_end_"};
-static const char* block11[8] = {"signal9", "signal14", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* block12to13[7] = {"signal9", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* block14[8] = {"signal8", "signal23", "signal36", "signal15", "signal26", "signal28", "signal30", "_end_"};
-static const char* block16to17[5] = {"signal15", "signal26", "signal28", "signal30", "_end_"};
-static const char* block18[2] = {"signal20", "_end_"};
-static const char* block19to22[6] = {"signal8", "signal23", "signal36", "signal4a", "signal18a", "_end_"};
-static const char* p1[8] = {"signal4a", "signal5", "signal19", "signal45", "signal47", "signal49", "signal51", "_end_"};
-static const char* p2[7] = {"signal4a", "signal5", "signal19", "signal45", "signal47", "signal49", "_end_"};
-static const char* p3[7] = {"signal7a", "signal8", "signal22a", "signal46a", "signal48a", "signal50a", "_end_"};
-static const char* p4[9] = {"signal7a", "signal8", "signal22a", "signal35a", "signal46a", "signal48a", "signal50a", "signal53a", "_end_"};
-static const char* p5[8] = {"signal1", "signal9", "signal11", "signal15", "signal26", "signal28", "signal30", "_end_"};
-static const char* p6to7[8] = {"signal1", "signal9", "signal14", "signal15", "signal24", "signal26", "signal37", "_end_"};
-static const char* p8to9[8] = {"signal4a", "signal18a", "signal19", "signal45", "signal47", "signal49", "signal51", "_end_"};
-static const char* p10[4] = {"signal20", "signal21", "signal43", "_end_"};
-static const char* p11[8] = {"signal8", "signal22a", "signal23", "signal36", "signal46a", "signal48a", "signal50a", "_end_"};
-static const char* p12[10] = {"signal8", "signal22a", "signal23", "signal35a", "signal36", "signal46a", "signal48a", "signal50a", "signal53a", "_end_"};
-static const char* p13[9] = {"signal22a", "signal23", "signal35a", "signal36", "signal46a", "signal48a", "signal50a", "signal53a", "_end_"};
-static const char* p14[8] = {"signal1", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "_end_"};
-static const char* p15to16[9] = {"signal1", "signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "_end_"};
-static const char* p17[7] = {"signal1", "signal9", "signal15", "signal24", "signal26", "signal37", "_end_"};
-static const char* p18a[9] = {"signal9", "signal14", "signal15", "signal24", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* p18b[10] = {"signal9", "signal14", "signal15", "signal24", "signal26", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* p19[9] = {"signal9", "signal15", "signal24", "signal26", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* p20to21[10] = {"signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal37", "signal39", "signal41", "_end_"};
-static const char* p22[9] = {"signal9", "signal24", "signal28", "signal30", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* p23[6] = {"signal15", "signal26", "signal28", "signal30", "signal32", "_end_"};
-static const char* p24[6] = {"signal8", "signal23", "signal35a", "signal36", "signal53a", "_end_"};
-static const char* p25[7] = {"signal15", "signal26", "signal28", "signal30", "signal39", "signal41", "_end_"};
-static const char* p26[6] = {"signal4a", "signal18a", "signal45", "signal47", "signal49", "_end_"};
-static const char* p27[7] = {"signal8", "signal23", "signal36", "signal46a", "signal48a", "signal50a", "_end_"};
-static const char* p28[5] = {"signal4a", "signal18a", "signal47", "signal49", "_end_"};
-static const char* p29[6] = {"signal8", "signal23", "signal36", "signal48a", "signal50a", "_end_"};
-static const char* crossing1[11] = {"signal9", "signal15", "signal24", "signal26", "signal28", "signal30", "signal32", "signal37", "signal39", "signal41", "_end_"};
-static const char* crossing2[7] = {"signal9", "signal14", "signal15", "signal24", "signal26", "signal37", "_end_"};
-
-static const char** guarding_signals_mapping[44] = {block1, block2, block3, block4, block5, block6, block7, block8and15, block9, block10, block11, block12to13, block14, block16to17, block18, block19to22, p1, p2, p3, p4, p5, p6to7, p8to9, p10, p11, p12, p13, p14, p15to16, p17, p18a, p18b, p19, p20to21, p22, p23, p24, p25, p26, p27, p28, p29, crossing1, crossing2};
 
 const int set_interlocker(const char *interlocker_name) {
 	if (selected_interlocker_instance != -1) {
@@ -170,201 +124,8 @@ void release_all_interlockers(void) {
 	selected_interlocker_instance = -1;
 }
 
-size_t guarding_signals_lookup(const char* segment_id) {
-if (strcmp(segment_id,"seg1") || strcmp(segment_id,"seg2") || strcmp(segment_id,"seg3")){ // block 1
-		return 0;
-	} else if (strcmp(segment_id,"seg6") || strcmp(segment_id,"seg7a") || strcmp(segment_id,"seg7b") || strcmp(segment_id,"seg8")){ // block 2
-		return 1;
-	} else if (strcmp(segment_id,"seg11") || strcmp(segment_id,"seg12") || strcmp(segment_id,"seg13")){ // block 3
-		return  2;
-	} else if (strcmp(segment_id,"seg15") || strcmp(segment_id,"seg16a") || strcmp(segment_id,"seg16b") || strcmp(segment_id,"seg17")){ // block 4
-		return 3;
-	} else if (strcmp(segment_id,"seg21b") || strcmp(segment_id,"seg22") || strcmp(segment_id,"seg23")){ // block 5
-		return 4;
-	} else if (strcmp(segment_id,"seg26") || strcmp(segment_id,"seg27") || strcmp(segment_id,"seg28")){ // block 6
-		return 5;
-	} else if (strcmp(segment_id,"seg30") || strcmp(segment_id,"seg31a") || strcmp(segment_id,"seg31b") || strcmp(segment_id,"seg32")){ // block 7 (platform4)
-		return 6;
-	} else if (strcmp(segment_id,"seg36") || strcmp(segment_id,"seg37") || strcmp(segment_id,"seg38")){ // block 8
-		return 7;
-	} else if (strcmp(segment_id,"seg42a") || strcmp(segment_id,"seg42b")){ // block 9
-		return 8;
-	} else if (strcmp(segment_id,"seg50")){ // block 10
-		return 9;
-	} else if (strcmp(segment_id,"seg47") || strcmp(segment_id,"seg46") || strcmp(segment_id,"seg45")){ // block 11 (platform3)
-		return 10;
-	} else if (strcmp(segment_id,"seg56") || strcmp(segment_id,"seg55") || strcmp(segment_id,"seg54") || strcmp(segment_id,"seg59") || strcmp(segment_id,"seg58") || strcmp(segment_id,"seg57")){ // block 12 (platform2) or block 13 (platform1)
-		return 11;
-	} else if (strcmp(segment_id,"seg65") || strcmp(segment_id,"seg64") || strcmp(segment_id,"seg63") || strcmp(segment_id,"seg62") || strcmp(segment_id,"seg61")){ // block 14 + seg65
-		return 12;
-	} else if (strcmp(segment_id,"seg67") || strcmp(segment_id,"seg68") || strcmp(segment_id,"seg69")){ // block 15
-		return 7; // same as block 8 (re-check!)
-	} else if (strcmp(segment_id,"seg71") || strcmp(segment_id,"seg72") || strcmp(segment_id,"seg73") || strcmp(segment_id,"seg74") || strcmp(segment_id,"seg75") || strcmp(segment_id,"seg76")){ // block 16 (platform7) or block 17 (platform6)
-		return 13;
-	} else if (strcmp(segment_id,"seg79") || strcmp(segment_id,"seg78b") || strcmp(segment_id,"seg78a") || strcmp(segment_id,"seg77")){ // block 18 (platform5)
-		return 14;
-	} else if (strcmp(segment_id,"seg81") || strcmp(segment_id,"seg82a") || strcmp(segment_id,"seg82b") || strcmp(segment_id,"seg83")
-					|| strcmp(segment_id,"seg86") || strcmp(segment_id,"seg87a") || strcmp(segment_id,"seg87b") || strcmp(segment_id,"seg88")
-					|| strcmp(segment_id,"seg90") || strcmp(segment_id,"seg91a") || strcmp(segment_id,"seg91b") || strcmp(segment_id,"seg92")
-					|| strcmp(segment_id,"seg93") || strcmp(segment_id,"seg94a") || strcmp(segment_id,"seg94b") || strcmp(segment_id,"seg95")){ // block 19 to block 22
-		return 15;
-	} else if (strcmp(segment_id,"seg4")){ // p1
-		return 16;
-	} else if (strcmp(segment_id,"seg5")){ // p2
-		return 17;
-	} else if (strcmp(segment_id,"seg9")){ // p3
-		return 18;
-	} else if (strcmp(segment_id,"seg10")){ // p4
-		return 19;
-	} else if (strcmp(segment_id,"seg14")){ // p5
-		return 20;
-	} else if (strcmp(segment_id,"seg18") || strcmp(segment_id,"seg19")){ // p6 or p7
-		return 21;
-	} else if (strcmp(segment_id,"seg24") || strcmp(segment_id,"seg25")){ // p8 or p9
-		return 22;
-	} else if (strcmp(segment_id,"seg29")){ // p10
-		return 23;
-	} else if (strcmp(segment_id,"seg33")){ // p11
-		return 24;
-	} else if (strcmp(segment_id,"seg34")){ // p12
-		return 25;
-	} else if (strcmp(segment_id,"seg35")){ // p13
-		return 26;
-	} else if (strcmp(segment_id,"seg39")){ // p14
-		return 27;
-	} else if (strcmp(segment_id,"seg40") || strcmp(segment_id,"seg41")){ // p15 or p16
-		return 28;
-	} else if (strcmp(segment_id,"seg43")){ // p17
-		return 29;
-	} else if (strcmp(segment_id,"seg21a")){ // p18a
-		return 30;
-	} else if (strcmp(segment_id,"seg44")){ // p18b
-		return 31;
-	} else if (strcmp(segment_id,"seg48")){ // p19
-		return 32;
-	} else if (strcmp(segment_id,"seg49") || strcmp(segment_id,"seg51")){ // p20 or p21
-		return 33;
-	} else if (strcmp(segment_id,"seg53")){ // p22
-		return 34;
-	} else if (strcmp(segment_id,"seg60")){ // p23
-		return 35;
-	} else if (strcmp(segment_id,"seg66")){ // p24
-		return 36;
-	} else if (strcmp(segment_id,"seg70")){ // p25
-		return 37;
-	} else if (strcmp(segment_id,"seg80")){ // p26
-		return 38;
-	} else if (strcmp(segment_id,"seg84")){ // p27
-		return 39;
-	} else if (strcmp(segment_id,"seg85")){ // p28
-		return 40;
-	} else if (strcmp(segment_id,"seg89")){ // p29
-		return 41;
-	} else if (strcmp(segment_id,"seg52")){ // crossing1
-		return 42;
-	} else if (strcmp(segment_id,"seg20")){ // crossing2
-		return 43;
-	}
-	/// TODO: Make platform independent - size_t is probably not a unsigned long everywhere.
-	return ULONG_MAX; 
-}
 
-bool is_any_entry_signal_permissive(const char* segment_id) {
-	size_t guarding_signals_lookup_index = guarding_signals_lookup(segment_id);
-	if (guarding_signals_lookup_index >= ULONG_MAX) {
-		return false;
-	}
-	const char** guarding_signals_elem = guarding_signals_mapping[guarding_signals_lookup_index];
-	if (guarding_signals_elem == NULL) {
-		return false;
-	}
-	for (size_t sig_i = 0; sig_i < 14; ++sig_i) {
-		const char* guarding_signal_item = guarding_signals_elem[sig_i];
-		if (strcmp(guarding_signal_item, "_end_")) {
-			break;
-		}
-		if (guarding_signal_item != NULL) {
-			t_bidib_unified_accessory_state_query signal_state = bidib_get_signal_state(guarding_signal_item);
-			const char* guarding_signal_aspect_state = (signal_state.type == BIDIB_ACCESSORY_BOARD) ?
-			                       signal_state.board_accessory_state.state_id :
-			                       signal_state.dcc_accessory_state.state_id;
-			/// TODO: Replace g_strrstr (substring search) with full string comparison 
-			// (need to know precise aspect names for that)
-			if (g_strrstr(guarding_signal_aspect_state, "go") || g_strrstr(guarding_signal_aspect_state, "shunt")) {
-				bidib_free_unified_accessory_state_query(signal_state);
-				return true;
-			}
-			bidib_free_unified_accessory_state_query(signal_state);
-		}
-	}
-	return false;
-}
-
-bool is_any_segment_after_preceding_signal_until_segment_occupied(t_interlocking_route *route, size_t path_segment_index) {
-	//First need to find the signal that precedes path_segment_index
-	if (route == NULL || route->path == NULL || route->path->len == 0) {
-		return false;
-	}
-	if (path_segment_index > route->path->len) {
-		return false;
-	}
-	for (long long i = path_segment_index; i >= 0; --i) {
-		const char* path_item = g_array_index(route->path, char*, (size_t) i);
-		if (is_type_segment(path_item)) {
-			// return true if segment is occupied,
-			// otherwise continue searching.
-			if (is_segment_occupied(path_item)) {
-				return true;
-			}
-		} else if (is_type_signal(path_item)) {
-			// Preceding signal has been found; thus end search.
-			return false;
-		}
-	}
-	return false;
-}
-
-bool is_route_conflict_safe_sectional(const char *granted_route_id, const char *requested_route_id) {
-	t_interlocking_route *granted_route = get_route(granted_route_id);
-	t_interlocking_route *requested_route = get_route(requested_route_id);
-	
-	if (granted_route == NULL || requested_route == NULL) {
-		/// TODO: Log
-		return false;
-	}
-	bool encountered_signal = true;
-	// Search backwards in granted route to minimize duplicate lookups
-	for (size_t gr_i = granted_route->path->len; gr_i > 0; --gr_i) {
-		const char* gr_path_item = g_array_index(granted_route->path, char*, gr_i - 1);
-		/// TODO: Remove the G_UNLIKELY if the routes contain intermediate interlocking signals
-		if (G_UNLIKELY(is_type_signal(gr_path_item))) {
-			// Further optimization: Only set encountered_signal to true if this is NOT a distant signal.
-			encountered_signal = true;
-			continue;
-		}
-		if (G_UNLIKELY(!is_type_segment(gr_path_item))) {
-			continue;
-		}
-		for (size_t re_i = 0; re_i < requested_route->path->len; ++re_i) {
-			const char* re_path_item = g_array_index(requested_route->path, char*, re_i);
-			if (strcmp(gr_path_item, re_path_item)) {
-				if (is_any_entry_signal_permissive(re_path_item)) {
-					return false;
-				}
-				if (encountered_signal) {
-					encountered_signal = false;
-					if (is_any_segment_after_preceding_signal_until_segment_occupied(granted_route, gr_i)) {
-						return false;
-					}
-				}
-			}
-		}
-	}
-	return true;
-}
-
-// get_granted_route_conflicts, but with direct implementation of sectional-style checker; 
-// should thus be much more efficient
+// get_granted_route_conflicts, but using direct implementation of sectional-style checker
 GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
 
@@ -388,16 +149,16 @@ GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 GArray *get_granted_route_conflicts(const char *route_id) {
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
 
-	// When a sectional interlocker is in use, use the route_has_no_sectional_conflicts to
+	// When a sectional interlocker is in use, use the sectional checker to
 	// check for route availability.
 
 	if (g_strrstr(selected_interlocker_name->str,"sectional") != NULL) {
-		// When route has no sectional conflicts, directly return
-		// with empty conflict_route_ids collection. Otherwise continue
-		// with standard check.
-		if (route_has_no_sectional_conflicts(route_id)) {
-			return conflict_route_ids;
-		}
+		// Use native impl of sectional checker
+		return get_granted_route_conflicts_sectional(route_id);
+		// Machine-Gen impl alternative:
+		//if (route_has_no_sectional_conflicts(route_id)) {
+		//	return conflict_route_ids;
+		//}
 	}
 
 	char *conflict_routes[1024];
