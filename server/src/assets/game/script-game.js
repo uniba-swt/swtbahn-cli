@@ -165,10 +165,6 @@ function setChosenDestination(destination) {
 	$('#destination').attr("class", signalFlagMap[destination]);
 }
 
-function disableDestinationReached() {
-	driver.isDestinationReached = false;
-}
-
 
 /**************************************************
  * Feedback UI elements
@@ -541,6 +537,10 @@ class Driver {
 			});
 		}, destinationReachedTimeout);
 	}
+	
+	disableDestinationReached() {
+		this.isDestinationReached = false;
+	}
 
 	// Server request to release the train
 	releaseTrainPromise() {
@@ -635,6 +635,7 @@ class Driver {
 				} else if (!this.hasRouteGranted) {
 					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
 				} else {
+					this.routeDetails = null;
 					setModalDanger(modalMessages.drivingInfringement, 'STOP, STOP, STOP');
 				}
 			},
@@ -701,12 +702,12 @@ class Driver {
 			.then(() => clearChosenDestination())
 
 			.then(() => {
-				if (!this.hasValidTrainSession) {                      // 9. Check whether the safety layer had to force the train to stop
+				if (!this.hasValidTrainSession) {                      // 9. Check whether the driver has quit their session
 					this.clearDestinationReachedInterval();
-					throw new Error("Game has ended");
+					throw new Error("Driver ended their session");
 				}
 			})
-			.then(() => disableDestinationReached())                   // 10. Remove the destination reached behaviour
+			.then(() => this.disableDestinationReached())              // 10. Remove the destination reached behaviour
 			.then(() => this.updateCurrentBlockPromise())              // 11. Show the next possible destinations
 			.then(() => updatePossibleDestinations(driver.currentBlock))
 			.catch(() => { });                                         // 12. Execution skips to here if the safety layer was triggered (step 9)
@@ -748,7 +749,7 @@ function endGameLogic() {
 	driver.clearDestinationReachedInterval();
 	driver.reset();
 	disableAllDestinationButtons();
-	disableDestinationReached();
+	driver.disableDestinationReached();
 	disableSpeedButtons();
 	clearChosenDestination();
 
@@ -800,7 +801,7 @@ function initialise() {
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	clearChosenDestination();
-	disableDestinationReached();
+	driver.disableDestinationReached();
 
 	// Handle train selection.
 	$('.selectTrainButton').click(function (event) {
@@ -825,7 +826,7 @@ function initialise() {
 		destinationButton.click(function () {
 			// Should check if button is enabled here
 			if (destinationButton.hasClass("flagThemeDisabled")) {
-				console.log("Route Driving was not attempted as its disabled");
+				console.log("Route Driving was not attempted because it is disabled");
 				setResponseDanger('#serverResponse', "This route is not available", "Diese Route ist zurzeit leider nicht verfügbar", 'Sorry');
 			} else {
 				const route = JSON.parse(destinationButton.val());
