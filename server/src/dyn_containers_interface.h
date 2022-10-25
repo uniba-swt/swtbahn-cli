@@ -49,7 +49,7 @@ typedef struct {
 		bool input_unload;							// Unload the train engine
 		char input_filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 		
-		bool output_in_use;							// Whether the container is still in use
+		volatile bool output_in_use;				// Whether the container is still in use
 		char output_name[NAME_MAX];					// Name of the train engine
 	} train_engines_io[TRAIN_ENGINE_COUNT_MAX];
 	
@@ -61,7 +61,7 @@ typedef struct {
 		int  input_requested_speed;					// Input defined by the train engine
 		char input_requested_forwards;				// Input defined by the train engine
 		
-		bool output_in_use;							// Whether this instance is still in use
+		volatile bool output_in_use;				// Whether this instance is still in use
 		int  output_train_engine_type;				// Train engine type in use
 		int  output_nominal_speed;					// Output defined by the train engine
 		char output_nominal_forwards;				// Output defined by the train engine
@@ -76,7 +76,7 @@ typedef struct {
 		bool input_unload;							// Unload the interlocker
 		char input_filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 
-		bool output_in_use;							// Whether the container is still in use
+		volatile bool output_in_use;				// Whether the container is still in use
 		char output_name[NAME_MAX];					// Name of the interlocker algorithm
 	} interlockers_io[INTERLOCKER_COUNT_MAX];
 	
@@ -90,7 +90,7 @@ typedef struct {
 		char input_dst_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_train_id[NAME_MAX];				// Input defined by interlocker
 
-		bool output_in_use;							// Whether this instance is still in use
+		volatile bool output_in_use;				// Whether this instance is still in use
 		bool output_has_reset;                      // Whether this instance has been reset
 		int  output_interlocker_type;				// Interlocker type in use
 		char output_route_id[NAME_MAX];			    // Output defined by interlocker

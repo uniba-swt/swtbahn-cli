@@ -168,7 +168,7 @@ shared t_forec_intern_input_train_engine forec_intern_input_train_engine_2;
 shared t_forec_intern_input_train_engine forec_intern_input_train_engine_3;
 
 typedef struct {
-	bool in_use;						// Whether the container is still in use
+	volatile bool in_use;				// Whether the container is still in use
 	char *name;							// Name of the train engine when loaded
 } t_forec_intern_output_train_engine;
 shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0 = {.in_use = false, .name = ""};
@@ -191,7 +191,7 @@ shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engin
 shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_4;
 
 typedef struct {	
-	bool in_use;						// Whether this instance is still in use
+	volatile bool in_use;				// Whether this instance is still in use
 	int  train_engine_type;				// Train engine in use
 	int  nominal_speed;					// Output defined by the train engine
 	char nominal_forwards;				// Output defined by the train engine
@@ -215,7 +215,7 @@ shared t_forec_intern_input_interlocker forec_intern_input_interlocker_2;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3;
 
 typedef struct {
-	bool in_use;						// Whether the container is still in use
+	volatile bool in_use;				// Whether the container is still in use
 	char *name;                         // Name of the interlocker
 } t_forec_intern_output_interlocker;
 shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0 = {.in_use = false, .name = ""};
@@ -240,7 +240,7 @@ shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_
 shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_3;
 
 typedef struct {
-	bool in_use;						// Whether this instance is still in use
+	volatile bool in_use;				// Whether this instance is still in use
 	bool has_reset;                     // Whether this instance has been reset
 	int interlocker_type;               // Interlocker type in use
 
