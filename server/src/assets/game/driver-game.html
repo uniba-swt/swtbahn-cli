@@ -11,11 +11,13 @@
 
 	<link rel="stylesheet" href="style-game.css" />
 
-	<script src="destinations-swtbahn-ultraloop.js"></script>
-	<script src="destinations-swtbahn-standard.js"></script>
-	<script src="destinations-swtbahn-full.js"></script>
-	<script src="flags-swtbahn-full.js"></script>
+	<script src="destinations-swtbahn-ultraloop.json"></script>
+	<script src="destinations-swtbahn-standard.json"></script>
+	<script src="destinations-swtbahn-full.json"></script>
+	<script src="flags-swtbahn-full.json"></script>
+	
 	<script src="script-game.js"></script>
+	<script src="script-game-mutex.js"></script>
 
 	<title>SWTbahn Driver Client</title>
 	<meta charset="utf-8" />
@@ -67,9 +69,14 @@
 			<img class="img-fluid" src="../swtbahn-logo.png">
 		</div>
 		<div class="col p-2 d-flex justify-content-end align-items-end">
-			<button id="endGameButton" type="button" class="btn btn-lg btn-primary">
+			<button id="endGameButton" type="button" class="btn btn-primary me-2">
 				<span lang="de">Beenden</span>
 				<span lang="en">End Trip</span>
+			</button>
+			
+			<button id="changeLang" class="btn btn-outline-primary">
+				<span lang="en">🇬🇧</span>
+				<span lang="de">🇩🇪</span>
 			</button>
 		</div>
 	</div>
@@ -85,7 +92,22 @@
 			<img src="train-cargo-db.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Cargo DB</h5>
-				<p class="card-text">Lorem ipsum</p>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 81 t <br />
+						Länge: 18.90 m <br />
+						Breite: 2.97 m <br />
+						Höhe: 4.27 m <br />
+						Höchstgeschwindigkeit: 150 km/h
+					</span>
+					<span lang="en">
+						Weight: 81 t<br />
+						Length: 18.90 m<br />
+						Width: 2.97 m<br />
+						Height: 4.27 m<br />
+						Max. Speed: 150 km/h
+					</span>
+				</p>
 				<button class="selectTrainButton btn btn-primary" id="cargo_db">
 					<span lang="de">Fahre diesen Zug</span>
 					<span lang="en">Drive this train</span>
@@ -97,7 +119,22 @@
 			<img src="train-cargo-green.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Cargo Green</h5>
-				<p class="card-text">Lorem ipsum</p>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 85 t <br />
+						Länge: 18.9 m <br />
+						Breite: 2.97 m <br />
+						Höhe: 4.27 m <br />
+						Höchstgeschwindigkeit: 140 km/h
+					</span>
+					<span lang="en">
+						Weight: 85 t<br />
+						Length: 18.9 m<br />
+						Width: 2.97 m<br />
+						Height: 4.27 m<br />
+						Max. Speed: 140 km/h
+					</span>
+				</p>
 				<button class="selectTrainButton btn btn-primary" id="cargo_green">
 					<span lang="de">Fahre diesen Zug</span>
 					<span lang="en">Drive this train</span>
@@ -109,14 +146,55 @@
 			<img src="train-regional-odeg.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Regional ODEG</h5>
-				<p class="card-text">Lorem ipsum</p>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 70 t <br />
+						Länge: 40.89 m <br />
+						Breite: 3.00 m <br />
+						Höhe: 4.04 m <br />
+						Höchstgeschwindigkeit: 140 km/h
+					</span>
+					<span lang="en">
+						Weight: 70 t<br />
+						Length: 40.89 m<br />
+						Width: 3.00 m<br />
+						Height: 4.04 m<br />
+						Max. Speed: 140 km/h
+					</span>
+				</p>
 				<button class="selectTrainButton btn btn-primary" id="regional_odeg">
 					<span lang="de">Fahre diesen Zug</span>
 					<span lang="en">Drive this train</span>
 				</button>
 			</div>
 		</div>
+		<div class="card mb-3">
+			<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Regional Brengdirect</h5>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 78.5 t <br />
+						Länge: 53.43 m <br />
+						Breite: 2.65 m <br />
+						Höchstgeschwindigkeit: 115 km/h
+					</span>
+					<span lang="en">
+						Weight: 78.5 t<br />
+						Length: 53.43 m<br />
+						Width: 2.65 m<br />
+						Max. Speed: 115 km/h
+					</span>
+				</p>
+				<button class="selectTrainButton btn btn-primary" id="regional_brengdirect">
+					<span lang="de">Fahre diesen Zug</span>
+					<span lang="en">Drive this train</span>
+				</button>
+			</div>
+		</div>
 	</div>
+
+
 
 	<div class="m-4"></div>
 
@@ -130,27 +208,23 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabel">
-						<span lang="de">Fahrt nicht zulässig!</span>
-						<span lang="en">Driving Infrigment!</span>
-					</h5>
+					<h5 id="serverModalTitle" class="modal-title"></h5>
 				</div>
-				<div id="serverModalResponse" class="modal-body"></div>
+				<div id="serverModalBody" class="modal-body"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-light" data-bs-dismiss="modal">
-						<span lang="de">Verstanden</span>
-						<span lang="en">Understood"</span>
-					</button>
+					<button id="serverModalButton" type="button" class="btn btn-light btn-outline-dark" data-bs-dismiss="modal"></button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<form id="destinationsForm">
-		<label class="col-form-label-lg me-md-5"><b>
-			<span lang="de">Mögliche Ziele:</span>
-			<span lang="en">Possible destinations:</span>
-		</b></label>
+		<label class="col-form-label-lg me-md-5">
+			<b>
+				<span lang="de">Mögliche Ziele:</span>
+				<span lang="en">Possible destinations:</span>
+			</b>
+		</label>
 		<div class="input-group row">
 			<div id="possibleDestinations" class="col">
 				<svg class="flag" viewBox="0 0 100 100">
@@ -215,11 +289,11 @@
 		</b></label>
 		<div class="input-group row">
 			<div class="col">
-				<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
-					<span lang="de">Stop</span>
-					<span lang="en">Stop</span>
-				</button>
 				<div class="btn-group" role="group">
+					<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
+						<span lang="de">Stop</span>
+						<span lang="en">Stop</span>
+					</button>
 					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">
 						<span lang="de">Langsam</span>
 						<span lang="en">Slow</span>
@@ -237,32 +311,6 @@
 		</div>
 	</form>
 
-	<form id="destinationReachedForm">
-		<label class="col-auto col-form-label-lg me-md-5"><b>
-			<span lang="de">Ziel erreicht</span>
-			<span lang="en">Stopped at destination?</span>
-		</b></label>
-		<div class="input-group row">
-			<div class="col">
-				<button id="destinationReached" type="button" class="btn btn-lg btn-success me-md-5">
-					<span lang="de">Anhalten</span>
-					<span lang="en">Yes</span>
-				</button>
-			</div>
-		</div>
-	</form>
 </body>
-
-<footer class="fixed-bottom d-flex bg-light">
-	<div class="d-flex col align-items-end justify-content-end">
-
-		<button id="changeLang" class="btn-hidden btn bg-light" style="max-width: 50px;">
-			<img lang="en" class="img-fluid " src="germanflag.png">
-			<img lang="de" class="img-fluid " src="usflag.png">
-		</button>
-
-	</div>
-
-</footer>
 
 </html>

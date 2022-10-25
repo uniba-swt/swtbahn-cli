@@ -134,9 +134,10 @@ const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
 };
 
 // Interlockers that are available at compile time
-static const unsigned int INTERLOCKER_DEFINED_COUNT = 1;
+static const unsigned int INTERLOCKER_DEFINED_COUNT = 2;
 const char *interlockerFilepaths[INTERLOCKER_DEFINED_COUNT] = {
-	"../src/interlockers/libinterlocker_default (unremovable)"
+	"../src/interlockers/libinterlocker_default (unremovable)",
+	"../src/interlockers/libinterlocker_simple_sectional (unremovable)"
 };
 
 
@@ -158,8 +159,8 @@ shared t_forec_intern_input forec_intern_input = {.terminate = false, .let_perio
 
 // Train engine information
 typedef struct {
-	bool load;							// Load the train engine specified by file path
-	bool unload;						// Unload the train engine
+	volatile bool load;					// Load the train engine specified by file path
+	volatile bool unload;				// Unload the train engine
 	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 } t_forec_intern_input_train_engine;
 shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0;
@@ -168,7 +169,7 @@ shared t_forec_intern_input_train_engine forec_intern_input_train_engine_2;
 shared t_forec_intern_input_train_engine forec_intern_input_train_engine_3;
 
 typedef struct {
-	bool in_use;						// Whether the container is still in use
+	volatile bool in_use;				// Whether the container is still in use
 	char *name;							// Name of the train engine when loaded
 } t_forec_intern_output_train_engine;
 shared t_forec_intern_output_train_engine forec_intern_output_train_engine_0 = {.in_use = false, .name = ""};
@@ -178,8 +179,8 @@ shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3 = {
 
 // Train engine instance information
 typedef struct {
-	bool grab;							// Desire to use this instance
-	bool release;						// Desire to stop using this instance
+	volatile bool grab;					// Desire to use this instance
+	volatile bool release;				// Desire to stop using this instance
 	int  train_engine_type;				// Desired train engine to use
 	int  requested_speed;				// Input defined by the train engine
 	char requested_forwards;			// Input defined by the train engine
@@ -191,7 +192,7 @@ shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engin
 shared t_forec_intern_input_train_engine_instance forec_intern_input_train_engine_instance_4;
 
 typedef struct {	
-	bool in_use;						// Whether this instance is still in use
+	volatile bool in_use;				// Whether this instance is still in use
 	int  train_engine_type;				// Train engine in use
 	int  nominal_speed;					// Output defined by the train engine
 	char nominal_forwards;				// Output defined by the train engine
@@ -205,8 +206,8 @@ shared t_forec_intern_output_train_engine_instance forec_intern_output_train_eng
 
 // Interlocker information
 typedef struct {
-	bool load;							// Load the interlocker specified by file path
-	bool unload;                        // Unload the interlocker
+	volatile bool load;                 // Load the interlocker specified by file path
+	volatile bool unload;               // Unload the interlocker
 	char filepath[PATH_MAX + NAME_MAX]; // File path of library source code, without the file extension
 } t_forec_intern_input_interlocker;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_0;
@@ -215,7 +216,7 @@ shared t_forec_intern_input_interlocker forec_intern_input_interlocker_2;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3;
 
 typedef struct {
-	bool in_use;						// Whether the container is still in use
+	volatile bool in_use;				// Whether the container is still in use
 	char *name;                         // Name of the interlocker
 } t_forec_intern_output_interlocker;
 shared t_forec_intern_output_interlocker forec_intern_output_interlocker_0 = {.in_use = false, .name = ""};
@@ -225,10 +226,10 @@ shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3 = {.i
 
 // Interlocker instance information
 typedef struct {
-	bool grab;							// Desire to use this instance
-	bool release;                       // Desire to stop using this instance
+	volatile bool grab;                 // Desire to use this instance
+	volatile bool release;              // Desire to stop using this instance
 	int interlocker_type;               // Desired interlocker to use
-	bool reset;                         // Desire to reset the interlocker
+	volatile bool reset;                // Desire to reset the interlocker
 
 	char src_signal_id[NAME_MAX];       // Input defined by interlocker
 	char dst_signal_id[NAME_MAX];       // Input defined by interlocker
@@ -240,12 +241,12 @@ shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_
 shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_instance_3;
 
 typedef struct {
-	bool in_use;						// Whether this instance is still in use
-	bool has_reset;                     // Whether this instance has been reset
+	volatile bool in_use;				// Whether this instance is still in use
+	volatile bool has_reset;            // Whether this instance has been reset
 	int interlocker_type;               // Interlocker type in use
 
 	char *route_id;                     // Output defined by interlocker
-	bool terminated;                    // Output defined by interlocker
+	volatile bool terminated;           // Output defined by interlocker
 } t_forec_intern_output_interlocker_instance;
 shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = ""};
 shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = ""};
@@ -523,6 +524,14 @@ thread loadInterlockers(void) {
 		forec_intern_output_interlocker_0.in_use = true;
 		copyFilename(interlockers[0].name, interlockerFilepaths[0], name_max, path_max + name_max);
 		forec_intern_output_interlocker_0.name = interlockers[0].name;
+	}
+	
+	load_status = dynlib_load(&interlockers[1], interlockerFilepaths[1], INTERLOCKER);
+	printout(threadName, load_status, &interlockers[1]);
+	if (load_status == dynlib_load_success) {
+		forec_intern_output_interlocker_1.in_use = true;
+		copyFilename(interlockers[1].name, interlockerFilepaths[1], name_max, path_max + name_max);
+		forec_intern_output_interlocker_1.name = interlockers[1].name;
 	}
 	
 	while (true) {

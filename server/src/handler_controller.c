@@ -172,8 +172,6 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 }
 
 const bool get_route_is_clear(const char *route_id) {
-	pthread_mutex_lock(&interlocker_mutex);
-
 	bahn_data_util_init_cached_track_state();
 
 	// Check that all route signals are in the Stop aspect
@@ -183,7 +181,6 @@ const bool get_route_is_clear(const char *route_id) {
 		char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
 			bahn_data_util_free_cached_track_state();
-			pthread_mutex_unlock(&interlocker_mutex);
 			return false;
 		}
 	}
@@ -194,14 +191,11 @@ const bool get_route_is_clear(const char *route_id) {
 	for (size_t i = 0; i < item_ids_len; i++) {
 		if (is_type_segment(item_ids[i]) && is_segment_occupied(item_ids[i])) {
 			bahn_data_util_free_cached_track_state();
-			pthread_mutex_unlock(&interlocker_mutex);
 			return false;
 		}
 	}
 
-	bahn_data_util_free_cached_track_state();
-
-	pthread_mutex_unlock(&interlocker_mutex);
+	bahn_data_util_free_cached_track_state();	
 	return true;
 }
 
@@ -264,15 +258,21 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 }
 
 const char *grant_route_id(const char *train_id, const char *route_id) {
+	pthread_mutex_lock(&interlocker_mutex);
+
 	// Check whether the route can be granted
 	t_interlocking_route * const route = get_route(route_id);
-	const GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
-	if (route->train != NULL || granted_conflicts->len > 0) {
+	GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
+	const bool hasGrantedConflicts = (granted_conflicts->len > 0);
+	g_array_free(granted_conflicts, true);
+	if (route->train != NULL || hasGrantedConflicts) {
+		pthread_mutex_unlock(&interlocker_mutex);
 		return "not_grantable";
 	}
 
 	// Check whether the route is physically available
 	if (!get_route_is_clear(route_id)) {
+		pthread_mutex_unlock(&interlocker_mutex);
 		return "not_clear";
 	}
 
@@ -297,6 +297,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_flush();
 	}
 
+	pthread_mutex_unlock(&interlocker_mutex);
 	return "granted";
 }
 
@@ -314,8 +315,8 @@ void release_route(const char *route_id) {
 			if (bidib_set_signal(signal_id, signal_aspect)) {
 				syslog_server(LOG_ERR, "Release route: Unable to set signal to aspect %s", signal_aspect);
 			}
+			bidib_flush();
 		}
-		bidib_flush();
 
 		free(route->train);
 		route->train = NULL;
