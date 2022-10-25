@@ -45,8 +45,8 @@ typedef struct {
 	
 	// Train engine information
 	struct t_train_engine_io {
-		bool input_load;							// Load the train engine specified by filepath
-		bool input_unload;							// Unload the train engine
+		volatile bool input_load;					// Load the train engine specified by filepath
+		volatile bool input_unload;					// Unload the train engine
 		char input_filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 		
 		volatile bool output_in_use;				// Whether the container is still in use
@@ -72,8 +72,8 @@ typedef struct {
 	
 	// Interlocker information
 	struct t_interlocker_io {
-		bool input_load;							// Load the interlocker specified by filepath
-		bool input_unload;							// Unload the interlocker
+		volatile bool input_load;					// Load the interlocker specified by filepath
+		volatile bool input_unload;					// Unload the interlocker
 		char input_filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 
 		volatile bool output_in_use;				// Whether the container is still in use
@@ -82,19 +82,19 @@ typedef struct {
 	
 	// Interlocker instance information
 	struct t_interlocker_instance_io {
-		bool input_grab;							// Desire to use this instance
-		bool input_release;							// Desire to stop using this instance
+		volatile bool input_grab;					// Desire to use this instance
+		volatile bool input_release;				// Desire to stop using this instance
 		int  input_interlocker_type;				// Desired interlocker to use
-		bool input_reset;                           // Desire to reset the interlocker
+		volatile bool input_reset;                  // Desire to reset the interlocker
 		char input_src_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_dst_signal_id[NAME_MAX];			// Input defined by interlocker
 		char input_train_id[NAME_MAX];				// Input defined by interlocker
 
 		volatile bool output_in_use;				// Whether this instance is still in use
-		bool output_has_reset;                      // Whether this instance has been reset
+		volatile bool output_has_reset;				// Whether this instance has been reset
 		int  output_interlocker_type;				// Interlocker type in use
-		char output_route_id[NAME_MAX];			    // Output defined by interlocker
-		bool output_terminated;                     // Output defined by interlocker
+		char output_route_id[NAME_MAX];				// Output defined by interlocker
+		volatile bool output_terminated;			// Output defined by interlocker
 	} interlocker_instances_io[INTERLOCKER_INSTANCE_COUNT_MAX];
 } t_dyn_containers_interface;
 

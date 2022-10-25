@@ -158,8 +158,8 @@ shared t_forec_intern_input forec_intern_input = {.terminate = false, .let_perio
 
 // Train engine information
 typedef struct {
-	bool load;							// Load the train engine specified by file path
-	bool unload;						// Unload the train engine
+	volatile bool load;					// Load the train engine specified by file path
+	volatile bool unload;				// Unload the train engine
 	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 } t_forec_intern_input_train_engine;
 shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0;
@@ -178,8 +178,8 @@ shared t_forec_intern_output_train_engine forec_intern_output_train_engine_3 = {
 
 // Train engine instance information
 typedef struct {
-	bool grab;							// Desire to use this instance
-	bool release;						// Desire to stop using this instance
+	volatile bool grab;					// Desire to use this instance
+	volatile bool release;				// Desire to stop using this instance
 	int  train_engine_type;				// Desired train engine to use
 	int  requested_speed;				// Input defined by the train engine
 	char requested_forwards;			// Input defined by the train engine
@@ -205,8 +205,8 @@ shared t_forec_intern_output_train_engine_instance forec_intern_output_train_eng
 
 // Interlocker information
 typedef struct {
-	bool load;							// Load the interlocker specified by file path
-	bool unload;                        // Unload the interlocker
+	volatile bool load;                 // Load the interlocker specified by file path
+	volatile bool unload;               // Unload the interlocker
 	char filepath[PATH_MAX + NAME_MAX]; // File path of library source code, without the file extension
 } t_forec_intern_input_interlocker;
 shared t_forec_intern_input_interlocker forec_intern_input_interlocker_0;
@@ -225,10 +225,10 @@ shared t_forec_intern_output_interlocker forec_intern_output_interlocker_3 = {.i
 
 // Interlocker instance information
 typedef struct {
-	bool grab;							// Desire to use this instance
-	bool release;                       // Desire to stop using this instance
+	volatile bool grab;                 // Desire to use this instance
+	volatile bool release;              // Desire to stop using this instance
 	int interlocker_type;               // Desired interlocker to use
-	bool reset;                         // Desire to reset the interlocker
+	volatile bool reset;                // Desire to reset the interlocker
 
 	char src_signal_id[NAME_MAX];       // Input defined by interlocker
 	char dst_signal_id[NAME_MAX];       // Input defined by interlocker
@@ -241,11 +241,11 @@ shared t_forec_intern_input_interlocker_instance forec_intern_input_interlocker_
 
 typedef struct {
 	volatile bool in_use;				// Whether this instance is still in use
-	bool has_reset;                     // Whether this instance has been reset
+	volatile bool has_reset;            // Whether this instance has been reset
 	int interlocker_type;               // Interlocker type in use
 
 	char *route_id;                     // Output defined by interlocker
-	bool terminated;                    // Output defined by interlocker
+	volatile bool terminated;           // Output defined by interlocker
 } t_forec_intern_output_interlocker_instance;
 shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_0 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = ""};
 shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_1 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = ""};
