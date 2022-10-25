@@ -38,7 +38,6 @@
 #include "param_verification.h"
 #include "interlocking.h"
 #include "bahn_data_util.h"
-#include "check_route_sectional/check_route_sectional.h"
 #include "check_route_sectional/check_route_sectional_direct.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -138,7 +137,7 @@ GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 				const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
 				char *conflict_route_id_string = malloc(sizeof(char *) * conflict_route_id_string_len);
 				snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
-							conflict_route->id, conflict_route->train);
+				         conflict_route->id, conflict_route->train);
 				g_array_append_val(conflict_route_ids, conflict_route_id_string);
 			}
 		}
@@ -151,14 +150,9 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 
 	// When a sectional interlocker is in use, use the sectional checker to
 	// check for route availability.
-
-	if (g_strrstr(selected_interlocker_name->str,"sectional") != NULL) {
-		// Use native impl of sectional checker
+	if (g_strrstr(selected_interlocker_name->str, "sectional") != NULL) {
+		// Use native implementation of sectional checker
 		return get_granted_route_conflicts_sectional(route_id);
-		// Machine-Gen impl alternative:
-		//if (route_has_no_sectional_conflicts(route_id)) {
-		//	return conflict_route_ids;
-		//}
 	}
 
 	char *conflict_routes[1024];
@@ -194,7 +188,6 @@ const bool get_route_is_clear(const char *route_id) {
 		}
 	}
 
-
 	// Check that all blocks are unoccupied
 	char *item_ids[1024];
 	const size_t item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
@@ -210,29 +203,6 @@ const bool get_route_is_clear(const char *route_id) {
 
 	pthread_mutex_unlock(&interlocker_mutex);
 	return true;
-}
-
-bool route_has_no_sectional_conflicts(const char *route_id) {
-	// 1. set inputs/context for check
-	pthread_mutex_lock(&interlocker_mutex);
-	bahn_data_util_init_cached_track_state();
-	char checker_output[1024];
-	char* route_id_copy = strdup(route_id);
-	check_route_sectional_tick_data check_input_data = {route_id_copy, NULL, NULL, checker_output, -1};
-
-	// 2. Reset execution context and set new input
-	check_route_sectional_reset(&check_input_data);
-
-	// 3. Do ticks until check has terminated
-	do {
-		check_route_sectional_tick(&check_input_data);
-	} while (check_input_data.terminated != 1);
-
-	// Iff route_id is returned, route is available (thus return true)
-	bool ret = strcmp(check_input_data.out, route_id) == 0;
-	pthread_mutex_unlock(&interlocker_mutex);
-	free (route_id_copy);
-	return ret;
 }
 
 GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {

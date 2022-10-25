@@ -27,6 +27,7 @@
 
 #ifndef _CHECK_ROUTE_SECTIONAL_DIRECT_H
 #define _CHECK_ROUTE_SECTIONAL_DIRECT_H
+
 #include <stdbool.h>
 
 /**
