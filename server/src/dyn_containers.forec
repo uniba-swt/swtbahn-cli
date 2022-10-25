@@ -134,9 +134,10 @@ const char *trainEngineFilepaths[TRAIN_ENGINE_DEFINED_COUNT] = {
 };
 
 // Interlockers that are available at compile time
-static const unsigned int INTERLOCKER_DEFINED_COUNT = 1;
+static const unsigned int INTERLOCKER_DEFINED_COUNT = 2;
 const char *interlockerFilepaths[INTERLOCKER_DEFINED_COUNT] = {
-	"../src/interlockers/libinterlocker_default (unremovable)"
+	"../src/interlockers/libinterlocker_default (unremovable)",
+	"../src/interlockers/libinterlocker_simple_sectional (unremovable)"
 };
 
 
@@ -523,6 +524,14 @@ thread loadInterlockers(void) {
 		forec_intern_output_interlocker_0.in_use = true;
 		copyFilename(interlockers[0].name, interlockerFilepaths[0], name_max, path_max + name_max);
 		forec_intern_output_interlocker_0.name = interlockers[0].name;
+	}
+	
+	load_status = dynlib_load(&interlockers[1], interlockerFilepaths[1], INTERLOCKER);
+	printout(threadName, load_status, &interlockers[1]);
+	if (load_status == dynlib_load_success) {
+		forec_intern_output_interlocker_1.in_use = true;
+		copyFilename(interlockers[1].name, interlockerFilepaths[1], name_max, path_max + name_max);
+		forec_intern_output_interlocker_1.name = interlockers[1].name;
 	}
 	
 	while (true) {
