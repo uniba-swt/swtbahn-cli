@@ -113,17 +113,22 @@ bool is_route_conflict_safe_sectional(const char *granted_route_id, const char *
 	// Search backwards in granted route to minimize duplicate lookups
 	for (size_t gr_i = granted_route->path->len; gr_i > 0; --gr_i) {
 		const char* gr_path_item = g_array_index(granted_route->path, char*, gr_i - 1);
-		/// TODO: Remove the G_UNLIKELY if the routes contain intermediate interlocking signals
-		if (G_UNLIKELY(is_type_signal(gr_path_item))) {
+		if (gr_path_item == NULL) {
+			continue;
+		}
+		if (is_type_signal(gr_path_item)) {
 			// Further optimization: Only set encountered_signal to true if this is NOT a distant signal.
 			encountered_signal = true;
 			continue;
 		}
-		if (G_UNLIKELY(!is_type_segment(gr_path_item))) {
+		if (!is_type_segment(gr_path_item)) {
 			continue;
 		}
 		for (size_t re_i = 0; re_i < requested_route->path->len; ++re_i) {
 			const char* re_path_item = g_array_index(requested_route->path, char*, re_i);
+			if (re_path_item == NULL) {
+				continue;
+			}
 			if (strcmp(gr_path_item, re_path_item)) {
 				if (is_any_entry_signal_permissive(re_path_item)) {
 					return false;
