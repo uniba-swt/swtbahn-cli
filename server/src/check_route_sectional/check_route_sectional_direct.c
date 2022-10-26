@@ -129,13 +129,13 @@ bool is_route_conflict_safe_sectional(const char *granted_route_id, const char *
 			if (re_path_item == NULL) {
 				continue;
 			}
-			if (strcmp(gr_path_item, re_path_item)) {
+			if (strcmp(gr_path_item, re_path_item) == 0) {
 				if (is_any_entry_signal_permissive(re_path_item)) {
 					return false;
 				}
 				if (encountered_signal) {
 					encountered_signal = false;
-					if (is_any_segment_after_preceding_signal_until_segment_occupied(granted_route, gr_i)) {
+					if (is_any_segment_after_preceding_signal_until_segment_occupied(granted_route, gr_i - 1)) {
 						return false;
 					}
 				}
@@ -185,7 +185,7 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 	// Check state of each entry signal
 	for (size_t sig_i = 0; sig_i < longest_entry_signals_array_len; ++sig_i) {
 		const char* entry_signal_item = entry_signals_for_segment[sig_i];
-		if (strcmp(entry_signal_item, "_end_")) {
+		if (strcmp(entry_signal_item, "_end_") == 0) {
 			// End of entry_signals_for_segment
 			break;
 		}
@@ -197,7 +197,7 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 			// Could replace g_strrstr (substring search) with direct string comparison 
 			// (need to know precise aspect names for that) -> look them up. Determining them dynamically
 			// is possible but costs time
-			if (g_strrstr(entry_signal_aspect_state, "go") || g_strrstr(entry_signal_aspect_state, "shunt")) {
+			if (g_strrstr(entry_signal_aspect_state, "go") != NULL || g_strrstr(entry_signal_aspect_state, "shunt") != NULL) {
 				bidib_free_unified_accessory_state_query(signal_state);
 				return true;
 			}
@@ -211,98 +211,98 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 size_t entry_signals_lookup(const char* segment_id) {
 	if (segment_id == NULL) {
 		return 65535;
-	} else if (strcmp(segment_id,"seg1") || strcmp(segment_id,"seg2") || strcmp(segment_id,"seg3")) { // block 1
+	} else if (strcmp(segment_id,"seg1") == 0 || strcmp(segment_id,"seg2") == 0 || strcmp(segment_id,"seg3") == 0) { // block 1
 		return 0;
-	} else if (strcmp(segment_id,"seg6") || strcmp(segment_id,"seg7a") || strcmp(segment_id,"seg7b") || strcmp(segment_id,"seg8")) { // block 2
+	} else if (strcmp(segment_id,"seg6") == 0 || strcmp(segment_id,"seg7a") == 0 || strcmp(segment_id,"seg7b") == 0 || strcmp(segment_id,"seg8") == 0) { // block 2
 		return 1;
-	} else if (strcmp(segment_id,"seg11") || strcmp(segment_id,"seg12") || strcmp(segment_id,"seg13")) { // block 3
+	} else if (strcmp(segment_id,"seg11") == 0 || strcmp(segment_id,"seg12") == 0 || strcmp(segment_id,"seg13") == 0) { // block 3
 		return  2;
-	} else if (strcmp(segment_id,"seg15") || strcmp(segment_id,"seg16a") || strcmp(segment_id,"seg16b") || strcmp(segment_id,"seg17")) { // block 4
+	} else if (strcmp(segment_id,"seg15") == 0 || strcmp(segment_id,"seg16a") == 0 || strcmp(segment_id,"seg16b") == 0 || strcmp(segment_id,"seg17") == 0) { // block 4
 		return 3;
-	} else if (strcmp(segment_id,"seg21b") || strcmp(segment_id,"seg22") || strcmp(segment_id,"seg23")) { // block 5
+	} else if (strcmp(segment_id,"seg21b") == 0 || strcmp(segment_id,"seg22") == 0 || strcmp(segment_id,"seg23") == 0) { // block 5
 		return 4;
-	} else if (strcmp(segment_id,"seg26") || strcmp(segment_id,"seg27") || strcmp(segment_id,"seg28")) { // block 6
+	} else if (strcmp(segment_id,"seg26") == 0 || strcmp(segment_id,"seg27") == 0 || strcmp(segment_id,"seg28") == 0) { // block 6
 		return 5;
-	} else if (strcmp(segment_id,"seg30") || strcmp(segment_id,"seg31a") || strcmp(segment_id,"seg31b") || strcmp(segment_id,"seg32")) { // block 7 (platform4)
+	} else if (strcmp(segment_id,"seg30") == 0 || strcmp(segment_id,"seg31a") == 0 || strcmp(segment_id,"seg31b") == 0 || strcmp(segment_id,"seg32") == 0) { // block 7 (platform4)
 		return 6;
-	} else if (strcmp(segment_id,"seg36") || strcmp(segment_id,"seg37") || strcmp(segment_id,"seg38")) { // block 8
+	} else if (strcmp(segment_id,"seg36") == 0 || strcmp(segment_id,"seg37") == 0 || strcmp(segment_id,"seg38") == 0) { // block 8
 		return 7;
-	} else if (strcmp(segment_id,"seg42a") || strcmp(segment_id,"seg42b")) { // block 9
+	} else if (strcmp(segment_id,"seg42a") == 0 || strcmp(segment_id,"seg42b") == 0) { // block 9
 		return 8;
-	} else if (strcmp(segment_id,"seg50")) { // block 10
+	} else if (strcmp(segment_id,"seg50") == 0) { // block 10
 		return 9;
-	} else if (strcmp(segment_id,"seg47") || strcmp(segment_id,"seg46") || strcmp(segment_id,"seg45")) { // block 11 (platform3)
+	} else if (strcmp(segment_id,"seg47") == 0 || strcmp(segment_id,"seg46") == 0 || strcmp(segment_id,"seg45") == 0) { // block 11 (platform3)
 		return 10;
-	} else if (strcmp(segment_id,"seg56") || strcmp(segment_id,"seg55") || strcmp(segment_id,"seg54") || strcmp(segment_id,"seg59") || strcmp(segment_id,"seg58") || strcmp(segment_id,"seg57")) { // block 12 (platform2) or block 13 (platform1)
+	} else if (strcmp(segment_id,"seg56") == 0 || strcmp(segment_id,"seg55") == 0 || strcmp(segment_id,"seg54") == 0 || strcmp(segment_id,"seg59") == 0 || strcmp(segment_id,"seg58") == 0 || strcmp(segment_id,"seg57") == 0) { // block 12 (platform2) or block 13 (platform1)
 		return 11;
-	} else if (strcmp(segment_id,"seg65") || strcmp(segment_id,"seg64") || strcmp(segment_id,"seg63") || strcmp(segment_id,"seg62") || strcmp(segment_id,"seg61")) { // block 14 + seg65
+	} else if (strcmp(segment_id,"seg65") == 0 || strcmp(segment_id,"seg64") == 0 || strcmp(segment_id,"seg63") == 0 || strcmp(segment_id,"seg62") == 0 || strcmp(segment_id,"seg61") == 0) { // block 14 + seg65
 		return 12;
-	} else if (strcmp(segment_id,"seg67") || strcmp(segment_id,"seg68") || strcmp(segment_id,"seg69")) { // block 15
+	} else if (strcmp(segment_id,"seg67") == 0 || strcmp(segment_id,"seg68") == 0 || strcmp(segment_id,"seg69") == 0) { // block 15
 		return 7; // same as block 8 (re-check!)
-	} else if (strcmp(segment_id,"seg71") || strcmp(segment_id,"seg72") || strcmp(segment_id,"seg73") || strcmp(segment_id,"seg74") || strcmp(segment_id,"seg75") || strcmp(segment_id,"seg76")) { // block 16 (platform7) or block 17 (platform6)
+	} else if (strcmp(segment_id,"seg71") == 0 || strcmp(segment_id,"seg72") == 0 || strcmp(segment_id,"seg73") == 0 || strcmp(segment_id,"seg74") == 0 || strcmp(segment_id,"seg75") == 0 || strcmp(segment_id,"seg76") == 0) { // block 16 (platform7) or block 17 (platform6)
 		return 13;
-	} else if (strcmp(segment_id,"seg79") || strcmp(segment_id,"seg78b") || strcmp(segment_id,"seg78a") || strcmp(segment_id,"seg77")) { // block 18 (platform5)
+	} else if (strcmp(segment_id,"seg79") == 0 || strcmp(segment_id,"seg78b") == 0 || strcmp(segment_id,"seg78a") == 0 || strcmp(segment_id,"seg77") == 0) { // block 18 (platform5)
 		return 14;
-	} else if (strcmp(segment_id,"seg81") || strcmp(segment_id,"seg82a") || strcmp(segment_id,"seg82b") || strcmp(segment_id,"seg83")
-					|| strcmp(segment_id,"seg86") || strcmp(segment_id,"seg87a") || strcmp(segment_id,"seg87b") || strcmp(segment_id,"seg88")
-					|| strcmp(segment_id,"seg90") || strcmp(segment_id,"seg91a") || strcmp(segment_id,"seg91b") || strcmp(segment_id,"seg92")
-					|| strcmp(segment_id,"seg93") || strcmp(segment_id,"seg94a") || strcmp(segment_id,"seg94b") || strcmp(segment_id,"seg95")) { // block 19 to block 22
+	} else if (strcmp(segment_id,"seg81") == 0 || strcmp(segment_id,"seg82a") == 0 || strcmp(segment_id,"seg82b") == 0 || strcmp(segment_id,"seg83") == 0
+					|| strcmp(segment_id,"seg86") == 0 || strcmp(segment_id,"seg87a") == 0 || strcmp(segment_id,"seg87b") == 0 || strcmp(segment_id,"seg88") == 0
+					|| strcmp(segment_id,"seg90") == 0 || strcmp(segment_id,"seg91a") == 0 || strcmp(segment_id,"seg91b") == 0 || strcmp(segment_id,"seg92") == 0
+					|| strcmp(segment_id,"seg93") == 0 || strcmp(segment_id,"seg94a") == 0 || strcmp(segment_id,"seg94b") == 0 || strcmp(segment_id,"seg95") == 0) { // block 19 to block 22
 		return 15;
-	} else if (strcmp(segment_id,"seg4")) { // p1
+	} else if (strcmp(segment_id,"seg4") == 0) { // p1
 		return 16;
-	} else if (strcmp(segment_id,"seg5")) { // p2
+	} else if (strcmp(segment_id,"seg5") == 0) { // p2
 		return 17;
-	} else if (strcmp(segment_id,"seg9")) { // p3
+	} else if (strcmp(segment_id,"seg9") == 0) { // p3
 		return 18;
-	} else if (strcmp(segment_id,"seg10")) { // p4
+	} else if (strcmp(segment_id,"seg10") == 0) { // p4
 		return 19;
-	} else if (strcmp(segment_id,"seg14")) { // p5
+	} else if (strcmp(segment_id,"seg14") == 0) { // p5
 		return 20;
-	} else if (strcmp(segment_id,"seg18") || strcmp(segment_id,"seg19")) { // p6 or p7
+	} else if (strcmp(segment_id,"seg18") == 0 || strcmp(segment_id,"seg19") == 0) { // p6 or p7
 		return 21;
-	} else if (strcmp(segment_id,"seg24") || strcmp(segment_id,"seg25")) { // p8 or p9
+	} else if (strcmp(segment_id,"seg24") == 0 || strcmp(segment_id,"seg25") == 0) { // p8 or p9
 		return 22;
-	} else if (strcmp(segment_id,"seg29")) { // p10
+	} else if (strcmp(segment_id,"seg29") == 0) { // p10
 		return 23;
-	} else if (strcmp(segment_id,"seg33")) { // p11
+	} else if (strcmp(segment_id,"seg33") == 0) { // p11
 		return 24;
-	} else if (strcmp(segment_id,"seg34")) { // p12
+	} else if (strcmp(segment_id,"seg34") == 0) { // p12
 		return 25;
-	} else if (strcmp(segment_id,"seg35")) { // p13
+	} else if (strcmp(segment_id,"seg35") == 0) { // p13
 		return 26;
-	} else if (strcmp(segment_id,"seg39")) { // p14
+	} else if (strcmp(segment_id,"seg39") == 0) { // p14
 		return 27;
-	} else if (strcmp(segment_id,"seg40") || strcmp(segment_id,"seg41")) { // p15 or p16
+	} else if (strcmp(segment_id,"seg40") == 0 || strcmp(segment_id,"seg41") == 0) { // p15 or p16
 		return 28;
-	} else if (strcmp(segment_id,"seg43")) { // p17
+	} else if (strcmp(segment_id,"seg43") == 0) { // p17
 		return 29;
-	} else if (strcmp(segment_id,"seg21a")) { // p18a
+	} else if (strcmp(segment_id,"seg21a") == 0) { // p18a
 		return 30;
-	} else if (strcmp(segment_id,"seg44")) { // p18b
+	} else if (strcmp(segment_id,"seg44") == 0) { // p18b
 		return 31;
-	} else if (strcmp(segment_id,"seg48")) { // p19
+	} else if (strcmp(segment_id,"seg48") == 0) { // p19
 		return 32;
-	} else if (strcmp(segment_id,"seg49") || strcmp(segment_id,"seg51")) { // p20 or p21
+	} else if (strcmp(segment_id,"seg49") == 0 || strcmp(segment_id,"seg51") == 0) { // p20 or p21
 		return 33;
-	} else if (strcmp(segment_id,"seg53")) { // p22
+	} else if (strcmp(segment_id,"seg53") == 0) { // p22
 		return 34;
-	} else if (strcmp(segment_id,"seg60")) { // p23
+	} else if (strcmp(segment_id,"seg60") == 0) { // p23
 		return 35;
-	} else if (strcmp(segment_id,"seg66")) { // p24
+	} else if (strcmp(segment_id,"seg66") == 0) { // p24
 		return 36;
-	} else if (strcmp(segment_id,"seg70")) { // p25
+	} else if (strcmp(segment_id,"seg70") == 0) { // p25
 		return 37;
-	} else if (strcmp(segment_id,"seg80")) { // p26
+	} else if (strcmp(segment_id,"seg80") == 0) { // p26
 		return 38;
-	} else if (strcmp(segment_id,"seg84")) { // p27
+	} else if (strcmp(segment_id,"seg84") == 0) { // p27
 		return 39;
-	} else if (strcmp(segment_id,"seg85")) { // p28
+	} else if (strcmp(segment_id,"seg85") == 0) { // p28
 		return 40;
-	} else if (strcmp(segment_id,"seg89")) { // p29
+	} else if (strcmp(segment_id,"seg89") == 0) { // p29
 		return 41;
-	} else if (strcmp(segment_id,"seg52")) { // crossing1
+	} else if (strcmp(segment_id,"seg52") == 0) { // crossing1
 		return 42;
-	} else if (strcmp(segment_id,"seg20")) { // crossing2
+	} else if (strcmp(segment_id,"seg20") == 0) { // crossing2
 		return 43;
 	}
 	return 65535; 
