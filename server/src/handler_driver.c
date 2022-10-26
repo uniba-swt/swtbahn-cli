@@ -226,12 +226,12 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	pthread_mutex_lock(&grabbed_trains_mutex);	
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const char requested_forwards = is_forward_driving(route, train_id);
+	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (is_automatic) {
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
 		                                                DRIVING_SPEED_SLOW, 
 		                                                requested_forwards);
 	}
-	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set the signals along the route to Stop as the train drives past them
 	const bool result = drive_route_progressive_stop_signals(train_id, route);
@@ -245,10 +245,8 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	}
 	
 	// Driving stops
-	pthread_mutex_lock(&grabbed_trains_mutex);
 	syslog_server(LOG_NOTICE, "Drive route: Driving stops");
 	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
@@ -492,13 +490,13 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 				              "train: %s route: %s not granted",
 				              grabbed_trains[grab_id].name->str, route_id);
 				if (strcmp(result, "not_grantable") == 0) {
-					onion_response_printf(res, "Route found is not available "
-					                      "or has conflicts with others");
+					onion_response_printf(res, "Route %s is not available "
+					                      "or has conflicts with others", route_id);
 				} else if (strcmp(result, "not_clear") == 0) {
-					onion_response_printf(res, "Route found has occupied tracks "
-					                      "or source signal is not stop");
+					onion_response_printf(res, "Route %s has occupied tracks "
+					                      "or source signal is not stop", route_id);
 				} else {
-					onion_response_printf(res, "Route could not be granted (%s)",
+					onion_response_printf(res, "Route %s could not be granted",
 					                      route_id);
 				}
 
