@@ -70,6 +70,7 @@ manner:
   - `destinations-swtbahn-full.js`
   - `destinations-swtbahn-standard.js`
   - `destinations-swtbahn-ultraloop.js`
+  - `flags-swtbahn-full.js`
   - `script-game.js`
 - View
   - `driver-game.html`
@@ -77,16 +78,18 @@ manner:
 
 ### Model and Controller
 The destinations possible from an ordinary block are stored as a JSON lookup table in 
-the `destinations-swtbahn-*.js` files, specific to each SWTbahn platform. These tables
-are used in `script-game.js`.
+the `destinations-swtbahn-*.js` files, specific to each SWTbahn platform. The flags 
+associated with each destination are stored as a JSON lookup table in the `flags-swtbahn-*.js`
+files. These tables are used in `script-game.js`.
 
 The game logic and behaviour are defined in `script-game.js` and is organised 
 roughly into the following responsibilities:
 - Helper functions to hide and show different user interface elements
   - Destination buttons
   - Speed buttons
-  - Destination reached button
+  - Destination reached behaviour
   - Alert box with speech feedback
+  - Modal dialog with speech feedback
 - Helper functions to update the possible destinations from a given block and to update their availability
 - Driver class for train and driving related behaviour
   - Get the train's current block
@@ -106,7 +109,7 @@ roughly into the following responsibilities:
 
 JavaScript uses a single-threaded event-loop to execute function calls.
 A function is always executed to completion, without any interruption.
-Thus, busy-waiting statements, e.g., `while (flag)`, will block indefinitely
+Thus, busy-waiting statements, e.g., `flag = true; while (flag) { ... }`, will block indefinitely
 because `flag` cannot be changed to `false` by another function. When 
 communicating with a server, a synchronous request would block the JavaScript
 runtime until a response is received. Server communication can be 
@@ -124,6 +127,11 @@ Note that, when the server returns an error, the promise becomes rejected and
 the remainder of the promise chain is skipped. A rejected promise behaves as an
 error that needs to be caught and handled.
 
+A pitfall with asynchronous communication is that execution dependencies between
+asynchronous calls are not guaranteed to be respected. For example, if the user 
+is presented with multiple buttons that trigger some server operation and the operations
+should be executed one at a time, mutual exclusion of the asynchronous communication is needed.
+
 > When reviewing the code, always remember that functions execute to completion and
 > all of its contained promises (and asynchronous code) will only be executed at a later time.
 > Functions that return a promise are named with the suffix `Promise`.
@@ -135,7 +143,7 @@ error that needs to be caught and handled.
 ### View
 The structural elements of the game client are defined in `driver-game.html` and
 is styled, themed, and laid out using [Bootstrap](https://getbootstrap.com).
-Additional styling that cannot be accomplised alone by Boostrap is supplemented 
-by `style-game.css`, e.g., the SWTbahn logo, train details, and the alert box 
-fade animation.
+Additional styling that cannot be accomplished alone by Boostrap is supplemented 
+by `style-game.css`, e.g., the train details, the alert box fade animation, and the
+destination flags.
 

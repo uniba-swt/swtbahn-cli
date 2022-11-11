@@ -308,6 +308,7 @@
     <label>Available Interlockers:</label>
     <select id="availableInterlockers">
         <option>libinterlocker_default (unremovable)</option>
+        <option>libinterlocker_simple_sectional (unremovable)</option>
     </select>
     <button id="unsetInterlockerButton">Unset</button>
     <button id="setInterlockerButton">Set</button>
@@ -321,6 +322,19 @@
     <br />
     <br />
 </body>
+
+<script type="text/javascript">
+    const trainStatusTimeout = 500;
+    const trainStatusInterval = setInterval(() => {
+        updateTrainGrabbedState();
+    }, trainStatusTimeout);
+
+
+    const grantedRoutesTimeout = 500;
+    const grantedRoutesInterval = setInterval(() => {
+        updateGrantedRoutes($('#grantedRoutes'));
+    }, grantedRoutesTimeout);
+</script>
 
 </html>
 

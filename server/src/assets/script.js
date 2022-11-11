@@ -19,6 +19,74 @@ function updateTrainIsForwards() {
 	});
 }
 
+function updateTrainGrabbedState() {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/trains',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			const trains = responseData.split(/\r?\n|\r|\n/g);
+			trains.forEach((train) => {
+				const trainId = train.match(/^\w+_\w+/g)[0];
+				const isGrabbed = train.includes('yes');
+				
+				if (isGrabbed) {
+					$(`#releaseTrainButton_${trainId}`).show();
+				} else {
+					$(`#releaseTrainButton_${trainId}`).hide();
+				}
+			});
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			// Do nothing
+		}
+	});
+}
+
+function updateGrantedRoutes(htmlElement) {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/granted-routes',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			htmlElement.empty();
+			
+			if (responseData.includes('No granted routes')) {
+				htmlElement.html('<li>No granted routes</li>');
+				return;
+			}			
+			
+			const routes = responseData.split(/\r?\n|\r|\n/g);
+			routes.forEach((route) => {
+				const routeId = route.match(/\d+/g)[0];
+				const trainId = route.match(/\w+_\w+$/g)[0];
+				
+				const routeText = `route ${routeId} granted to ${trainId}`;
+				const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
+				htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
+			});
+			
+			$('.grantedRoute').click(function (event) {
+				adminReleaseRoute(event.currentTarget.value);
+			});
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			// Do nothing
+		}
+	});
+}
+
+// Admin control of granted routes
+function adminReleaseRoute(routeId) {
+	$('#routeId').val(routeId);
+	$('#releaseRouteButton').click();
+}
+
+
 $(document).ready(
 	function () {
 
@@ -535,37 +603,6 @@ $(document).ready(
 
 		// Admin control of grabbed trains and train speed
 
-		function updateTrainGrabbedState() {
-			return $.ajax({
-				type: 'POST',
-				url: '/monitor/trains',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					const trains = responseData.split(/\r?\n|\r|\n/g);
-					trains.forEach((train) => {
-						const trainId = train.match(/^\w+_\w+/g)[0];
-						const isGrabbed = train.includes('yes');
-						
-						if (isGrabbed) {
-							$(`#releaseTrainButton_${trainId}`).show();
-						} else {
-							$(`#releaseTrainButton_${trainId}`).hide();
-						}
-					});
-				},
-				error: (responseData, textStatus, errorThrown) => {
-					// Do nothing
-				}
-			});
-		}
-
-		const trainStatusTimeout = 500;
-		const trainStatusInterval = setInterval(() => {
-			updateTrainGrabbedState();
-		}, trainStatusTimeout);
-
 		function adminSetTrainSpeed(trainId, speed) {
 			return $.ajax({
 				type: 'POST',
@@ -847,8 +884,8 @@ $(document).ready(
 					$('#refreshRemoveInterlockerResponse').text('Unable to refresh list of interlockers');
 				}
 			});
-		}
 
+		}
 		$('#refreshInterlockersButton').click(function () {
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			refreshInterlockersList();
@@ -949,54 +986,6 @@ $(document).ready(
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
 
-
-		// Admin control of granted routes
-		
-		function adminReleaseRoute(routeId) {
-			$('#routeId').val(routeId);
-			$('#releaseRouteButton').click();
-		}
-		
-		function updateGrantedRoutes(htmlElement) {
-			return $.ajax({
-				type: 'POST',
-				url: '/monitor/granted-routes',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					htmlElement.empty();
-					
-					if (responseData.includes('No granted routes')) {
-						htmlElement.html('<li>No granted routes</li>');
-						return;
-					}			
-					
-					const routes = responseData.split(/\r?\n|\r|\n/g);
-					routes.forEach((route) => {
-						const routeId = route.match(/\d+/g)[0];
-						const trainId = route.match(/\w+_\w+$/g)[0];
-						
-						const routeText = `route ${routeId} granted to ${trainId}`;
-						const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
-						htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
-					});
-					
-					$('.grantedRoute').click(function (event) {
-						adminReleaseRoute(event.currentTarget.value);
-					});
-				},
-				error: (responseData, textStatus, errorThrown) => {
-					// Do nothing
-				}
-			});
-		}
-		
-		const grantedRoutesTimeout = 500;
-		const grantedRoutesInterval = setInterval(() => {
-			updateGrantedRoutes($('#grantedRoutes'));
-		}, grantedRoutesTimeout);
-		
 	}
 );
 

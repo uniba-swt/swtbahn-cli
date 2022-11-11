@@ -1,33 +1,14 @@
 body {
   font-family: UB Scala Sans, sans-serif;
-  margin: 20px;
+  margin: 0 20px;
 }
 
-#swtLogo {
-  background-image: url("swtbahn-logo.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: auto 100px;
-  line-height: 100px;
-  color: #054479;
-  height: 100px;
-  width: 100%;
-}
-
-#trainSelection{
-  /* center elements vertically */
+#trainSelection {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   height: 100%;
-}
-
-#trainDetails {
-  font-size: 29pt;
-  font-weight: bold;
-  color: #054479;
-  height: 100px;
 }
 
 #serverAlertBox {
@@ -48,4 +29,138 @@ body {
     border-color: var(--danger);
   }
 }
+
+#serverModal .modal-content {
+  color: black;
+  background-color: white;
+}
+
+#serverModal .modal-danger {
+  color: white;
+  background-color: Crimson;
+}
+
+#serverModal .modal-success {
+  color: white;
+  background-color: ForestGreen;
+}
+
+#serverModal .modal-header {
+  border-bottom: none;
+}
+
+#serverModal .modal-footer {
+  border-top: none;
+}
+
+/* Hide the SVG template for the destination flags */
+#svgDef {
+  height: 0px;
+  width: 0px;
+}
+
+svg.flag {
+  width: 20%;
+  height: auto;
+  padding-right: 5%;
+}
+
+#possibleDestinations svg.flag {
+  cursor: pointer;
+}
+
+/* Colour themes for the destination flags */
+.flagThemeBlack {
+  --flag-theme: black;
+}
+
+.flagThemeGreen {
+  --flag-theme: DarkGreen;
+}
+
+.flagThemeRed {
+  --flag-theme: DarkRed;
+}
+
+.flagThemeBlue {
+  --flag-theme: var(--bs-primary);
+}
+
+.flagThemeDisabled {
+    opacity: 0.2;
+}
+
+.flagThemeBlank {
+  --flag-fill: white;
+  --flag-circle-fill: white;
+  --flag-stroke: white;
+  --flag-topLeft-fill: white;
+  --flag-topRight-fill: white;
+  --flag-centre-fill: white;
+  --flag-bottomLeft-fill: white;
+  --flag-bottomRight-fill: white;
+}
+
+/* Design themes for the destination flags */
+.flagOutline {
+  --flag-fill: white;
+  --flag-circle-fill: var(--flag-theme);
+  --flag-stroke: var(--flag-theme);
+}
+
+.flagFilled {
+  --flag-fill: var(--flag-theme);
+  --flag-circle-fill: white;
+  --flag-stroke: var(--flag-theme);
+}
+
+/* Flag symbols */
+.flagZero {
+  --flag-topLeft-fill: var(--flag-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-fill);
+}
+
+.flagOne {
+  --flag-topLeft-fill: var(--flag-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-circle-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-fill);
+}
+
+.flagTwo {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
+.flagThree {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-fill);
+  --flag-centre-fill: var(--flag-circle-fill);
+  --flag-bottomLeft-fill: var(--flag-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
+.flagFour {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-circle-fill);
+  --flag-centre-fill: var(--flag-fill);
+  --flag-bottomLeft-fill: var(--flag-circle-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
+.flagFive {
+  --flag-topLeft-fill: var(--flag-circle-fill);
+  --flag-topRight-fill: var(--flag-circle-fill);
+  --flag-centre-fill: var(--flag-circle-fill);
+  --flag-bottomLeft-fill: var(--flag-circle-fill);
+  --flag-bottomRight-fill: var(--flag-circle-fill);
+}
+
 
