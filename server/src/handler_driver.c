@@ -175,6 +175,174 @@ static bool drive_route_params_valid(const char *train_id, t_interlocking_route 
 	return true;
 }
 
+//GArray *route_ids = g_array_sized_new(FALSE, FALSE, sizeof(size_t), 8);
+
+typedef struct t_route_signal_info_s{
+	char *id;
+	bool has_been_set_to_stop;
+	bool is_source_signal;
+	bool is_destination_signal;
+	size_t index_in_route_path;
+	int number_of_occurrence;
+} t_route_signal_info;
+
+
+static GArray* get_route_signal_info_array(t_interlocking_route *route) {
+	// - 0. Build signal_infos array that holds information about the signals in the route. Saves...
+	// 	- ID of signal
+	// 	- if signal has been 'reached'/have been set to stop.
+	// 	- if signal is the source signal
+	// 	- if signal is the destination signal
+	// 	- Index of the signal in route->path
+	// 	- occurrence/count of this particular signal id in the signal info array  
+	if (route == NULL) {
+		return NULL;
+	}
+	const size_t path_count = route->path->len;
+	const size_t number_of_signal_infos = route->signals->len;
+	GArray *signal_infos = g_array_sized_new(FALSE, FALSE, sizeof(t_route_signal_info), number_of_signal_infos);
+	
+	for (size_t i = 0; i < number_of_signal_infos; ++i) {
+		const char *signal_id_item = g_array_index(route->signals, char *, i);
+		if (signal_id_item == NULL) {
+			///TODO: Log_ERR invalid signal, skipped
+			continue;
+		}
+		t_route_signal_info *signal_info_elem = malloc(sizeof(t_route_signal_info));
+		if (signal_info_elem == NULL) {
+			///TODO: Log_ERR failed to allocate memory in ...
+			return NULL;
+		}
+		// signal_info basic properties
+		signal_info_elem->has_been_set_to_stop = false;
+		signal_info_elem->is_source_signal = (i == 0);
+		signal_info_elem->is_destination_signal = (i+1 == number_of_signal_infos);
+		
+		// signal_info->id
+		signal_info_elem->id = malloc(sizeof(char) * (strlen(signal_id_item) + 1));
+		if (signal_info_elem->id == NULL) {
+			///TODO: Log_ERR failed to allocate memory in ...
+			return NULL;
+		}
+		strcpy(signal_info_elem->id, signal_id_item);
+		
+		// signal_info->number_of_occurrence
+		if (i == 0) {
+			signal_info_elem->number_of_occurrence = 0;
+		} else {
+			// Occurrence-counter of id in this signal_infos array, determine by searching in iteration of start -> current position
+			size_t signal_internal_prior_occurrences_count = 0;
+			for (size_t signal_info_index_intern = 0; signal_info_index_intern < i; ++signal_info_index_intern) {
+				const t_route_signal_info *signal_info_search_item = g_array_index(signal_infos, t_route_signal_info*, signal_info_index_intern);
+				if (signal_info_search_item != NULL) {
+					if (strcmp(signal_info_search_item->id, signal_info_elem->id) == 0) {
+						signal_internal_prior_occurrences_count++;
+					}
+				}
+			}
+			signal_info_elem->number_of_occurrence = signal_internal_prior_occurrences_count;
+		}
+		// signal_info->index_in_route_path
+		// index of the signal in route->path (only if not source or destination signal?) determine by iterating/searching route->path
+		size_t found_counter = 0;
+		for (size_t path_index = 0; path_index < path_count; ++path_index) {
+			const char *path_item = g_array_index(route->path, char *, path_index);
+			if (path_item != NULL) {
+				if (strcmp(path_item, signal_id_item) == 0) {
+					if (found_counter == signal_info_elem->number_of_occurrence) {
+						signal_info_elem->index_in_route_path = path_index;
+						break;
+					}
+					found_counter++;
+				}
+			}
+		}
+		g_array_append_val(signal_infos, signal_info_elem);
+	}
+	return signal_infos;
+}
+
+static void free_route_signal_info_array(GArray *route_signal_infos) {
+	if (route_signal_infos == NULL) {
+		return;
+	}
+	const size_t arr_len = route_signal_infos->len;
+	for (size_t signal_info_index = 0; signal_info_index < arr_len; ++signal_info_index) {
+		t_route_signal_info *signal_info_search_item = g_array_index(route_signal_infos, t_route_signal_info*, signal_info_index);
+		if (signal_info_search_item != NULL && signal_info_search_item->id != NULL) {
+			free(signal_info_search_item->id);
+		}
+	}
+	g_array_free(route_signal_infos, true);
+}
+
+static bool drive_route_progressive_stop_signals_decoupled(const char *train_id, t_interlocking_route *route) {
+	// Strategy:
+	// Route tells us the signals involved in it. Both on their own, and in the path.
+	// During driving (while train route driving valid, or other condition):
+	// - 1. Get position of train
+	// - 2. Determine the index (in route->path) of the segment(s) where the train currently is ('train index')
+	// - 3. Determine which signals have a lower index in route->path than the 'train index' ('passed signals'). Set them to aspect_stop.
+	//        Note: Do not check the *actual* current aspect of these signals, as with sectional route release,
+	//        already passed signals may have been set back to GO for another route.
+	
+	// Get route signal infos
+	GArray *signal_info_array = get_route_signal_info_array(route);
+	// Check that signal_infos array is not empty and has at least 2 entries (source, destination)
+	if (signal_info_array == NULL) {
+		///TODO: Log_ERR: Can't gather information about signals of the route to be driven
+		return false;
+	} else if (signal_info_array->len < 2) {
+		free_route_signal_info_array(signal_info_array);
+		///TODO: Log_ERR: information about signals of the route to be driven insufficient (< 2 signals)
+		return false;
+	}
+	const char *signal_stop_aspect = "aspect_stop";
+	const size_t path_count = route->path->len;
+	size_t train_pos_index_previous = 0;
+	// Route driving ongoing/starts
+	while (running && drive_route_params_valid(train_id, route)) {
+		// 1. Get position of train
+		t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+		// 2. Determine the index (in route->path) of the segment(s) where the train currently is ('train_pos_index')
+		///TODO: Protect against 'too-far-ahead' recognition if one segment appears more than once in one route.
+		size_t train_pos_index_on_route_path = 0;
+		for (size_t path_item_index = 0; path_item_index < path_count; path_item_index) {
+			const char *path_item = g_array_index(route->path, char *, path_item_index);
+			for (size_t i = 0; i < train_position_query.length; i++) {
+				if (strcmp(path_item, train_position_query.segments[i]) == 0) {
+					if (path_item_index > train_pos_index_on_route_path) {
+						train_pos_index_on_route_path = path_item_index;
+					}
+				}
+			}
+		}
+		bidib_free_train_position_query(train_position_query);
+		// If max_index_occ_segment is still 0, assume train has yet to enter the route
+		if (train_pos_index_on_route_path > 0 && train_pos_index_previous != train_pos_index_on_route_path) {
+			// 3. Determine which signals have a lower index in route->path than the 'train index' ('passed signals')
+			const size_t arr_len = signal_info_array->len;
+			for (size_t signal_info_index = 0; signal_info_index < arr_len; ++signal_info_index) {
+				t_route_signal_info *signal_info_search_item = g_array_index(signal_info_array, t_route_signal_info*, signal_info_index);
+				if (signal_info_search_item != NULL) {
+					if (!signal_info_search_item->has_been_set_to_stop 
+					    && signal_info_search_item->index_in_route_path < train_pos_index_on_route_path) {
+						if (bidib_set_signal(signal_info_search_item->id, signal_stop_aspect)) {
+							///TODO: Log_ERR... but what else? Safety violation once we have a safety layer?
+						} else {
+							signal_info_search_item->has_been_set_to_stop = true;
+						}
+					}
+				}
+			}
+		}
+		train_pos_index_previous = train_pos_index_on_route_path;
+		usleep(TRAIN_DRIVE_TIME_STEP);
+	}
+	free_route_signal_info_array(signal_info_array);
+	return false;
+}
+
 static bool drive_route_progressive_stop_signals(const char *train_id, t_interlocking_route *route) {
 	const char *signal_stop_aspect = "aspect_stop";
 	const char *next_signal = route->source;
