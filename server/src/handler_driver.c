@@ -188,7 +188,7 @@ static bool validate_interlocking_route_members_not_null(const t_interlocking_ro
 			  && route->train != NULL);
 }
 
-static void free_route_signal_info_array(GArray *route_signal_infos) {
+void free_route_signal_info_array(GArray *route_signal_infos) {
 	if (route_signal_infos == NULL) {
 		return;
 	}
@@ -205,7 +205,7 @@ static void free_route_signal_info_array(GArray *route_signal_infos) {
 	g_array_free(route_signal_infos, true);
 }
 
-static GArray* get_route_signal_info_array(t_interlocking_route *route) {
+GArray* get_route_signal_info_array(t_interlocking_route *route) {
 	// - 0. Build signal_infos array that holds information about the signals in the route. Saves...
 	// 	- ID of signal
 	// 	- if signal has been 'reached'/have been set to stop.
@@ -221,9 +221,7 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 	syslog_server(LOG_DEBUG, "Get route signal-info array called for routeID %s", route->id);
 	const size_t path_count = route->path->len;
 	const size_t number_of_signal_infos = route->signals->len;
-	GArray *signal_infos = g_array_sized_new(FALSE, TRUE, 
-	                                         sizeof(t_route_signal_info), 
-	                                         number_of_signal_infos);
+	GArray *signal_infos = g_array_new(FALSE, FALSE, sizeof(t_route_signal_info));
 	size_t built_signal_infos_counter = 0;
 	for (size_t i = 0; i < number_of_signal_infos; ++i) {
 		const char *signal_id_item = g_array_index(route->signals, char *, i);
@@ -244,14 +242,14 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 		signal_info_elem->is_destination_signal = (i+1 == number_of_signal_infos);
 		
 		// signal_info->id
-		signal_info_elem->id = malloc(sizeof(char) * (strlen(signal_id_item) + 1));
+		signal_info_elem->id = malloc(sizeof(char) * (strlen(signal_id_item) + 3));
 		if (signal_info_elem->id == NULL) {
 			syslog_server(LOG_ERR, "Get route signal-info array unable to allocate memory for "
 			              "new signal info element ID");
 			free_route_signal_info_array(signal_infos);
 			return NULL;
 		}
-		snprintf(signal_info_elem->id, (strlen(signal_id_item) + 1), "%s", signal_id_item);
+		snprintf(signal_info_elem->id, (strlen(signal_id_item) + 3), "%s\0", signal_id_item);
 		//strcpy(signal_info_elem->id, signal_id_item);
 		
 		// signal_info->index_in_route_path
@@ -286,7 +284,7 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 }
 
 // Return -2 on err, -1 on train not on route
-static long long get_train_pos_index_in_route_path(const char* train_id,  t_interlocking_route *route) {
+long long get_train_pos_index_in_route_path(const char* train_id,  t_interlocking_route *route) {
 	if (train_id == NULL || route == NULL || route->path == NULL) {
 		return -2;
 	}
