@@ -31,7 +31,6 @@
 #define SWTSERVER_HANDLER_UPLOAD_H
 
 #include <onion/types.h>
-#include <stdbool.h>
 #include <glib.h>
 #include "websocket_uploader/engine_uploader.h"
 

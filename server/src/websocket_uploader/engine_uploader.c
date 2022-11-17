@@ -26,8 +26,10 @@
  */
 
 #include "engine_uploader.h"
-#include <glib.h>
 #include "../server.h"
+
+#include <glib.h>
+#include "mongoose.h"
 
 typedef struct {
 	bool started;
@@ -59,35 +61,36 @@ void websock_verification_callback(struct mg_connection *c, int ev, void *ev_dat
 
 
 void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr) {
-	// Read sctx model from file and send that as the message. https://stackoverflow.com/a/174743
+	// Read sctx model from file and send that as the message. 
 	// Open the file with the sctx model
-	FILE* fp = fopen((*ws_data_ptr).file_path->str, "r");
-	GString* g_fullmsg = g_string_new("");
+	FILE *fp = fopen(ws_data_ptr->file_path->str, "r");
+	GString *g_fullmsg = g_string_new("");
 	if (fp) {
-		char* buffer = NULL;
+		char *buffer = NULL;
 		size_t length = 0;
+		// Adapted from https://stackoverflow.com/a/174743
 		ssize_t bytes_read_count = getdelim(&buffer, &length, '\0', fp);
 		if (bytes_read_count != -1 && buffer != NULL) {
 			//- Create escaped version of the GString that represents the model file
-			gchar* g_c_escaped = g_strescape(buffer, NULL);
+			gchar *g_c_escaped = g_strescape(buffer, NULL);
 			//- Create message in the (json)syntax that the verification server wants
 			g_string_append_printf(g_fullmsg, "{%s,", msg_type_start_sig);
 			g_string_append_printf(g_fullmsg, "%s:\"%s\"}", msg_type_start_sctx_field_key, g_c_escaped);
 			free(g_c_escaped);
 			free(buffer);
 		} else {
-			syslog_server(LOG_ERR, "Upload Engine - Websocket callback could not load the model file");
+			syslog_server(LOG_ERR, "Upload Engine - Unable to read model file to be uploaded");
 			ws_data_ptr->finished = true;
 			ws_data_ptr->success = false;
 		}
 	} else {
-		syslog_server(LOG_ERR, "Upload Engine - Unable to open engine model file to be uploaded");
+		syslog_server(LOG_ERR, "Upload Engine - Unable to open model file to be uploaded");
 		ws_data_ptr->finished = true;
 		ws_data_ptr->success = false;
 	}
 	// Send verification request
 	if(g_fullmsg != NULL && g_fullmsg->len > 0){
-		syslog_server(LOG_INFO, "Upload Engine - Now sending verification request to swtbahn-verifier");
+		syslog_server(LOG_INFO, "Upload Engine - Sending verification request to verifier server");
 		mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
 	} else {
 		syslog_server(LOG_ERR, "Upload Engine - Websocket msg payload setup has gone wrong");
@@ -97,26 +100,30 @@ void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr)
 	g_string_free(g_fullmsg, true);
 }
 
-void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, ws_verif_data* ws_data_ptr) {
+void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, 
+                                ws_verif_data *ws_data_ptr) {
 	// Parses mg_ws_message, which is expected to contain a message from the verification server.
 	// Then adjusts ws_data_ptr struct according to server's message.
-	
-	char* msg_type_is_defined = strstr(wm->data.ptr, msg_type_field_key);
+	if (c == NULL || wm == NULL || ws_data_ptr == NULL) {
+		syslog_server(LOG_WARNING, "Upload Engine - Can't process verification server reply, "
+		              "invalid parameters");
+	}
+	char *msg_type_is_defined = strstr(wm->data.ptr, msg_type_field_key);
 	if (!msg_type_is_defined) {
 		// Message type field not specified, stop.
 		syslog_server(LOG_WARNING, "Upload Engine - Verification Server replied in unknown format");
 		return;
 	}
 	
-	char* type_verif_req_received = strstr(wm->data.ptr, msg_type_received_sig);
-	char* type_verif_req_result = strstr(wm->data.ptr, msg_type_result_sig);
+	char *type_verif_req_received = strstr(wm->data.ptr, msg_type_received_sig);
+	char *type_verif_req_result = strstr(wm->data.ptr, msg_type_result_sig);
 	
 	if (type_verif_req_received) {
 		syslog_server(LOG_NOTICE, "Upload Engine - Verification Server started verification");
 		ws_data_ptr->started = true;
 	} else if (type_verif_req_result) {
 		// Parse result
-		char* verif_success = strstr(wm->data.ptr, msg_type_result_status_true_sig);
+		char *verif_success = strstr(wm->data.ptr, msg_type_result_status_true_sig);
 		if (verif_success) {
 			syslog_server(LOG_NOTICE, "Upload Engine - Verification Server finished,"
 			                          " verification succeeded");
@@ -131,7 +138,7 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 			if (!status_false_in_reply){
 				// No 'status' field in answer with either true or false
 				syslog_server(LOG_WARNING, "Upload Engine - Verification Server finished,"
-													" verification status not specified");
+				              " verification status not specified");
 			} else {
 				// Ordinary failure
 				// Save server's reply (to forward to client later on)
@@ -149,10 +156,11 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 
 
 void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
-	ws_verif_data* ws_data_ptr = fn_data;
+	ws_verif_data *ws_data_ptr = fn_data;
 	if (ev == MG_EV_ERROR) {
-		syslog_server(LOG_ERR, "Upload Engine - Websocket callback encountered error: %s", (char *) ev_data);
-		// Error is encountered, the verification can't be completed -> success false; finished true.
+		syslog_server(LOG_ERR, "Upload Engine - Websocket callback error: %s", (char *) ev_data);
+		// Error is encountered, the verification can't be completed 
+		// -> success false; finished true.
 		ws_data_ptr->success = false;
 		ws_data_ptr->finished = true;
 	} else if (ev == MG_EV_WS_OPEN) {
@@ -162,7 +170,7 @@ void websock_verification_callback(struct mg_connection *c, int ev, void *ev_dat
 		// Receive & Process message from server
 		process_verif_server_reply(c, (struct mg_ws_message *) ev_data, ws_data_ptr);
 	} else if (ev == MG_EV_CLOSE) {
-		syslog_server(LOG_INFO, "Upload Engine - Now closing websocket connection to swtbahn-verifier");
+		syslog_server(LOG_INFO, "Upload Engine - Closing websocket connection to verifier server");
 		ws_data_ptr->finished = true;
 	}
 }
@@ -197,13 +205,14 @@ verif_result verify_engine_model(const char* f_filepath) {
 			ws_verifData.finished = true;
 			ws_verifData.success = false;
 			syslog_server(LOG_WARNING, 
-							"Upload Engine - Verification did not start within %d ms, abort", 
-							(poll_counter * websocket_single_poll_length_ms));
+			              "Upload Engine - Verification did not start within %d ms, abort", 
+			              (poll_counter * websocket_single_poll_length_ms));
 		}
 	}
 	
 	if(c && !c->is_closing){
-		// If connection is not yet closing, send close. After that, one more event poll has to be performed,
+		// If connection is not yet closing, send close. 
+		// After that, one more event poll has to be performed,
 		// otherwise the close will not complete. (Also, buf = reason = max length of 1)
 		mg_ws_send(c, "0", 1, WEBSOCKET_OP_CLOSE);
 		mg_mgr_poll(&mgr, 1000);

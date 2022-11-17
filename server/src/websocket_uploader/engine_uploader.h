@@ -29,7 +29,7 @@
 #define ENGINE_UPLOADER_H
 
 #include <glib.h>
-#include "mongoose.h"
+#include <stdbool.h>
 
 typedef struct {
    bool success;
