@@ -308,7 +308,11 @@ static long long get_train_pos_index_in_route_path(const char* train_id,  t_inte
 	bidib_free_train_position_query(train_position_query);
 	return train_pos_index;
 }
-
+/*	char *id;
+	bool has_been_set_to_stop;
+	bool is_source_signal;
+	bool is_destination_signal;
+	size_t index_in_route_path;*/
 static bool drive_route_progressive_stop_signals_decoupled(const char *train_id, t_interlocking_route *route) {
 	// Strategy:
 	// Route tells us the signals involved in it. Both on their own, and in the path.
@@ -329,6 +333,14 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	              "called for routeID %s", route->id);
 	// Get route signal infos
 	GArray *signal_info_array = get_route_signal_info_array(route);
+	syslog_server(LOG_NOTICE, "Printing signal info array:");
+	for (size_t n = 0; n < signal_info_array->len; ++n) {
+		const t_route_signal_info *s_item = g_array_index(signal_info_array, t_route_signal_info*, n);
+		syslog_server(LOG_NOTICE, "   i %d - ID %s, has-been-set-to-stop %s, source %s, destination %s, index %d", 
+		              n, s_item->id, s_item->has_been_set_to_stop ? "yes" : "no",
+		              s_item->is_source_signal ? "yes" : "no", s_item->is_destination_signal ? "yes" : "no",
+						  s_item->index_in_route_path);
+	}
 	// Check that signal_infos array is not empty and has at least 2 entries (source, destination)
 	if (signal_info_array == NULL) {
 		syslog_server(LOG_ERR, "drive route progressive stop signals decoupled "
@@ -346,7 +358,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	const char *signal_stop_aspect = "aspect_stop";
 	const size_t path_count = route->path->len;
 	// -1 because of destination signal.
-	const size_t signals_to_set_stop_for_finish = signal_info_array->len - 1;
+	const size_t signals_to_set_stop_for_finish = (signal_info_array->len) - 1;
 	size_t signals_set_to_stop_total = 0;
 	long long train_pos_index_previous = (long long) route->path->len + 1;
 	// Route driving ongoing, valid, and not all signals set to stop
@@ -370,8 +382,8 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 				t_route_signal_info *signal_info_search_item = g_array_index(signal_info_array, 
 				                                                             t_route_signal_info*, 
 				                                                             signal_info_index);
-				if (signal_info_search_item != NULL && !(signal_info_search_item->is_destination_signal)) {
-					if (!(signal_info_search_item->has_been_set_to_stop) 
+				if (signal_info_search_item != NULL) {
+					if (!(signal_info_search_item->has_been_set_to_stop) && !(signal_info_search_item->is_destination_signal)
 					    && (signal_info_search_item->index_in_route_path < train_pos_index
 					       || (signal_info_search_item->index_in_route_path <= train_pos_index 
 					               && signal_info_search_item->is_source_signal))) {
