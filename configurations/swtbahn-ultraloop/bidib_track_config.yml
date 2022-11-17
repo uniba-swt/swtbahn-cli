@@ -23,8 +23,8 @@ boards:
       - id: seg7
         address: 0x07
         length: 0.0cm
-      - id: seg8
-        address: 0x08
+      - id: seg16
+        address: 0x0F
         length: 0.0cm
       - id: seg17
         address: 0x10

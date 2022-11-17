@@ -30,6 +30,8 @@
 
 #include <onion/types.h>
 
+void stop_bidib(void);
+
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res);
 
@@ -41,6 +43,13 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 
 onion_connection_status handler_set_verification(void *_, onion_request *req,
                                                 onion_response *res);
+
+onion_connection_status handler_admin_release_train(void *_, onion_request *req,
+                                                    onion_response *res);
+
+onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
+                                                          onion_response *res);
+
 
 #endif
 

@@ -136,10 +136,8 @@ bool remove_engine_files(const char library_name[]) {
 	return (result == 0);
 } 
 
-bool engine_is_unremovable(const char name[]) {
-	bool result = strcmp(name, "libtrain_engine_default (unremovable)") == 0
-	              || strcmp(name, "libtrain_engine_linear (unremovable)") == 0;
-	return result;
+bool plugin_is_unremovable(const char name[]) {
+	return (strstr(name, "(unremovable)") != NULL);
 }
 
 void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr) {
@@ -410,7 +408,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
-		if (name == NULL || engine_is_unremovable(name)) {
+		if (name == NULL || plugin_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Remove engine - engine name is invalid or engine is unremovable", 
 						  name);
@@ -499,11 +497,6 @@ bool remove_interlocker_files(const char library_name[]) {
 	result += remove(filepath);
 
 	return (result == 0);
-}
-
-bool interlocker_is_unremovable(const char name[]) {
-	bool result = strcmp(name, "interlocker_default (unremovable)") == 0;
-	return result;
 }
 
 onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
@@ -598,9 +591,8 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
-		if (name == NULL || interlocker_is_unremovable(name)) {
-			syslog_server(LOG_ERR, "Request: Remove interlocker - interlocker name "
-											"is invalid or interlocker is unremovable", name);
+		if (name == NULL || plugin_is_unremovable(name)) {
+			syslog_server(LOG_ERR, "Request: Remove interlocker - interlocker name is invalid or interlocker is unremovable", name);
 			
 			onion_response_printf(res, "Interlocker name is invalid or interlocker is unremovable");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);

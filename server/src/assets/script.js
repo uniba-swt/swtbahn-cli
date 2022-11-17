@@ -5,12 +5,95 @@ var trainId = '';
 var trainEngine = '';
 var verificationObj = {};
 var toggleInit = false;
+var trainIsForwards = true;
+var lastSetSpeed = 0;			// Only needed when swapping train direction
+
+function updateTrainIsForwards() {
+	$.ajax({
+		type: 'POST',
+		url: '/monitor/train-state',
+		crossDomain: true,
+		data: { 'train': trainId },
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			trainIsForwards = responseData.includes('direction: forwards');
+		}
+	});
+}
+
+function updateTrainGrabbedState() {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/trains',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			const trains = responseData.split(/\r?\n|\r|\n/g);
+			trains.forEach((train) => {
+				const trainId = train.match(/^\w+_\w+/g)[0];
+				const isGrabbed = train.includes('yes');
+				
+				if (isGrabbed) {
+					$(`#releaseTrainButton_${trainId}`).show();
+				} else {
+					$(`#releaseTrainButton_${trainId}`).hide();
+				}
+			});
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			// Do nothing
+		}
+	});
+}
+
+function updateGrantedRoutes(htmlElement) {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/granted-routes',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			htmlElement.empty();
+			
+			if (responseData.includes('No granted routes')) {
+				htmlElement.html('<li>No granted routes</li>');
+				return;
+			}			
+			
+			const routes = responseData.split(/\r?\n|\r|\n/g);
+			routes.forEach((route) => {
+				const routeId = route.match(/\d+/g)[0];
+				const trainId = route.match(/\w+_\w+$/g)[0];
+				
+				const routeText = `route ${routeId} granted to ${trainId}`;
+				const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
+				htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
+			});
+			
+			$('.grantedRoute').click(function (event) {
+				adminReleaseRoute(event.currentTarget.value);
+			});
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			// Do nothing
+		}
+	});
+}
+
+// Admin control of granted routes
+function adminReleaseRoute(routeId) {
+	$('#routeId').val(routeId);
+	$('#releaseRouteButton').click();
+}
+
 
 $(document).ready(
 	function () {
-		trackOutput = 'master';
 		$('#verificationLogDownload').hide();
 		$('#clearVerificationMsg').hide();
+		
 		// Configuration
 		$('#pingButton').click(function () {
 			$('#pingResponse').text('Waiting');
@@ -102,6 +185,7 @@ $(document).ready(
 						$('#grabTrainResponse').text('Grabbed');
 						$('#grabTrainResponse').parent().removeClass('alert-danger');
 						$('#grabTrainResponse').parent().addClass('alert-success');
+						updateTrainIsForwards();
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#grabTrainResponse')
@@ -112,6 +196,8 @@ $(document).ready(
 				});
 			} else {
 				$('#grabTrainResponse').text('You can only grab one train!');
+				$('#grabTrainResponse').parent().addClass('alert-danger');
+				$('#grabTrainResponse').parent().removeClass('alert-success');
 			}
 		});
 
@@ -146,7 +232,7 @@ $(document).ready(
 			}
 		});
 
-		speeds = [
+		const speeds = [
 			"0",
 			"10",
 			"20",
@@ -178,12 +264,29 @@ $(document).ready(
 				$('#dccSpeed:text').val(speeds[position + 1]);
 			}
 		});
+		
+		$('#swapDirection').click(function () {
+			trainIsForwards = !trainIsForwards;
+			enteredSpeed = $('#dccSpeed').val();
+			if (lastSetSpeed == 0) {
+				$('#dccSpeed').val(1);
+				$('#driveTrainButton').click();
+				$('#dccSpeed').val(0);
+				setTimeout(function() {
+					$('#driveTrainButton').click();
+					$('#dccSpeed').val(enteredSpeed);
+				}, 100 /* milliseconds */);
+			} else {
+				$('#dccSpeed').val(Math.abs(lastSetSpeed));
+				$('#driveTrainButton').click();
+				$('#dccSpeed').val(enteredSpeed);
+			}
+		});
 
 		$('#driveTrainButton').click(function () {
 			$('#driveTrainResponse').text('Waiting');
 			speed = $('#dccSpeed').val();
-			direction = $('#direction').is(':checked');
-			speed = direction ? speed : -speed;
+			speed = trainIsForwards ? speed : -speed;
 			if (sessionId != 0 && grabId != -1) {
 				$.ajax({
 					type: 'POST',
@@ -200,6 +303,7 @@ $(document).ready(
 						$('#driveTrainResponse').text('DCC train speed set to ' + speed);
 						$('#driveTrainResponse').parent().removeClass('alert-danger');
 						$('#driveTrainResponse').parent().addClass('alert-success');
+						lastSetSpeed = speed;
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#driveTrainResponse')
@@ -216,10 +320,10 @@ $(document).ready(
 		});
 
 		$('#stopTrainButton').click(function () {
-			lastSpeed = $('#dccSpeed').val();
+			enteredSpeed = $('#dccSpeed').val();
 			$('#dccSpeed').val(0);
 			$('#driveTrainButton').click();
-			$('#dccSpeed').val(lastSpeed);
+			$('#dccSpeed').val(enteredSpeed);
 		});
 
 		$('#requestRouteButton').click(function () {
@@ -250,7 +354,7 @@ $(document).ready(
 								$('#routeResponse').parent().removeClass('alert-danger');
 								$('#routeResponse').parent().addClass('alert-success');
 
-								$('#routeId').text(responseData);
+								$('#routeId').val(responseData);
 							},
 							error: function (responseData, textStatus, errorThrown) {
 								$('#routeResponse').text(responseData.responseText);
@@ -279,9 +383,8 @@ $(document).ready(
 			source = $('#signalIdFrom').val();
 			destination = $('#signalIdTo').val();
 			if (sessionId != 0 && grabId != -1) {
-
-				ajaxGetInterlocker().then(ajaxRequestRoute);
-				
+				ajaxGetInterlocker()
+					.then(ajaxRequestRoute);
 			} else {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -328,7 +431,7 @@ $(document).ready(
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					routeId = responseData;
-					$('routeId').text(routeId);
+					$('routeId').val(routeId);
 					$('#routeResponse').parent().removeClass('alert-danger');
 					$('#routeResponse').parent().addClass('alert-success');
 					$('#routeResponse').text('Route ' + responseData + ' granted');
@@ -352,9 +455,7 @@ $(document).ready(
 			}
 	  	}
 		
-		$('#driveRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').text();
+		function driveRoute(routeId, mode) {
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -368,14 +469,19 @@ $(document).ready(
 					type: 'POST',
 					url: '/driver/drive-route',
 					crossDomain: true,
-					data: { 'session-id': sessionId, 'grab-id': grabId, 'route-id': routeId },
+					data: { 
+						'session-id': sessionId, 
+						'grab-id': grabId, 
+						'route-id': routeId,
+						'mode': mode
+					},
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$('#routeResponse').text(responseData);
 						$('#routeResponse').parent().removeClass('alert-danger');
 						$('#routeResponse').parent().addClass('alert-success');
 						
-						$('#routeId').text("None");
+						$('#routeId').val("None");
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#routeResponse').text('Route could not be driven!');
@@ -388,6 +494,12 @@ $(document).ready(
 				$('#routeResponse').parent().addClass('alert-danger');
 				$('#routeResponse').text('You must have a grabbed train!');
 			}
+		}
+
+		$('#automaticDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "automatic");
 		});
 		
 		$('#clearVerificationMsg').click(function () {
@@ -410,6 +522,13 @@ $(document).ready(
 				console.log(e);
 			}
 		});
+
+		$('#manualDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "manual");
+		});
+		
 
 		// Custom Engines
 		$('#uploadEngineButton').click(function () {
@@ -537,12 +656,71 @@ $(document).ready(
 		});
 
 
+		// Admin control of grabbed trains and train speed
+
+		function adminSetTrainSpeed(trainId, speed) {
+			return $.ajax({
+				type: 'POST',
+				url: '/admin/set-dcc-train-speed',
+				crossDomain: true,
+				data: {
+					'train': trainId,
+					'speed': speed,
+					'track-output': trackOutput
+				},
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					// Do nothing
+				},
+				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+				}
+			});
+		}
+		
+		function adminReleaseTrain(trainId) {
+			return $.ajax({
+				type: 'POST',
+				url: '/admin/release-train',
+				crossDomain: true,
+				data: {
+					'train': trainId
+				},
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					// Do nothing
+				},
+				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+				}
+			});
+		}
+
+		const trainIds = [
+			'cargo_db',
+			'cargo_green',
+			'cargo_bayern',
+			'regional_odeg',
+			'regional_brengdirect'
+		];
+		
+		trainIds.forEach((trainId) => {
+			$(`#driveTrainButton_${trainId}`).click(function () {
+				const speed = $(`#dccSpeed_${trainId}`).val();
+				adminSetTrainSpeed(trainId, speed);
+			});
+			
+			$(`#releaseTrainButton_${trainId}`).click(function () {
+				adminReleaseTrain(trainId);
+			});
+		});
+		
+
 		// Controller
 		
-		// For driver.html
 		$('#releaseRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').text();
+			var routeId = $('#routeId').val();
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
 				$('#routeResponse').parent().addClass('alert-danger');
@@ -562,7 +740,7 @@ $(document).ready(
 					$('#routeResponse').parent().addClass('alert-success');
 					$('#routeResponse').text('Route ' + routeId + ' released');
 				
-					$('#routeId').text("None");
+					$('#routeId').val("None");
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					$('#routeResponse').parent().removeClass('alert-success');
@@ -573,208 +751,102 @@ $(document).ready(
 			});
 		});
 		
-		// For client.html
-		$('#releaseRouteButtonClient').click(function () {
-			$('#releaseRouteResponse').text('Waiting');
-			var routeId = $('#routeId').val();
-			if (isNaN(routeId)) {
-				$('#releaseRouteResponse').parent().removeClass('alert-success');
-				$('#releaseRouteResponse').parent().addClass('alert-danger');
-				$('#releaseRouteResponse').text('Route \"' + routeId + '\" is not a number!');
-			} else {
-				$.ajax({
-					type: 'POST',
-					url: '/controller/release-route',
-					crossDomain: true,
-					data: { 'route-id': routeId },
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						$('#releaseRouteResponse').parent().removeClass('alert-danger');
-						$('#releaseRouteResponse').parent().addClass('alert-success');
-						$('#releaseRouteResponse').text('Route ' + routeId + ' released');
-					
-						$('#routeId').text("None");
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#releaseRouteResponse').parent().removeClass('alert-success');
-						$('#releaseRouteResponse').parent().addClass('alert-danger');
-						$('#releaseRouteResponse')
-							.text('System not running or invalid track output!');
-					}
-				});
-			}
-		});
+		function setPointAjax(pointId, pointPosition) {
+			$.ajax({
+				type: 'POST',
+				url: '/controller/set-point',
+				crossDomain: true,
+				data: { 'point': pointId, 'state': pointPosition },
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					$('#setPointResponse')
+						.text('Point ' + pointId + ' set to ' + pointPosition);
+					$('#setPointResponse').parent().removeClass('alert-danger');
+					$('#setPointResponse').parent().addClass('alert-success');
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					$('#setPointResponse').text('System not running or invalid position!');
+					$('#setPointResponse').parent().removeClass('alert-success');
+					$('#setPointResponse').parent().addClass('alert-danger');
+				}
+			});
+		}
 
 		$('#setPointButton').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = $("#pointPosition option:selected").text();
-
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-point',
-				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
-				}
-			});
+			setPointAjax(pointId, pointPosition);
 		});
-
+		
 		$('#setPointButtonNormal').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = 'normal';
-
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-point',
-				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
-				}
-			});
+			setPointAjax(pointId, pointPosition);
 		});
 
 		$('#setPointButtonReverse').click(function () {
 			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = 'reverse';
+			setPointAjax(pointId, pointPosition);
+		});
 
+		function setSignalAjax(signalId, signalAspect) {
 			$.ajax({
 				type: 'POST',
-				url: '/controller/set-point',
+				url: '/controller/set-signal',
 				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
+				data: { 'signal': signalId, 'state': signalAspect },
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
+					$('#setSignalResponse')
+						.text('Signal ' + signalId + ' set to ' + signalAspect);
+					$('#setSignalResponse').parent().removeClass('alert-danger');
+					$('#setSignalResponse').parent().addClass('alert-success');
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
+					$('#setSignalResponse').text('System not running or invalid aspect!');
+					$('#setSignalResponse').parent().removeClass('alert-success');
+					$('#setSignalResponse').parent().addClass('alert-danger');
 				}
 			});
-		});
+		}
 
 		$('#setSignalButton').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = $("#signalAspect option:selected").text();
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
 		});
-
 
 		$('#setSignalButtonRed').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_stop';
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonYellow').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_caution';
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonGreen').click(function () {
 			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_go';
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
+			setSignalAjax(signalId, signalAspect);
+		});
+
+		$('#setSignalButtonWhite').click(function () {
+			$('#setSignalResponse').text('Waiting');
+			var signalId = $('#signalId').val();
+			var signalAspect = 'aspect_shunt';
+			setSignalAjax(signalId, signalAspect);
 		});
 		
 		$('#setPeripheralStateButton').click(function () {
@@ -867,8 +939,8 @@ $(document).ready(
 					$('#refreshRemoveInterlockerResponse').text('Unable to refresh list of interlockers');
 				}
 			});
-		}
 
+		}
 		$('#refreshInterlockersButton').click(function () {
 			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			refreshInterlockersList();
@@ -1034,11 +1106,4 @@ $(document).ready(
 		
 	}
 );
-
-
-
-
-
-
-
 

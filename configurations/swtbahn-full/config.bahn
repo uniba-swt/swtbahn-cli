@@ -160,6 +160,10 @@ module SWTbahnFull
         seg91b 0x09 length 41.6cm
         seg92  0x0a length 15cm
     end
+    
+    reversers master
+    	reverser 30051 block14
+    end
 
     signals lightcontrol1
         # Long partition
@@ -502,6 +506,8 @@ module SWTbahnFull
     end
 
     blocks
+        # Anti-clockwise reading direction    
+    
         block1
             overlap seg1
             main seg2
@@ -566,6 +572,8 @@ module SWTbahnFull
     end
 
     platforms
+        # Anti-clockwise reading direction
+
         platform1           # block13
             overlap seg57
             main seg58
@@ -587,15 +595,13 @@ module SWTbahnFull
             main seg78a seg78b
             overlap seg79
         platform6           # block17
-            overlap seg74 
-            main seg75 
             overlap seg76
-            reversed
+            main seg75 
+            overlap seg74
         platform7           # block16
-            overlap seg71 
-            main seg72 
             overlap seg73
-            reversed
+            main seg72 
+            overlap seg71
     end
 
     crossings
@@ -604,6 +610,8 @@ module SWTbahnFull
     end
 
     layout
+        # Anti-clockwise reading direction
+
         # Blocks
         block1.down -- point7.straight
         block1.up -- point1.stem

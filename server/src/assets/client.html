@@ -4,7 +4,7 @@
 <head>
     <link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
     
@@ -80,8 +80,7 @@
 
     <label>DCC Speed:</label>
     <input type="text" id=dccSpeed value="10" />
-    <label>Forward Direction:</label>
-    <input type="checkbox" id=direction checked />
+    <button id=swapDirection>Swap Direction</button>
     <button id=driveTrainButton>Drive</button>
     <button id=stopTrainButton>Stop</button>
     <span id=driveTrainResponse></span>
@@ -92,17 +91,53 @@
     <label>to</label>
     <input type="text" id=signalIdTo value="signal" />
     <button id=requestRouteButton>Request</button>
-    <button id=driveRouteButton>Drive Route</button>
+    <button id=automaticDriveRouteButton>Automatic Drive Route</button>
+    <button id=manualDriveRouteButton>Manual Drive Route</button>
     <span id=routeResponse></span>
-    <br/>
-    <br/>
+    <br />
+    <br />
+    
+    <label>Grabbed statuses:</label>
+    <ul>
+        <li>
+            cargo_db 
+            <input type="text" id=dccSpeed_cargo_db /> 
+            <button id=driveTrainButton_cargo_db>Drive</button> 
+            <button id=releaseTrainButton_cargo_db>Release</button>
+        </li>
+        <li>
+            cargo_green 
+            <input type="text" id=dccSpeed_cargo_green /> 
+            <button id=driveTrainButton_cargo_green>Drive</button> 
+            <button id=releaseTrainButton_cargo_green>Release</button>
+        <li>
+            cargo_bayern 
+            <input type="text" id=dccSpeed_cargo_bayern /> 
+            <button id=driveTrainButton_cargo_bayern>Drive</button> 
+            <button id=releaseTrainButton_cargo_bayern>Release</button>
+        </li>
+        <li>
+            regional_odeg 
+            <input type="text" id=dccSpeed_regional_odeg /> 
+            <button id=driveTrainButton_regional_odeg>Drive</button> 
+            <button id=releaseTrainButton_regional_odeg>Release</button>
+        </li>
+        <li>
+            regional_brengdirect
+            <input type="text" id=dccSpeed_regional_brengdirec t/> 
+            <button id=driveTrainButton_regional_brengdirect>Drive</button> 
+            <button id=releaseTrainButton_regional_brengdirect>Release</button>
+        </li>
+    </ul>
+    
+    <br />
         
 
     <h1>Controller</h1>
 
     <label>Release Route:</label>
-    <input type="text" id=routeId value="" />
-    <button id=releaseRouteButtonClient>Release</button>
+    <input type="text" id=routeId value="None" />
+    <button id=releaseRouteButton>Release</button>
     <span id=releaseRouteResponse></span>
     <br/>
 
@@ -247,6 +282,10 @@
     <br/>
     <br/>
     
+    <label>Granted routes:</label>
+    <ul id=grantedRoutes></ul>
+    
+    <br />
 
     <h1>Custom Engines and Interlockers</h1>
     
@@ -275,6 +314,7 @@
     <label>Available Interlockers:</label>
     <select id="availableInterlockers">
         <option>libinterlocker_default (unremovable)</option>
+        <option>libinterlocker_simple_sectional (unremovable)</option>
     </select>
     <button id="unsetInterlockerButton">Unset</button>
     <button id="setInterlockerButton">Set</button>
@@ -284,10 +324,23 @@
     <br/>
     
     <label>Interlocker in use:</label>
-	<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
-    <br/>
-    <br/>
+    <span id="interlockerInUse">libinterlocker_default (unremovable)</span>
+    <br />
+    <br />
 </body>
+
+<script type="text/javascript">
+    const trainStatusTimeout = 500;
+    const trainStatusInterval = setInterval(() => {
+        updateTrainGrabbedState();
+    }, trainStatusTimeout);
+
+
+    const grantedRoutesTimeout = 500;
+    const grantedRoutesInterval = setInterval(() => {
+        updateGrantedRoutes($('#grantedRoutes'));
+    }, grantedRoutesTimeout);
+</script>
 
 </html>
 

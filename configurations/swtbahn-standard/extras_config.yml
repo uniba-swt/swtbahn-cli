@@ -124,6 +124,10 @@ platforms:
     signals:
       - signal18
       - signal19
+reversers:
+  - id: reverser
+    board: master
+    block: block7
 crossings:
   - id: crossing1
     segment: seg35

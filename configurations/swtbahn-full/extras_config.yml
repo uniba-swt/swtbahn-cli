@@ -247,9 +247,9 @@ platforms:
     main:
       - seg75
     overlaps:
-      - seg74
       - seg76
-    is_reversed: true
+      - seg74
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal41
@@ -259,13 +259,17 @@ platforms:
     main:
       - seg72
     overlaps:
-      - seg71
       - seg73
-    is_reversed: true
+      - seg71
+    is_reversed: false
     direction: bidirectional
     signals:
       - signal39
       - signal40
+reversers:
+  - id: reverser
+    board: master
+    block: block14
 crossings:
   - id: crossing1
     segment: seg20

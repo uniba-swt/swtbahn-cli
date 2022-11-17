@@ -56,6 +56,10 @@ module SWTbahnStandard
 		seg40 0x29 length 56.7cm
 		seg41 0x2A length 10cm
 	end
+	
+	reversers master
+		reverser 20051 block7
+	end
 
 	signals lightcontrol1
 		entry signal3 0x00
@@ -112,6 +116,8 @@ module SWTbahnStandard
 	end
 
 	blocks
+		# Anti-clockwise reading direction
+		
 		# blocks
 		block1 overlap seg3 main seg4 overlap seg5 limit 300km/h trains cargo passenger end
 		block2 overlap seg7 main seg8 overlap seg9 limit 350km/h
@@ -137,6 +143,8 @@ module SWTbahnStandard
 	end
 
 	layout
+		# Anti-clockwise reading direction
+
 		# blocks
 		block1.down -- point1.stem
 		block1.up -- point2.straight

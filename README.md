@@ -15,7 +15,7 @@ libbidib project.
 * Libraries: [onion](https://github.com/uniba-swt/onion), libpam, libgnutls,
 libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
-* ForeC command line compiler: [forec](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
+* ForeC command line compiler: [forecc](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
   * Path to the folder that contains the kico.jar has to be defined in the environment variable `KIELER_PATH`
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
@@ -31,6 +31,10 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 3. Navigate to the directory where the build files should be generated
 4. Execute `cmake <path-to-project-root>/server`
 5. Execute `make`
+
+
+## Test
+To run the unit tests, execute `make test` from within the build directory. Each unit test can be executed to display more detailed test results, e.g., `./server_bahn_util_tests`.
 
 
 ## Usage

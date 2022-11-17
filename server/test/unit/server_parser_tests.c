@@ -1,3 +1,30 @@
+/*
+ *
+ * Copyright (C) 2022 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ * 
+ * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
+ * a client-server application to interactively control a BiDiB model railway.
+ *
+ * swtbahn-cli is licensed under the GNU GENERAL PUBLIC LICENSE (Version 3), see
+ * the LICENSE file at the project's top-level directory for details or consult
+ * <http://www.gnu.org/licenses/>.
+ *
+ * swtbahn-cli is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * swtbahn-cli is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
+ *
+ * The following people contributed to the conception and realization of the
+ * present swtbahn-cli (in alphabetic order by surname):
+ *
+ * - Eugene Yip <https://github.com/eyip002>
+ *
+ */
+ 
 #include <syslog.h>
 #include <stddef.h>
 #include <setjmp.h>
@@ -78,10 +105,12 @@ static void route_information(void **state) {
 }
 
 static void point_position(void **state) {
-	char *position = config_get_point_position("0", "point11");
+	char *route_id_0 = "0"; 
+	char *position = config_get_point_position(route_id_0, "point11");
 	assert_string_equal(position, "normal");
 	
-	position = config_get_point_position("1", "point4");
+	char *route_id_1 = "1";
+	position = config_get_point_position(route_id_1, "point11");
 	assert_string_equal(position, "reverse");
 }
 
@@ -112,6 +141,9 @@ static void extra_information(void **state) {
 
 	char *crossing_segment = config_get_scalar_string_value ("crossing", "crossing1", "segment");
 	assert_string_equal(crossing_segment, "seg20");
+
+	char *reverser_id = config_get_scalar_string_value("reverser", "reverser", "id");
+	assert_string_equal(reverser_id, "reverser");
 }
 
 static void signal_type(void **state) {
@@ -141,7 +173,6 @@ static void signal_type(void **state) {
 
 	char *signal_type_id = config_get_scalar_string_value("signaltype", "distant", "id");
 	assert_string_equal(signal_type_id, "distant");
-
 }
 
 static void train_information(void **state) {
@@ -162,8 +193,11 @@ static void block_information(void ** state) {
 	char *id = config_get_scalar_string_value("block", "block1", "id");
 	assert_string_equal(id, "block1");
 
-	char *segment = config_get_scalar_string_value("block" , "block1", "segment");
-	assert_string_equal(segment, "seg2");
+	char *segments[1024];
+	int segments_count = config_get_array_string_value("block" , "block1", "main_segments", segments);
+	assert_non_null(segments);
+	assert_int_equal(1, segments_count);
+	assert_string_equal(segments[0], "seg2");
 
 	char *overlap_ids[1024];
 	int overlap_count = config_get_array_string_value("block", "block1", "overlaps", overlap_ids);
@@ -194,6 +228,17 @@ static void block_information(void ** state) {
 	assert_int_equal(signals_count, 2);
 	assert_string_equal(signal_ids[0], "signal1");
 	assert_string_equal(signal_ids[1], "signal4a");
+}
+
+static void reverser_information(void ** state) {
+	char *reverser_id = config_get_scalar_string_value("reverser", "reverser", "id");
+	assert_string_equal(reverser_id, "reverser");
+
+	char *reverser_board = config_get_scalar_string_value("reverser", "reverser", "board");
+	assert_string_equal(reverser_board, "master");
+	
+	char *reverser_block = config_get_scalar_string_value("reverser", "reverser", "block");
+	assert_string_equal(reverser_block, "block14");
 }
 
 static void signal_composition(void **state) {
@@ -254,6 +299,7 @@ int main(int argc, char **argv) {
 			cmocka_unit_test(signal_type),
 			cmocka_unit_test(train_information),
 			cmocka_unit_test(block_information),
+			cmocka_unit_test(reverser_information),
 			cmocka_unit_test(signal_composition),
 			cmocka_unit_test(invalid_ids)
 	};

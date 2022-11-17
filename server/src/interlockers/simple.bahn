@@ -95,7 +95,9 @@ def route_is_clear(string route_id): bool
     # 2. Iterate through the segments and signals
     for string item_id in item_ids
         # 3. If the item is a segment, check whether it is occupied
-        if (is item_id a_segment) && (is item_id occupied)
+        bool is_a_segment = is item_id a_segment
+        bool is_occupied = is item_id occupied
+        if is_a_segment && is_occupied
             return false
         end
     end
@@ -122,6 +124,9 @@ def set_points(string route_id)
             set state point_id to reverse
         end
     end
+    
+    # TODO: Wait 1 sec for the points to physically move
+    # into position
 end
 
 
@@ -139,7 +144,12 @@ def set_signals(string route_id)
     for string signal_id in signal_ids
         # Set each signal (except for the destination) to the Go aspect
         if signal_id != destination_id
-            set state signal_id to go
+            string signal_type = get config signal.type signal_id
+            if signal_type == "shunting"
+                set state signal_id to shunt
+            else
+                set state signal_id to go
+            end
         end
     end
 end

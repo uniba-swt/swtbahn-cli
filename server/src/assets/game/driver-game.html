@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="icon" type="image/png" id="favIcon" href="../favicon.jpg" />
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" />
+
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="style-game.css" />
+
+	<script src="destinations-swtbahn-ultraloop.json"></script>
+	<script src="destinations-swtbahn-standard.json"></script>
+	<script src="destinations-swtbahn-full.json"></script>
+	<script src="flags-swtbahn-full.json"></script>
+	
+	<script src="script-game.js"></script>
+	<script src="script-game-mutex.js"></script>
+
+	<title>SWTbahn Driver Client</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<svg id="svgDef">
+	<style>
+		rect {
+			stroke-width: 18px;
+			stroke: var(--flag-stroke);
+			fill: var(--flag-fill);
+		}
+		
+		circle.topLeft {
+			fill: var(--flag-topLeft-fill);
+		}
+		
+		circle.topRight {
+			fill: var(--flag-topRight-fill);
+		}
+		
+		circle.centre {
+			fill: var(--flag-centre-fill);
+		}
+		
+		circle.bottomLeft {
+			fill: var(--flag-bottomLeft-fill);
+		}
+		
+		circle.bottomRight {
+			fill: var(--flag-bottomRight-fill);
+		}
+	</style>
+	
+	<symbol id="flagDef">
+		<rect width="100" height="100"></rect>
+		<circle class="topLeft" cx="25" cy="25" r="10"></circle>
+		<circle class="topRight" cx="75" cy="25" r="10"></circle>
+		<circle class="centre" cx="50" cy="50" r="10"></circle>
+		<circle class="bottomLeft" cx="25" cy="75" r="10"></circle>
+		<circle class="bottomRight" cx="75" cy="75" r="10"></circle>
+	</symbol>
+</svg>
+
+<body>
+	<div class="row">
+		<div class="col p-2">
+			<img class="img-fluid" src="../swtbahn-logo.png">
+		</div>
+		<div class="col p-2 d-flex justify-content-end align-items-end">
+			<button id="endGameButton" type="button" class="btn btn-primary me-2">
+				<span lang="de">Beenden</span>
+				<span lang="en">End Trip</span>
+			</button>
+			
+			<button id="changeLang" class="btn btn-outline-primary">
+				<span lang="en">🇬🇧</span>
+				<span lang="de">🇩🇪</span>
+			</button>
+		</div>
+	</div>
+	
+	<div class="row">
+		<img id="chosenTrain" class="col pt-2 img-fluid" src=""></img>
+	</div>
+	
+	<hr />
+
+	<div id="trainSelection" class="row g-0">
+		<div class="card mb-3">
+			<img src="train-cargo-db.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Cargo DB</h5>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 81 t <br />
+						Länge: 18.90 m <br />
+						Breite: 2.97 m <br />
+						Höhe: 4.27 m <br />
+						Höchstgeschwindigkeit: 150 km/h
+					</span>
+					<span lang="en">
+						Weight: 81 t<br />
+						Length: 18.90 m<br />
+						Width: 2.97 m<br />
+						Height: 4.27 m<br />
+						Max. Speed: 150 km/h
+					</span>
+				</p>
+				<button class="selectTrainButton btn btn-primary" id="cargo_db">
+					<span lang="de">Fahre diesen Zug</span>
+					<span lang="en">Drive this train</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="card mb-3">
+			<img src="train-cargo-green.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Cargo Green</h5>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 85 t <br />
+						Länge: 18.9 m <br />
+						Breite: 2.97 m <br />
+						Höhe: 4.27 m <br />
+						Höchstgeschwindigkeit: 140 km/h
+					</span>
+					<span lang="en">
+						Weight: 85 t<br />
+						Length: 18.9 m<br />
+						Width: 2.97 m<br />
+						Height: 4.27 m<br />
+						Max. Speed: 140 km/h
+					</span>
+				</p>
+				<button class="selectTrainButton btn btn-primary" id="cargo_green">
+					<span lang="de">Fahre diesen Zug</span>
+					<span lang="en">Drive this train</span>
+				</button>
+			</div>
+		 </div>
+
+		<div class="card mb-3">
+			<img src="train-regional-odeg.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Regional ODEG</h5>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 70 t <br />
+						Länge: 40.89 m <br />
+						Breite: 3.00 m <br />
+						Höhe: 4.04 m <br />
+						Höchstgeschwindigkeit: 140 km/h
+					</span>
+					<span lang="en">
+						Weight: 70 t<br />
+						Length: 40.89 m<br />
+						Width: 3.00 m<br />
+						Height: 4.04 m<br />
+						Max. Speed: 140 km/h
+					</span>
+				</p>
+				<button class="selectTrainButton btn btn-primary" id="regional_odeg">
+					<span lang="de">Fahre diesen Zug</span>
+					<span lang="en">Drive this train</span>
+				</button>
+			</div>
+		</div>
+		<div class="card mb-3">
+			<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Regional Brengdirect</h5>
+				<p class="card-text">
+					<span lang="de">
+						Gewicht: 78.5 t <br />
+						Länge: 53.43 m <br />
+						Breite: 2.65 m <br />
+						Höchstgeschwindigkeit: 115 km/h
+					</span>
+					<span lang="en">
+						Weight: 78.5 t<br />
+						Length: 53.43 m<br />
+						Width: 2.65 m<br />
+						Max. Speed: 115 km/h
+					</span>
+				</p>
+				<button class="selectTrainButton btn btn-primary" id="regional_brengdirect">
+					<span lang="de">Fahre diesen Zug</span>
+					<span lang="en">Drive this train</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="m-4"></div>
+
+	<div id="serverAlertBox">
+		<div id="serverAlert" class="alert" role="alert">
+			<span id="serverResponse"></span>
+		</div>
+	</div>
+	
+	<div id="serverModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="serverModalTitle" class="modal-title"></h5>
+				</div>
+				<div id="serverModalBody" class="modal-body"></div>
+				<div class="modal-footer">
+					<button id="serverModalButton" type="button" class="btn btn-light btn-outline-dark" data-bs-dismiss="modal"></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<form id="destinationsForm">
+		<label class="col-form-label-lg me-md-5">
+			<b>
+				<span lang="de">Mögliche Ziele:</span>
+				<span lang="en">Possible destinations:</span>
+			</b>
+		</label>
+		<div class="input-group row">
+			<div id="possibleDestinations" class="col">
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination0" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination1" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination2" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination3" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+								
+				<div class="m-4"></div>
+
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination4" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination5" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination6" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination7" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<div class="m-4"></div>
+
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination8" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination9" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination10" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+				<svg class="flag" viewBox="0 0 100 100">
+					<use id="destination11" href="#flagDef" class="flagThemeBlank" value=""></use>
+				</svg>
+			</div>
+		</div>
+	</form>
+
+	<form id="speedForm">
+		<div id="chosenDestination" class="row pt-4">
+			<label class="col-auto col-form-label-lg me-md-5 align-self-center"><b>
+				<span lang="de">Ziel:</span>
+				<span lang="en">Destination:</span>
+			</b></label>
+			<svg class="flag" viewBox="0 0 100 100">
+				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
+			</svg>
+		</div>
+		
+		<label class="col-auto col-form-label-lg me-md-5"><b>
+			<span lang="de">Geschwindigkeit</span>
+			<span lang="en">Speed</span>
+		</b></label>
+		<div class="input-group row">
+			<div class="col">
+				<div class="btn-group" role="group">
+					<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
+						<span lang="de">Stop</span>
+						<span lang="en">Stop</span>
+					</button>
+					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">
+						<span lang="de">Langsam</span>
+						<span lang="en">Slow</span>
+					</button>
+					<button id="normal" type="button" class="btn btn-secondary btn-lg" value="40">
+						<span lang="de">Normal</span>
+						<span lang="en">Normal</span>
+					</button>
+					<button id="fast" type="button" class="btn btn-success btn-lg" value="60">
+						<span lang="de">Schnell</span>
+						<span lang="en">Fast</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+</body>
+
+</html>

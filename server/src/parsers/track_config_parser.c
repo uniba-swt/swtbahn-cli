@@ -119,6 +119,21 @@ void nullify_track_config_tables(void) {
     tb_peripherals = NULL;
 }
 
+void initialise_hashtables(void) {
+    if (tb_segments == NULL) {
+        tb_segments = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_segment);
+    }
+    if (tb_signals == NULL) {
+        tb_signals = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_signal);
+    }
+    if (tb_points == NULL) {
+        tb_points = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_point);
+    }
+    if (tb_peripherals == NULL) {
+        tb_peripherals = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_peripheral);
+    }
+}
+
 void track_yaml_sequence_start(char *scalar) {
     if (track_mapping == TRACK_ROOT && str_equal(scalar, "boards")) {
         track_sequence = BOARDS;
@@ -127,15 +142,11 @@ void track_yaml_sequence_start(char *scalar) {
 
     if (track_mapping == BOARD && str_equal(scalar, "segments")) {
         track_sequence = SEGMENTS;
-        if (tb_segments == NULL)
-            tb_segments = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_segment);
         return;
     }
 
     if (track_mapping == BOARD && str_equal(scalar, "signals-board")) {
         track_sequence = SIGNALS;
-        if (tb_signals == NULL)
-            tb_signals = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_signal);
         return;
     }
 
@@ -147,8 +158,6 @@ void track_yaml_sequence_start(char *scalar) {
 
     if (track_mapping == BOARD && str_equal(scalar, "points-board")) {
         track_sequence = POINTS;
-        if (tb_points == NULL)
-            tb_points = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_point);
         return;
     }
 
@@ -159,8 +168,6 @@ void track_yaml_sequence_start(char *scalar) {
 
     if (track_mapping == BOARD && str_equal(scalar, "peripherals")) {
         track_sequence = PERIPHERALS;
-        if (tb_peripherals == NULL)
-            tb_peripherals = g_hash_table_new_full(g_str_hash, g_str_equal, free_track_id_key, free_peripheral);
         return;
     }
 
@@ -392,6 +399,7 @@ void parse_track_yaml(yaml_parser_t *parser, t_config_data *data) {
     track_mapping = TRACK_ROOT;
     track_sequence = TRACK_SEQ_NONE;
     
+    initialise_hashtables();
     parse_yaml_content(parser, track_yaml_sequence_start, track_yaml_sequence_end, track_yaml_mapping_start, track_yaml_mapping_end, track_yaml_scalar);
     data->table_segments = tb_segments;
     data->table_signals = tb_signals;

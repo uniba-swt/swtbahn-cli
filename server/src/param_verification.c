@@ -95,6 +95,13 @@ const char *params_check_route_id(const char *data_route_id) {
 	return data_route_id;
 }
 
+const char *params_check_mode(const char *data_mode) {
+	if (strcmp(data_mode, "automatic") == 0 || strcmp(data_mode, "manual") == 0) {
+		return data_mode;
+	}
+	return "";
+}
+
 bool params_check_is_number(const char *string) {
 	if (string == NULL || *string == '\0' || isspace(*string)) {
 		return 0;
