@@ -22,6 +22,7 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Ben-Oliver Hosak <https://github.com/hosakb>
+ * - Bernhard Luedtke <https://github.com/bluedtke>
  * - Eugene Yip <https://github.com/eyip002>
  *
  */
@@ -50,7 +51,8 @@ static const char interlocker_extensions[][5] = { "bahn" };
 static const int interlocker_extensions_count = 1;
 
 static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/";
-//static const char verifier_url[] = "ws://127.0.0.1:8080/engineverification/"; //For development, local verification server.
+// For development, local verification server.
+//static const char verifier_url[] = "ws://127.0.0.1:8080/engineverification/";
 
 static const unsigned int websocket_single_poll_length_ms = 250;
 static const unsigned int websocket_max_polls_before_start = 60;
@@ -165,7 +167,7 @@ void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr)
 		ws_data_ptr->finished = true;
 		ws_data_ptr->success = false;
 	}
-	//Send verification request
+	// Send verification request
 	if(g_fullmsg != NULL && g_fullmsg->len > 0){
 		syslog_server(LOG_INFO, "Request: Upload - Now sending verification request to swtbahn-verifier");
 		mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
@@ -178,12 +180,12 @@ void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr)
 }
 
 void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, ws_verif_data* ws_data_ptr) {
-	//Parses mg_ws_message, which is expected to contain a message from the verification server.
-	//Then adjusts ws_data_ptr struct according to server's message.
+	// Parses mg_ws_message, which is expected to contain a message from the verification server.
+	// Then adjusts ws_data_ptr struct according to server's message.
 	
 	char* msg_type_is_defined = strstr(wm->data.ptr, "__MESSAGE_TYPE__");
 	if (!msg_type_is_defined) {
-		//Message type field not specified, stop.
+		// Message type field not specified, stop.
 		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown format");
 		return;
 	}
@@ -195,7 +197,7 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 		syslog_server(LOG_NOTICE, "Request: Upload - Verification Server started verification");
 		ws_data_ptr->started = true;
 	} else if (type_verif_req_result) {
-		//Parse result
+		// Parse result
 		char* verif_success = strstr(wm->data.ptr, "\"status\":true");
 		if (verif_success) {
 			syslog_server(LOG_NOTICE, "Request: Upload - Verification Server finished,"
@@ -206,22 +208,22 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 			// Verification failed/unsuccessful
 			ws_data_ptr->success = false;
 			ws_data_ptr->finished = true;
-			//Differentiate between status:false and unspecified failure
+			// Differentiate between status:false and unspecified failure
 			char* verif_fail = strstr(wm->data.ptr, "\"status\":false");
 			if (!verif_fail){
-				//No 'status' field in answer. Stop with fail
+				// No 'status' field in answer. Stop with fail
 				syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
 													" verification status not specified");
 			} else {
 				// Ordinary failure
-				//Save server's reply (to forward to client lateron)
+				// Save server's reply (to forward to client lateron)
 				syslog_server(LOG_NOTICE, "Request: Upload - Verification Server finished, verification fail");
 				ws_data_ptr->srv_result_full_msg  = g_string_new("");
 				g_string_append_printf(ws_data_ptr->srv_result_full_msg,"%s",wm->data.ptr);
 			}
 		}
 	} else {
-		//Unknown message type specified by the server.
+		// Unknown message type specified by the server.
 		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown msg type");
 	}
 }
@@ -232,7 +234,7 @@ void websock_verification_callback(struct mg_connection *c, int ev, void *ev_dat
 	
 	if (ev == MG_EV_ERROR) {
 		syslog_server(LOG_ERR, "Request: Upload - Websocket callback encountered error: %s", (char *) ev_data);
-		//If an error is encountered, the verification can't be completed -> success false; finished true.
+		// If an error is encountered, the verification can't be completed -> success false; finished true.
 		(*ws_data_ptr).success = false;
 		(*ws_data_ptr).finished = true;
 	} else if (ev == MG_EV_WS_OPEN) {
@@ -282,16 +284,16 @@ verif_result verify_engine_model(const char* f_filepath) {
 	}
 	
 	if(c && !c->is_closing){
-		//If connection is not yet closing, send close. After that, one more event poll has to be performed,
+		// If connection is not yet closing, send close. After that, one more event poll has to be performed,
 		// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
 		mg_ws_send(c, "0", 1, 1000);
 		mg_mgr_poll(&mgr, 1000);
 	}
-	mg_mgr_free(&mgr); // Deallocate resources
+	mg_mgr_free(&mgr);
 	verif_result result_data;
 	result_data.success = ws_verifData.success;
 	result_data.srv_result_full_msg = ws_verifData.srv_result_full_msg;
-	//Free string allocated for loading model file
+	// Free string allocated for loading model file
 	g_string_free(ws_verifData.file_path, true);
 	return result_data;
 }
@@ -331,7 +333,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		if(verification_enabled){
 			verif_result v_result = verify_engine_model(final_filepath);
 			if(!v_result.success){
-				//Stop upload if verification did not succeed
+				// Stop upload if verification did not succeed
 				syslog_server(LOG_ERR, "Request: Upload - Engine verification failed");
 				remove_engine_files(libname);
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
