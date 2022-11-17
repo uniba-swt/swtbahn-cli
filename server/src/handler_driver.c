@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <glib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "server.h"
 #include "dyn_containers_interface.h"
@@ -220,7 +221,7 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 	syslog_server(LOG_DEBUG, "Get route signal-info array called for routeID %s", route->id);
 	const size_t path_count = route->path->len;
 	const size_t number_of_signal_infos = route->signals->len;
-	GArray *signal_infos = g_array_sized_new(FALSE, FALSE, 
+	GArray *signal_infos = g_array_sized_new(FALSE, TRUE, 
 	                                         sizeof(t_route_signal_info), 
 	                                         number_of_signal_infos);
 	size_t built_signal_infos_counter = 0;
@@ -250,7 +251,8 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 			free_route_signal_info_array(signal_infos);
 			return NULL;
 		}
-		strcpy(signal_info_elem->id, signal_id_item);
+		snprintf(signal_info_elem->id, (strlen(signal_id_item) + 1), "%s", signal_id_item);
+		//strcpy(signal_info_elem->id, signal_id_item);
 		
 		// signal_info->index_in_route_path
 		// determine index of the signal in route->path (only if not source or destination signal)
@@ -271,7 +273,15 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 		g_array_append_val(signal_infos, signal_info_elem);
 	}
 	syslog_server(LOG_DEBUG, "Get route signal-info array returning "
-	              "with %d built signal-info elements", built_signal_infos_counter);
+	              "with %d built signal-info elements, array length is %d", built_signal_infos_counter, signal_infos->len);
+	syslog_server(LOG_NOTICE, "Printing signal info array 1:");
+	for (size_t n = 0; n < signal_infos->len; ++n) {
+		const t_route_signal_info *s_item = g_array_index(signal_infos, t_route_signal_info*, n);
+		syslog_server(LOG_NOTICE, "   i %d - ID %s, has-been-set-to-stop %s, source %s, destination %s, index %d", 
+		              n, s_item->id, s_item->has_been_set_to_stop ? "yes" : "no",
+		              s_item->is_source_signal ? "yes" : "no", s_item->is_destination_signal ? "yes" : "no",
+						  s_item->index_in_route_path);
+	}
 	return signal_infos;
 }
 
@@ -308,11 +318,7 @@ static long long get_train_pos_index_in_route_path(const char* train_id,  t_inte
 	bidib_free_train_position_query(train_position_query);
 	return train_pos_index;
 }
-/*	char *id;
-	bool has_been_set_to_stop;
-	bool is_source_signal;
-	bool is_destination_signal;
-	size_t index_in_route_path;*/
+
 static bool drive_route_progressive_stop_signals_decoupled(const char *train_id, t_interlocking_route *route) {
 	// Strategy:
 	// Route tells us the signals involved in it. Both on their own, and in the path.
@@ -333,7 +339,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	              "called for routeID %s", route->id);
 	// Get route signal infos
 	GArray *signal_info_array = get_route_signal_info_array(route);
-	syslog_server(LOG_NOTICE, "Printing signal info array:");
+	syslog_server(LOG_NOTICE, "Printing signal info array: 2");
 	for (size_t n = 0; n < signal_info_array->len; ++n) {
 		const t_route_signal_info *s_item = g_array_index(signal_info_array, t_route_signal_info*, n);
 		syslog_server(LOG_NOTICE, "   i %d - ID %s, has-been-set-to-stop %s, source %s, destination %s, index %d", 
@@ -356,7 +362,6 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	              "with length %d for routeID %s", signal_info_array->len, route->id);
 	
 	const char *signal_stop_aspect = "aspect_stop";
-	const size_t path_count = route->path->len;
 	// -1 because of destination signal.
 	const size_t signals_to_set_stop_for_finish = (signal_info_array->len) - 1;
 	size_t signals_set_to_stop_total = 0;
