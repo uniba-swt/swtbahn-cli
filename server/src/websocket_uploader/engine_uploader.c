@@ -51,7 +51,6 @@ static const char msg_type_start_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATIO
 static const char msg_type_start_sctx_field_key[] = "\"sctx\"";
 static const char msg_type_received_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RECEIVED\"";
 static const char msg_type_result_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RESULT\"";
-static const char msg_type_result_status_field_key[] = "\"status\"";
 static const char msg_type_result_status_true_sig[] = "\"status\":true";
 static const char msg_type_result_status_false_sig[] = "\"status\":false";
 
