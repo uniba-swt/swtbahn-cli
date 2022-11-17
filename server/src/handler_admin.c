@@ -193,7 +193,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 }
 
 onion_connection_status handler_set_verification(void *_, onion_request *req,
-																onion_response *res) {
+                                                 onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)){
 		const char *data_verification_enabled = onion_request_get_post(req, "verification-enabled");

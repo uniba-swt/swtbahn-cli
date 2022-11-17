@@ -1072,7 +1072,6 @@ monitor.add_command(get_segments)
 monitor.add_command(get_reversers)
 monitor.add_command(get_peripherals)
 monitor.add_command(get_verification)
-
 monitor.add_command(get_granted_routes)
 monitor.add_command(get_route)
 
