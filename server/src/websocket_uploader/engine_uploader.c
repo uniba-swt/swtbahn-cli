@@ -37,18 +37,26 @@ typedef struct {
 	GString* srv_result_full_msg;
 } ws_verif_data;
 
+static const unsigned int websocket_single_poll_length_ms = 250;
+static const unsigned int websocket_max_polls_before_start = 60;
+
 static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/";
 // For development, local verification server.
 //static const char verifier_url[] = "ws://127.0.0.1:8080/engineverification/";
 
+static const char msg_type_field_key[] = "\"__MESSAGE_TYPE__\"";
+static const char msg_type_start_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_START\"";
+static const char msg_type_start_sctx_field_key[] = "\"sctx\"";
+static const char msg_type_received_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RECEIVED\"";
+static const char msg_type_result_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RESULT\"";
+static const char msg_type_result_status_field_key[] = "\"status\"";
+static const char msg_type_result_status_true_sig[] = "\"status\":true";
+static const char msg_type_result_status_false_sig[] = "\"status\":false";
+
 void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, ws_verif_data* ws_data_ptr);
-
 void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr);
-
 void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
 
-static const unsigned int websocket_single_poll_length_ms = 250;
-static const unsigned int websocket_max_polls_before_start = 60;
 
 void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr) {
 	// Read sctx model from file and send that as the message. https://stackoverflow.com/a/174743
@@ -63,8 +71,8 @@ void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr)
 			//- Create escaped version of the GString that represents the model file
 			gchar* g_c_escaped = g_strescape(buffer, NULL);
 			//- Create message in the (json)syntax that the verification server wants
-			g_string_append_printf(g_fullmsg, "{\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_START\",");
-			g_string_append_printf(g_fullmsg, "\"sctx\":\"%s\"}", g_c_escaped);
+			g_string_append_printf(g_fullmsg, "{%s,", msg_type_start_sig);
+			g_string_append_printf(g_fullmsg, "%s:\"%s\"}", msg_type_start_sctx_field_key, g_c_escaped);
 			free(g_c_escaped);
 			free(buffer);
 		} else {
@@ -93,22 +101,22 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 	// Parses mg_ws_message, which is expected to contain a message from the verification server.
 	// Then adjusts ws_data_ptr struct according to server's message.
 	
-	char* msg_type_is_defined = strstr(wm->data.ptr, "__MESSAGE_TYPE__");
+	char* msg_type_is_defined = strstr(wm->data.ptr, msg_type_field_key);
 	if (!msg_type_is_defined) {
 		// Message type field not specified, stop.
 		syslog_server(LOG_WARNING, "Upload Engine - Verification Server replied in unknown format");
 		return;
 	}
 	
-	char* type_verif_req_rec = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RECEIVED\"");
-	char* type_verif_req_result = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RESULT\"");
+	char* type_verif_req_received = strstr(wm->data.ptr, msg_type_received_sig);
+	char* type_verif_req_result = strstr(wm->data.ptr, msg_type_result_sig);
 	
-	if (type_verif_req_rec) {
+	if (type_verif_req_received) {
 		syslog_server(LOG_NOTICE, "Upload Engine - Verification Server started verification");
 		ws_data_ptr->started = true;
 	} else if (type_verif_req_result) {
 		// Parse result
-		char* verif_success = strstr(wm->data.ptr, "\"status\":true");
+		char* verif_success = strstr(wm->data.ptr, msg_type_result_status_true_sig);
 		if (verif_success) {
 			syslog_server(LOG_NOTICE, "Upload Engine - Verification Server finished,"
 			                          " verification succeeded");
@@ -119,7 +127,7 @@ void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *w
 			ws_data_ptr->success = false;
 			ws_data_ptr->finished = true;
 			// Differentiate between status:false and unspecified failure
-			bool status_false_in_reply = (strstr(wm->data.ptr, "\"status\":false") != NULL);
+			bool status_false_in_reply = (strstr(wm->data.ptr, msg_type_result_status_false_sig) != NULL);
 			if (!status_false_in_reply){
 				// No 'status' field in answer with either true or false
 				syslog_server(LOG_WARNING, "Upload Engine - Verification Server finished,"
