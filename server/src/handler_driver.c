@@ -265,6 +265,8 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 			}
 		}
 		++built_signal_infos_counter;
+		syslog_server(LOG_NOTICE, "Signal-Info element for signal %s added", signal_info_elem->id);
+		syslog_server(LOG_NOTICE, "    Index in route path: %d", signal_info_elem->index_in_route_path);
 		g_array_append_val(signal_infos, signal_info_elem);
 	}
 	syslog_server(LOG_DEBUG, "Get route signal-info array returning "
@@ -337,7 +339,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		              "got signal-info array, but this has not enough signal infos (< 2)");
 		return false;
 	}
-	syslog_server(LOG_DEBUG, "drive route progressive stop signals decoupled got signal-info array "
+	syslog_server(LOG_NOTICE, "drive route progressive stop signals decoupled got signal-info array "
 	              "with length %d for routeID %s", signal_info_array->len, route->id);
 	
 	const char *signal_stop_aspect = "aspect_stop";
@@ -368,13 +370,6 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 				                                                             t_route_signal_info*, 
 				                                                             signal_info_index);
 				if (signal_info_search_item != NULL 
-				    && signal_info_search_item->index_in_route_path > train_pos_index) {
-						// as signal_info elements are ordered/arranged such that their index in the
-						// route path increases or stays the same from element to element, we
-						// can break as soon as we find the first signal that is not reached yet
-						break;
-					 }
-				if (signal_info_search_item != NULL 
 				    && !signal_info_search_item->has_been_set_to_stop 
 				    && (signal_info_search_item->index_in_route_path < train_pos_index
 				        || (signal_info_search_item->index_in_route_path <= train_pos_index 
@@ -386,13 +381,15 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 						syslog_server(LOG_ERR, "drive route progressive stop signals decoupled unable "
 						              "to set signal %s to stop", signal_info_search_item->id);
 					} else {
+						bidib_flush();
+						syslog_server(LOG_NOTICE, "drive route progressive stop signals decoupled: "
+						              "SIGNAL %s set to stop", signal_info_search_item->id);
 						signal_info_search_item->has_been_set_to_stop = true;
 						signals_set_stop_this_iter_counter++;
 						signals_set_to_stop_total++;
 					}
 				}
 			}
-			bidib_flush();
 			if (signals_set_stop_this_iter_counter > 0) {	
 				syslog_server(LOG_DEBUG, "drive route progressive stop signals decoupled set %d signals "
 				              "to stop in one loop/check iteration", signals_set_stop_this_iter_counter);
