@@ -345,7 +345,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	// -1 because of destination signal.
 	const size_t signals_to_set_stop_for_finish = signal_info_array->len - 1;
 	size_t signals_set_to_stop_total = 0;
-	size_t train_pos_index_previous = 0;
+	size_t train_pos_index_previous = route->path->len + 1;
 	// Route driving ongoing, valid, and not all signals set to stop
 	while (running && drive_route_params_valid(train_id, route) 
 	        && signals_set_to_stop_total < signals_to_set_stop_for_finish) {
@@ -359,7 +359,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		}
 		// If max_index_occ_segment is still 0, assume train has yet to enter the route.
 		// If previous train position is the same, do nothing. Otherwise, look for signals to set to stop.
-		if (train_pos_index > 0 && train_pos_index_previous != train_pos_index) {
+		if (/*train_pos_index > 0 &&*/ train_pos_index_previous != train_pos_index) {
 			// 3. Determine which signals have a lower index in route->path than the 'train index'
 			//    and set them to aspect_stop.
 			const size_t arr_len = signal_info_array->len;
