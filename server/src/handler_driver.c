@@ -191,6 +191,7 @@ static void free_route_signal_info_array(GArray *route_signal_infos) {
 	if (route_signal_infos == NULL) {
 		return;
 	}
+	/*
 	const size_t arr_len = route_signal_infos->len;
 	for (size_t signal_info_index = 0; signal_info_index < arr_len; ++signal_info_index) {
 		t_route_signal_info *signal_info_search_item = g_array_index(route_signal_infos, 
@@ -199,7 +200,7 @@ static void free_route_signal_info_array(GArray *route_signal_infos) {
 		if (signal_info_search_item != NULL && signal_info_search_item->id != NULL) {
 			free(signal_info_search_item->id);
 		}
-	}
+	}*/
 	g_array_free(route_signal_infos, true);
 }
 
@@ -321,7 +322,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		syslog_server(LOG_ERR, "drive route progressive stop signals decoupled, "
 		              "route or route->id is NULL");
 	}
-	syslog_server(LOG_DEBUG, "drive route progressive stop signals decoupled "
+	syslog_server(LOG_NOTICE, "drive route progressive stop signals decoupled "
 	              "called for routeID %s", route->id);
 	// Get route signal infos
 	GArray *signal_info_array = get_route_signal_info_array(route);
@@ -392,7 +393,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		train_pos_index_previous = train_pos_index;
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
-	syslog_server(LOG_DEBUG, "drive route progressive stop signals decoupled for routeID %s ending; "
+	syslog_server(LOG_NOTICE, "drive route progressive stop signals decoupled for routeID %s ending; "
 	              "%d signals were set to stop here in total.", route->id, signals_set_to_stop_total);
 	free_route_signal_info_array(signal_info_array);
 	return true;
@@ -464,7 +465,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set the signals along the route to Stop as the train drives past them
-	const bool result = drive_route_progressive_stop_signals(train_id, route);
+	const bool result = drive_route_progressive_stop_signals_decoupled(train_id, route);
 	
 	// Wait for train to reach the end of the route
 	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 1);
