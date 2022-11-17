@@ -50,13 +50,6 @@ static const char interlocker_dir[] = "interlockers";
 static const char interlocker_extensions[][5] = { "bahn" };
 static const int interlocker_extensions_count = 1;
 
-static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/";
-// For development, local verification server.
-//static const char verifier_url[] = "ws://127.0.0.1:8080/engineverification/";
-
-static const unsigned int websocket_single_poll_length_ms = 250;
-static const unsigned int websocket_max_polls_before_start = 60;
-
 extern pthread_mutex_t dyn_containers_mutex;
 
 
@@ -66,7 +59,7 @@ bool clear_dir(const char dir[]) {
 	DIR *dir_handle = opendir(dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", dir);
+		syslog_server(LOG_ERR, "clear_dir: Directory %s could not be opened", dir);
 		return false;
 	}
 	
@@ -96,23 +89,22 @@ bool clear_interlocker_dir(void) {
 void remove_file_extension(char filepath_destination[], 
                            const char filepath_source[], const char extension[]) {
 	strcpy(filepath_destination, filepath_source);
-    size_t filepath_len = strlen(filepath_source);
-    size_t extension_len = strlen(extension);
-    filepath_destination[filepath_len - extension_len] = '\0';
+	size_t filepath_len = strlen(filepath_source);
+	size_t extension_len = strlen(extension);
+	filepath_destination[filepath_len - extension_len] = '\0';
 }
 
 bool engine_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(engine_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", engine_dir);
+		syslog_server(LOG_ERR, "engine_file_exists Directory %s could not be opened", engine_dir);
 		return true;
 	}
 	struct dirent *dir_entry = NULL;
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
 		if (strcmp(dir_entry->d_name, filename) == 0) {
 			closedir(dir_handle);
-			syslog_server(LOG_ERR, "Upload: Engine %s already exists", filename);
 			return true;
 		}
 	}
@@ -141,162 +133,6 @@ bool plugin_is_unremovable(const char name[]) {
 	return (strstr(name, "(unremovable)") != NULL);
 }
 
-void send_verif_req_message(struct mg_connection *c, ws_verif_data* ws_data_ptr) {
-	// Read sctx model from file and send that as the message. https://stackoverflow.com/a/174743
-	char* buffer = NULL;
-	size_t length;
-	FILE* fp = fopen((*ws_data_ptr).file_path->str, "r");
-	GString* g_fullmsg = g_string_new("");
-	if (fp) {
-		ssize_t bytes_read_count = getdelim(&buffer, &length, '\0', fp);
-		if (bytes_read_count != -1) {
-			//- Create escaped version of the GString that represents the model file
-			//- Create message in the (json)syntax that the verification server wants
-			gchar* g_c_escaped = g_strescape(buffer, NULL);
-			g_string_append_printf(g_fullmsg, "{\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_START\",");
-			g_string_append_printf(g_fullmsg, "\"sctx\":\"%s\"}", g_c_escaped);
-			free(g_c_escaped);
-			free(buffer);
-		} else {
-			syslog_server(LOG_ERR, "Request: Upload - Websocket callback could not load the model file");
-			ws_data_ptr->finished = true;
-			ws_data_ptr->success = false;
-		}
-	} else {
-		syslog_server(LOG_ERR, "Request: Upload - Unable to open engine model file to be uploaded");
-		ws_data_ptr->finished = true;
-		ws_data_ptr->success = false;
-	}
-	// Send verification request
-	if(g_fullmsg != NULL && g_fullmsg->len > 0){
-		syslog_server(LOG_INFO, "Request: Upload - Now sending verification request to swtbahn-verifier");
-		mg_ws_send(c, g_fullmsg->str, g_fullmsg->len, WEBSOCKET_OP_TEXT);
-	} else {
-		syslog_server(LOG_ERR, "Request: Upload - Websocket msg payload setup has gone wrong");
-		ws_data_ptr->finished = true;
-		ws_data_ptr->success = false;
-	}
-	g_string_free(g_fullmsg, true);
-}
-
-void process_verif_server_reply(struct mg_connection *c, struct mg_ws_message *wm, ws_verif_data* ws_data_ptr) {
-	// Parses mg_ws_message, which is expected to contain a message from the verification server.
-	// Then adjusts ws_data_ptr struct according to server's message.
-	
-	char* msg_type_is_defined = strstr(wm->data.ptr, "__MESSAGE_TYPE__");
-	if (!msg_type_is_defined) {
-		// Message type field not specified, stop.
-		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown format");
-		return;
-	}
-	
-	char* type_verif_req_rec = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RECEIVED\"");
-	char* type_verif_req_result = strstr(wm->data.ptr, "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_RESULT\"");
-	
-	if (type_verif_req_rec) {
-		syslog_server(LOG_NOTICE, "Request: Upload - Verification Server started verification");
-		ws_data_ptr->started = true;
-	} else if (type_verif_req_result) {
-		// Parse result
-		char* verif_success = strstr(wm->data.ptr, "\"status\":true");
-		if (verif_success) {
-			syslog_server(LOG_NOTICE, "Request: Upload - Verification Server finished,"
-			                          " verification success");
-			ws_data_ptr->success = true;
-			ws_data_ptr->finished = true;
-		} else {
-			// Verification failed/unsuccessful
-			ws_data_ptr->success = false;
-			ws_data_ptr->finished = true;
-			// Differentiate between status:false and unspecified failure
-			char* verif_fail = strstr(wm->data.ptr, "\"status\":false");
-			if (!verif_fail){
-				// No 'status' field in answer. Stop with fail
-				syslog_server(LOG_WARNING, "Request: Upload - Verification Server finished,"
-													" verification status not specified");
-			} else {
-				// Ordinary failure
-				// Save server's reply (to forward to client lateron)
-				syslog_server(LOG_NOTICE, "Request: Upload - Verification Server finished, verification fail");
-				ws_data_ptr->srv_result_full_msg  = g_string_new("");
-				g_string_append_printf(ws_data_ptr->srv_result_full_msg,"%s",wm->data.ptr);
-			}
-		}
-	} else {
-		// Unknown message type specified by the server.
-		syslog_server(LOG_WARNING, "Request: Upload - Verification Server replied in unknown msg type");
-	}
-}
-
-
-void websock_verification_callback(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
-	ws_verif_data* ws_data_ptr = fn_data;
-	
-	if (ev == MG_EV_ERROR) {
-		syslog_server(LOG_ERR, "Request: Upload - Websocket callback encountered error: %s", (char *) ev_data);
-		// If an error is encountered, the verification can't be completed -> success false; finished true.
-		(*ws_data_ptr).success = false;
-		(*ws_data_ptr).finished = true;
-	} else if (ev == MG_EV_WS_OPEN) {
-		send_verif_req_message(c, ws_data_ptr);
-	} else if (ev == MG_EV_WS_MSG) {
-		struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-		process_verif_server_reply(c, wm, ws_data_ptr);
-	} else if (ev == MG_EV_CLOSE) {
-		syslog_server(LOG_INFO, "Request: Upload - Now closing websocket connection to swtbahn-verifier");
-		(*ws_data_ptr).finished = true;
-	}
-}
-
-verif_result verify_engine_model(const char* f_filepath) {
-	struct mg_mgr mgr;
-	ws_verif_data ws_verifData;
-	ws_verifData.started 	= false;
-	ws_verifData.finished 	= false;
-	ws_verifData.success 	= false;
-	ws_verifData.file_path 	= g_string_new(f_filepath);
-	ws_verifData.srv_result_full_msg = NULL;
-	
-	// Client connection
-	struct mg_connection *c;
-	
-	// Initialise event manager
-	mg_mgr_init(&mgr);
-	
-	// Create client
-	c = mg_ws_connect(&mgr, verifier_url, websock_verification_callback, &ws_verifData, NULL);
-	
-	unsigned int poll_counter = 0;
-	
-	// Wait for Verification to end
-	while (c && ws_verifData.finished == false) {
-		mg_mgr_poll(&mgr, websocket_single_poll_length_ms); // Wait for reply
-		
-		// Check if verification has started yet
-		if (++poll_counter > websocket_max_polls_before_start && !ws_verifData.started){ 
-			//poll_counter *  milliseconds passed without verification start
-			ws_verifData.finished = true;
-			ws_verifData.success = false;
-			syslog_server(LOG_WARNING, 
-							"Request: Upload - engine verification - Verification did not start within %d ms, abort", 
-							(poll_counter * websocket_single_poll_length_ms));
-		}
-	}
-	
-	if(c && !c->is_closing){
-		// If connection is not yet closing, send close. After that, one more event poll has to be performed,
-		// otherwise the close msg will not be sent. (Also, buf = reason = max length of 1 apparently??)
-		mg_ws_send(c, "0", 1, 1000);
-		mg_mgr_poll(&mgr, 1000);
-	}
-	mg_mgr_free(&mgr);
-	verif_result result_data;
-	result_data.success = ws_verifData.success;
-	result_data.srv_result_full_msg = ws_verifData.srv_result_full_msg;
-	// Free string allocated for loading model file
-	g_string_free(ws_verifData.file_path, true);
-	return result_data;
-}
 
 onion_connection_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
@@ -306,14 +142,14 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		const char *temp_filepath = onion_request_get_file(req, "file");
 		
 		if (filename == NULL || temp_filepath == NULL) {
-			syslog_server(LOG_ERR, "Request: Upload - engine file is invalid");
+			syslog_server(LOG_ERR, "Request: Upload Engine - engine file is invalid");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine file is invalid");
 			return OCS_PROCESSED;
 		}
 		
  		if (engine_file_exists(filename)) {
-			syslog_server(LOG_ERR, "Request: Upload - engine file already exists");
+			syslog_server(LOG_WARNING, "Request: Upload Engine - engine file already exists");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine file already exists");
 			return OCS_PROCESSED;
@@ -327,14 +163,14 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", engine_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
-		syslog_server(LOG_NOTICE, "Request: Upload - copied engine SCCharts file from %s to %s", 
+		syslog_server(LOG_DEBUG, "Request: Upload Engine - copied engine SCCharts file from %s to %s", 
 		              temp_filepath, final_filepath);
 
-		if(verification_enabled){
+		if (verification_enabled) {
 			verif_result v_result = verify_engine_model(final_filepath);
-			if(!v_result.success){
+			if (!v_result.success) {
 				// Stop upload if verification did not succeed
-				syslog_server(LOG_ERR, "Request: Upload - Engine verification failed");
+				syslog_server(LOG_NOTICE, "Request: Upload Engine - Engine verification failed");
 				remove_engine_files(libname);
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
 				if (v_result.srv_result_full_msg != NULL) {
@@ -353,7 +189,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
 			remove_engine_files(libname);
 
-			syslog_server(LOG_ERR, "Request: Upload - engine file %s could not be compiled "
+			syslog_server(LOG_ERR, "Request: Upload Engine - engine file %s could not be compiled "
 			                       "into a C file and then to a shared library", filepath);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine file %s could not be compiled into a C file "
@@ -361,14 +197,14 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 			return OCS_PROCESSED;
 		}
 		
-		syslog_server(LOG_NOTICE, "Request: Upload - engine %s compiled", filename);
+		syslog_server(LOG_NOTICE, "Request: Upload Engine - engine %s compiled", filename);
 		pthread_mutex_lock(&dyn_containers_mutex);
 		const int engine_slot = dyn_containers_get_free_engine_slot();
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			remove_engine_files(libname);
 			
-			syslog_server(LOG_ERR, "Request: Upload - no available engine slot");
+			syslog_server(LOG_ERR, "Request: Upload Engine - no available engine slot");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "No available engine slot");
 			return OCS_PROCESSED;
@@ -379,7 +215,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Upload - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Upload Engine - system not running or wrong request type");
 		
 		onion_response_set_code(res, HTTP_BAD_REQUEST);
 		onion_response_printf(res, "System not running or wrong request type");

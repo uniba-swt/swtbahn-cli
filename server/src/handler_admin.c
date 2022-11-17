@@ -204,9 +204,9 @@ onion_connection_status handler_set_verification(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Set verification: %s", data_verification_enabled);
 		verification_enabled = params_check_verification_state(data_verification_enabled);
 		if(verification_enabled) {
-			syslog_server(LOG_NOTICE, "Verification is enabled");
+			syslog_server(LOG_NOTICE, "Verification is set to enabled");
 		} else {
-			syslog_server(LOG_NOTICE, "Verification is disabled");
+			syslog_server(LOG_NOTICE, "Verification is set to disabled");
 		}
 		return OCS_PROCESSED;
 	} else {
