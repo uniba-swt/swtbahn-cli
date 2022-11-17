@@ -359,7 +359,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		}
 		// If max_index_occ_segment is still 0, assume train has yet to enter the route.
 		// If previous train position is the same, do nothing. Otherwise, look for signals to set to stop.
-		if (/*train_pos_index > 0 &&*/ train_pos_index_previous != train_pos_index) {
+		if (train_pos_index_previous != train_pos_index) {
 			// 3. Determine which signals have a lower index in route->path than the 'train index'
 			//    and set them to aspect_stop.
 			const size_t arr_len = signal_info_array->len;
@@ -369,8 +369,17 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 				                                                             t_route_signal_info*, 
 				                                                             signal_info_index);
 				if (signal_info_search_item != NULL 
+				    && signal_info_search_item->index_in_route_path > train_pos_index) {
+						// as signal_info elements are ordered/arranged such that their index in the
+						// route path increases or stays the same from element to element, we
+						// can break as soon as we find the first signal that is not reached yet
+						break;
+					 }
+				if (signal_info_search_item != NULL 
 				    && !signal_info_search_item->has_been_set_to_stop 
-				    && signal_info_search_item->index_in_route_path < train_pos_index
+				    && (signal_info_search_item->index_in_route_path < train_pos_index
+				        || (signal_info_search_item->index_in_route_path <= train_pos_index 
+				            && signal_info_search_item->is_source_signal))
 				    && !signal_info_search_item->is_destination_signal) {
 					
 					if (bidib_set_signal(signal_info_search_item->id, signal_stop_aspect)) {
