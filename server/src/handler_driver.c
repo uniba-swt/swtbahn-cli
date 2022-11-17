@@ -292,7 +292,7 @@ static size_t get_train_pos_index_in_route_path(const char* train_id,  t_interlo
 			for (size_t i = 0; i < train_position_query.length; ++i) {
 				if (train_position_query.segments[i] != NULL 
 				    && strcmp(path_item, train_position_query.segments[i]) == 0
-					 && path_item_index > train_pos_index) {
+				    && path_item_index > train_pos_index) {
 						train_pos_index = path_item_index;
 				}
 			}
@@ -383,7 +383,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			bidib_flush();
 			if (signals_set_stop_this_iter_counter > 0) {	
 				syslog_server(LOG_DEBUG, "drive route progressive stop signals decoupled set %d signals "
-			              "to stop in one loop/check iteration", signals_set_stop_this_iter_counter);
+				              "to stop in one loop/check iteration", signals_set_stop_this_iter_counter);
 			}
 		}
 		train_pos_index_previous = train_pos_index;
