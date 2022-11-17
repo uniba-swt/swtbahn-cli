@@ -267,6 +267,7 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 		++built_signal_infos_counter;
 		syslog_server(LOG_NOTICE, "Signal-Info element for signal %s added", signal_info_elem->id);
 		syslog_server(LOG_NOTICE, "    Index in route path: %d", signal_info_elem->index_in_route_path);
+		syslog_server(LOG_NOTICE, "    Has been set to stop: %s", signal_info_elem->has_been_set_to_stop ? "yes" : "no");
 		g_array_append_val(signal_infos, signal_info_elem);
 	}
 	syslog_server(LOG_DEBUG, "Get route signal-info array returning "
@@ -369,24 +370,24 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 				t_route_signal_info *signal_info_search_item = g_array_index(signal_info_array, 
 				                                                             t_route_signal_info*, 
 				                                                             signal_info_index);
-				if (signal_info_search_item != NULL 
-				    && !signal_info_search_item->has_been_set_to_stop 
-				    && (signal_info_search_item->index_in_route_path < train_pos_index
-				        || (signal_info_search_item->index_in_route_path <= train_pos_index 
-				            && signal_info_search_item->is_source_signal))
-				    && !signal_info_search_item->is_destination_signal) {
-					
-					if (bidib_set_signal(signal_info_search_item->id, signal_stop_aspect)) {
-						// Log_ERR... but what else? Safety violation once we have a safety layer?
-						syslog_server(LOG_ERR, "drive route progressive stop signals decoupled unable "
-						              "to set signal %s to stop", signal_info_search_item->id);
-					} else {
-						bidib_flush();
-						syslog_server(LOG_NOTICE, "drive route progressive stop signals decoupled: "
-						              "SIGNAL %s set to stop", signal_info_search_item->id);
-						signal_info_search_item->has_been_set_to_stop = true;
-						signals_set_stop_this_iter_counter++;
-						signals_set_to_stop_total++;
+				if (signal_info_search_item != NULL && !(signal_info_search_item->is_destination_signal)) {
+					if (!(signal_info_search_item->has_been_set_to_stop) 
+					    && (signal_info_search_item->index_in_route_path < train_pos_index
+					       || (signal_info_search_item->index_in_route_path <= train_pos_index 
+					               && signal_info_search_item->is_source_signal))) {
+						
+						if (bidib_set_signal(signal_info_search_item->id, signal_stop_aspect)) {
+							// Log_ERR... but what else? Safety violation once we have a safety layer?
+							syslog_server(LOG_ERR, "drive route progressive stop signals decoupled unable "
+											"to set signal %s to stop", signal_info_search_item->id);
+						} else {
+							bidib_flush();
+							syslog_server(LOG_NOTICE, "drive route progressive stop signals decoupled: "
+											"SIGNAL %s set to stop", signal_info_search_item->id);
+							signal_info_search_item->has_been_set_to_stop = true;
+							signals_set_stop_this_iter_counter++;
+							signals_set_to_stop_total++;
+						}
 					}
 				}
 			}
