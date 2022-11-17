@@ -272,15 +272,15 @@ static GArray* get_route_signal_info_array(t_interlocking_route *route) {
 	return signal_infos;
 }
 
-
-static size_t get_train_pos_index_in_route_path(const char* train_id,  t_interlocking_route *route) {
+// Return -2 on err, -1 on train not on route
+static long long get_train_pos_index_in_route_path(const char* train_id,  t_interlocking_route *route) {
 	if (train_id == NULL || route == NULL || route->path == NULL) {
-		return SIZE_MAX;
+		return -2;
 	}
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	if (train_position_query.segments == NULL || train_position_query.length == 0) {
 		bidib_free_train_position_query(train_position_query);
-		return SIZE_MAX;
+		return -2;
 	}
 	// Determine index (in route->path) of the segment where the train is ('train index')
 	///TODO: Protect against 'too-far-ahead' recognition if one segment appears more than once in one route.
@@ -288,7 +288,7 @@ static size_t get_train_pos_index_in_route_path(const char* train_id,  t_interlo
 	//   - use second-most-forward segment (no use if train occupies only one)
 	//   - ignore segments that appear twice (use prev. train pos or none)
 	//   - compare change in position to previous iteration (no use if train is set further ahead by hand)
-	size_t train_pos_index = 0;
+	long long train_pos_index = -1;
 	const size_t path_count = route->path->len;
 	for (size_t path_item_index = 0; path_item_index < path_count; ++path_item_index) {
 		const char *path_item = g_array_index(route->path, char *, path_item_index);
@@ -345,17 +345,16 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	// -1 because of destination signal.
 	const size_t signals_to_set_stop_for_finish = signal_info_array->len - 1;
 	size_t signals_set_to_stop_total = 0;
-	size_t train_pos_index_previous = route->path->len + 1;
+	long long train_pos_index_previous = (long long) route->path->len + 1;
 	// Route driving ongoing, valid, and not all signals set to stop
 	while (running && drive_route_params_valid(train_id, route) 
 	        && signals_set_to_stop_total < signals_to_set_stop_for_finish) {
 		// 1. Get position of train,
 		// 2. Determine index (in route->path) of the segment where the train is
-		size_t train_pos_index = get_train_pos_index_in_route_path(train_id, route);
-		if (train_pos_index >= SIZE_MAX) {
+		long long train_pos_index = get_train_pos_index_in_route_path(train_id, route);
+		if (train_pos_index == -2) {
 			syslog_server(LOG_ERR, "drive route progressive stop signals decoupled unable to determine "
 			              "the position of the train %s on the route %s", train_id, route->id);
-			train_pos_index = 0;
 		}
 		// If max_index_occ_segment is still 0, assume train has yet to enter the route.
 		// If previous train position is the same, do nothing. Otherwise, look for signals to set to stop.
