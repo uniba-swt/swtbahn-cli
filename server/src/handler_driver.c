@@ -411,10 +411,11 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 				if (sig_info_elem != NULL && !(sig_info_elem->has_been_set_to_stop) && !(sig_info_elem->is_destination_signal)) {
 					// <= to catch source signal that has index 0 even though it does not appear in route->path.
 					if (sig_info_elem->index_in_route_path <= train_pos_index) {
+						const char *path_item = g_array_index(route->path, char *, (size_t) train_pos_index);
 						syslog_server(LOG_NOTICE, "Drive-Route Decoupled: Set %s with index %d to stop, "
 						              "train index %d, segment %s", sig_info_elem->id, 
 										  sig_info_elem->index_in_route_path, train_pos_index, 
-										  train_pos_index >= 0 ? g_array_index(route->path, char *, train_pos_index) : "NONE");
+										  path_item);
 						if (bidib_set_signal(sig_info_elem->id, signal_stop_aspect)) {
 							// Log_ERR... but what else? Safety violation once we have a safety layer?
 							syslog_server(LOG_ERR, "Drive-Route Decoupled: unable "
