@@ -508,6 +508,18 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	// Set the signals along the route to Stop as the train drives past them
 	const bool result = drive_route_progressive_stop_signals_decoupled(train_id, route);
 	
+	if (is_automatic && result) {
+		const char *pre_dest_segment = g_array_index(route->path, char *, route->path->len - 2);
+		while (running && result && !train_position_is_at(train_id, pre_dest_segment)
+		                      && drive_route_params_valid(train_id, route)) {
+			usleep(TRAIN_DRIVE_TIME_STEP);
+			route = get_route(route->id);
+		}
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		syslog_server(LOG_NOTICE, "Drive route: Slowing %s for end of route %s", train_id, route_id);
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, (int) (DRIVING_SPEED_SLOW * 0.66), requested_forwards);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+	}
 	// Wait for train to reach the end of the route
 	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 1);
 	while (running && result && !train_position_is_at(train_id, dest_segment)
