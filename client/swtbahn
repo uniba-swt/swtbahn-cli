@@ -128,7 +128,7 @@ def admin():
     pass
 
 
-@click.command(help="Start the SWTbahn up")
+@click.command(help="Start up the SWTbahn")
 def startup():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -144,7 +144,7 @@ def startup():
             click.echo(e, err=True)
 
 
-@click.command(help="Shut the SWTbahn down")
+@click.command(help="Shut down the SWTbahn")
 def shutdown():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -161,7 +161,7 @@ def shutdown():
             click.echo(e, err=True)
 
 
-@click.command(help="Set the power state for a track output")
+@click.command(help="Set the power state of a track output")
 @click.argument('state', type=click.Choice(['off', 'stop', 'soft_stop', 'go']))
 def set_track_output(state):
     if(parse_config()):
@@ -184,18 +184,18 @@ def set_track_output(state):
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
-@click.command(help="Set the verification to be enabled or disabled")
-@click.argument('verification-enabled', type=click.Choice(['true', 'false']))
-def set_verification(verification_enabled):
+@click.command(help="Set whether plugins will be verified upon upload")
+@click.argument('verification-option', type=click.Choice(['true', 'false']))
+def set_verification_option(verification_option):
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
         try:
-            response = requests.post(server + "/admin/set-verification",
-                                     data = {'verification-enabled': verification_enabled})
+            response = requests.post(server + "/admin/set-verification-option",
+                                     data = {'verification-option': verification_option})
             if (response.status_code == requests.codes.ok):
-                click.echo("verification set to " + verification_enabled + "\n")
+                click.echo("Verification set to " + verification_option + "\n")
             else:
                 click.echo("System not running!\n", err=True)
         except requests.exceptions.RequestException as e:
@@ -970,14 +970,14 @@ def get_peripherals():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
-@click.command(help="Get the status of the verification module")
-def get_verification():
+@click.command(help="Get whether plugins will be verified upon upload")
+def get_verification_option():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
         try:
-            response = requests.get(server + "/monitor/verification")
+            response = requests.get(server + "/monitor/verification-option")
             if (response.status_code == requests.codes.ok):
                 click.echo(response.text + "\n")
             else:
@@ -1031,7 +1031,7 @@ cli.add_command(monitor)
 admin.add_command(startup)
 admin.add_command(shutdown)
 admin.add_command(set_track_output)
-admin.add_command(set_verification)
+admin.add_command(set_verification_option)
 admin.add_command(admin_release)
 admin.add_command(admin_set_dcc_speed)
 
@@ -1071,7 +1071,7 @@ monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
 monitor.add_command(get_reversers)
 monitor.add_command(get_peripherals)
-monitor.add_command(get_verification)
+monitor.add_command(get_verification_option)
 monitor.add_command(get_granted_routes)
 monitor.add_command(get_route)
 

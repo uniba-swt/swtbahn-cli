@@ -6,6 +6,7 @@ set(CMAKE_C_FLAGS "-g -Wall -Wno-gnu-folding-constant")
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 find_package(PkgConfig REQUIRED)
+
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 link_directories(${GLIB_LIBRARY_DIRS})

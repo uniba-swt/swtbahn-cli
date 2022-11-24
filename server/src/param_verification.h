@@ -49,7 +49,7 @@ bool params_check_is_number(const char *string);
 
 bool params_check_is_bool_string(const char *string);
 
-bool params_check_verification_state(const char *string);
+bool params_check_verification_option(const char *string);
 
 #endif	// SWTSERVER_HANDLER_ADMIN_H
 

@@ -192,29 +192,24 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_set_verification(void *_, onion_request *req,
-                                                 onion_response *res) {
+onion_connection_status handler_set_verification_option(void *_, onion_request *req,
+                                                        onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)){
-		const char *data_verification_enabled = onion_request_get_post(req, "verification-enabled");
-		if(data_verification_enabled == NULL || !params_check_is_bool_string(data_verification_enabled)){
-			syslog_server(LOG_ERR, "Request: Set verification - invalid parameters");
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_verification_option = onion_request_get_post(req, "verification-option");
+		if (data_verification_option == NULL || !params_check_is_bool_string(data_verification_option)) {
+			syslog_server(LOG_ERR, "Request: Set verification option - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		}
-		syslog_server(LOG_NOTICE, "Request: Set verification: %s", data_verification_enabled);
-		verification_enabled = params_check_verification_state(data_verification_enabled);
-		if(verification_enabled) {
-			syslog_server(LOG_NOTICE, "Verification is set to enabled");
-		} else {
-			syslog_server(LOG_NOTICE, "Verification is set to disabled");
-		}
+		verification_enabled = params_check_verification_option(data_verification_option);
+		syslog_server(LOG_NOTICE, "Request: Set verification option - state: %s", 
+		              verification_enabled ? "enabled" : "disabled");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Set verification - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
-
 
 onion_connection_status handler_admin_release_train(void *_, onion_request *req,
                                                     onion_response *res) {

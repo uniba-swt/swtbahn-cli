@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "admin/startup", handler_startup);
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
-	onion_url_add(urls, "admin/set-verification", handler_set_verification);
+	onion_url_add(urls, "admin/set-verification-option", handler_set_verification_option);
 	onion_url_add(urls, "admin/release-train", handler_admin_release_train);
 	onion_url_add(urls, "admin/set-dcc-train-speed", handler_admin_set_dcc_train_speed);
 	
@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
 	onion_url_add(urls, "monitor/reversers", handler_get_reversers);
 	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
-	onion_url_add(urls, "monitor/verification", handler_get_verification);
+	onion_url_add(urls, "monitor/verification-option", handler_get_verification_option);
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);
 
