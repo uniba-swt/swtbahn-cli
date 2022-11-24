@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <glib.h>
 #include <string.h>
+#include <time.h>
 
 #include "server.h"
 #include "dyn_containers_interface.h"
@@ -214,7 +215,7 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 	return true;
 }
 
-static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic) {
+static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic, bool use_stop_emergency) {
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	t_interlocking_route *route = get_route(route_id);
 	if (!drive_route_params_valid(train_id, route)) {
@@ -245,10 +246,21 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	}
 	
 	// Driving stops
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	syslog_server(LOG_NOTICE, "Drive route: Driving stops");
-	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
+	if (use_stop_emergency) {
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		struct timespec tv;
+		clock_gettime(CLOCK_MONOTONIC, &tv);
+		bidib_emergency_stop_train(train_id, "master");
+		syslog_server(LOG_NOTICE, "Drive route: Driving stops EMERG at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+	} else {
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		struct timespec tv;
+		clock_gettime(CLOCK_MONOTONIC, &tv);
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
+		syslog_server(LOG_NOTICE, "Drive route: Driving stops NORMAL at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+	}
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
@@ -564,7 +576,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			const bool is_automatic = (strcmp(mode, "automatic") == 0);
-			if (drive_route(grab_id, route_id, is_automatic)) {
+			if (drive_route(grab_id, route_id, is_automatic, false)) {
 				onion_response_printf(res, "Route %s driving completed", route_id);
 				return OCS_PROCESSED;
 			} else {
