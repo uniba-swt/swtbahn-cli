@@ -251,6 +251,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		struct timespec tv;
 		clock_gettime(CLOCK_MONOTONIC, &tv);
 		bidib_emergency_stop_train(train_id, "master");
+		//bidib_flush();
 		syslog_server(LOG_NOTICE, "Drive route: Driving stops EMERG at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 	} else {
