@@ -132,6 +132,34 @@ Use `scp` on your client computer. For example, suppose the Raspberry Pi is loca
 `141.13.106.30` and has the user `pi`. To copy the the file `/var/log/syslog` from the 
 Raspberry Pi via the user `pi`, use the command `scp pi@141.13.106.30:/var/log/syslog syslog`
 
+## Verification
+For uploading train engines (and other plugins) in form of sequentially constructive statecharts, 
+one can setup verification of certain properties that must succeed before upload is allowed.  
+Verification is enabled by default and can be configured to ON or OFF by use of 
+the /admin/set-verification-option endpoint. In the Python client, the command for this 
+is `swtbahn admin set-verification-option <true/false>`.  
+When enabled, upon receiving a request to upload a model (.sctx file, e.g. a train engine model), 
+the server sends a request to a so-called "verification server", which...
+- a) checks that a certain set of safety properties (invariants, LTLs) are contained in the model
+- b) compiles the model to a format that can be verified (e.g., using nuSmv)
+- c) verifies that the safety properties hold.  
+If and only if the verification of the safety properties is successful, the model will be processed 
+further by the swtbahn-cli server. If the verification is not successful, the model upload will be 
+aborted.  
+The verification server used by default is not available publicly. As the swtbahn-cli communicates 
+with it via websockets with messages in a JSON format. The general communication with a verification 
+server looks roughly as follows:
+1. swtbahn-cli receives upload request and establishes a websocket connection with the verification server
+2. swtbahn-cli sends message containing model to be verified to the verification server
+3. Verification server replies, either a) confirming the request and telling the swtbahn-cli server 
+that this will now be worked on, or b) rejecting the request.
+4. swtbahn-cli receives reply. Assuming the verification request is now being worked on 
+(i.e., accepted), it waits for the verification to finish by continueing to listen to the 
+websocket connection.
+5. Verification server finishes verification, and sends the results to the swtbahn-cli server.
+6. swtbahn-cli receives reply. Closes websocket connection. If verification succeeded, continues
+with upload, otherwise stops upload with and sends the requester the reason for verification failure.   
+How exactly the verification server performs the verification is left open intentionally.
 
 ## Grab-id and session-id behaviour
 Grab-ids are used as tokens for trains. A client needs to grab a train before he
