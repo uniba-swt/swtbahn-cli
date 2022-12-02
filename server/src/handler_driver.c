@@ -90,7 +90,7 @@ bool train_grabbed(const char *train) {
 	return grabbed;
 }
 
-inline struct timespec get_delta_timespec(const struct timespec *time_a, const struct timespec *time_b) {
+struct timespec get_delta_timespec_(const struct timespec *time_a, const struct timespec *time_b) {
 	if (time_a != NULL && time_b != NULL) {
 		long delta_nanos = time_b->tv_nsec - time_a->tv_nsec;
 		long delta_seconds = time_b->tv_sec - time_a->tv_sec;
@@ -111,7 +111,7 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	struct timespec tvb;
 	clock_gettime(CLOCK_MONOTONIC, &tvb);
-	struct timespec tvdiff = get_delta_timespec(&tva, &tvb);
+	struct timespec tvdiff = get_delta_timespec_(&tva, &tvb);
 	syslog_server(LOG_INFO, "Get train position took a time of %d.%.9ld", 
 	              tvdiff.tv_sec, tvdiff.tv_nsec);
 	
