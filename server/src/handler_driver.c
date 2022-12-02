@@ -264,7 +264,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 1);
 	while (running && result && !train_position_is_at(train_id, dest_segment)
 	                         && drive_route_params_valid(train_id, route)) {
-		usleep(TRAIN_DRIVE_TIME_STEP);
+		usleep((useconds_t) TRAIN_DRIVE_TIME_STEP*0.25);
 		route = get_route(route->id);
 		struct timespec tvd;
 		clock_gettime(CLOCK_MONOTONIC, &tvd);
@@ -277,6 +277,9 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	// such that we can sort-of-measure the time it takes to acquire the mutex
 	struct timespec tva;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
+	printf("Drive route: End of route (%s) reached detected at %ld.%.9ld\n", 
+	              dest_segment, tva.tv_sec, tva.tv_nsec);
+	fflush(stdout);
 	syslog_server(LOG_NOTICE, "Drive route: End of route (%s) reached detected at %d.%.9ld", 
 	              dest_segment, tva.tv_sec, tva.tv_nsec);
 	
@@ -289,6 +292,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		//bidib_flush();
 		syslog_server(LOG_NOTICE, "Drive route: Driving stops EMERG at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
 	} else {
+		printf("Drive route: Driving stops NORMAL at %ld.%.9ld\n", tv.tv_sec, tv.tv_nsec);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 		syslog_server(LOG_NOTICE, "Drive route: Driving stops NORMAL at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
 	}
