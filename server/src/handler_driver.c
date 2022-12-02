@@ -32,6 +32,7 @@
 #include <glib.h>
 #include <string.h>
 #include <time.h>
+#include <stdio.h>
 
 #include "server.h"
 #include "dyn_containers_interface.h"
@@ -265,7 +266,13 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	                         && drive_route_params_valid(train_id, route)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 		route = get_route(route->id);
+		struct timespec tvd;
+		clock_gettime(CLOCK_MONOTONIC, &tvd);
+		printf("\r %d.%.9ld");
+		fflush(stdout);
 	}
+	printf("\n");
+	fflush(stdout);
 	// Logging timestamp before trying to acquire the mutex for grabbed trains, 
 	// such that we can sort-of-measure the time it takes to acquire the mutex
 	struct timespec tva;
