@@ -268,7 +268,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		route = get_route(route->id);
 		struct timespec tvd;
 		clock_gettime(CLOCK_MONOTONIC, &tvd);
-		printf("\r %d.%.9ld");
+		printf("\r %d.%.9ld", tvd.tv_sec, tvd.tv_nsec);
 		fflush(stdout);
 	}
 	printf("\n");
