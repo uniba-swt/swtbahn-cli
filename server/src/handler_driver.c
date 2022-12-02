@@ -270,8 +270,8 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	// such that we can sort-of-measure the time it takes to acquire the mutex
 	struct timespec tva;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
-	syslog_server(LOG_NOTICE, "Drive route: End of route reached detected at %d.%.9ld", 
-	              tva.tv_sec, tva.tv_nsec);
+	syslog_server(LOG_NOTICE, "Drive route: End of route (%s) reached detected at %d.%.9ld", 
+	              dest_segment, tva.tv_sec, tva.tv_nsec);
 	
 	// Driving stops
 	pthread_mutex_lock(&grabbed_trains_mutex);
