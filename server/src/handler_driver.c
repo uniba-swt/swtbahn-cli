@@ -90,9 +90,31 @@ bool train_grabbed(const char *train) {
 	return grabbed;
 }
 
-static bool train_position_is_at(const char *train_id, const char *segment) {
-	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+inline struct timespec get_delta_timespec(const struct timespec *time_a, const struct timespec *time_b) {
+	if (time_a != NULL && time_b != NULL) {
+		long delta_nanos = time_b->tv_nsec - time_a->tv_nsec;
+		long delta_seconds = time_b->tv_sec - time_a->tv_sec;
+		if (time_b->tv_nsec < time_a->tv_nsec) {
+			delta_nanos += 1000000000;
+			delta_seconds--;
+		}
+		struct timespec diff = {.tv_sec = delta_seconds, .tv_nsec = delta_nanos};
+		return diff;
+	}
+	struct timespec empty_diff = {.tv_sec = 0, .tv_nsec = 0};
+	return empty_diff;
+}
 
+static bool train_position_is_at(const char *train_id, const char *segment) {
+	struct timespec tva;
+	clock_gettime(CLOCK_MONOTONIC, &tva);
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
+	struct timespec tvb;
+	clock_gettime(CLOCK_MONOTONIC, &tvb);
+	struct timespec tvdiff = get_delta_timespec(&tva, &tvb);
+	syslog_server(LOG_INFO, "Get train position took a time of %d.%.9ld", 
+	              tvdiff.tv_sec, tvdiff.tv_nsec);
+	
 	for (size_t i = 0; i < train_position_query.length; i++) {
 		if (strcmp(segment, train_position_query.segments[i]) == 0) {
 			bidib_free_train_position_query(train_position_query);
@@ -244,24 +266,26 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		usleep(TRAIN_DRIVE_TIME_STEP);
 		route = get_route(route->id);
 	}
+	// Logging timestamp before trying to acquire the mutex for grabbed trains, 
+	// such that we can sort-of-measure the time it takes to acquire the mutex
+	struct timespec tva;
+	clock_gettime(CLOCK_MONOTONIC, &tva);
+	syslog_server(LOG_NOTICE, "Drive route: End of route reached detected at %d.%.9ld", 
+	              tva.tv_sec, tva.tv_nsec);
 	
 	// Driving stops
+	pthread_mutex_lock(&grabbed_trains_mutex);
+	struct timespec tv;
+	clock_gettime(CLOCK_MONOTONIC, &tv);
 	if (use_stop_emergency) {
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		struct timespec tv;
-		clock_gettime(CLOCK_MONOTONIC, &tv);
 		bidib_emergency_stop_train(train_id, "master");
 		//bidib_flush();
 		syslog_server(LOG_NOTICE, "Drive route: Driving stops EMERG at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
 	} else {
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		struct timespec tv;
-		clock_gettime(CLOCK_MONOTONIC, &tv);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 		syslog_server(LOG_NOTICE, "Drive route: Driving stops NORMAL at %d.%.9ld", tv.tv_sec, tv.tv_nsec);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
 	}
+	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
