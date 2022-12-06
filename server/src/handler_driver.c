@@ -633,7 +633,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	}
 	// Wait for train to reach the end of the route
 	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 1);
-	while (running && result && !train_position_is_at(train_id, dest_segment)
+	while (running && result && !is_segment_occupied(dest_segment) 
 	                         && drive_route_params_valid(train_id, route)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 		route = get_route(route->id);
