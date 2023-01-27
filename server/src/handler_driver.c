@@ -358,18 +358,10 @@ static t_route_multi_segment_indices get_multi_segment_indices_for_route(const t
 	for (size_t path_index_i = 0; path_index_i < route->path->len; ++path_index_i) {
 		const char *path_item_i = g_array_index(route->path, char *, path_index_i);
 		if (path_item_i != NULL && is_type_segment(path_item_i)) {
-			//bool seg_i_already_added = false;
 			for (size_t path_index_n = 0; path_index_n < route->path->len; ++path_index_n) {
 				const char *path_item_n = g_array_index(route->path, char *, path_index_n);
 				if (path_item_n != NULL && is_type_segment(path_item_n)
 				        && strcmp(path_item_i, path_item_n) == 0 && path_index_i != path_index_n) {
-					/*
-					// not active as seg at i will be added once the outer loop index is at n.
-					if (!seg_i_already_added) {	
-						d_seg_indices.arr[d_seg_indices.len] = path_index_i;
-						d_seg_indices.len++;
-						seg_i_already_added = true;
-					}*/
 					d_seg_indices.arr[d_seg_indices.len] = path_index_n;
 					d_seg_indices.len++;
 				}
@@ -382,7 +374,6 @@ static t_route_multi_segment_indices get_multi_segment_indices_for_route(const t
 	} else {
 		size_t *tmp = reallocarray(d_seg_indices.arr, d_seg_indices.len, sizeof(size_t));
 		if (tmp == NULL) {
-			// re-alloc failed
 			syslog_server(LOG_ERR, 
 			              "Get multi segment indices for route %s: Unable to re-allocate memory", 
 			              route->id);
@@ -411,8 +402,6 @@ ssize_t get_train_pos_index_in_route_no_multis(const char* train_id, const t_int
 		bidib_free_train_position_query(train_pos_query);
 		return -2;
 	}
-	// Determine index (in route->path) of the segment where the train is ('train index')
-	//   - ignore segments that appear more than once
 	ssize_t train_pos_index = -1;
 	size_t train_pos_index_unsigned = 0;
 	const size_t path_count = route->path->len;
@@ -429,7 +418,7 @@ ssize_t get_train_pos_index_in_route_no_multis(const char* train_id, const t_int
 			}
 			if (!ignore) {
 				const char *path_item = g_array_index(route->path, char *, n);
-				if (n > train_pos_index && strcmp(path_item, train_pos_query.segments[i]) == 0) {
+				if (n > train_pos_index_unsigned && strcmp(path_item, train_pos_query.segments[i]) == 0) {
 					train_pos_index = (ssize_t) n;
 					train_pos_index_unsigned = n;
 					break;
@@ -461,7 +450,7 @@ ssize_t get_train_pos_index_in_route_path(const char *train_id,  const t_interlo
 		// Search starting at most recent pos_index to skip unnecessary comparisons
 		for (size_t n = train_pos_index_unsigned; n < path_count; ++n) {
 			const char *path_item = g_array_index(route->path, char *, n);
-			if (n > train_pos_index && strcmp(path_item, train_position_query.segments[i]) == 0) {
+			if (n > train_pos_index_unsigned && strcmp(path_item, train_position_query.segments[i]) == 0) {
 				train_pos_index = (ssize_t) n;
 				train_pos_index_unsigned = n;
 				break;
@@ -500,14 +489,7 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 			// once the train reaches the *second* segment of the route.
 			
 			// 3. Determine if signal has been passed by the train
-			if (sig_info_elem->index_in_route_path <= train_pos_index) {
-				if (train_pos_index > 0) {
-					///TODO: Remove debug print here
-					const char *path_item = g_array_index(route->path, char*, train_pos_index);
-					syslog_server(LOG_NOTICE, 
-					              "Drive-Route Decoupled: route->path item %s reached,"
-					              " thus set signal %s to stop", path_item, sig_info_elem->id);
-				}
+			if ((ssize_t) sig_info_elem->index_in_route_path <= train_pos_index) {
 				// 4. Try to set the signal to signal_stop_aspect.
 				if (bidib_set_signal(sig_info_elem->id, signal_stop_aspect)) {
 					// Log_ERR... but what else? Safety violation once we have a safety layer?
@@ -544,7 +526,6 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		syslog_server(LOG_ERR, "Drive-Route Decoupled: train_id is NULL");
 		return false;
 	}
-	syslog_server(LOG_NOTICE, "Drive-Route Decoupled: called for routeID %s", route->id);
 	
 	// 1. Get route signal infos and indices of segments that appear more than once
 	t_route_signal_info_array signal_infos = get_route_signal_info_array(route);
@@ -566,9 +547,6 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	syslog_server(LOG_DEBUG, "Drive-Route Decoupled: got signal-infos "
 	              "with arr length %d for routeID %s", signal_infos.len, route->id);
 	
-	///TODO: Remove debug print_signal_info_array
-	print_signal_info_array(LOG_NOTICE, &signal_infos);
-	
 	// Signals in a route shall be set to stop once the train has driven past them.
 	// The destination signal shall not be driven past, thus there
 	// are (signal_infos.len - 1) signals to set to stop in total for driving this route
@@ -589,7 +567,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		// 2. Check if the train_pos_index could not be determined either due to invalided params (-3)
 		//    or due to the train not being on the tracks
 		if (train_pos_index <= -2) {
-			syslog_server(LOG_WARNING, "Drive-Route Decoupled: unable to determine "
+			syslog_server(LOG_DEBUG, "Drive-Route Decoupled: unable to determine "
 			              "the position of the train %s on the route %s", train_id, route->id);
 			// Train position unknown -> skip this iteration. 
 			// Don't want to stop route driving here as train might just be lost temporarily
@@ -598,14 +576,14 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		
 		// 3. If train position has changed, check if any signals need to be set to aspect stop
 		if (train_pos_index_previous != train_pos_index) {
-			syslog_server(LOG_NOTICE, "Drive-Route Decoupled: Train position index now %d",
+			syslog_server(LOG_DEBUG, "Drive-Route Decoupled: Train position index now %d",
 			              train_pos_index);
 			if (train_pos_index_previous > train_pos_index) {
-				syslog_server(LOG_WARNING, 
-				              "Drive-Route Decoupled: New train position index is lower than before!",
+				syslog_server(LOG_DEBUG, 
+				              "Drive-Route Decoupled: New train position index is lower than before",
 				              train_pos_index);
 			}
-			signals_set_to_stop = update_route_signals_for_train_pos(&signal_infos, route, train_pos_index);
+			signals_set_to_stop += update_route_signals_for_train_pos(&signal_infos, route, train_pos_index);
 		}
 		train_pos_index_previous = train_pos_index;
 		usleep(TRAIN_DRIVE_TIME_STEP);
