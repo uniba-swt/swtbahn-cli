@@ -19,11 +19,14 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
   * Path to the folder that contains the kico.jar has to be defined in the environment variable `KIELER_PATH`
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
+* SCCharts verifier: [SWTbahn Verifier (SWT internal repository)](https://gitlab.rz.uni-bamberg.de/swt/swtbahn-verifier)
 
-#### Client
+#### Command Line Client
 * python3
 * Python libraries: click, requests, pyaml (`pip3 install click requests pyaml`)
 
+#### Web Client
+* Web browser
 
 ## Build
 1. Clone the repository
@@ -133,33 +136,36 @@ Use `scp` on your client computer. For example, suppose the Raspberry Pi is loca
 Raspberry Pi via the user `pi`, use the command `scp pi@141.13.106.30:/var/log/syslog syslog`
 
 ## Verification
-For uploading train engines (and other plugins) in form of sequentially constructive statecharts, 
-one can setup verification of certain properties that must succeed before upload is allowed.  
-Verification is enabled by default and can be configured to ON or OFF by use of 
-the /admin/set-verification-option endpoint. In the Python client, the command for this 
-is `swtbahn admin set-verification-option <true/false>`.  
-When enabled, upon receiving a request to upload a model (.sctx file, e.g. a train engine model), 
-the server sends a request to a so-called "verification server", which...
-- a) checks that a certain set of safety properties (invariants, LTLs) are contained in the model
-- b) compiles the model to a format that can be verified (e.g., using nuSmv)
-- c) verifies that the safety properties hold.  
-If and only if the verification of the safety properties is successful, the model will be processed 
-further by the swtbahn-cli server. If the verification is not successful, the model upload will be 
-aborted.  
-The verification server used by default is not available publicly. As the swtbahn-cli communicates 
-with it via websockets with messages in a JSON format. The general communication with a verification 
-server looks roughly as follows:
-1. swtbahn-cli receives upload request and establishes a websocket connection with the verification server
-2. swtbahn-cli sends message containing model to be verified to the verification server
-3. Verification server replies, either a) confirming the request and telling the swtbahn-cli server 
-that this will now be worked on, or b) rejecting the request.
-4. swtbahn-cli receives reply. Assuming the verification request is now being worked on 
-(i.e., accepted), it waits for the verification to finish by continueing to listen to the 
-websocket connection.
-5. Verification server finishes verification, and sends the results to the swtbahn-cli server.
-6. swtbahn-cli receives reply. Closes websocket connection. If verification succeeded, continues
-with upload, otherwise stops upload with and sends the requester the reason for verification failure.   
-How exactly the verification server performs the verification is left open intentionally.
+Train engines (and ther plugins) defined as SCCharts (*.sctx) files can be verified against certain
+properties before they are uploaded to the sever. Verification is on by default and 
+can be configured to `OFF` or `ON` via the `/admin/set-verification-option` endpoint. 
+For the command line client, use the command `swtbahn admin set-verification-option <true/false>`.
+
+When verification has been turned on and an SCCharts file is uploaded, the server sends a 
+request to [SWTbahn Verifier (SWT internal repository)](https://gitlab.rz.uni-bamberg.de/swt/swtbahn-verifier), 
+which...
+1. checks that the SCCharts file defines a set of safety properties (invariants, LTLs),
+2. compiles the SCCharts file to a format that can be verified (e.g., using nuSmv),
+3. verifies the safety properties, and
+4. sends verification results back to the server.
+
+If all safety properties hold, the server processes the SCCharts file, e.g., by compiling and loading the file as a plugin. 
+Otherwise, if any safety property does not hold, the server does not process the SCCharts file any further and reports
+the failure to the client.  
+
+The sever communicates with SWTbahn Verifier via websockets with JSON messages. A typical verification session is as follows:
+1. swtbahn-cli server receives an upload request for an SCCharts file;
+2. swtbahn-cli server establishes a websocket connection with SWTbahn Verifier;
+3. swtbahn-cli server sends the SCCharts file as a JSON message to SWTbahn Verifier;
+4. SWTbahn Verifier responds by either 
+   1. acknowledging the request to verify the SCCharts file and proceeding with the verification, or
+   2. rejecting the request;
+5. swtbahn-cli responds by either
+   1. waiting for the verification results on the websocket connection, or
+   2. stopping the processing of the SCCharts file;
+6. for the case that SWTbahn Verifier proceeded with the verification, after the verification has finished, SWTbahn Verifier sends the 
+   results as a JSON message to the swtbahn-cli server; and
+7. swtbahn-cli receives the results, closes the websocket connection, and processes the results.
 
 ## Grab-id and session-id behaviour
 Grab-ids are used as tokens for trains. A client needs to grab a train before he
