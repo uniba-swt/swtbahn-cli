@@ -2,15 +2,12 @@
 <html lang="en">
 
 <head>
-	<link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
+	<link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
 
 	<link rel="stylesheet" href="./dependencies/bootstrap.min.css" />
-	<link rel="stylesheet" href="./dependencies/bootstrap4-toggle.min.css" />
+	<link rel="stylesheet" href="style.css" />
 
 	<script src="./dependencies/jquery.min.js"></script>
-	<script src="./dependencies/bootstrap4-toggle.min.js"></script>
-
-	<link rel="stylesheet" href="style.css" />
 
 	<script src="script.js"></script>
 
@@ -30,69 +27,55 @@
 	</div>
 	<hr />
 
-	<div class="card-deck">
+	<div class="row row-cols-1 row-cols-lg-2 g-4">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h3 class="card-title"> System</h3>
 
-		<div class="card" style="width: 22rem;">
-			<div class="card-body">
-				<h3 class="card-title"> System</h3>
-
-				<div class="form-group">
-					<button id=pingButton type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
+					<div>
+						<button id=pingButton type="button" class="btn btn-outline-primary">Ping SWTbahn Server</button>
+					</div>
 					<br />
 					<div class="alert alert-info" role="alert">
 						<span id=pingResponse></span>
 					</div>
-				</div>
 
-				<br />
+					<br />
 
-				<div class="form-group">
-					<div style="display: flex; justify-content: space-between;">
-						<button id=startupButton type="button" class="btn btn-outline-primary" style="width: 49%;">Startup</button>
-						<button id=shutdownButton type="button" class="btn btn-outline-primary" style="width: 49%;">Shutdown</button>
+					<div class="d-flex justify-content-between">
+						<button id=startupButton type="button" class="btn btn-outline-primary" style="width: 49%">Startup</button>
+						<button id=shutdownButton type="button" class="btn btn-outline-primary" style="width: 49%">Shutdown</button>
 					</div>
 					<br />
 					<div class="alert alert-info" role="alert">
 						<span id=startupShutdownResponse></span>
 					</div>
-				</div>
 
-				<br />
+					<br />
 
-				<div class="form-group">
 					<h3>Custom Interlocker</h3>
-					<div style="display: flex; justify-content: space-between">
-						<label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary"
-							style="width: 49%; margin: 0px">Select a BahnDSL file (*.bahn)</label>
+					<div class="d-flex justify-content-between">
+						<label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary" style="width: 49%">Select a BahnDSL file (*.bahn)</label>
 						<input id="selectUploadFile" type="file" accept=".bahn" hidden />
-						<button id="uploadInterlockerButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Upload</button>
+						<button id="uploadInterlockerButton" type="button" class="btn btn-outline-primary" style="width: 49%">Upload</button>
+					</div>
+					<br />
+					<div class="alert alert-info" role="alert">
+						<span id="uploadResponse"></span>
 					</div>
 
 					<br />
 
-					<div class="alert alert-info" role="alert">
-						<span id="uploadResponse"></span>
-					</div>
-				</div>
-
-				<br />
-
-				<div class="form-group">
 					<label class="form-label" for="availableInterlockers">Available Interlockers:</label>
 					<div class="input-group">
-						<div class="input-group-prepend">
-							<label id="interlocker-label" class="input-group-text"
-								for="availableInterlockers">Interlocker</label>
-						</div>
-						<select class="custom-select" id="availableInterlockers">
+						<span id="interlocker-label" class="input-group-text" for="availableInterlockers">Interlocker</span>
+						<select class="form-select" id="availableInterlockers">
 							<option>libinterlocker_default (unremovable)</option>
 							<option>libinterlocker_simple_sectional (unremovable)</option>
 						</select>
 					</div>
-
 					<br />
-				
 					<label class="form-label" for="interlockerInUse">Interlocker in use:</label>
 					<div class="alert alert-info" role="alert">
 						<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
@@ -100,19 +83,13 @@
 
 					<br />
 
-					<div style="display: flex; justify-content: space-evenly">
-						<button id="setInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
-							style="width: 23%">Set</button>
-						<button id="unsetInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
-							style="width: 23%">Unset</button>
-						<button id="refreshInterlockersButton" type="button" class="btn btn-outline-primary btn-sm"
-							style="width: 23%">Refresh</button>
-						<button id="removeInterlockerButton" type="button" class="btn btn-outline-primary btn-sm"
-							style="width: 23%">Remove</button>
+					<div class="d-flex justify-content-between">
+						<button id="setInterlockerButton" type="button" class="btn btn-outline-primary btn-sm" style="width: 24%">Set</button>
+						<button id="unsetInterlockerButton" type="button" class="btn btn-outline-primary btn-sm" style="width: 24%">Unset</button>
+						<button id="refreshInterlockersButton" type="button" class="btn btn-outline-primary btn-sm" style="width: 24%">Refresh</button>
+						<button id="removeInterlockerButton" type="button" class="btn btn-outline-primary btn-sm" style="width: 24%">Remove</button>
 					</div>
-
 					<br />
-
 					<div class="alert alert-info" role="alert">
 						<span id="refreshRemoveInterlockerResponse"></span>
 					</div>
@@ -120,189 +97,171 @@
 			</div>
 		</div>
 
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h3 class="card-title">Point Controller</h3>
 
-		<div class="card" style="width: 22rem;">
-			<div class="card-body">
-				<h3 class="card-title">Point Controller</h3>
-
-				<div class="form-group">
 					<div class="row">
-						<div class="col-7">
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<select class="custom-select" id=pointId>
-									<option>point1</option>
-									<option>point2</option>
-									<option>point3</option>
-									<option>point4</option>
-									<option>point5</option>
-									<option>point6</option>
-									<option>point7</option>
-									<option>point8</option>
-									<option>point9</option>
-									<option>point10</option>
-									<option>point11</option>
-									<option>point12</option>
-									<option>point13</option>
-									<option>point14</option>
-									<option>point15</option>
-									<option>point16</option>
-									<option>point17</option>
-									<option>point18a</option>
-									<option>point18b</option>
-									<option>point19</option>
-									<option>point20</option>
-									<option>point21</option>
-									<option>point22</option>
-									<option>point23</option>
-									<option>point24</option>
-									<option>point25</option>
-									<option>point26</option>
-									<option>point27</option>
-									<option>point28</option>
-									<option>point29</option>
-								</select>
-							</div>
+						<div class="col">
+							<select class="form-select" id=pointId>
+								<option>point1</option>
+								<option>point2</option>
+								<option>point3</option>
+								<option>point4</option>
+								<option>point5</option>
+								<option>point6</option>
+								<option>point7</option>
+								<option>point8</option>
+								<option>point9</option>
+								<option>point10</option>
+								<option>point11</option>
+								<option>point12</option>
+								<option>point13</option>
+								<option>point14</option>
+								<option>point15</option>
+								<option>point16</option>
+								<option>point17</option>
+								<option>point18a</option>
+								<option>point18b</option>
+								<option>point19</option>
+								<option>point20</option>
+								<option>point21</option>
+								<option>point22</option>
+								<option>point23</option>
+								<option>point24</option>
+								<option>point25</option>
+								<option>point26</option>
+								<option>point27</option>
+								<option>point28</option>
+								<option>point29</option>
+							</select>
 						</div>
 					</div>
 
 					</br>
 
-					<div style="display: flex; justify-content: space-between;">
-						<button id=setPointButtonNormal type="button" class="pointBtn btn btn-outline-primary"
-							style="width: 49%;">Normal</button>
-						<button id=setPointButtonReverse type="button" class="pointBtn btn btn-outline-primary"
-							style="width: 49%;">Reverse</button>
+					<div class="d-flex justify-content-between">
+						<button id=setPointButtonNormal type="button" class="pointBtn btn btn-outline-primary" style="width: 49%;">Normal</button>
+						<button id=setPointButtonReverse type="button" class="pointBtn btn btn-outline-primary" style="width: 49%;">Reverse</button>
 					</div>
 					</br>
 					<div class="alert alert-info" role="alert">
 						<span id=setPointResponse></span>
 					</div>
-				</div>
 
-				</br>
+					</br>
 
-				<h3 class="card-title">Signal Controller</h3>
+					<h3 class="card-title">Signal Controller</h3>
 
-				<div class="form-group">
 					<div class="row">
-						<div class="col-7">
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<select class="custom-select" id="signalId">
-									<option>signal1</option>
-									<option>signal2</option>
-									<option>signal3</option>
-									<option>signal4</option>
-									<option>signal4a</option>
-									<option>signal4b</option>
-									<option>signal5</option>
-									<option>signal6</option>
-									<option>signal7</option>
-									<option>signal7a</option>
-									<option>signal7b</option>
-									<option>signal8</option>
-									<option>signal9</option>
-									<option>signal10</option>
-									<option>signal11</option>
-									<option>signal12</option>
-									<option>signal13</option>
-									<option>signal14</option>
-									<option>signal15</option>
-									<option>signal16</option>
-									<option>signal17</option>
-									<option>signal18</option>
-									<option>signal18a</option>
-									<option>signal18b</option>
-									<option>signal19</option>
-									<option>signal20</option>
-									<option>signal21</option>
-									<option>signal22</option>
-									<option>signal22a</option>
-									<option>signal22b</option>
-									<option>signal23</option>
-									<option>signal24</option>
-									<option>signal25</option>
-									<option>signal26</option>
-									<option>signal27</option>
-									<option>signal28</option>
-									<option>signal29</option>
-									<option>signal30</option>
-									<option>signal31</option>
-									<option>signal32</option>
-									<option>signal33</option>
-									<option>signal34</option>
-									<option>signal35</option>
-									<option>signal35a</option>
-									<option>signal35b</option>
-									<option>signal36</option>
-									<option>signal37</option>
-									<option>signal38</option>
-									<option>signal39</option>
-									<option>signal40</option>
-									<option>signal41</option>
-									<option>signal42</option>
-									<option>signal43</option>
-									<option>signal44</option>
-									<option>signal45</option>
-									<option>signal46</option>
-									<option>signal46a</option>
-									<option>signal46b</option>
-									<option>signal47</option>
-									<option>signal48</option>
-									<option>signal48a</option>
-									<option>signal48b</option>
-									<option>signal49</option>
-									<option>signal50</option>
-									<option>signal50a</option>
-									<option>signal50b</option>
-									<option>signal51</option>
-									<option>signal52</option>
-									<option>signal53</option>
-									<option>signal53a</option>
-									<option>signal53b</option>
-									<option>platformlight1</option>
-									<option>platformlight2</option>
-									<option>platformlight4a</option>
-									<option>platformlight4b</option>
-									<option>platformlights</option>
-								</select>
-							</div>
+						<div class="col">
+							<select class="form-select" id="signalId">
+								<option>signal1</option>
+								<option>signal2</option>
+								<option>signal3</option>
+								<option>signal4</option>
+								<option>signal4a</option>
+								<option>signal4b</option>
+								<option>signal5</option>
+								<option>signal6</option>
+								<option>signal7</option>
+								<option>signal7a</option>
+								<option>signal7b</option>
+								<option>signal8</option>
+								<option>signal9</option>
+								<option>signal10</option>
+								<option>signal11</option>
+								<option>signal12</option>
+								<option>signal13</option>
+								<option>signal14</option>
+								<option>signal15</option>
+								<option>signal16</option>
+								<option>signal17</option>
+								<option>signal18</option>
+								<option>signal18a</option>
+								<option>signal18b</option>
+								<option>signal19</option>
+								<option>signal20</option>
+								<option>signal21</option>
+								<option>signal22</option>
+								<option>signal22a</option>
+								<option>signal22b</option>
+								<option>signal23</option>
+								<option>signal24</option>
+								<option>signal25</option>
+								<option>signal26</option>
+								<option>signal27</option>
+								<option>signal28</option>
+								<option>signal29</option>
+								<option>signal30</option>
+								<option>signal31</option>
+								<option>signal32</option>
+								<option>signal33</option>
+								<option>signal34</option>
+								<option>signal35</option>
+								<option>signal35a</option>
+								<option>signal35b</option>
+								<option>signal36</option>
+								<option>signal37</option>
+								<option>signal38</option>
+								<option>signal39</option>
+								<option>signal40</option>
+								<option>signal41</option>
+								<option>signal42</option>
+								<option>signal43</option>
+								<option>signal44</option>
+								<option>signal45</option>
+								<option>signal46</option>
+								<option>signal46a</option>
+								<option>signal46b</option>
+								<option>signal47</option>
+								<option>signal48</option>
+								<option>signal48a</option>
+								<option>signal48b</option>
+								<option>signal49</option>
+								<option>signal50</option>
+								<option>signal50a</option>
+								<option>signal50b</option>
+								<option>signal51</option>
+								<option>signal52</option>
+								<option>signal53</option>
+								<option>signal53a</option>
+								<option>signal53b</option>
+								<option>platformlight1</option>
+								<option>platformlight2</option>
+								<option>platformlight4a</option>
+								<option>platformlight4b</option>
+								<option>platformlights</option>
+							</select>
 						</div>
 					</div>
 
 					</br>
 
-					<div style="display: flex; justify-content: space-between;">
-						<button id=setSignalButtonRed type="button" class="signalBtn btn btn-outline-danger"
-							style="width: 20%;">Stop</button>
-						<button id=setSignalButtonYellow type="button" class="signalBtn btn btn-outline-warning"
-							style="width: 25%;">Caution</button>
-						<button id=setSignalButtonGreen type="button" class="signalBtn btn btn-outline-success"
-							style="width: 20%; ">Go</button>
-						<button id=setSignalButtonWhite type="button" class="signalBtn btn btn-outline-dark"
-							style="width: 20%; ">Shunt</button>
+					<div class="d-flex justify-content-between">
+						<button id=setSignalButtonRed type="button" class="signalBtn btn btn-outline-danger" style="width: 24%;">Stop</button>
+						<button id=setSignalButtonYellow type="button" class="signalBtn btn btn-outline-warning" style="width: 24%;">Caution</button>
+						<button id=setSignalButtonGreen type="button" class="signalBtn btn btn-outline-success" style="width: 24%; ">Go</button>
+						<button id=setSignalButtonWhite type="button" class="signalBtn btn btn-outline-dark" style="width: 24%; ">Shunt</button>
 					</div>
-
 					</br>
-
 					<div class="alert alert-info" role="alert">
 						<span id=setSignalResponse></span>
 					</div>
 
-				</div>
-
-				</br>
+					</br>
 				
-				<h3 class="card-title">Peripheral Controller</h3>
+					<h3 class="card-title">Peripheral Controller</h3>
 
-				<div class="form-group">
 					<div class="row">
-						<div class="col-7">
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<label class="input-group-text">ID</label>
+						<div class="col">
+							<div class="input-group mb-3">
+								<label class="input-group-text col-2">ID</label>
 								<input type="text" class="form-control form-control" id=peripheralId>
 							</div>
-							<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-								<label class="input-group-text">State</label>
+							<div class="input-group">
+								<label class="input-group-text col-2">State</label>
 								<input type="text" class="form-control form-control" id=peripheralState>
 							</div>
 						</div>
@@ -310,18 +269,16 @@
 
 					</br>
 
-					<div style="display: flex; justify-content: space-between;">
-						<button id=setPeripheralStateButton type="button" class="peripheralBtn btn btn-outline-primary"
-							style="width: 100%;">Set</button>
+					<div class="d-flex justify-content-between">
+						<button id=setPeripheralStateButton type="button" class="peripheralBtn btn btn-outline-primary w-100">Set</button>
 					</div>
 					</br>
 					<div class="alert alert-info" role="alert">
 						<span id=setPeripheralResponse></span>
 					</div>
-
 				</div>
-
 			</div>
+			
 		</div>
 	</div>
 </body>
