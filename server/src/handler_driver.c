@@ -215,10 +215,11 @@ static bool validate_interlocking_route_members_not_null(const t_interlocking_ro
 
 static void log_signal_info(int priority, const t_route_signal_info *sig_info) {
 	if (sig_info != NULL) {
-		syslog_server(priority, "\tID %s", (sig_info->id != NULL ? sig_info->id : "NULL") );
-		syslog_server(priority, "\tis source?      %s", sig_info->is_source_signal ? "yes" : "no");
-		syslog_server(priority, "\tis destination? %s", sig_info->is_destination_signal ? "yes" : "no");
-		syslog_server(priority, "\tindex in path   %d", sig_info->index_in_route_path);
+		syslog_server(priority, "Drive route signal info: id - %s, %s source, %s destination, path index - %d", 
+		              sig_info->id != NULL ? sig_info->id : "NULL",
+		              sig_info->is_source_signal ? "is" : "not",
+		              sig_info->is_destination_signal ? "is" : "not",
+		              sig_info->index_in_route_path);
 	}
 }
 
