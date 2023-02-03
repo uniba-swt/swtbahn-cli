@@ -71,9 +71,9 @@ t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
 };
 
 typedef struct {
-	size_t *arr;
+	bool *arr;
 	size_t len;
-} t_route_repeated_segment_indices;
+} t_route_repeated_segment_flags;
 
 typedef enum {
     ERR_INVALID_PARAM,
@@ -213,7 +213,6 @@ static bool validate_interlocking_route_members_not_null(const t_interlocking_ro
 	        && route->train != NULL);
 }
 
-
 static void log_signal_info(int priority, const t_route_signal_info *sig_info) {
 	if (sig_info != NULL) {
 		syslog_server(priority, "\tID %s", (sig_info->id != NULL ? sig_info->id : "NULL") );
@@ -350,107 +349,57 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 	return info_arr;
 }
 
-
-void free_route_repeated_segment_indices(t_route_repeated_segment_indices *r_seg_indices) {
-	if (r_seg_indices != NULL && r_seg_indices->arr != NULL) {
-		free(r_seg_indices->arr);
-		r_seg_indices->arr = NULL;
-		r_seg_indices->len = 0;
+void free_route_repeated_segment_flags(t_route_repeated_segment_flags *r_seg_flags) {
+	if (r_seg_flags != NULL && r_seg_flags->arr != NULL) {
+		free(r_seg_flags->arr);
+		r_seg_flags->arr = NULL;
+		r_seg_flags->len = 0;
 	}
 }
 
-// "repeated segment index" = Index of a segment that appears more than once in a route
-static t_route_repeated_segment_indices get_route_repeated_segment_indices(const t_interlocking_route *route) {
-	// For route, determine which segments appear more than once
-	t_route_repeated_segment_indices r_seg_indices = {.arr = NULL, .len = 0};
+static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_interlocking_route *route) {
+	// For route, determine which segments appear more than once.
+	
+	t_route_repeated_segment_flags r_seg_flags = {.arr = NULL, .len = 0};
 	if (route == NULL || route->path == NULL) {
-		return r_seg_indices;
+		return r_seg_flags;
 	}
-	// First allocate enough memory for more than the maximum possible amount of 
-	// duplicate segment indices. Will afterwards be reallocated to the size it actually needs.
-	r_seg_indices.arr = malloc(sizeof(size_t) * route->path->len);
-	if (r_seg_indices.arr == NULL) {
+	
+	r_seg_flags.arr = malloc(sizeof(bool) * route->path->len);
+	if (r_seg_flags.arr == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Get repeated segment indices for route %s: Unable to allocate memory for array",
+		              "Get repeated segment flags for route %s: Unable to allocate memory for array",
 		              route->id);
-		return r_seg_indices;
+		return r_seg_flags;
 	}
+	r_seg_flags.len = (size_t) route->path->len;
+	
+	for (size_t i = 0; i < r_seg_flags.len; ++i) {
+		r_seg_flags.arr[i] = false;
+	}
+	
 	// For every segment in route->path, check if it occurs again at a different position. 
-	// If yes, add the occurrence (from outer loop) to r_seg_indices and break the inner loop.
+	// If yes, set the respective flags in r_seg_flags to true.
+	
 	for (size_t path_index_i = 0; path_index_i < route->path->len; ++path_index_i) {
 		const char *path_item_i = g_array_index(route->path, char *, path_index_i);
-		if (path_item_i != NULL && is_type_segment(path_item_i)) {
-			for (size_t path_index_n = 0; path_index_n < route->path->len; ++path_index_n) {
+		if (path_item_i != NULL && is_type_segment(path_item_i) && (path_index_i + 1) < route->path->len) {
+			for (size_t path_index_n = path_index_i + 1; path_index_n < route->path->len; ++path_index_n) {
 				const char *path_item_n = g_array_index(route->path, char *, path_index_n);
-				if (path_item_n != NULL && strcmp(path_item_i, path_item_n) == 0
-				        && path_index_i != path_index_n) {
-					r_seg_indices.arr[r_seg_indices.len] = path_index_i;
-					r_seg_indices.len++;
+				if (path_item_n != NULL && strcmp(path_item_i, path_item_n) == 0) {
+					r_seg_flags.arr[path_index_i] = true;
+					r_seg_flags.arr[path_index_n] = true;
 					break;
 				}
 			}
 		}
 	}
-	if (r_seg_indices.len == 0) {
-		free(r_seg_indices.arr);
-		r_seg_indices.arr = NULL;
-	} else {
-		size_t *tmp = reallocarray(r_seg_indices.arr, r_seg_indices.len, sizeof(size_t));
-		if (tmp == NULL) {
-			syslog_server(LOG_ERR, 
-			              "Get repeated segment indices for route %s: Unable to re-allocate memory", 
-			              route->id);
-			free(r_seg_indices.arr);
-			r_seg_indices.arr = NULL;
-			r_seg_indices.len = 0;
-		} else {
-			// re-alloc successful
-			r_seg_indices.arr = tmp;
-		}
+	
+	if (r_seg_flags.len == 0) {
+		free(r_seg_flags.arr);
+		r_seg_flags.arr = NULL;
 	}
-	return r_seg_indices;
-}
-
-// Queries the position of the train. Checks which segments that the train occupies exist in the route path. 
-// Return -3 on param err, -2 on train not on tracks, -1 on train not on route, >= 0 if train is on route.
-// If train occupies at least one segment in route path, returns the route-path index of the occupied segment
-// that is the furthest along the route. Ignores any segments that appear more than once in route->path
-ssize_t get_train_pos_index_in_route_ignore_repeated_segments(const char *train_id, const t_interlocking_route *route, 
-                                                              const t_route_repeated_segment_indices *repeated_segment_indices) {
-	if (train_id == NULL || route == NULL || route->path == NULL || repeated_segment_indices == NULL) {
-		return -3;
-	}
-	t_bidib_train_position_query train_pos_query = bidib_get_train_position(train_id);
-	if (train_pos_query.segments == NULL || train_pos_query.length == 0) {
-		bidib_free_train_position_query(train_pos_query);
-		return -2;
-	}
-	ssize_t train_pos_index = -1;
-	size_t train_pos_index_unsigned = 0;
-	const size_t path_count = route->path->len;
-	for (size_t i = 0; i < train_pos_query.length; ++i) {
-		// Search starting at most recent pos_index to skip unnecessary comparisons
-		// If index is present in array of multi-occurring segments, skip iteration 
-		for (size_t n = train_pos_index_unsigned; n < path_count; ++n) {
-			bool ignore = false;
-			for (size_t k = 0; k < repeated_segment_indices->len; ++k) {
-				if (repeated_segment_indices->arr[k] == n) {
-					ignore = true;
-					break;
-				}
-			}
-			if (!ignore) {
-				const char *path_item = g_array_index(route->path, char *, n);
-				if (n > train_pos_index_unsigned && strcmp(path_item, train_pos_query.segments[i]) == 0) {
-					train_pos_index = (ssize_t) n;
-					train_pos_index_unsigned = n;
-					break;
-				}
-			}
-		}
-	}
-	bidib_free_train_position_query(train_pos_query);
-	return train_pos_index;
+	return r_seg_flags;
 }
 
 // Queries the position of the train. Checks which segments that the train occupies exist in the route path. 
@@ -460,13 +409,15 @@ ssize_t get_train_pos_index_in_route_ignore_repeated_segments(const char *train_
 // If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
 // If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
 // If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
-t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segments_exp(const char *train_id, 
+t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segments(const char *train_id, 
                                                               const t_interlocking_route *route, 
-                                                              const t_route_repeated_segment_indices *repeated_segment_indices) {
+                                                              const t_route_repeated_segment_flags *repeated_segment_flags) {
 	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
-	if (train_id == NULL || route == NULL || route->path == NULL || repeated_segment_indices == NULL) {
+	if (train_id == NULL || route == NULL || route->path == NULL || repeated_segment_flags == NULL
+	        || repeated_segment_flags->arr == NULL) {
 		return ret_query;
 	}
+	
 	t_bidib_train_position_query train_pos_query = bidib_get_train_position(train_id);
 	if (train_pos_query.segments == NULL || train_pos_query.length == 0) {
 		ret_query.err_code = ERR_TRAIN_NOT_ON_TRACKS;
@@ -477,18 +428,15 @@ t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segmen
 	const size_t path_count = route->path->len;
 	for (size_t i = 0; i < train_pos_query.length; ++i) {
 		// Search starting at most recent pos_index to skip unnecessary comparisons
-		// If index is present in array of multi-occurring segments, skip iteration 
-		for (size_t n = ret_query.pos_index; n < path_count; ++n) {
-			bool ignore = false;
-			for (size_t k = 0; k < repeated_segment_indices->len; ++k) {
-				if (repeated_segment_indices->arr[k] == n) {
-					ignore = true;
-					break;
-				}
-			}
+		if ((ret_query.pos_index + 1) >= path_count) {
+			// pos_index at max, stop.
+			break;
+		}
+		for (size_t n = ret_query.pos_index + 1; n < path_count; ++n) {
+			bool ignore = repeated_segment_flags->arr[n];
 			if (!ignore) {
 				const char *path_item = g_array_index(route->path, char *, n);
-				if (n > ret_query.pos_index && strcmp(path_item, train_pos_query.segments[i]) == 0) {
+				if (strcmp(path_item, train_pos_query.segments[i]) == 0) {
 					ret_query.pos_index = n;
 					ret_query.err_code = OKAY_TRAIN_ON_ROUTE;
 					break;
@@ -602,19 +550,19 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		return false;
 	}
 	
-	// 1. Get route signal infos and indices of segments that appear more than once
+	// 1. Get route signal infos and flags of segments that appear more than once
 	t_route_signal_info_array signal_infos = get_route_signal_info_array(route);
-	t_route_repeated_segment_indices multi_segment_indices = get_route_repeated_segment_indices(route);
+	t_route_repeated_segment_flags repeated_segment_flags = get_route_repeated_segment_flags(route);
 	
 	// Check that signal_infos array is not empty and has at least 2 entries (source, destination)
 	if (signal_infos.data_ptr == NULL) {
 		syslog_server(LOG_ERR, "Drive-Route Decoupled: signal-infos array member null");
 		free_route_signal_info_array(&signal_infos);
-		free_route_repeated_segment_indices(&multi_segment_indices);
+		free_route_repeated_segment_flags(&repeated_segment_flags);
 		return false;
 	} else if (signal_infos.len < 2) {
 		free_route_signal_info_array(&signal_infos);
-		free_route_repeated_segment_indices(&multi_segment_indices);
+		free_route_repeated_segment_flags(&repeated_segment_flags);
 		syslog_server(LOG_ERR, "Drive-Route Decoupled: "
 		              "got signal-infos, but has not enough entries (< 2)");
 		return false;
@@ -634,7 +582,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	while (running && drive_route_params_valid(train_id, route) 
 	       && signals_set_to_stop < signals_to_set_to_stop_count) {
 		// 1. Get position of train, and determine index (in route->path) of where the train is
-		t_train_index_on_route_query train_pos_query = get_train_pos_index_in_route_ignore_repeated_segments_exp(train_id, route, &multi_segment_indices);
+		t_train_index_on_route_query train_pos_query = get_train_pos_index_in_route_ignore_repeated_segments(train_id, route, &repeated_segment_flags);
 		
 		// 2. Check if the train_pos_query has valid pos_index
 		if (train_pos_query.err_code != OKAY_TRAIN_ON_ROUTE) {
@@ -666,7 +614,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	syslog_server(LOG_NOTICE, "Drive-Route Decoupled: for routeID %s ending; "
 	              "%d signals were set to stop here in total.", route->id, signals_set_to_stop);
 	free_route_signal_info_array(&signal_infos);
-	free_route_repeated_segment_indices(&multi_segment_indices);
+	free_route_repeated_segment_flags(&repeated_segment_flags);
 	return true;
 }
 
