@@ -75,6 +75,17 @@ typedef struct {
 	size_t len;
 } t_route_repeated_segment_indices;
 
+typedef enum {
+    ERR_INVALID_PARAM,
+	ERR_TRAIN_NOT_ON_TRACKS,
+	ERR_TRAIN_NOT_ON_ROUTE,
+	OKAY_TRAIN_ON_ROUTE
+} t_route_pos_error_code;
+
+typedef struct {
+	size_t pos_index;
+	t_route_pos_error_code err_code;
+} t_train_index_on_route_query;
 
 static void increment_next_grab_id(void) {
 	if (next_grab_id == TRAIN_ENGINE_INSTANCE_COUNT_MAX - 1) {
@@ -443,34 +454,86 @@ ssize_t get_train_pos_index_in_route_ignore_repeated_segments(const char *train_
 }
 
 // Queries the position of the train. Checks which segments that the train occupies exist in the route path. 
-// Return -3 on param err, -2 on train not on tracks, -1 on train not on route, >= 0 if train is on route.
-// If train occupies at least one segment in route path, returns the route-path index of the occupied segment
-// that is the furthest along the route.
-ssize_t get_train_pos_index_in_route_path(const char *train_id,  const t_interlocking_route *route) {
+// If train occupies at least one segment in route path that does not occur more than once in route,
+// returned t_train_index_on_route_query member .pos_index holds the index of the occupied segment 
+// that is the furthest along the route, and .err_code holds OKAY_TRAIN_ON_ROUTE
+// If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
+// If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
+// If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
+t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segments_exp(const char *train_id, 
+                                                              const t_interlocking_route *route, 
+                                                              const t_route_repeated_segment_indices *repeated_segment_indices) {
+	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
+	if (train_id == NULL || route == NULL || route->path == NULL || repeated_segment_indices == NULL) {
+		return ret_query;
+	}
+	t_bidib_train_position_query train_pos_query = bidib_get_train_position(train_id);
+	if (train_pos_query.segments == NULL || train_pos_query.length == 0) {
+		ret_query.err_code = ERR_TRAIN_NOT_ON_TRACKS;
+		return ret_query;
+	}
+	
+	ret_query.err_code = ERR_TRAIN_NOT_ON_ROUTE;
+	const size_t path_count = route->path->len;
+	for (size_t i = 0; i < train_pos_query.length; ++i) {
+		// Search starting at most recent pos_index to skip unnecessary comparisons
+		// If index is present in array of multi-occurring segments, skip iteration 
+		for (size_t n = ret_query.pos_index; n < path_count; ++n) {
+			bool ignore = false;
+			for (size_t k = 0; k < repeated_segment_indices->len; ++k) {
+				if (repeated_segment_indices->arr[k] == n) {
+					ignore = true;
+					break;
+				}
+			}
+			if (!ignore) {
+				const char *path_item = g_array_index(route->path, char *, n);
+				if (n > ret_query.pos_index && strcmp(path_item, train_pos_query.segments[i]) == 0) {
+					ret_query.pos_index = n;
+					ret_query.err_code = OKAY_TRAIN_ON_ROUTE;
+					break;
+				}
+			}
+		}
+	}
+	bidib_free_train_position_query(train_pos_query);
+	return ret_query;
+}
+
+// Queries the position of the train. Checks which segments that the train occupies exist in the route path. 
+// If train occupies at least one segment in route path, returned t_train_index_on_route_query
+// member .pos_index holds the index of the occupied segment that is the furthest along the route, 
+// and .err_code holds OKAY_TRAIN_ON_ROUTE
+// If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
+// If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
+// If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
+t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train_id, 
+                                                               const t_interlocking_route *route) {
+	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
 	if (train_id == NULL || route == NULL || route->path == NULL) {
-		return -3;
+		return ret_query;
 	}
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	if (train_position_query.segments == NULL || train_position_query.length == 0) {
 		bidib_free_train_position_query(train_position_query);
-		return -2;
+		ret_query.err_code = ERR_TRAIN_NOT_ON_TRACKS;
+		return ret_query;
 	}
-	ssize_t train_pos_index = -1;
-	size_t train_pos_index_unsigned = 0;
+	ret_query.err_code = ERR_TRAIN_NOT_ON_ROUTE;
 	const size_t path_count = route->path->len;
 	for (size_t i = 0; i < train_position_query.length; ++i) {
 		// Search starting at most recent pos_index to skip unnecessary comparisons
-		for (size_t n = train_pos_index_unsigned; n < path_count; ++n) {
+		for (size_t n = ret_query.pos_index; n < path_count; ++n) {
 			const char *path_item = g_array_index(route->path, char *, n);
-			if (n > train_pos_index_unsigned && strcmp(path_item, train_position_query.segments[i]) == 0) {
-				train_pos_index = (ssize_t) n;
-				train_pos_index_unsigned = n;
+			if (n > ret_query.pos_index && strcmp(path_item, train_position_query.segments[i]) == 0) {
+				ret_query.pos_index = n;
+				ret_query.err_code = OKAY_TRAIN_ON_ROUTE;
 				break;
 			}
 		}
 	}
 	bidib_free_train_position_query(train_position_query);
-	return train_pos_index;
+	return ret_query;
 }
 
 // For a train at position train_pos_index in route->path, set all signals to stop that
@@ -478,7 +541,7 @@ ssize_t get_train_pos_index_in_route_path(const char *train_id,  const t_interlo
 // Returns the count of how many signals have been set to stop in this function
 static size_t update_route_signals_for_train_pos(t_route_signal_info_array *signal_infos, 
                                                  t_interlocking_route *route,
-                                                 ssize_t train_pos_index) {
+                                                 size_t train_pos_index) {
 	size_t signals_set_to_stop = 0;
 	const char *signal_stop_aspect = "aspect_stop";
 	// 1. Determine which signals have a lower or equal index in route->path than the
@@ -501,7 +564,7 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 			// once the train reaches the _second_ segment of the route.
 			
 			// 3. Determine if signal has been passed by the train
-			if ((ssize_t) sig_info_elem->index_in_route_path <= train_pos_index) {
+			if (sig_info_elem->index_in_route_path <= train_pos_index) {
 				// 4. Try to set the signal to signal_stop_aspect.
 				if (bidib_set_signal(sig_info_elem->id, signal_stop_aspect)) {
 					// Log_ERR... but what else? Safety violation once we have a safety layer?
@@ -564,22 +627,19 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	// are (signal_infos.len - 1) signals to set to stop in total for driving this route
 	const size_t signals_to_set_to_stop_count = signal_infos.len - 1;
 	size_t signals_set_to_stop = 0;
-	
-	// Initialised to -3 as -2 and -1 are used for error return indication in the function that
-	// determines the train's position
-	ssize_t train_pos_index_previous = -3;
+	ssize_t train_pos_index_previous = -1;
 	
 	// Main route driving loop runs as long as server is running, the drive route params are valid,
 	// and not all signals have yet been set to stop
 	while (running && drive_route_params_valid(train_id, route) 
 	       && signals_set_to_stop < signals_to_set_to_stop_count) {
 		// 1. Get position of train, and determine index (in route->path) of where the train is
-		ssize_t train_pos_index = get_train_pos_index_in_route_ignore_repeated_segments(train_id, route, &multi_segment_indices);
+		t_train_index_on_route_query train_pos_query = get_train_pos_index_in_route_ignore_repeated_segments_exp(train_id, route, &multi_segment_indices);
 		
-		// 2. Check if the train_pos_index could not be determined either due to invalided params (-3)
-		//    or due to the train not being on the tracks
-		if (train_pos_index <= -2) {
-			syslog_server(LOG_DEBUG, "Drive-Route Decoupled: unable to determine "
+		// 2. Check if the train_pos_query has valid pos_index
+		if (train_pos_query.err_code != OKAY_TRAIN_ON_ROUTE) {
+			syslog_server(LOG_DEBUG,
+			              "Drive-Route Decoupled: unable to determine "
 			              "the position of the train %s on the route %s", train_id, route->id);
 			// Train position unknown -> skip this iteration. 
 			// Don't want to stop route driving here as train might just be lost temporarily
@@ -587,17 +647,18 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		}
 		
 		// 3. If train position has changed, check if any signals need to be set to aspect stop
-		if (train_pos_index_previous != train_pos_index) {
-			syslog_server(LOG_DEBUG, "Drive-Route Decoupled: Train position index now %d",
-			              train_pos_index);
-			if (train_pos_index_previous > train_pos_index) {
+		if (train_pos_index_previous != (ssize_t) train_pos_query.pos_index) {
+			syslog_server(LOG_DEBUG, 
+			              "Drive-Route Decoupled: Train position index now %d",
+			              train_pos_query.pos_index);
+			if (train_pos_index_previous > (ssize_t) train_pos_query.pos_index) {
 				syslog_server(LOG_DEBUG, 
-				              "Drive-Route Decoupled: New train position index is lower than before",
-				              train_pos_index);
+				              "Drive-Route Decoupled: New train position index %d is lower than before",
+				              train_pos_query.pos_index);
 			}
-			signals_set_to_stop += update_route_signals_for_train_pos(&signal_infos, route, train_pos_index);
+			signals_set_to_stop += update_route_signals_for_train_pos(&signal_infos, route, train_pos_query.pos_index);
 		}
-		train_pos_index_previous = train_pos_index;
+		train_pos_index_previous = (ssize_t) train_pos_query.pos_index;
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	// NOTE: The "ending" does not mean that the end of the route was reached, but rather that
