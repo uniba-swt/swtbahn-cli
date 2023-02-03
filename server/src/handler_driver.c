@@ -62,7 +62,7 @@ typedef struct {
 } t_route_signal_info;
 
 typedef struct {
-	t_route_signal_info** data_ptr;
+	t_route_signal_info **data_ptr;
 	size_t len;
 } t_route_signal_info_array;
 
@@ -71,9 +71,9 @@ t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
 };
 
 typedef struct {
-	size_t* arr;
+	size_t *arr;
 	size_t len;
-} t_route_multi_segment_indices;
+} t_route_repeated_segment_indices;
 
 
 static void increment_next_grab_id(void) {
@@ -199,11 +199,11 @@ static bool validate_interlocking_route_members_not_null(const t_interlocking_ro
 	return (route->conflicts != NULL && route->destination != NULL && route->id != NULL 
 	        && route->orientation != NULL && route->path != NULL && route->points != NULL 
 	        && route->sections != NULL && route->signals != NULL && route->source != NULL
-			  && route->train != NULL);
+	        && route->train != NULL);
 }
 
 
-static void print_signal_info_member(int priority, const t_route_signal_info *sig_info) {
+static void log_signal_info(int priority, const t_route_signal_info *sig_info) {
 	if (sig_info != NULL) {
 		syslog_server(priority, "\tID %s", (sig_info->id != NULL ? sig_info->id : "NULL") );
 		syslog_server(priority, "\tis source?      %s", sig_info->is_source_signal ? "yes" : "no");
@@ -212,27 +212,26 @@ static void print_signal_info_member(int priority, const t_route_signal_info *si
 	}
 }
 
-static void print_signal_info_array(int priority, const t_route_signal_info_array *sig_infos) {
-	syslog_server(priority, "PRINT START Signal Info Array");
-	if (sig_infos != NULL) {
-		for(size_t i = 0; i < sig_infos->len; ++i) {
-			print_signal_info_member(priority, sig_infos->data_ptr[i]);
+static void log_signal_info_array(int priority, const t_route_signal_info_array *sig_info_array) {
+	syslog_server(priority, "Drive route signal info array: Begin");
+	if (sig_info_array != NULL) {
+		for (size_t i = 0; i < sig_info_array->len; ++i) {
+			log_signal_info(priority, sig_info_array->data_ptr[i]);
 		}
 	}
-	syslog_server(priority, "PRINT END Signal Info Array");
+	syslog_server(priority, "Drive route signal info array: End");
 }
 
-static void free_route_signal_info_array(t_route_signal_info_array* route_signal_infos) {
-	if (route_signal_infos == NULL) {
+static void free_route_signal_info_array(t_route_signal_info_array *route_signal_info_array) {
+	if (route_signal_info_array == NULL) {
 		return;
 	}
-	if (route_signal_infos->data_ptr == NULL) {
-		route_signal_infos->len = 0;
+	if (route_signal_info_array->data_ptr == NULL) {
+		route_signal_info_array->len = 0;
 		return;
 	}
-	const size_t len = route_signal_infos->len;
-	for (size_t i = 0; i < len; ++i) {
-		t_route_signal_info* elem = route_signal_infos->data_ptr[i];
+	for (size_t i = 0; i < route_signal_info_array->len; ++i) {
+		t_route_signal_info *elem = route_signal_info_array->data_ptr[i];
 		if (elem != NULL) {
 			if (elem->id != NULL) {
 				free(elem->id);
@@ -240,161 +239,174 @@ static void free_route_signal_info_array(t_route_signal_info_array* route_signal
 			free(elem);
 		}
 	}
-	free(route_signal_infos->data_ptr);
-	route_signal_infos->data_ptr = NULL;
-	route_signal_infos->len = 0;
-	// Don't free route_signal_infos itself, as we have not allocated it with malloc.
+	free(route_signal_info_array->data_ptr);
+	route_signal_info_array->data_ptr = NULL;
+	route_signal_info_array->len = 0;
+	// Don't free route_signal_info_array itself, as we have not allocated it with malloc.
 }
 
 static t_route_signal_info_array get_route_signal_info_array(const t_interlocking_route *route) {
-	// Strat
-	// 1. Allocate memory for array of pointers 'r' that will point to t_route_signal_info elements
-	// 2. For every signal in route->signals....
+	// Strategy:
+	// 1. Allocate memory for array of pointers to t_route_signal_info type entities
+	// 2. For every signal in route->signals...
 	//   A. Skip iteration if signal from route->signals is NULL
-	//   B. Allocate memory for member t_route_signal_info t at position ... of r.
+	//   B. Allocate memory for member t_route_signal_info at position i in info_arr
 	//   C. Set t's trivial members to appropriate defaults (set to stop, is source, is destination)
-	//   D. Allocate memory for non-trivial member 'id' in t
-	//   E. Copy ID from signal (from route->signals) into newly allocated 'id' of t
-	//   F. Determine Index of the current signal in route->path and set member for that index of t accordingly
-	
-	syslog_server(LOG_NOTICE, "Building signal-infos: called for routeID %s", route->id);
+	//   D. Copy ID from signal (from route->signals) to new signal_info.
+	// 3. For every signal_info member in info_arr, determine index of that signal-id 
+	//    in route->path and set member for index_in_route_path of signal_info accordingly
 	
 	t_route_signal_info_array info_arr = {.data_ptr = NULL, .len = 0};
 	if (!validate_interlocking_route_members_not_null(route)) {
 		syslog_server(LOG_ERR, 
-		             "Building signal-infos: called with route NULL"
-		             ", or members of route parameter struct have value NULL");
+		             "Get drive route signal info array: route is NULL or some route details are NULL");
 		return info_arr;
 	}
+	syslog_server(LOG_NOTICE, "Get drive route signal info array: Start building for route id %s", route->id);
 	
 	// 1. Allocate memory for array of pointers to t_route_signal_info type entities
 	const size_t number_of_signal_infos = route->signals->len;
 	info_arr.data_ptr = (t_route_signal_info**) malloc(sizeof(t_route_signal_info*) * number_of_signal_infos);
 	
 	if (info_arr.data_ptr == NULL) {
-		syslog_server(LOG_ERR, "Building signal-infos: Can't allocate memory for array");
+		syslog_server(LOG_ERR, "Get drive route signal info array: Could not allocate memory for array");
 		return info_arr;
 	}
-	// 2. For every signal in route->signals....
-	size_t built_signal_infos_counter = 0;
+	// 2. For every signal in route->signals...
 	for (size_t i = 0; i < number_of_signal_infos; ++i) {
 		const char *signal_id_item = g_array_index(route->signals, char *, i);
 		
 		// A. Skip iteration if signal from route->signals is NULL
 		if (signal_id_item == NULL) {
-			syslog_server(LOG_WARNING, "Building signal-infos: found invalid (NULL) signal, skipped");
-			continue; // skip loop iteration
+			syslog_server(LOG_WARNING,
+			              "Get drive route signal info array: "
+			              "Skipping NULL signal at index %d of route->signals", i);
+			info_arr.data_ptr[i] = NULL;
+			continue;
 		}
-		// B. Allocate memory for member t_route_signal_info t at position ... of r.
+		// B. Allocate memory for member t_route_signal_info at position i in info_arr.
 		info_arr.data_ptr[i] = (t_route_signal_info *) malloc(sizeof(t_route_signal_info));
-		info_arr.len++;
+		info_arr.len = i + 1;
 		if (info_arr.data_ptr[i] == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Building signal-infos: unable to allocate memory for new element");
+			              "Get drive route signal info array: "
+			              "Unable to allocate memory for array index %d", i);
 			free_route_signal_info_array(&info_arr);
 			return info_arr;
 		}
 		
-		// C. Set t's trivial members to appropriate defaults (set to stop, is source, is destination)
+		// C. Set t's trivial members to appropriate defaults
 		info_arr.data_ptr[i]->has_been_set_to_stop = false;
 		info_arr.data_ptr[i]->is_source_signal = (i == 0);
 		info_arr.data_ptr[i]->is_destination_signal = (i+1 == number_of_signal_infos);
 		
-		// D. Allocate memory for non-trivial member 'id' in t
-		info_arr.data_ptr[i]->id = (char *) malloc(sizeof(char) * (strlen(signal_id_item) + 1));
+		// D. Copy ID from signal (from route->signals) to new signal_info.
+		info_arr.data_ptr[i]->id = strdup(signal_id_item);
 		if (info_arr.data_ptr[i]->id == NULL) {
-			syslog_server(LOG_ERR, "Building signal-infos: unable to allocate memory for "
-			              "new element ID");
+			syslog_server(LOG_ERR,
+			              "Get drive route signal info array: Unable to allocate memory for signal id %s",
+			              signal_id_item);
 			free_route_signal_info_array(&info_arr);
 			return info_arr;
 		}
+	}
+	// 3. For every signal_info, determine index of that signal-id in route->path and set member 
+	//    for index_in_route_path of signal_info accordingly
+	size_t path_index = 0;
+	for (size_t i = 0; i < info_arr.len; ++i) {
+		if (info_arr.data_ptr[i] == NULL) {
+			syslog_server(LOG_WARNING, 
+			              "Get drive route signal info array: "
+			              "Skipping NULL signal_info at index %d of info_arr", i);
+			continue;
+		}
 		
-		// E. Copy ID from signal (from route->signals) into newly allocated 'id' of t
-		strcpy(info_arr.data_ptr[i]->id, signal_id_item);
-		
-		// F. Determine Index of the current signal in route->path and set member 
-		//    for that index of t accordingly
 		info_arr.data_ptr[i]->index_in_route_path = 0;
-		if (!info_arr.data_ptr[i]->is_source_signal && !info_arr.data_ptr[i]->is_destination_signal) {
-			for (size_t path_index = 0; path_index < route->path->len; ++path_index) {
-				const char *path_item = g_array_index(route->path, char *, path_index);
-				if (path_item != NULL && strcmp(path_item, signal_id_item) == 0) {
-					info_arr.data_ptr[i]->index_in_route_path = path_index;
-					break;
-				}
+		if (info_arr.data_ptr[i]->is_source_signal || info_arr.data_ptr[i]->is_destination_signal) {
+			continue;
+		}
+		// path_index not reset on purpose, as info_arr signals are ordered ascendingly
+		// in relation to their occurrence in the route. That is, a signal at position 5 in info_arr
+		// must have a higher index_in_route_path than a signal at position < 5 in info_arr.
+		for (; path_index < route->path->len; ++path_index) {
+			const char *path_item = g_array_index(route->path, char *, path_index);
+			if (path_item != NULL && strcmp(path_item, info_arr.data_ptr[i]->id) == 0) {
+				info_arr.data_ptr[i]->index_in_route_path = path_index;
+				break;
 			}
 		}
-		++built_signal_infos_counter;
 	}
 	return info_arr;
 }
 
 
-void free_multi_segment_indices(t_route_multi_segment_indices *d_seg_indices) {
-	if (d_seg_indices != NULL && d_seg_indices->arr != NULL) {
-		free(d_seg_indices->arr);
-		d_seg_indices->arr = NULL;
-		d_seg_indices->len = 0;
+void free_route_repeated_segment_indices(t_route_repeated_segment_indices *r_seg_indices) {
+	if (r_seg_indices != NULL && r_seg_indices->arr != NULL) {
+		free(r_seg_indices->arr);
+		r_seg_indices->arr = NULL;
+		r_seg_indices->len = 0;
 	}
 }
 
-// "Multi segment index" = Index of a segment that appears more than once in a route
-static t_route_multi_segment_indices get_multi_segment_indices_for_route(const t_interlocking_route *route) {
+// "repeated segment index" = Index of a segment that appears more than once in a route
+static t_route_repeated_segment_indices get_route_repeated_segment_indices(const t_interlocking_route *route) {
 	// For route, determine which segments appear more than once
-	t_route_multi_segment_indices d_seg_indices = {.arr = NULL, .len = 0};
+	t_route_repeated_segment_indices r_seg_indices = {.arr = NULL, .len = 0};
 	if (route == NULL || route->path == NULL) {
-		return d_seg_indices;
+		return r_seg_indices;
 	}
 	// First allocate enough memory for more than the maximum possible amount of 
 	// duplicate segment indices. Will afterwards be reallocated to the size it actually needs.
-	d_seg_indices.arr = malloc(sizeof(size_t) * route->path->len);
-	if (d_seg_indices.arr == NULL) {
+	r_seg_indices.arr = malloc(sizeof(size_t) * route->path->len);
+	if (r_seg_indices.arr == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Get multi segment indices for route %s: Unable to allocate memory", route->id);
-		return d_seg_indices;
+		              "Get repeated segment indices for route %s: Unable to allocate memory for array",
+		              route->id);
+		return r_seg_indices;
 	}
 	// For every segment in route->path, check if it occurs again at a different position. 
-	// If yes, add both occurrences to d_seg_indices.
+	// If yes, add the occurrence (from outer loop) to r_seg_indices and break the inner loop.
 	for (size_t path_index_i = 0; path_index_i < route->path->len; ++path_index_i) {
 		const char *path_item_i = g_array_index(route->path, char *, path_index_i);
 		if (path_item_i != NULL && is_type_segment(path_item_i)) {
 			for (size_t path_index_n = 0; path_index_n < route->path->len; ++path_index_n) {
 				const char *path_item_n = g_array_index(route->path, char *, path_index_n);
-				if (path_item_n != NULL && is_type_segment(path_item_n)
-				        && strcmp(path_item_i, path_item_n) == 0 && path_index_i != path_index_n) {
-					d_seg_indices.arr[d_seg_indices.len] = path_index_n;
-					d_seg_indices.len++;
+				if (path_item_n != NULL && strcmp(path_item_i, path_item_n) == 0
+				        && path_index_i != path_index_n) {
+					r_seg_indices.arr[r_seg_indices.len] = path_index_i;
+					r_seg_indices.len++;
+					break;
 				}
 			}
 		}
 	}
-	if (d_seg_indices.len == 0) {
-		free(d_seg_indices.arr);
-		d_seg_indices.arr = NULL;
+	if (r_seg_indices.len == 0) {
+		free(r_seg_indices.arr);
+		r_seg_indices.arr = NULL;
 	} else {
-		size_t *tmp = reallocarray(d_seg_indices.arr, d_seg_indices.len, sizeof(size_t));
+		size_t *tmp = reallocarray(r_seg_indices.arr, r_seg_indices.len, sizeof(size_t));
 		if (tmp == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Get multi segment indices for route %s: Unable to re-allocate memory", 
+			              "Get repeated segment indices for route %s: Unable to re-allocate memory", 
 			              route->id);
-			free(d_seg_indices.arr);
-			d_seg_indices.arr = NULL;
-			d_seg_indices.len = 0;
+			free(r_seg_indices.arr);
+			r_seg_indices.arr = NULL;
+			r_seg_indices.len = 0;
 		} else {
 			// re-alloc successful
-			d_seg_indices.arr = tmp;
+			r_seg_indices.arr = tmp;
 		}
 	}
-	return d_seg_indices;
+	return r_seg_indices;
 }
 
 // Queries the position of the train. Checks which segments that the train occupies exist in the route path. 
 // Return -3 on param err, -2 on train not on tracks, -1 on train not on route, >= 0 if train is on route.
 // If train occupies at least one segment in route path, returns the route-path index of the occupied segment
 // that is the furthest along the route. Ignores any segments that appear more than once in route->path
-ssize_t get_train_pos_index_in_route_no_multis(const char* train_id, const t_interlocking_route *route, 
-                                                 const t_route_multi_segment_indices *multi_segment_indices) {
-	if (train_id == NULL || route == NULL || route->path == NULL || multi_segment_indices == NULL) {
+ssize_t get_train_pos_index_in_route_ignore_repeated_segments(const char *train_id, const t_interlocking_route *route, 
+                                                              const t_route_repeated_segment_indices *repeated_segment_indices) {
+	if (train_id == NULL || route == NULL || route->path == NULL || repeated_segment_indices == NULL) {
 		return -3;
 	}
 	t_bidib_train_position_query train_pos_query = bidib_get_train_position(train_id);
@@ -410,8 +422,8 @@ ssize_t get_train_pos_index_in_route_no_multis(const char* train_id, const t_int
 		// If index is present in array of multi-occurring segments, skip iteration 
 		for (size_t n = train_pos_index_unsigned; n < path_count; ++n) {
 			bool ignore = false;
-			for (size_t k = 0; k < multi_segment_indices->len; ++k) {
-				if (multi_segment_indices->arr[k] == n) {
+			for (size_t k = 0; k < repeated_segment_indices->len; ++k) {
+				if (repeated_segment_indices->arr[k] == n) {
 					ignore = true;
 					break;
 				}
@@ -486,7 +498,7 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 			// position index of 0 since it never appears in the actual route elements list,
 			// and if train is on first segment of the route (pos index 0), it has passed
 			// the source signal. With '<', the source signal would only be set to stop
-			// once the train reaches the *second* segment of the route.
+			// once the train reaches the _second_ segment of the route.
 			
 			// 3. Determine if signal has been passed by the train
 			if ((ssize_t) sig_info_elem->index_in_route_path <= train_pos_index) {
@@ -529,17 +541,17 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	
 	// 1. Get route signal infos and indices of segments that appear more than once
 	t_route_signal_info_array signal_infos = get_route_signal_info_array(route);
-	t_route_multi_segment_indices multi_segment_indices = get_multi_segment_indices_for_route(route);
+	t_route_repeated_segment_indices multi_segment_indices = get_route_repeated_segment_indices(route);
 	
 	// Check that signal_infos array is not empty and has at least 2 entries (source, destination)
 	if (signal_infos.data_ptr == NULL) {
 		syslog_server(LOG_ERR, "Drive-Route Decoupled: signal-infos array member null");
 		free_route_signal_info_array(&signal_infos);
-		free_multi_segment_indices(&multi_segment_indices);
+		free_route_repeated_segment_indices(&multi_segment_indices);
 		return false;
 	} else if (signal_infos.len < 2) {
 		free_route_signal_info_array(&signal_infos);
-		free_multi_segment_indices(&multi_segment_indices);
+		free_route_repeated_segment_indices(&multi_segment_indices);
 		syslog_server(LOG_ERR, "Drive-Route Decoupled: "
 		              "got signal-infos, but has not enough entries (< 2)");
 		return false;
@@ -562,7 +574,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	while (running && drive_route_params_valid(train_id, route) 
 	       && signals_set_to_stop < signals_to_set_to_stop_count) {
 		// 1. Get position of train, and determine index (in route->path) of where the train is
-		ssize_t train_pos_index = get_train_pos_index_in_route_no_multis(train_id, route, &multi_segment_indices);
+		ssize_t train_pos_index = get_train_pos_index_in_route_ignore_repeated_segments(train_id, route, &multi_segment_indices);
 		
 		// 2. Check if the train_pos_index could not be determined either due to invalided params (-3)
 		//    or due to the train not being on the tracks
@@ -593,7 +605,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	syslog_server(LOG_NOTICE, "Drive-Route Decoupled: for routeID %s ending; "
 	              "%d signals were set to stop here in total.", route->id, signals_set_to_stop);
 	free_route_signal_info_array(&signal_infos);
-	free_multi_segment_indices(&multi_segment_indices);
+	free_route_repeated_segment_indices(&multi_segment_indices);
 	return true;
 }
 
