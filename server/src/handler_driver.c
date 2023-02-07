@@ -531,6 +531,30 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 	return signals_set_to_stop;
 }
 
+static bool drive_route_decoupled_signal_info_array_valid(const char *route_id, 
+                                                          t_route_signal_info_array *signal_info_array) {
+	if (signal_info_array == NULL || route_id == NULL) {
+		syslog_server(LOG_ERR,
+		              "Drive route decoupled signal info array validation: "
+		              "Route id or signal info array is NULL");
+		return false;
+	}
+	// Check that signal_info_array array is not empty and has at least 2 entries (source, destination)
+	if (signal_info_array->data_ptr == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Drive route decoupled signal info array validation: "
+		              "Signal info array retrieved for route %s is NULL", 
+		              route_id);
+		return false;
+	} else if (signal_info_array->len < 2) {
+		syslog_server(LOG_ERR, 
+		              "Drive route decoupled signal info array validation: Signal info array "
+		              "retrieved for route %s has only %d elements (at least two elements needed)",
+		              route_id, signal_info_array->len);
+		return false;
+	}
+	return true;
+}
 
 /**
  * @brief For a train driving a route, set the signals to stop that the train passes
@@ -554,20 +578,12 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	t_route_signal_info_array signal_info_array = get_route_signal_info_array(route);
 	t_route_repeated_segment_flags repeated_segment_flags = get_route_repeated_segment_flags(route);
 	
-	// Check that signal_info_array array is not empty and has at least 2 entries (source, destination)
-	if (signal_info_array.data_ptr == NULL) {
-		syslog_server(LOG_ERR, "Drive route decoupled: Retrieved signal_info_array is NULL");
+	if (!drive_route_decoupled_signal_info_array_valid(route->id, &signal_info_array)) {
 		free_route_signal_info_array(&signal_info_array);
 		free_route_repeated_segment_flags(&repeated_segment_flags);
-		return false;
-	} else if (signal_info_array.len < 2) {
-		free_route_signal_info_array(&signal_info_array);
-		free_route_repeated_segment_flags(&repeated_segment_flags);
-		syslog_server(LOG_ERR, "Drive route decoupled: "
-		              "Retrieved signal_info_array has only %d elements (at least two elements needed)",
-					  signal_info_array.len);
 		return false;
 	}
+	
 	syslog_server(LOG_DEBUG, 
 	              "Drive route decoupled: Retrieved signal_info_array with %d elements for route id %s",
 	              signal_info_array.len, route->id);
