@@ -258,16 +258,6 @@ static void free_route_signal_info_array(t_route_signal_info_array *route_signal
 }
 
 static t_route_signal_info_array get_route_signal_info_array(const t_interlocking_route *route) {
-	// Strategy:
-	// 1. Allocate memory for array of pointers to t_route_signal_info type entities
-	// 2. For every signal in route->signals...
-	//   A. Skip iteration if signal from route->signals is NULL
-	//   B. Allocate memory for member t_route_signal_info at position i in info_arr
-	//   C. Set t's trivial members to appropriate defaults (set to stop, is source, is destination)
-	//   D. Copy ID from signal (from route->signals) to new signal_info.
-	// 3. For every signal_info member in info_arr, determine index of that signal-id 
-	//    in route->path and set member for index_in_route_path of signal_info accordingly
-	
 	t_route_signal_info_array info_arr = {.data_ptr = NULL, .len = 0};
 	if (!validate_interlocking_route_members_not_null(route)) {
 		syslog_server(LOG_ERR, 
@@ -322,7 +312,7 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 			return info_arr;
 		}
 	}
-	// 3. For every signal_info, determine index of that signal-id in route->path and set member 
+	// 3. For every signal_info, determine index of its signal-id in route->path and set member 
 	//    for index_in_route_path of signal_info accordingly
 	size_t path_index = 0;
 	for (size_t i = 0; i < info_arr.len; ++i) {
@@ -334,12 +324,12 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 		}
 		
 		info_arr.data_ptr[i]->index_in_route_path = 0;
+		// source and destination signals do not appear in route->path, thus skip them here
 		if (info_arr.data_ptr[i]->is_source_signal || info_arr.data_ptr[i]->is_destination_signal) {
 			continue;
 		}
 		// path_index not reset on purpose, as info_arr signals are ordered ascendingly
-		// in relation to their occurrence in the route. That is, a signal at position 5 in info_arr
-		// must have a higher index_in_route_path than a signal at position < 5 in info_arr.
+		// in relation to their occurrence in the route.
 		for (; path_index < route->path->len; ++path_index) {
 			const char *path_item = g_array_index(route->path, char *, path_index);
 			if (path_item != NULL && strcmp(path_item, info_arr.data_ptr[i]->id) == 0) {
@@ -489,8 +479,7 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
                                                  size_t train_pos_index) {
 	size_t signals_set_to_stop = 0;
 	const char *signal_stop_aspect = "aspect_stop";
-	// 1. Determine which signals have a lower or equal index in route->path than the
-	//    'train index' (meaning the train has passed them) and set them to aspect_stop.
+	// 1. For every signal on the route, represented by an entry in signal_info_array
 	for (size_t sig_info_index = 0; sig_info_index < signal_info_array->len; ++sig_info_index) {
 		t_route_signal_info *sig_info = signal_info_array->data_ptr[sig_info_index];
 		
@@ -502,13 +491,6 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 		}
 		// 2. Determine if this signal is eligible to be set to stop
 		if (!(sig_info->has_been_set_to_stop) && !(sig_info->is_destination_signal)) {
-			
-			// The following IF uses '<=' and not '<' because the source signal has a "fake" 
-			// position index of 0 since it never appears in the actual route elements list,
-			// and if train is on first segment of the route (pos index 0), it has passed
-			// the source signal. With '<', the source signal would only be set to stop
-			// once the train reaches the _second_ segment of the route.
-			
 			// 3. Determine if signal has been passed by the train
 			if (sig_info->index_in_route_path <= train_pos_index) {
 				// 4. Try to set the signal to signal_stop_aspect.
@@ -589,33 +571,28 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	              signal_info_array.len, route->id);
 	
 	// Signals in a route shall be set to stop once the train has driven past them.
-	// The destination signal shall not be driven past, thus there
-	// are (signal_info_array.len - 1) signals to set to stop in total for driving this route
+	// Destination signal is already in STOP aspect, thus signal_info_array.len - 1 signals.
 	const size_t signals_to_set_to_stop_count = signal_info_array.len - 1;
 	size_t signals_set_to_stop = 0;
 	size_t train_pos_index_previous = 0;
-	bool first_position_recognition = true;
+	bool first_okay_position = true;
 	
-	// Main route driving loop runs as long as server is running, the drive route params are valid,
-	// and not all signals have yet been set to stop
 	while (running && drive_route_params_valid(train_id, route) 
 	       && signals_set_to_stop < signals_to_set_to_stop_count) {
 		// 1. Get position of train, and determine index (in route->path) of where the train is
 		t_train_index_on_route_query train_pos_query = get_train_pos_index_in_route_ignore_repeated_segments(train_id, route, &repeated_segment_flags);
 		
-		// 2. Check if the train_pos_query has valid pos_index
 		if (train_pos_query.err_code != OKAY_TRAIN_ON_ROUTE) {
 			syslog_server(LOG_DEBUG,
 			              "Drive route decoupled: Unable to determine position of train %s on route id %s",
 			              train_id, route->id);
-			// Train position unknown -> skip this iteration. 
-			// Don't want to stop route driving here as train might just be lost temporarily
+			// Train position unknown, perhaps temporarily lost -> skip this iteration. 
 			continue;
 		}
 		
-		// 3. If train position has changed, or the train position is valid for the first time,
+		// 2. If train position has changed, or the train position is OKAY for the first time,
 		//    check if any signals need to be set to aspect stop 
-		if (train_pos_index_previous != train_pos_query.pos_index || first_position_recognition) {
+		if (train_pos_index_previous != train_pos_query.pos_index || first_okay_position) {
 			const char *path_item = g_array_index(route->path, char *, train_pos_query.pos_index);
 			syslog_server(LOG_DEBUG, 
 			              "Drive route decoupled: Train %s now at route path index %d (%s) on route %s",
@@ -629,13 +606,12 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			}
 			
 			signals_set_to_stop += update_route_signals_for_train_pos(&signal_info_array, route, train_pos_query.pos_index);
-			first_position_recognition = false;
+			first_okay_position = false;
 		}
 		train_pos_index_previous = train_pos_query.pos_index;
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
-	// NOTE: The "ending" does not mean that the end of the route was reached, but rather that
-	//       there is no more need to set any route signals to stop.
+	
 	syslog_server(LOG_NOTICE,
 	              "Drive route decoupled: Finished setting %d signals to stop for route id %s", 
 	              route->id, signals_set_to_stop);
