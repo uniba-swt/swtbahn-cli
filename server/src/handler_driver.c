@@ -50,6 +50,7 @@
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned int DRIVING_SPEED_SLOW = 40;
+static unsigned int DRIVING_SPEED_STOPPING = 25;
 static unsigned int next_grab_id = 0;
 
 
@@ -76,15 +77,15 @@ typedef struct {
 } t_route_repeated_segment_flags;
 
 typedef enum {
-    ERR_INVALID_PARAM,
+	ERR_INVALID_PARAM,
 	ERR_TRAIN_NOT_ON_TRACKS,
 	ERR_TRAIN_NOT_ON_ROUTE,
 	OKAY_TRAIN_ON_ROUTE
-} t_route_pos_error_code;
+} e_route_pos_error_code;
 
 typedef struct {
 	size_t pos_index;
-	t_route_pos_error_code err_code;
+	e_route_pos_error_code err_code;
 } t_train_index_on_route_query;
 
 static void increment_next_grab_id(void) {
@@ -350,7 +351,7 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 	return info_arr;
 }
 
-void free_route_repeated_segment_flags(t_route_repeated_segment_flags *r_seg_flags) {
+static void free_route_repeated_segment_flags(t_route_repeated_segment_flags *r_seg_flags) {
 	if (r_seg_flags != NULL && r_seg_flags->arr != NULL) {
 		free(r_seg_flags->arr);
 		r_seg_flags->arr = NULL;
@@ -365,15 +366,15 @@ static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_i
 	if (route == NULL || route->path == NULL) {
 		return r_seg_flags;
 	}
-	
-	r_seg_flags.arr = malloc(sizeof(bool) * route->path->len);
+	const size_t route_path_len = (size_t) route->path->len;
+	r_seg_flags.arr = malloc(sizeof(bool) * route_path_len);
 	if (r_seg_flags.arr == NULL) {
 		syslog_server(LOG_ERR, 
 		              "Get repeated segment flags for route %s: Unable to allocate memory for array",
 		              route->id);
 		return r_seg_flags;
 	}
-	r_seg_flags.len = (size_t) route->path->len;
+	r_seg_flags.len = route_path_len;
 	
 	for (size_t i = 0; i < r_seg_flags.len; ++i) {
 		r_seg_flags.arr[i] = false;
@@ -382,10 +383,10 @@ static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_i
 	// For every segment in route->path, check if it occurs again at a different position. 
 	// If yes, set the respective flags in r_seg_flags to true.
 	
-	for (size_t path_index_i = 0; path_index_i < route->path->len; ++path_index_i) {
+	for (size_t path_index_i = 0; path_index_i < route_path_len; ++path_index_i) {
 		const char *path_item_i = g_array_index(route->path, char *, path_index_i);
-		if (path_item_i != NULL && is_type_segment(path_item_i) && (path_index_i + 1) < route->path->len) {
-			for (size_t path_index_n = path_index_i + 1; path_index_n < route->path->len; ++path_index_n) {
+		if (path_item_i != NULL && is_type_segment(path_item_i) && (path_index_i + 1) < route_path_len) {
+			for (size_t path_index_n = path_index_i + 1; path_index_n < route_path_len; ++path_index_n) {
 				const char *path_item_n = g_array_index(route->path, char *, path_index_n);
 				if (path_item_n != NULL && strcmp(path_item_i, path_item_n) == 0) {
 					r_seg_flags.arr[path_index_i] = true;
@@ -394,11 +395,6 @@ static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_i
 				}
 			}
 		}
-	}
-	
-	if (r_seg_flags.len == 0) {
-		free(r_seg_flags.arr);
-		r_seg_flags.arr = NULL;
 	}
 	return r_seg_flags;
 }
@@ -410,7 +406,7 @@ static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_i
 // If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
 // If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
 // If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
-t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segments(const char *train_id, 
+static t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segments(const char *train_id, 
                                                               const t_interlocking_route *route, 
                                                               const t_route_repeated_segment_flags *repeated_segment_flags) {
 	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
@@ -456,7 +452,7 @@ t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated_segmen
 // If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
 // If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
 // If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
-t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train_id, 
+static t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train_id, 
                                                                const t_interlocking_route *route) {
 	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
 	if (train_id == NULL || route == NULL || route->path == NULL) {
@@ -488,23 +484,24 @@ t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train
 // For a train at position train_pos_index in route->path, set all signals to stop that
 // the train has passed and have not yet been set to stop.
 // Returns the count of how many signals have been set to stop in this function
-static size_t update_route_signals_for_train_pos(t_route_signal_info_array *signal_infos, 
+static size_t update_route_signals_for_train_pos(t_route_signal_info_array *signal_info_array, 
                                                  t_interlocking_route *route,
                                                  size_t train_pos_index) {
 	size_t signals_set_to_stop = 0;
 	const char *signal_stop_aspect = "aspect_stop";
 	// 1. Determine which signals have a lower or equal index in route->path than the
 	//    'train index' (meaning the train has passed them) and set them to aspect_stop.
-	for (size_t sig_info_index = 0; sig_info_index < signal_infos->len; ++sig_info_index) {
-		t_route_signal_info *sig_info_elem = signal_infos->data_ptr[sig_info_index];
+	for (size_t sig_info_index = 0; sig_info_index < signal_info_array->len; ++sig_info_index) {
+		t_route_signal_info *sig_info = signal_info_array->data_ptr[sig_info_index];
 		
-		if (sig_info_elem == NULL) {
-			syslog_server(LOG_ERR, "Drive-Route Decoupled: Signal in signal_infos at "
-			              "index %d is NULL", sig_info_index);
+		if (sig_info == NULL) {
+			syslog_server(LOG_ERR, 
+			              "Update route signals: For route %s, signal_info_array[%d] is NULL", 
+			              route->id, sig_info_index);
 			continue;
 		}
 		// 2. Determine if this signal is eligible to be set to stop
-		if (!(sig_info_elem->has_been_set_to_stop) && !(sig_info_elem->is_destination_signal)) {
+		if (!(sig_info->has_been_set_to_stop) && !(sig_info->is_destination_signal)) {
 			
 			// The following IF uses '<=' and not '<' because the source signal has a "fake" 
 			// position index of 0 since it never appears in the actual route elements list,
@@ -513,17 +510,19 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 			// once the train reaches the _second_ segment of the route.
 			
 			// 3. Determine if signal has been passed by the train
-			if (sig_info_elem->index_in_route_path <= train_pos_index) {
+			if (sig_info->index_in_route_path <= train_pos_index) {
 				// 4. Try to set the signal to signal_stop_aspect.
-				if (bidib_set_signal(sig_info_elem->id, signal_stop_aspect)) {
+				if (bidib_set_signal(sig_info->id, signal_stop_aspect)) {
 					// Log_ERR... but what else? Safety violation once we have a safety layer?
-					syslog_server(LOG_ERR, "Drive-Route Decoupled: unable to set signal %s to stop",
-					              sig_info_elem->id);
+					syslog_server(LOG_ERR, 
+					              "Update route signals: Unable to set signal %s to %s on route %s",
+					              sig_info->id, signal_stop_aspect, route->id);
 				} else {
 					bidib_flush();
-					syslog_server(LOG_NOTICE, "Drive-Route Decoupled: Signal %s set to stop",
-					              sig_info_elem->id);
-					sig_info_elem->has_been_set_to_stop = true;
+					syslog_server(LOG_NOTICE, 
+					              "Update route signals: Signal %s set to %s on route %s",
+					              sig_info->id, signal_stop_aspect, route->id);
+					sig_info->has_been_set_to_stop = true;
 					signals_set_to_stop++;
 				}
 			}
@@ -543,40 +542,43 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
  */
 static bool drive_route_progressive_stop_signals_decoupled(const char *train_id, t_interlocking_route *route) {
 	if (route == NULL || route->id == NULL) {
-		syslog_server(LOG_ERR, "Drive-Route Decoupled: route or route->id is NULL");
+		syslog_server(LOG_ERR, "Drive route decoupled: Route or route id is NULL");
 		return false;
 	}
 	if (train_id == NULL) {
-		syslog_server(LOG_ERR, "Drive-Route Decoupled: train_id is NULL");
+		syslog_server(LOG_ERR, "Drive route decoupled: Train id is NULL, route id is %s", route->id);
 		return false;
 	}
 	
 	// 1. Get route signal infos and flags of segments that appear more than once
-	t_route_signal_info_array signal_infos = get_route_signal_info_array(route);
+	t_route_signal_info_array signal_info_array = get_route_signal_info_array(route);
 	t_route_repeated_segment_flags repeated_segment_flags = get_route_repeated_segment_flags(route);
 	
-	// Check that signal_infos array is not empty and has at least 2 entries (source, destination)
-	if (signal_infos.data_ptr == NULL) {
-		syslog_server(LOG_ERR, "Drive-Route Decoupled: signal-infos array member null");
-		free_route_signal_info_array(&signal_infos);
+	// Check that signal_info_array array is not empty and has at least 2 entries (source, destination)
+	if (signal_info_array.data_ptr == NULL) {
+		syslog_server(LOG_ERR, "Drive route decoupled: Retrieved signal_info_array is NULL");
+		free_route_signal_info_array(&signal_info_array);
 		free_route_repeated_segment_flags(&repeated_segment_flags);
 		return false;
-	} else if (signal_infos.len < 2) {
-		free_route_signal_info_array(&signal_infos);
+	} else if (signal_info_array.len < 2) {
+		free_route_signal_info_array(&signal_info_array);
 		free_route_repeated_segment_flags(&repeated_segment_flags);
-		syslog_server(LOG_ERR, "Drive-Route Decoupled: "
-		              "got signal-infos, but has not enough entries (< 2)");
+		syslog_server(LOG_ERR, "Drive route decoupled: "
+		              "Retrieved signal_info_array has only %d elements (at least two elements needed)",
+					  signal_info_array.len);
 		return false;
 	}
-	syslog_server(LOG_DEBUG, "Drive-Route Decoupled: got signal-infos "
-	              "with arr length %d for routeID %s", signal_infos.len, route->id);
+	syslog_server(LOG_DEBUG, 
+	              "Drive route decoupled: Retrieved signal_info_array with %d elements for route id %s",
+	              signal_info_array.len, route->id);
 	
 	// Signals in a route shall be set to stop once the train has driven past them.
 	// The destination signal shall not be driven past, thus there
-	// are (signal_infos.len - 1) signals to set to stop in total for driving this route
-	const size_t signals_to_set_to_stop_count = signal_infos.len - 1;
+	// are (signal_info_array.len - 1) signals to set to stop in total for driving this route
+	const size_t signals_to_set_to_stop_count = signal_info_array.len - 1;
 	size_t signals_set_to_stop = 0;
-	ssize_t train_pos_index_previous = -1;
+	size_t train_pos_index_previous = 0;
+	bool first_position_recognition = true;
 	
 	// Main route driving loop runs as long as server is running, the drive route params are valid,
 	// and not all signals have yet been set to stop
@@ -588,33 +590,40 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		// 2. Check if the train_pos_query has valid pos_index
 		if (train_pos_query.err_code != OKAY_TRAIN_ON_ROUTE) {
 			syslog_server(LOG_DEBUG,
-			              "Drive-Route Decoupled: unable to determine "
-			              "the position of the train %s on the route %s", train_id, route->id);
+			              "Drive route decoupled: Unable to determine position of train %s on route id %s",
+			              train_id, route->id);
 			// Train position unknown -> skip this iteration. 
 			// Don't want to stop route driving here as train might just be lost temporarily
 			continue;
 		}
 		
-		// 3. If train position has changed, check if any signals need to be set to aspect stop
-		if (train_pos_index_previous != (ssize_t) train_pos_query.pos_index) {
+		// 3. If train position has changed, or the train position is valid for the first time,
+		//    check if any signals need to be set to aspect stop 
+		if (train_pos_index_previous != train_pos_query.pos_index || first_position_recognition) {
+			const char *path_item = g_array_index(route->path, char *, train_pos_query.pos_index);
 			syslog_server(LOG_DEBUG, 
-			              "Drive-Route Decoupled: Train position index now %d",
-			              train_pos_query.pos_index);
-			if (train_pos_index_previous > (ssize_t) train_pos_query.pos_index) {
+			              "Drive route decoupled: Train %s now at route path index %d (%s) on route %s",
+			              train_id, train_pos_query.pos_index, path_item, route->id);
+			
+			if (train_pos_index_previous > train_pos_query.pos_index) {
 				syslog_server(LOG_DEBUG, 
-				              "Drive-Route Decoupled: New train position index %d is lower than before",
-				              train_pos_query.pos_index);
+				              "Drive route decoupled: Train %s position index %d on route %s is"
+							  " lower than the previous value of %d",
+				              train_id, train_pos_query.pos_index, route->id, train_pos_index_previous);
 			}
-			signals_set_to_stop += update_route_signals_for_train_pos(&signal_infos, route, train_pos_query.pos_index);
+			
+			signals_set_to_stop += update_route_signals_for_train_pos(&signal_info_array, route, train_pos_query.pos_index);
+			first_position_recognition = false;
 		}
-		train_pos_index_previous = (ssize_t) train_pos_query.pos_index;
+		train_pos_index_previous = train_pos_query.pos_index;
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	// NOTE: The "ending" does not mean that the end of the route was reached, but rather that
 	//       there is no more need to set any route signals to stop.
-	syslog_server(LOG_NOTICE, "Drive-Route Decoupled: for routeID %s ending; "
-	              "%d signals were set to stop here in total.", route->id, signals_set_to_stop);
-	free_route_signal_info_array(&signal_infos);
+	syslog_server(LOG_NOTICE,
+	              "Drive route decoupled: Finished setting %d signals to stop for route id %s", 
+	              route->id, signals_set_to_stop);
+	free_route_signal_info_array(&signal_info_array);
 	free_route_repeated_segment_flags(&repeated_segment_flags);
 	return true;
 }
@@ -670,7 +679,8 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	t_interlocking_route *route = get_route(route_id);
 	if (train_id == NULL || route == NULL || !drive_route_params_valid(train_id, route)) {
-		syslog_server(LOG_WARNING, "Drive route: Invalid params at start");
+		syslog_server(LOG_ERR, 
+		              "Drive route: Unable to start driving because train or route are invalid");
 		free(train_id);
 		return false;
 	}
@@ -692,16 +702,16 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	
 	if (is_automatic && result) {
 		const char *pre_dest_segment = g_array_index(route->path, char *, route->path->len - 2);
-		while (running && result && !train_position_is_at(train_id, pre_dest_segment)
-		                      && drive_route_params_valid(train_id, route)) {
+		while (running && !train_position_is_at(train_id, pre_dest_segment)
+		        && drive_route_params_valid(train_id, route)) {
 			usleep(TRAIN_DRIVE_TIME_STEP);
 			route = get_route(route->id);
 		}
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		syslog_server(LOG_NOTICE, "Drive route: Slowing %s for end of route %s", train_id, route_id);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 
-		                                                (int) (DRIVING_SPEED_SLOW * 0.66),
-		                                                 requested_forwards);
+		                                                DRIVING_SPEED_STOPPING,
+		                                                requested_forwards);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 	}
 	// Wait for train to reach the end of the route
