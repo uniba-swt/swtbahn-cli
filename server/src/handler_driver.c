@@ -257,6 +257,57 @@ static void free_route_signal_info_array(t_route_signal_info_array *route_signal
 	// Don't free route_signal_info_array itself, as we have not allocated it with malloc.
 }
 
+// For the signal with id signal_id_item, populates the member of signal_info_array->data_ptr at
+// position index_in_info_array if possible and updates the length of signal_info_array.
+// Returns false if critical error was encountered and signal_info_array is useless for 
+// continuing. Otherwise returns true.
+static bool add_signal_info_for_signal(t_route_signal_info_array *signal_info_array, 
+                                       const char *signal_id_item, 
+                                       size_t index_in_info_array, 
+                                       size_t number_of_signal_infos) {
+	if (signal_info_array == NULL || signal_info_array->data_ptr == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Add signal-info to signal_info_array: "
+		              "Signal info array or signal info array data pointer is NULL");
+		return false;
+	}
+	const size_t i = index_in_info_array;
+	// A. Return without adding signal-info if signal from route->signals is NULL
+	if (signal_id_item == NULL) {
+		syslog_server(LOG_WARNING,
+		              "Add signal-info to signal_info_array: "
+		              "Skipping NULL signal at index %d of route->signals", i);
+		signal_info_array->data_ptr[i] = NULL;
+		signal_info_array->len = i + 1;
+		// Return true as this is not a critical error, i.e. we can still continue with route
+		return true;
+	}
+	// B. Allocate memory for member t_route_signal_info at position i in info_arr.
+	signal_info_array->data_ptr[i] = (t_route_signal_info *) malloc(sizeof(t_route_signal_info));
+	signal_info_array->len = i + 1;
+	if (signal_info_array->data_ptr[i] == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Get drive route signal info array: "
+		              "Unable to allocate memory for array index %d", i);
+		return false;
+	}
+	
+	// C. Set t's trivial members to appropriate defaults
+	signal_info_array->data_ptr[i]->has_been_set_to_stop = false;
+	signal_info_array->data_ptr[i]->is_source_signal = (i == 0);
+	signal_info_array->data_ptr[i]->is_destination_signal = (i+1 == number_of_signal_infos);
+	
+	// D. Copy ID from signal (from route->signals) to new signal_info.
+	signal_info_array->data_ptr[i]->id = strdup(signal_id_item);
+	if (signal_info_array->data_ptr[i]->id == NULL) {
+		syslog_server(LOG_ERR,
+		              "Get drive route signal info array: Unable to allocate memory for signal id %s",
+		              signal_id_item);
+		return false;
+	}
+	return true;
+}
+
 static t_route_signal_info_array get_route_signal_info_array(const t_interlocking_route *route) {
 	t_route_signal_info_array info_arr = {.data_ptr = NULL, .len = 0};
 	if (!validate_interlocking_route_members_not_null(route)) {
@@ -277,37 +328,8 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 	// 2. For every signal in route->signals...
 	for (size_t i = 0; i < number_of_signal_infos; ++i) {
 		const char *signal_id_item = g_array_index(route->signals, char *, i);
-		
-		// A. Skip iteration if signal from route->signals is NULL
-		if (signal_id_item == NULL) {
-			syslog_server(LOG_WARNING,
-			              "Get drive route signal info array: "
-			              "Skipping NULL signal at index %d of route->signals", i);
-			info_arr.data_ptr[i] = NULL;
-			continue;
-		}
-		// B. Allocate memory for member t_route_signal_info at position i in info_arr.
-		info_arr.data_ptr[i] = (t_route_signal_info *) malloc(sizeof(t_route_signal_info));
-		info_arr.len = i + 1;
-		if (info_arr.data_ptr[i] == NULL) {
-			syslog_server(LOG_ERR, 
-			              "Get drive route signal info array: "
-			              "Unable to allocate memory for array index %d", i);
-			free_route_signal_info_array(&info_arr);
-			return info_arr;
-		}
-		
-		// C. Set t's trivial members to appropriate defaults
-		info_arr.data_ptr[i]->has_been_set_to_stop = false;
-		info_arr.data_ptr[i]->is_source_signal = (i == 0);
-		info_arr.data_ptr[i]->is_destination_signal = (i+1 == number_of_signal_infos);
-		
-		// D. Copy ID from signal (from route->signals) to new signal_info.
-		info_arr.data_ptr[i]->id = strdup(signal_id_item);
-		if (info_arr.data_ptr[i]->id == NULL) {
-			syslog_server(LOG_ERR,
-			              "Get drive route signal info array: Unable to allocate memory for signal id %s",
-			              signal_id_item);
+		// 3. Call function to add a signal-info to info_arr for signal_id_item
+		if (!add_signal_info_for_signal(&info_arr, signal_id_item, i, number_of_signal_infos)) {
 			free_route_signal_info_array(&info_arr);
 			return info_arr;
 		}
