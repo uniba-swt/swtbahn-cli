@@ -592,7 +592,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	              "Drive route decoupled: Retrieved signal_info_array with %d elements for route id %s",
 	              signal_info_array.len, route->id);
 	
-	// Signals in a route shall be set to stop once the train has driven past them.
+	// Signals in a route shall be set to stop once the train has driven passed them.
 	// Destination signal is already in STOP aspect, thus signal_info_array.len - 1 signals.
 	const size_t signals_to_set_to_stop_count = signal_info_array.len - 1;
 	size_t signals_set_to_stop = 0;
@@ -600,7 +600,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	bool first_okay_position = true;
 	
 	while (running && drive_route_params_valid(train_id, route) 
-	       && signals_set_to_stop < signals_to_set_to_stop_count) {
+	               && signals_set_to_stop < signals_to_set_to_stop_count) {
 		// 1. Get position of train, and determine index (in route->path) of where the train is
 		t_train_index_on_route_query train_pos_query = get_train_pos_index_in_route_ignore_repeated_segments(train_id, route, &repeated_segment_flags);
 		
@@ -618,7 +618,9 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			const char *path_item = g_array_index(route->path, char *, train_pos_query.pos_index);
 			syslog_server(LOG_DEBUG, 
 			              "Drive route decoupled: Train %s now at route path index %d (%s) on route %s",
-			              train_id, train_pos_query.pos_index, path_item, route->id);
+			              train_id, train_pos_query.pos_index, 
+			              path_item != NULL ? path_item : "NULL", 
+			              route->id);
 			
 			if (train_pos_index_previous > train_pos_query.pos_index) {
 				syslog_server(LOG_DEBUG, 
@@ -717,7 +719,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	if (is_automatic && result) {
 		const char *pre_dest_segment = g_array_index(route->path, char *, route->path->len - 2);
 		while (running && !train_position_is_at(train_id, pre_dest_segment)
-		        && drive_route_params_valid(train_id, route)) {
+		               && drive_route_params_valid(train_id, route)) {
 			usleep(TRAIN_DRIVE_TIME_STEP);
 			route = get_route(route->id);
 		}
