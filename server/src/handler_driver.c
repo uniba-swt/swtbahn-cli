@@ -224,6 +224,7 @@ static void log_signal_info(int priority, const t_route_signal_info *sig_info) {
 	}
 }
 
+__attribute__ ((unused))
 static void log_signal_info_array(int priority, const t_route_signal_info_array *sig_info_array) {
 	syslog_server(priority, "Drive route signal info array: Begin");
 	if (sig_info_array != NULL) {
@@ -282,7 +283,7 @@ static bool add_signal_info_for_signal(t_route_signal_info_array *signal_info_ar
 		// Return true as this is not a critical error, i.e. we can still continue with route
 		return true;
 	}
-	// B. Allocate memory for member t_route_signal_info at position i in info_arr.
+	// B. Allocate memory for element i of signal_info_array->data_ptr
 	signal_info_array->data_ptr[i] = (t_route_signal_info *) malloc(sizeof(t_route_signal_info));
 	signal_info_array->len = i + 1;
 	if (signal_info_array->data_ptr[i] == NULL) {
@@ -292,12 +293,12 @@ static bool add_signal_info_for_signal(t_route_signal_info_array *signal_info_ar
 		return false;
 	}
 	
-	// C. Set t's trivial members to appropriate defaults
+	// C. Initialise members in signal_info_array->data_ptr[i] to appropriate defaults
 	signal_info_array->data_ptr[i]->has_been_set_to_stop = false;
 	signal_info_array->data_ptr[i]->is_source_signal = (i == 0);
 	signal_info_array->data_ptr[i]->is_destination_signal = (i+1 == number_of_signal_infos);
 	
-	// D. Copy ID from signal (from route->signals) to new signal_info.
+	// D. Copy signal id from route->signals to new route_signal_info
 	signal_info_array->data_ptr[i]->id = strdup(signal_id_item);
 	if (signal_info_array->data_ptr[i]->id == NULL) {
 		syslog_server(LOG_ERR,
@@ -464,6 +465,7 @@ static t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated
 // If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
 // If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
 // If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
+__attribute__ ((unused))
 static t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train_id, 
                                                                const t_interlocking_route *route) {
 	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
@@ -624,8 +626,8 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			
 			if (train_pos_index_previous > train_pos_query.pos_index) {
 				syslog_server(LOG_DEBUG, 
-				              "Drive route decoupled: Train %s position index %d on route %s is"
-							  " lower than the previous value of %d",
+				              "Drive route decoupled: Train %s position index %d on route %s is "
+				              "lower than the previous value of %d",
 				              train_id, train_pos_query.pos_index, route->id, train_pos_index_previous);
 			}
 			
@@ -644,7 +646,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	return true;
 }
 
-
+__attribute__ ((unused))
 static bool drive_route_progressive_stop_signals(const char *train_id, t_interlocking_route *route) {
 	const char *signal_stop_aspect = "aspect_stop";
 	const char *next_signal = route->source;
@@ -830,7 +832,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 				bidib_free_train_state_query(train_state_query);
 				int grab_id = grab_train(data_train, data_engine);
 				if (grab_id == -1) {
-					//TODO more precise error message if all slots are taken
+					// TODO: more precise error message if all slots are taken
 					syslog_server(LOG_ERR, "Request: Grab train - train already grabbed or engine not found");
 					return OCS_NOT_IMPLEMENTED;
 				} else {
