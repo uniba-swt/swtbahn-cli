@@ -370,8 +370,9 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			release_route(route_id);
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s", route_id);
+			release_route(route_id);
+			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - finished", route_id);
 			return OCS_PROCESSED;
 		}
 	} else {
@@ -390,14 +391,17 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s",
+			              data_point, data_state);
 			if (bidib_switch_point(data_point, data_state)) {
-				syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
 				bidib_flush();
+				syslog_server(LOG_ERR, "Request: Set point - point: %s state: %s - "
+				              "invalid parameters", data_point, data_state);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s",
-				       data_point, data_state);
 				bidib_flush();
+				syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s - finished",
+				              data_point, data_state);
 				return OCS_PROCESSED;
 			}
 		}
@@ -417,13 +421,15 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			syslog_server(LOG_NOTICE, "Request: Set signal - signal: %s state: %s",
+			              data_signal, data_state);
 			if (bidib_set_signal(data_signal, data_state)) {
 				syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog_server(LOG_NOTICE, "Request: Set signal - signal: %s state: %s",
-				              data_signal, data_state);
 				bidib_flush();
+				syslog_server(LOG_NOTICE, "Request: Set signal - signal: %s state: %s - finished",
+				              data_signal, data_state);
 				return OCS_PROCESSED;
 			}
 		}
@@ -443,13 +449,16 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			syslog_server(LOG_NOTICE, "Request: Set peripheral - peripheral: %s state: %s",
+			              data_peripheral, data_state);
 			if (bidib_set_peripheral(data_peripheral, data_state)) {
-				syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
+				syslog_server(LOG_ERR, "Request: Set peripheral - peripheral: %s state: %s - "
+				              "invalid parameters", data_peripheral, data_state);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog_server(LOG_NOTICE, "Request: Set peripheral - peripheral: %s state: %s",
-				              data_peripheral, data_state);
 				bidib_flush();
+				syslog_server(LOG_NOTICE, "Request: Set peripheral - peripheral: %s state: %s - "
+				              "finished", data_peripheral, data_state);
 				return OCS_PROCESSED;
 			}
 		}
@@ -463,11 +472,13 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		syslog_server(LOG_NOTICE, "Request: Get interlocker");
 		if (selected_interlocker_instance != -1) {
 			onion_response_printf(res, "%s", selected_interlocker_name->str);
+			syslog_server(LOG_NOTICE, "Request: Get interlocker finished");
 			return OCS_PROCESSED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Get interlocker - none selected");
+			syslog_server(LOG_WARNING, "Request: Get interlocker - none selected");
 			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
@@ -485,19 +496,23 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			syslog_server(LOG_NOTICE, "Request: Set interlocker - interlocker: %s",
+			              selected_interlocker_name->str);
 			if (selected_interlocker_instance != -1) {
-				syslog_server(LOG_ERR, "Request: Set interlocker - another interlocker instance already set");
+				syslog_server(LOG_ERR, "Request: Set interlocker - interlocker: %s - another "
+				              "interlocker instance is already set", data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			}
 
 			set_interlocker(data_interlocker);
 			if (selected_interlocker_instance == -1) {
-				syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters or "
-				                       "no more interlocker instances can be loaded");
+				syslog_server(LOG_ERR, "Request: Set interlocker - interlocker: %s - invalid "
+				              "parameters or no more interlocker instances can be loaded", 
+				              data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				onion_response_printf(res, "%s", selected_interlocker_name->str);
-				syslog_server(LOG_NOTICE, "Request: Set interlocker - %s",
+				syslog_server(LOG_NOTICE, "Request: Set interlocker - interlocker: %s - finished",
 				              selected_interlocker_name->str);
 				return OCS_PROCESSED;
 			}
@@ -517,17 +532,21 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s",
+			              data_interlocker);
 			if (selected_interlocker_instance == -1) {
-				syslog_server(LOG_ERR, "Request: Unset interlocker - no interlocker instance to unset");
+				syslog_server(LOG_ERR, "Request: Unset interlocker - interlocker: %s - "
+				              "no interlocker instance to unset", data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			}
 
 			unset_interlocker(data_interlocker);
 			if (selected_interlocker_instance != -1) {
-				syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
+				syslog_server(LOG_ERR, "Request: Unset interlocker - interlocker: %s - "
+				              "invalid parameters", data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog_server(LOG_NOTICE, "Request: Unset interlocker - %s",
+				syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s - finished",
 				              data_interlocker);
 				return OCS_PROCESSED;
 			}

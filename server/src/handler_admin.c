@@ -113,7 +113,7 @@ static bool start_bidib(void) {
 
 void stop_bidib(void) {
 	session_id = 0;
-	syslog_server(LOG_NOTICE, "Request: Stop");
+	syslog_server(LOG_NOTICE, "Stop bidib");
 	release_all_grabbed_trains();
 	release_all_interlockers();
 	running = false;
@@ -140,6 +140,7 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 		if (start_bidib()) { 
 			retval = OCS_PROCESSED;
 		}
+		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld finished", session_id);
 	} else {
 		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
 	}
@@ -156,7 +157,9 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) &
 	                                          OR_METHODS) == OR_POST)) {
+		syslog_server(LOG_NOTICE, "Request: Stop");
 		stop_bidib();
+		// Can't log here since bidib closes the syslog when stopping
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running");
@@ -182,6 +185,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x", state);
 			bidib_set_track_output_state_all(state);
 			bidib_flush();
+			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - finished", state);
 			return OCS_PROCESSED;
 		}
 	} else {
@@ -202,6 +206,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		}
+		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s", data_train);
 		
 		// Ensure that the train has stopped moving
 		pthread_mutex_lock(&grabbed_trains_mutex);	
@@ -217,10 +222,12 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		bidib_free_train_state_query(train_state_query);
 		
 		if (!release_train(grab_id)) {
-			syslog_server(LOG_ERR, "Request: Admin release train - invalid grab id");
+			syslog_server(LOG_ERR, "Request: Admin release train - train: %s - invalid grab id", 
+			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Admin release train");
+			syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s - finished",
+			              data_train);
 			return OCS_PROCESSED;
 		}
 	} else {
@@ -238,21 +245,25 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		int speed = params_check_speed(data_speed);
 		if (speed == 999) {
-			syslog_server(LOG_ERR, "Request: Admin set train speed - bad speed");
+			syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
+			              "bad speed", data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
-			syslog_server(LOG_ERR, "Request: Admin set train speed - bad track output");
+			syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
+			              "bad track output", data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %s", 
+			              data_train, data_speed);
 			pthread_mutex_lock(&grabbed_trains_mutex);
 			if (bidib_set_train_speed(data_train, speed, 
-									  data_track_output)) {
-				syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s: bad parameter values",
-							  data_train);
+			                          data_track_output)) {
+				syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
+				              "bad parameter values", data_train, speed);
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d",
-							  data_train, speed);
+				syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d - "
+				              " finished", data_train, speed);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
