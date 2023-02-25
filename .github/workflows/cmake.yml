@@ -24,12 +24,18 @@ jobs:
       run: sudo apt-get install -y --no-install-recommends libyaml-dev libcmocka-dev
 
     - name: Build libbidib
-      run: git clone https://github.com/uniba-swt/libbidib.git; cd libbidib; mkdir bin; cd bin; cmake ..; make; sudo make install
+      run: git clone --depth 1 https://github.com/uniba-swt/libbidib.git; cd libbidib; mkdir bin; cd bin; cmake ..; make; sudo make install
+
+    - name: Install pam, gcrypt, gnutls
+      run: sudo apt-get install -y --no-install-recommends libpam0g-dev libgcrypt20-dev libgnutls28-dev
+
+    - name: Build libonion
+      run: git clone --depth 1 https://github.com/uniba-swt/onion.git; cd onion; mkdir bin; cd bin; cmake ..; make; sudo make install
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cd server; cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       # Build your program with the given configuration
