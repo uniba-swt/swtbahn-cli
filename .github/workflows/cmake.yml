@@ -36,13 +36,11 @@ jobs:
       run: sudo apt-get install -y libfl-dev
 
     - name: Install forecc
-      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make -j; $FOREC_COMPILER_PATH=`pwd`
-      env:
-        FOREC_COMPILER_PATH: ""
+      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make -j; echo "FOREC_COMPILER_PATH=`pwd`" >> $GITHUB_ENV
 
     
     - name: test
-      run: echo $FOREC_COMPILER_PATH
+      run: echo "${{ env.FOREC_COMPILER_PATH }}"; FOREC_COMPILER_PATH=${{ env.FOREC_COMPILER_PATH }}; echo $FOREC_COMPILER_PATH
 
 
     - name: Configure CMake
