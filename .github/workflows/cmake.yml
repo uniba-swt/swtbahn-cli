@@ -40,7 +40,7 @@ jobs:
 
     
     - name: test
-      run: FOREC_COMPILER_PATH="${{ env.FOREC_COMPILER_PATH }}"; ls -al ${FOREC_COMPILER_PATH}
+      run: FOREC_COMPILER_PATH="${{ env.FOREC_COMPILER_PATH }}"; ls -al "${FOREC_COMPILER_PATH}"
 
 
     - name: Configure CMake
