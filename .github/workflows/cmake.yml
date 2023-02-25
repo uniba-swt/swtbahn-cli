@@ -46,6 +46,8 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: FOREC_COMPILER_PATH="${{ env.FOREC_COMPILER_PATH }}/"; PATH=${PATH}:${FOREC_COMPILER_PATH}; cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      env:
+        CC: clang
 
     - name: Test
       working-directory: ${{github.workspace}}/build
