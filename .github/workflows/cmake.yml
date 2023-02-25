@@ -36,7 +36,7 @@ jobs:
       run: sudo apt-get install -y libfl-dev
 
     - name: Install forecc
-      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make -j; $FOREC_COMPILER_PATH=pwd
+      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make -j; $FOREC_COMPILER_PATH=`pwd`
       env:
         FOREC_COMPILER_PATH: ""
 
