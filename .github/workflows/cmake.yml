@@ -44,15 +44,15 @@ jobs:
       env:
         CC: clang
         CXX: clang++
-      run: cd server; cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cd server; cmake -B ${{github.workspace}}/server/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
 
     - name: Build
       # Build your program with the given configuration
-      run: FOREC_COMPILER_PATH="${{ env.FOREC_COMPILER_PATH }}/"; PATH=${PATH}:${FOREC_COMPILER_PATH}; cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: FOREC_COMPILER_PATH="${{ env.FOREC_COMPILER_PATH }}/"; PATH=${PATH}:${FOREC_COMPILER_PATH}; cmake --build ${{github.workspace}}/server/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/server/build
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
