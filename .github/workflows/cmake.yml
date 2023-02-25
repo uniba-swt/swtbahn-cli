@@ -20,6 +20,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: test
+      run: echo `pwd`; pwd
+    
     - name: Install cmocka
       run: sudo apt-get install -y --no-install-recommends libyaml-dev libcmocka-dev
 
@@ -36,7 +39,7 @@ jobs:
       run: sudo apt-get install -y libfl-dev
 
     - name: Install forecc
-      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make; FOREC_COMPILER_PATH=$PWD; PATH=$PATH:$FOREC_COMPILER_PATH
+      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make; FOREC_COMPILER_PATH=pwd; PATH=$PATH:$FOREC_COMPILER_PATH
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
