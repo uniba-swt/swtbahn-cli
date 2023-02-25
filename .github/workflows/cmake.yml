@@ -36,7 +36,7 @@ jobs:
       run: sudo apt-get install -y libfl-dev
 
     - name: Install forecc
-      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make; export FOREC_COMPILER_PATH=pwd
+      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make; FOREC_COMPILER_PATH=$PWD; PATH=$PATH:$FOREC_COMPILER_PATH
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
