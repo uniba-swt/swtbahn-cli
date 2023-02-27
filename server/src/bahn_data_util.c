@@ -1084,3 +1084,19 @@ char *config_get_block_id_of_segment(const char *seg_id) {
     
     return NULL;
 }
+
+void log_bool(bool value) {
+    syslog_server(LOG_INFO, "%s", value ? "true" : "false");
+}
+
+void log_int(int value) {
+    syslog_server(LOG_INFO, "%d", value);
+}
+
+void log_float(float value) {
+    syslog_server(LOG_INFO, "%f", value);
+}
+
+void log_string(const char *value) {
+    syslog_server(LOG_INFO, "%s", value);
+}
