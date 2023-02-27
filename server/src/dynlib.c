@@ -103,7 +103,7 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	sprintf(command, bahndsl_move_command, output_dir, filename, "so", output_dir, filename, "so");
 	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
-	// Try and move the shared library with *.dylib extension out of the bahnc folder
+		// Try and move the shared library with *.dylib extension out of the bahnc folder
 		sprintf(command, bahndsl_move_command, output_dir, filename, "dylib", output_dir, filename, "dylib");
 		ret = system(command);
 		
