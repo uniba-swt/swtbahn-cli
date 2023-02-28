@@ -135,12 +135,12 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 		openlog("swtbahn", 0, LOG_LOCAL0);	
 
 		session_id = time(NULL);
-		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld", session_id);
+		syslog_server(LOG_NOTICE, "Request: Start - session id: %ld", session_id);
 
 		if (start_bidib()) { 
 			retval = OCS_PROCESSED;
 		}
-		syslog_server(LOG_NOTICE, "Request: Start, session id: %ld finished", session_id);
+		syslog_server(LOG_NOTICE, "Request: Start - session id: %ld - finished", session_id);
 	} else {
 		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
 	}

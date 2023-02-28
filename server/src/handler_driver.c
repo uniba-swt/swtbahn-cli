@@ -265,7 +265,7 @@ static int grab_train(const char *train, const char *engine) {
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
-			syslog_server(LOG_ERR, "Train %s already grabbed", train);
+			syslog_server(LOG_ERR, "Grab train - train: %s - Train already grabbed", train);
 			return -1;
 		}
 	}
@@ -275,7 +275,7 @@ static int grab_train(const char *train, const char *engine) {
 		while (grabbed_trains[next_grab_id].is_valid) {
 			if (next_grab_id == start) {
 				pthread_mutex_unlock(&grabbed_trains_mutex);
-				syslog_server(LOG_ERR, "All grab ids in use");
+				syslog_server(LOG_ERR, "Grab train - train: %s - All grab ids in use", train);
 				return -1;
 			}
 			increment_next_grab_id();
@@ -287,12 +287,13 @@ static int grab_train(const char *train, const char *engine) {
 	strcpy(grabbed_trains[grab_id].track_output, "master");
 	if (dyn_containers_set_train_engine_instance(&grabbed_trains[grab_id], train, engine)) {
 		pthread_mutex_unlock(&grabbed_trains_mutex);
-		syslog_server(LOG_ERR, "Train engine %s could not be used", engine);
+		syslog_server(LOG_ERR, "Grab train - train: %s engine: %s - train engine could not be used", 
+		              train, engine);
 		return -1;
 	}
 	grabbed_trains[grab_id].is_valid = true;
 	pthread_mutex_unlock(&grabbed_trains_mutex);
-	syslog_server(LOG_NOTICE, "Train %s grabbed", train);
+	syslog_server(LOG_NOTICE, "Grab train - train: %s - Train grabbed", train);
 	return grab_id;
 }
 
@@ -427,9 +428,8 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Request train route - "
-			              "train: %s from: %s to: %s",
-			              grabbed_trains[grab_id].name->str, data_source_name, 
-			              data_destination_name);
+			              "train: %s from: %s to: %s", grabbed_trains[grab_id].name->str, 
+			              data_source_name, data_destination_name);
 			// Use interlocker to find and grant a route
 			GString *route_id = grant_route(grabbed_trains[grab_id].name->str,
 			                                data_source_name,
@@ -790,8 +790,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
 			syslog_server(LOG_NOTICE, "Request: Set train peripheral - train: %s "
-			              "peripheral: %s state: 0x%02x",
-			              grabbed_trains[grab_id].name->str,
+			              "peripheral: %s state: 0x%02x", grabbed_trains[grab_id].name->str,
 			              data_peripheral, state);
 			if (bidib_set_train_peripheral(grabbed_trains[grab_id].name->str,
 			                               data_peripheral, state,
