@@ -74,7 +74,7 @@ void create_interlocking_hashtable(void) {
         }
     }
 
-    syslog_server(LOG_NOTICE, "Interlocking create hash table: successful");
+    syslog_server(LOG_NOTICE, "Interlocking create hash table - successful");
 }
 
 bool interlocking_table_initialise(const char *config_dir) {

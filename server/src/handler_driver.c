@@ -124,7 +124,8 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	bidib_free_train_position_query(train_position_query);
 	
 	if (block_id == NULL) {
-		syslog_server(LOG_ERR, "Driving is forwards: %s - current block of train: %s is unknown",
+		syslog_server(LOG_ERR, "Is train forward driving - Driving is forwards: %s - "
+		              "current block of train: %s is unknown",
 		              is_forwards ? "yes" : "no", train_id);
 		return is_forwards;
 	}
@@ -154,14 +155,14 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	const bool requested_forwards = electrically_reversed
 	                                ? !is_forwards
 	                                : is_forwards;
-	syslog_server(LOG_NOTICE, "Driving is forwards: %s",
+	syslog_server(LOG_NOTICE, "Is train forward driving - Driving is forwards: %s",
 	              requested_forwards ? "yes" : "no");
 	return requested_forwards;
 }
 
 static bool drive_route_params_valid(const char *train_id, t_interlocking_route *route) {
 	if ((route->train == NULL) || strcmp(train_id, route->train) != 0) {
-		syslog_server(LOG_NOTICE, "Check drive route params: Route %s not granted to train %s", 
+		syslog_server(LOG_WARNING, "Check drive route params - Route %s not granted to train %s", 
 		              route->id, train_id);
 		return false;
 	}
@@ -199,13 +200,13 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 			// Set signal to the Stop aspect
 			set_signal_stop = false;
 			if (bidib_set_signal(next_signal, signal_stop_aspect)) {
-				syslog_server(LOG_ERR, "Drive route progressive stop signals: "
+				syslog_server(LOG_ERR, "Drive route progressive stop signals - "
 				              "Unable to set route signal %s to aspect %s", 
 				              next_signal, signal_stop_aspect);
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Drive route progressive stop signals: "
-				              "Set signal - signal: %s state: %s",
+				syslog_server(LOG_NOTICE, "Drive route progressive stop signals - "
+				              "Set signal: %s to aspect: %s",
 				              next_signal, signal_stop_aspect);
 			}
 		}
@@ -303,7 +304,7 @@ bool release_train(int grab_id) {
 	if (grabbed_trains[grab_id].is_valid) {
 		grabbed_trains[grab_id].is_valid = false;
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
-		syslog_server(LOG_NOTICE, "Train %s released (grab id %d)", 
+		syslog_server(LOG_NOTICE, "Release train - train: %s released (grab id %d)", 
 		              grabbed_trains[grab_id].name->str, grab_id);
 		g_string_free(grabbed_trains[grab_id].name, TRUE);
 		grabbed_trains[grab_id].name = NULL;
@@ -368,7 +369,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, "Request: Release train - grab id: %d - "
-			              "invalid session id (%s != %d)", grab_id, data_session_id, session_id);
+			              "invalid session id %s", grab_id, data_session_id);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			syslog_server(LOG_ERR, "Request: Release train - grab id: %d - invalid grab id",
@@ -435,9 +436,15 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			                                data_source_name,
 			                                data_destination_name);
 			if (route_id->str != NULL && params_check_is_number(route_id->str)) {
+				///NOTE: kind of a repition with the "finished" log. If the "finished" log has to match
+				// the 'starting' log from earlier, it cannot include the route. However, we may want to
+				// know the route id that was granted.
+				syslog_server(LOG_NOTICE, "Request: Request train route - train: %s from: %s to: %s"
+				              " - route %s granted", grabbed_trains[grab_id].name->str, 
+				              data_source_name, data_destination_name, route_id->str);
 				onion_response_printf(res, "%s", route_id->str);
 				syslog_server(LOG_NOTICE, "Request: Request train route - "
-				              "train: %s route: %s from: %s to: %s - finished",
+				              "train: %s from: %s to: %s - finished",
 				              grabbed_trains[grab_id].name->str, route_id->str, data_source_name, 
 				              data_destination_name);
 				g_string_free(route_id, true);
@@ -547,7 +554,7 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Driving direction - bad train id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (strcmp(route_id, "") == 0) {
-			syslog_server(LOG_ERR, "Request: Driving direction - train: %s - bad route id", 
+			syslog_server(LOG_ERR, "Request: Driving direction - train: %s - route id empty", 
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
@@ -637,7 +644,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %s",
+			syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
 			              grabbed_trains[grab_id].name->str, speed);
 			strcpy(grabbed_trains[grab_id].track_output, data_track_output);
 			int dyn_containers_engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
@@ -648,7 +655,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
 				                                                speed, true);
 			}
-			syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %s - finished",
+			syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d - finished",
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
@@ -687,11 +694,11 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			syslog_server(LOG_NOTICE, "Request: Set calibrated train speed - train: %s speed: %s",
+			syslog_server(LOG_NOTICE, "Request: Set calibrated train speed - train: %s speed: %d",
 			              grabbed_trains[grab_id].name->str, speed);
 			if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id].name->str,
 			                                     speed, data_track_output)) {
-				syslog_server(LOG_ERR, "Request: Set calibrated train speed - train: %s speed: %s"
+				syslog_server(LOG_ERR, "Request: Set calibrated train speed - train: %s speed: %d"
 				              " - bad parameter values", grabbed_trains[grab_id].name->str, speed);
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				return OCS_NOT_IMPLEMENTED;

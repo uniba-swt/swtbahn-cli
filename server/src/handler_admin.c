@@ -78,31 +78,31 @@ static void *poll_bidib_messages(void *_) {
 static bool start_bidib(void) {
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
-		syslog_server(LOG_ERR, "Request: Start - Could not start BiDiB serial connection");
+		syslog_server(LOG_ERR, "Start - Could not start BiDiB serial connection");
 		return false;
 	}
 	
 	const int succ_clear_dir = clear_engine_dir() + clear_interlocker_dir();
 	if (!succ_clear_dir) {
-		syslog_server(LOG_ERR, "Request: Start - Could not clear the engine and interlocker directories");
+		syslog_server(LOG_ERR, "Start - Could not clear the engine and interlocker directories");
 		return false;
 	}
 
 	const int succ_config = bahn_data_util_initialise_config(config_directory);
 	if (!succ_config) {
-		syslog_server(LOG_ERR, "Request: Start - Could not initialise interlocking tables");
+		syslog_server(LOG_ERR, "Start - Could not initialise interlocking tables");
 		return false;
     }
 
 	const int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
-		syslog_server(LOG_ERR, "Request: Start - Could not start shared library containers");
+		syslog_server(LOG_ERR, "Start - Could not start shared library containers");
 		return false;
 	}
 	
 	const int err_interlocker = load_default_interlocker_instance();
 	if (err_interlocker) {
-		syslog_server(LOG_ERR, "Request: Start - Could not load default interlocker instance");
+		syslog_server(LOG_ERR, "Start - Could not load default interlocker instance");
 		return false;
 	}
 	
@@ -114,12 +114,18 @@ static bool start_bidib(void) {
 void stop_bidib(void) {
 	session_id = 0;
 	syslog_server(LOG_NOTICE, "Stop bidib");
+	syslog_server(LOG_INFO, "Stop bidib - Will cease printing to log once stop is complete");
 	release_all_grabbed_trains();
+	syslog_server(LOG_INFO, "Stop bidib - Released all grabbed trains");
 	release_all_interlockers();
+	syslog_server(LOG_INFO, "Stop bidib - Released all interlockers");
 	running = false;
 	dyn_containers_stop();
+	syslog_server(LOG_INFO, "Stop bidib - Stopped dyn-containers");
 	bahn_data_util_free_config();
 	pthread_join(poll_bidib_messages_thread, NULL);
+	syslog_server(LOG_INFO, "Stop bidib - Bidib message poll thread joined, "
+	              "now stopping bidib and closing log");
 	bidib_stop();
 }
 
@@ -132,7 +138,7 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 	if (!running && ((onion_request_get_flags(req) &
 	                                           OR_METHODS) == OR_POST)) {
 		// Necessary when restarting the server because libbidib closes syslog on exit
-		openlog("swtbahn", 0, LOG_LOCAL0);	
+		openlog("swtbahn", 0, LOG_LOCAL0);
 
 		session_id = time(NULL);
 		syslog_server(LOG_NOTICE, "Request: Start - session id: %ld", session_id);
@@ -159,7 +165,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	                                          OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_NOTICE, "Request: Stop");
 		stop_bidib();
-		// Can't log here since bidib closes the syslog when stopping
+		// Can't log "finished" here since bidib closes the syslog when stopping
 		retval = OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running");
@@ -177,8 +183,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
 		long int state = strtol(data_state, &end, 10);
-		if (data_state == NULL || (state == LONG_MAX || state == LONG_MIN) ||
-		    *end != '\0') {
+		if (data_state == NULL || (state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
@@ -197,7 +202,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 onion_connection_status handler_admin_release_train(void *_, onion_request *req,
                                                     onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {		
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		const int grab_id = train_get_grab_id(data_train);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
@@ -209,7 +214,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s", data_train);
 		
 		// Ensure that the train has stopped moving
-		pthread_mutex_lock(&grabbed_trains_mutex);	
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -253,11 +258,10 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 			              "bad track output", data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %s", 
-			              data_train, data_speed);
+			syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d", 
+			              data_train, speed);
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_set_train_speed(data_train, speed, 
-			                          data_track_output)) {
+			if (bidib_set_train_speed(data_train, speed, data_track_output)) {
 				syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
 				              "bad parameter values", data_train, speed);
 			} else {

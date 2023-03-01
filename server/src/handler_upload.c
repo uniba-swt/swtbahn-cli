@@ -57,7 +57,7 @@ bool clear_dir(const char dir[]) {
 	DIR *dir_handle = opendir(dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", dir);
+		syslog_server(LOG_ERR, "Clear Directory - Directory %s could not be opened", dir);
 		return false;
 	}
 	
@@ -96,14 +96,14 @@ bool engine_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(engine_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", engine_dir);
+		syslog_server(LOG_ERR, "Engine file exists check - Directory %s could not be opened", engine_dir);
 		return true;
 	}
 	struct dirent *dir_entry = NULL;
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
 		if (strcmp(dir_entry->d_name, filename) == 0) {
 			closedir(dir_handle);
-			syslog_server(LOG_ERR, "Upload: Engine %s already exists", filename);
+			syslog_server(LOG_NOTICE, "Engine file exists check - Engine %s already exists", filename);
 			return true;
 		}
 	}
@@ -223,7 +223,7 @@ onion_connection_status handler_refresh_engines(void *_, onion_request *req,
 		GString *train_engines = dyn_containers_get_train_engines();
 		onion_response_printf(res, "%s", train_engines->str);
 		g_string_free(train_engines, true);
-		syslog_server(LOG_INFO, "Request: Refresh engines finished");
+		syslog_server(LOG_INFO, "Request: Refresh engines - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Refresh engines - system not running or wrong request type");
@@ -238,8 +238,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		const char *name = onion_request_get_post(req, "engine-name");
 		if (name == NULL || plugin_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Remove engine - engine name is invalid or engine is unremovable", 
-						  name);
+			              "Request: Remove engine - engine name is invalid or engine is unremovable");
 						  
 			onion_response_printf(res, "Engine name is invalid or engine is unremovable");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
@@ -278,7 +277,8 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 		
-		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - removed - finished", name);
+		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - engine removed", name);
+		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - finished", name);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Remove engine - system not running or wrong request type");
@@ -293,14 +293,16 @@ bool interlocker_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(interlocker_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "Upload: Directory %s could not be opened", interlocker_dir);
+		syslog_server(LOG_ERR, "Interlocker file exists check - Directory %s could not be opened", 
+		              interlocker_dir);
 		return true;
 	}
 	struct dirent *dir_entry = NULL;
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
 		if (strcmp(dir_entry->d_name, filename) == 0) {
 			closedir(dir_handle);
-			syslog_server(LOG_ERR, "Upload: Interlocker %s already exists", filename);
+			syslog_server(LOG_NOTICE, "Interlocker file exists check - Interlocker %s already exists",
+			              filename);
 			return true;
 		}
 	}
@@ -365,10 +367,9 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		remove_file_extension(filepath, final_filepath, ".bahn");
 		const dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
 		if (status == DYNLIB_COMPILE_SHARED_BAHNDSL_ERR) {
-			remove_interlocker_files(libname);
-		
 			syslog_server(LOG_ERR, "Request: Upload interlocker - interlocker file: %s - "
 			              "interlocker could not be compiled", filename);
+			remove_interlocker_files(libname);
 			
 			onion_response_printf(res, "Interlocker file %s could not be compiled", filepath);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
@@ -416,7 +417,7 @@ onion_connection_status handler_refresh_interlockers(void *_, onion_request *req
 		GString *interlockers = dyn_containers_get_interlockers();
 		onion_response_printf(res, "%s", interlockers->str);
 		g_string_free(interlockers, true);
-		syslog_server(LOG_INFO, "Request: Refresh interlockers finished");
+		syslog_server(LOG_INFO, "Request: Refresh interlockers - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Refresh interlockers - system not running "
@@ -471,9 +472,10 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
-
-		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - "
-		              "removed - finished", name);
+		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - removed",
+		              name);
+		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - finished",
+		              name);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Remove interlocker - system not running "

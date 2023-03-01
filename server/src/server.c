@@ -87,7 +87,7 @@ static onion_connection_status handler_assets(void *_, onion_request *req,
 	const char local_path[] = "../src/assets/";
 	char *global_path = realpath(local_path, NULL);
 	if (!global_path) {
-		syslog_server(LOG_ERR, "Onion: Cannot calculate the global path of the given directory (%s)",
+		syslog_server(LOG_ERR, "Onion - Cannot calculate the global path of the given directory (%s)",
 		              local_path);
 		ONION_ERROR("Cannot calculate the global path of the given directory (%s)",
 		            local_path);
@@ -96,7 +96,7 @@ static onion_connection_status handler_assets(void *_, onion_request *req,
 	
 	struct stat st;
 	if (stat(global_path, &st) != 0) {
-		syslog_server(LOG_ERR, "Onion: Cannot access to the exported directory/file (%s)", 
+		syslog_server(LOG_ERR, "Onion - Cannot access to the exported directory/file (%s)", 
 		              global_path);
 		ONION_ERROR("Cannot access to the exported directory/file (%s)", global_path);
 		onion_low_free(global_path);

@@ -58,7 +58,7 @@ onion_connection_status handler_get_trains(void *_, onion_request *req,
 		strcpy(response, trains->str);
 		g_string_free(trains, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get available trains finished");
+		syslog_server(LOG_INFO, "Request: Get available trains - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get available trains - system not running or "
@@ -121,13 +121,13 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 				g_string_free(seg_string, true);
 				g_string_free(ret_string, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_INFO, "Request: Get train state - train: %s finished", 
+				syslog_server(LOG_INFO, "Request: Get train state - train: %s - finished", 
 				              data_train);
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_train_position_query(train_position_query);
 				bidib_free_train_state_query(train_state_query);
-				syslog_server(LOG_ERR, "Request: Get train state - train: %s invalid train", 
+				syslog_server(LOG_ERR, "Request: Get train state - train: %s - invalid train", 
 				              data_train);
 				return OCS_NOT_IMPLEMENTED;
 			}
@@ -165,12 +165,12 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 				strcpy(response, train_peripherals->str);
 				g_string_free(train_peripherals, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_INFO, "Request: Get train peripherals - train: %s finished",
+				syslog_server(LOG_INFO, "Request: Get train peripherals - train: %s - finished",
 				              data_train);
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
-				syslog_server(LOG_ERR, "Request: Get train train peripherals - train: %s invalid "
+				syslog_server(LOG_ERR, "Request: Get train train peripherals - train: %s - invalid "
 				              "train", data_train);
 				return OCS_NOT_IMPLEMENTED;
 			}
@@ -233,7 +233,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 		strcpy(response, track_outputs->str);
 		g_string_free(track_outputs, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get track outputs finished");
+		syslog_server(LOG_INFO, "Request: Get track outputs - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get track outputs - system not running or "
@@ -276,7 +276,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 		strcpy(response, points->str);
 		g_string_free(points, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get points finished");
+		syslog_server(LOG_INFO, "Request: Get points - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get points - system not running or wrong "
@@ -307,7 +307,7 @@ onion_connection_status handler_get_signals(void *_, onion_request *req,
 		strcpy(response, signals->str);
 		g_string_free(signals, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get signals finished");
+		syslog_server(LOG_INFO, "Request: Get signals - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get signals - system not running or wrong "
@@ -339,12 +339,12 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_INFO, "Request: Get point aspects - point: %s finished", 
+				syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - finished", 
 				              data_point);
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
-				syslog_server(LOG_ERR, "Request: Get point aspects - point%s invalid point", 
+				syslog_server(LOG_ERR, "Request: Get point aspects - point: %s - invalid point", 
 				              data_point);
 				return OCS_NOT_IMPLEMENTED;
 			}
@@ -378,12 +378,12 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s finished",
+				syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s - finished",
 				              data_signal);
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
-				syslog_server(LOG_ERR, "Request: Get signal aspects - signal: %s invalid signal",
+				syslog_server(LOG_ERR, "Request: Get signal aspects - signal: %s - invalid signal",
 				              data_signal);
 				return OCS_NOT_IMPLEMENTED;
 			}
@@ -430,7 +430,7 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 		strcpy(response, segments->str);
 		g_string_free(segments, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get segments finished");
+		syslog_server(LOG_INFO, "Request: Get segments - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get segments - system not running or "
@@ -481,7 +481,7 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req,
 			strcpy(response, reversers->str);
 			g_string_free(reversers, true);
 			onion_response_printf(res, "%s", response);
-			syslog_server(LOG_INFO, "Request: Get reversers finished");
+			syslog_server(LOG_INFO, "Request: Get reversers - finished");
 			return OCS_PROCESSED;
 		}
 	} else {
@@ -512,7 +512,7 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req,
 		strcpy(response, peripherals->str);
 		g_string_free(peripherals, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get peripherals finished");
+		syslog_server(LOG_INFO, "Request: Get peripherals - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get peripherals - system not running or "
@@ -547,7 +547,7 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 		strcpy(response, granted_routes->str);
 		g_string_free(granted_routes, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_INFO, "Request: Get granted routes finished");
+		syslog_server(LOG_INFO, "Request: Get granted routes - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get granted routes - system not running or "
@@ -627,7 +627,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 			strcpy(response, route_str->str);
 			g_string_free(route_str, true);
 			onion_response_printf(res, "%s", response);
-			syslog_server(LOG_INFO, "Request: Get route - route: %s finished", route_id);
+			syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
 			return OCS_PROCESSED;
 		}
 	} else {

@@ -63,7 +63,7 @@ const int set_interlocker(const char *interlocker_name) {
 			if (dyn_containers_set_interlocker_instance(
 					&interlocker_instances[i], interlocker_name)
 			) {
-				syslog_server(LOG_ERR, "Interlocker %s could not be used in instance %d",
+				syslog_server(LOG_ERR, "Set Interlocker - Interlocker %s could not be used in instance %d",
 							  interlocker_name, i);
 			} else {
 				selected_interlocker_name = g_string_new(interlocker_name);
@@ -201,7 +201,8 @@ const bool get_route_is_clear(const char *route_id) {
 
 GString *grant_route(const char *train_id, const char *source_id, const char *destination_id) {
 	if (selected_interlocker_instance == -1) {
-		syslog_server(LOG_ERR, "Grant route: No interlocker has been set");
+		syslog_server(LOG_ERR, "Grant route - Train %s from %s to %s - No interlocker has been set",
+		              train_id, source_id, destination_id);
 		return g_string_new("no_interlocker");
 	}
 
@@ -234,20 +235,20 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	// Return the result
 	const char *route_id = interlocker_instance_io.output_route_id;
 	if (route_id != NULL && params_check_is_number(route_id)) {
-		syslog_server(LOG_NOTICE, "Grant route: Route %s has been granted", route_id);
+		syslog_server(LOG_NOTICE, "Grant route - Train %s from %s to %s - Route %s has been granted", train_id, source_id, destination_id, route_id);
 
-		syslog_server(LOG_NOTICE, "Grant route: Set points and signals for route id \"%s\" - interlocker type %d",
+		syslog_server(LOG_NOTICE, "Grant route - Set points and signals for route id \"%s\" - interlocker type %d",
 		              interlocker_instance_io.output_route_id,
 		              interlocker_instance_io.output_interlocker_type);
 	} else {
 		if (strcmp(route_id, "no_routes") == 0) {
-			syslog_server(LOG_ERR, "Grant route: No routes possible from %s to %s", source_id, destination_id);
+			syslog_server(LOG_ERR, "Grant route - Train %s - No routes possible from %s to %s", train_id, source_id, destination_id);
 		} else if (strcmp(route_id, "not_grantable") == 0) {
-			syslog_server(LOG_ERR, "Grant route: Conflicting routes are in use");
+			syslog_server(LOG_ERR, "Grant route - Train %s - Conflicting routes are in use", train_id);
 		} else if (strcmp(route_id, "not_clear") == 0) {
-			syslog_server(LOG_ERR, "Grant route: Route found has occupied blocks or source signal is not stop");
+			syslog_server(LOG_ERR, "Grant route - Train %s - Route found has occupied blocks or source signal is not stop", train_id);
 		} else {
-			syslog_server(LOG_ERR, "Grant route: Route could not be granted (%s)", route_id);
+			syslog_server(LOG_ERR, "Grant route - Train %s - Route could not be granted (%s)", train_id, route_id);
 		}
 	}
 	GString *route_id_copy = g_string_new(route_id);
@@ -306,22 +307,24 @@ void release_route(const char *route_id) {
 	t_interlocking_route *route = get_route(route_id);
 	if (route->train != NULL) {
 		const char *signal_aspect = "aspect_stop";
-
+		syslog_server(LOG_INFO, "Release route - Route %s - Route currently granted to train %s", route_id, route->train);
 		const int signal_count = route->signals->len;
 		for (int signal_index = 0; signal_index < signal_count; signal_index++) {
 			// Get each signal along the route
 			const char *signal_id = g_array_index(route->signals, char *, signal_index);
 
 			if (bidib_set_signal(signal_id, signal_aspect)) {
-				syslog_server(LOG_ERR, "Release route: Unable to set signal to aspect %s", signal_aspect);
+				syslog_server(LOG_ERR, "Release route - Route %s - Unable to set signal to aspect %s", route_id, signal_aspect);
 			}
 			bidib_flush();
 		}
 
 		free(route->train);
 		route->train = NULL;
-		syslog_server(LOG_NOTICE, "Release route: route %s released", route_id);
-    }
+		syslog_server(LOG_NOTICE, "Release route - Route %s - route released", route_id);
+    } else {
+		syslog_server(LOG_ERR, "Release route - Route %s - Route is not granted to any train", route_id);
+	}
 
 	pthread_mutex_unlock(&interlocker_mutex);
 }
@@ -472,13 +475,13 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req,
                                                 onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_NOTICE, "Request: Get interlocker");
+		syslog_server(LOG_INFO, "Request: Get interlocker");
 		if (selected_interlocker_instance != -1) {
 			onion_response_printf(res, "%s", selected_interlocker_name->str);
-			syslog_server(LOG_NOTICE, "Request: Get interlocker finished");
+			syslog_server(LOG_INFO, "Request: Get interlocker - finished");
 			return OCS_PROCESSED;
 		} else {
-			syslog_server(LOG_WARNING, "Request: Get interlocker - none selected");
+			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
 			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
