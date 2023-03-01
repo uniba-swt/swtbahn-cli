@@ -640,7 +640,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	
 	syslog_server(LOG_NOTICE,
 	              "Drive route decoupled: Finished setting %d signals to stop for route id %s", 
-	              route->id, signals_set_to_stop);
+	              signals_set_to_stop, route->id);
 	free_route_signal_info_array(&signal_info_array);
 	free_route_repeated_segment_flags(&repeated_segment_flags);
 	return true;
