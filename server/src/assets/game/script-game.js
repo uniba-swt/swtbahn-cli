@@ -427,11 +427,11 @@ class Driver {
 	}
 
 	setTrainAvailable(obj){
-		$(obj).prop("disabled", false);
+		() => $(obj).prop("disabled", false);
 	}
 
 	setTrainUnavailable(obj){
-		$(obj.prop("disabled"), true);
+		() => $(obj.prop("disabled"), true);
 		
 	}
 
