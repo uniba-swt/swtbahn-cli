@@ -419,8 +419,8 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => $(obj.prop("disabled"), false),
-					() => $(obj.prop("disabled"), true)
+					() => $(obj).prop("disabled", false),
+					() => $(obj).prop("disabled", true)
 				);
 			})
 		}, trainAvailabilityTimeout);
