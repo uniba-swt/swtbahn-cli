@@ -428,12 +428,10 @@ class Driver {
 
 	setTrainAvailable(obj){
 		() => $(obj).prop("disabled", false);
-		$('.selectTrainButton').filter(obj.id).attr("id").removeClass("bd-danger");
 	}
 
 	setTrainUnavailable(obj){
 		() => $(obj.prop("disabled"), true);
-		$('.selectTrainButton').filter(obj.id).attr("id").addClass("bd-danger");
 		
 	}
 
