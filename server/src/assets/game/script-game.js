@@ -421,11 +421,11 @@ class Driver {
 					trainId,
 					() => { 
 						$(obj).prop("disabled", false);
-						$($(obj).parent()).removeClass("bg-danger");
+						$($(obj).parent()).removeClass("bg-secondary");
 					},
 					() => {
 						$(obj).prop("disabled", true);
-						$($(obj).parent()).addClass("bg-danger");
+						$($(obj).parent()).addClass("bg-secondary");
 					}
 				);
 			})
