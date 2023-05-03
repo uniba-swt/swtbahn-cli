@@ -419,10 +419,7 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => { 
-						$(obj.prop("disabled"), false);
-						console.log("train free");
-					},
+					() => $(obj.prop("disabled"), false),
 					() => $(obj.prop("disabled"), true)
 				);
 			})
