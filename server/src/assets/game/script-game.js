@@ -423,8 +423,10 @@ class Driver {
 						$(obj).prop("disabled", false);
 						$($(obj).parent()).removeClass("bg-danger");
 					},
-					() => $(obj).prop("disabled", true)
-				
+					() => {
+						$(obj).prop("disabled", true);
+						$($(obj).parent()).addClass("bg-danger");
+					}
 				);
 			})
 		}, trainAvailabilityTimeout);
