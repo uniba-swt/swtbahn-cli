@@ -409,6 +409,7 @@ class Driver {
 	// Update the styling of the train selection buttons based on the train availabilities
 	updateTrainAvailability() {
 		$('.selectTrainButton').prop("disabled", true);
+		
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
 			console.log("Checking available trains ... ");
@@ -418,11 +419,24 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => $(obj).prop("disabled", false),
-					() => $(obj).prop("disabled", true)
+					this.setTrainAvailable(obj) ,
+					this.setTrainUnavailable(obj)
 				);
 			})
 		}, trainAvailabilityTimeout);
+	}
+
+	setTrainAvailable(obj){
+		() => $(obj).prop("disabled", false);
+		card = obj.parent().parent();
+		card.css("background-color: white");
+	}
+
+	setTrainUnavailable(obj){
+		() => $(obj.prop("disabled"), true);
+		card = obj.parent().parent();
+		card.css("background-color: red");
+		
 	}
 
 	// Server request to grab a train
