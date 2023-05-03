@@ -144,12 +144,14 @@ const speedButtons = [
 
 function disableSpeedButtons() {
 	$('#speedForm').hide();
+	stoptimer();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
 	});
 }
 
 function enableSpeedButtons(destination) {
+	starttimer();
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);

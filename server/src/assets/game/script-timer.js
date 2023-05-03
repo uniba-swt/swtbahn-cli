@@ -19,10 +19,3 @@ function stoptimer(){
     sec = 0;
 }
 
-$("#speedForm").on("change", function(){
-    if($("#speedForm").is(":visible")){
-        starttimer();
-    }else{
-        stoptimer();
-    }
-});
