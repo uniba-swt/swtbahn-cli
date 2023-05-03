@@ -419,19 +419,19 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					this.setTrainAvailable(obj) ,
-					this.setTrainUnavailable(obj)
+					() => this.setTrainAvailable(obj) ,
+					() => this.setTrainUnavailable(obj)
 				);
 			})
 		}, trainAvailabilityTimeout);
 	}
 
 	setTrainAvailable(obj){
-		() => $(obj).prop("disabled", false);
+		$(obj).prop("disabled", false);
 	}
 
 	setTrainUnavailable(obj){
-		() => $(obj.prop("disabled"), true);
+		$(obj.prop("disabled"), true);
 		
 	}
 
