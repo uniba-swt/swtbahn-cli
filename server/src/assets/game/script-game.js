@@ -419,8 +419,12 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => $(obj).prop("disabled", false),
+					() => { 
+						$(obj).prop("disabled", false);
+						$($(obj).parent()).removeClass("bg-danger");
+					},
 					() => $(obj).prop("disabled", true)
+				
 				);
 			})
 		}, trainAvailabilityTimeout);
