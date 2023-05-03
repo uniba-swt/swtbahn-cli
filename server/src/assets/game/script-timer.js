@@ -3,7 +3,7 @@ var stop = 1;
 function add(){
     if(stop == 0){
         sec++;
-        document.getElementById("timer").innerHTML = seconds;
+        document.getElementById("timer").innerHTML = sec;
         timer();
     }
 }
