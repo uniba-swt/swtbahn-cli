@@ -428,13 +428,13 @@ class Driver {
 
 	setTrainAvailable(obj){
 		() => $(obj).prop("disabled", false);
-		card = obj.parent().parent();
+		card = obj.parent();
 		card.css("background-color: white");
 	}
 
 	setTrainUnavailable(obj){
 		() => $(obj.prop("disabled"), true);
-		card = obj.parent().parent();
+		card = obj.parent();
 		card.css("background-color: red");
 		
 	}
