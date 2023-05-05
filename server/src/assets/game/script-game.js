@@ -143,18 +143,18 @@ const speedButtons = [
 ];
 
 function disableSpeedButtons() {
-	$('#speedForm').hide();
 	$('.sessionTimer').hide();
-	stoptimer();
+	this.sessionTimer.stop();
+	$('#speedForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
 	});
 }
 
 function enableSpeedButtons(destination) {
-	$('#speedForm').show();
 	$('.sessionTimer').show();
-	starttimer();
+	this.sessionTimer.start();
+	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
 	});
@@ -319,6 +319,8 @@ class Driver {
 	trainAvailabilityInterval = null;
 	updatePossibleDestinationsInterval = null;
 	destinationReachedInterval = null;
+
+	sessionTimer = new Timer();
 
 	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
