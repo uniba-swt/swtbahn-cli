@@ -424,12 +424,26 @@ class Driver {
 						$(obj).removeClass("btn-danger");
 						$(obj).addClass("btn-primary");
 						$($(obj).parent()).removeClass("bg-secondary");
+						$(obj).children().each(function(){
+							var txt=$this.text();
+							switch(txt){
+								case "Nicht verfügbar": "Fahre diesen Zug"; break;
+								case "Unavailable": "Drive this train"; break;
+							}
+						});
 					},
 					() => {
 						$(obj).prop("disabled", true);
 						$(obj).removeClass("btn-primary");
 						$(obj).addClass("btn-danger");
 						$($(obj).parent()).addClass("bg-secondary");
+						$(obj).children().each(function(){
+							var txt=$this.text();
+							switch(txt){
+								case "Fahre diesen Zug": "Nicht verfügbar"; break;
+								case "Drive this train": "Unavailable"; break;
+							}
+						});
 					}
 				);
 			})
