@@ -425,7 +425,7 @@ class Driver {
 						$(obj).addClass("btn-primary");
 						$($(obj).parent()).removeClass("bg-secondary");
 						$(obj).children().each(function(){
-							var txt=$this.text();
+							var txt=$(this).text();
 							switch(txt){
 								case "Nicht verfügbar": "Fahre diesen Zug"; break;
 								case "Unavailable": "Drive this train"; break;
@@ -438,7 +438,7 @@ class Driver {
 						$(obj).addClass("btn-danger");
 						$($(obj).parent()).addClass("bg-secondary");
 						$(obj).children().each(function(){
-							var txt=$this.text();
+							var txt=$(this).text();
 							switch(txt){
 								case "Fahre diesen Zug": "Nicht verfügbar"; break;
 								case "Drive this train": "Unavailable"; break;
