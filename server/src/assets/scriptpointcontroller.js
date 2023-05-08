@@ -211,14 +211,18 @@ function getPointsAspectsAndUpdate() {
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
 			console.log('Got point states');
-			const ptAspRegex = new RegExp("(\S+) - state (\S+)", "g");
+			let matchArr;
+			const ptAspRegex = /(\w+) - state: (\w+)/g;
 			var respSplit = responseData.split(/\r?\n/);
 			for (const elem of respSplit) {
-				var match = elem.matchAll(ptAspRegex);
-				if (match !== undefined) {
-					ptAspectMap[match[1]] = match[2];
-					console.log("Set " + match[1] + " to " + match[2]);
+				console.log(elem);
+				matchArr = [...elem.matchAll(ptAspRegex)];
+				if (matchArr !== null) {
+					console.log(matchArr);
+					ptAspectMap[matchArr[0][1]] = matchArr[0][2];
+					console.log("Set " + matchArr[0][1] + " to " + matchArr[0][2]);
 				}
+				
 			}
 		},
 		error: function (responseData, textStatus, errorThrown) {
@@ -226,6 +230,7 @@ function getPointsAspectsAndUpdate() {
 		}
 	});
 }
+
 
 function updatePointStatesAjax() {
 	//sigAspectMap.forEach();
