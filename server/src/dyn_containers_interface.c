@@ -173,7 +173,7 @@ static void *dyn_containers_actuate(void *_) {
 
 int dyn_containers_start(void) {
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
-	                         &dyn_containers_interface);
+	                          &dyn_containers_interface);
 	dyn_containers_reset_interface(dyn_containers_interface);
 	pthread_create(&dyn_containers_thread, NULL, 
 	               forec_dyn_containers, NULL);

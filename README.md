@@ -1,4 +1,6 @@
 # SWTbahn Client-Server Command Line Interface
+[![CI/CD](https://github.com/uniba-swt/swtbahn-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/uniba-swt/swtbahn-cli/actions)
+[![Latest release](https://img.shields.io/github/v/release/uniba-swt/swtbahn-cli?style=version)](https://github.com/uniba-swt/swtbahn-cli/releases)
 
 This is a client-server command line interface for the SWTbahn. The server is
 connected to the BiDiB interface and provides a REST API. The client side

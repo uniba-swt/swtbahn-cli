@@ -130,7 +130,7 @@ def admin():
 
 @click.command(help="Start up the SWTbahn")
 def startup():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -146,7 +146,7 @@ def startup():
 
 @click.command(help="Shut down the SWTbahn")
 def shutdown():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -164,7 +164,7 @@ def shutdown():
 @click.command(help="Set the power state of a track output")
 @click.argument('state', type=click.Choice(['off', 'stop', 'soft_stop', 'go']))
 def set_track_output(state):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -205,7 +205,7 @@ def set_verification_option(verification_option):
 @click.command(name="release", help="Release a train")
 @click.argument('train')
 def admin_release(train):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -277,7 +277,7 @@ def release_route(route_id):
 @click.argument('point')
 @click.argument('state')
 def set_point(point, state):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -297,7 +297,7 @@ def set_point(point, state):
 @click.argument('signal')
 @click.argument('state')
 def set_signal(signal, state):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -317,7 +317,7 @@ def set_signal(signal, state):
 @click.argument('peripheral')
 @click.argument('state')
 def set_peripheral(peripheral, state):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -335,7 +335,7 @@ def set_peripheral(peripheral, state):
 
 @click.command(help="Get the interlocker in use")
 def get_interlocker():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -353,7 +353,7 @@ def get_interlocker():
 @click.command(help="Set an interlocker to use")
 @click.argument('interlocker')
 def set_interlocker(interlocker):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -372,7 +372,7 @@ def set_interlocker(interlocker):
 @click.command(help="Unset an interlocker from use")
 @click.argument('interlocker')
 def unset_interlocker(interlocker):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -391,7 +391,7 @@ def unset_interlocker(interlocker):
 @click.command(help="Upload an interlocker. Absolute path to an BahnDSL (*.bahn) file")
 @click.argument('filepath', type=click.Path(exists=True))
 def upload_interlocker(filepath):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -410,7 +410,7 @@ def upload_interlocker(filepath):
 @click.command(help="Delete an interlocker")
 @click.argument('interlocker-name')
 def delete_interlocker(interlocker_name):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -428,7 +428,7 @@ def delete_interlocker(interlocker_name):
 
 @click.command(help="Get a list of interlockers")
 def get_interlocker_list():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -491,7 +491,7 @@ def process_id_feedback(feedback, success_message):
 @click.command(help="Release your train")
 def release():
     global session_id, grab_id, server
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -725,7 +725,7 @@ def set_train_peripheral(peripheral, state, track_output):
 @click.command(help="Upload a train engine. Absolute path to an SCCharts (*.sctx) file")
 @click.argument('filepath', type=click.Path(exists=True))
 def upload_engine(filepath):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -744,7 +744,7 @@ def upload_engine(filepath):
 @click.command(help="Delete a train engine")
 @click.argument('engine-name')
 def delete_engine(engine_name):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -762,7 +762,7 @@ def delete_engine(engine_name):
 
 @click.command(help="Get a list of train engines")
 def get_engine_list():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -786,7 +786,7 @@ def monitor():
 
 @click.command(help="Get a list of trains")
 def get_trains():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -806,7 +806,7 @@ def get_trains():
 @click.command(help="Get the state of a train")
 @click.argument('train')
 def get_train_state(train):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -824,7 +824,7 @@ def get_train_state(train):
 @click.command(help="Get a list of peripherals of a train")
 @click.argument('train')
 def get_train_peripherals(train):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -841,7 +841,7 @@ def get_train_peripherals(train):
 
 @click.command(help="Get a list of track outputs")
 def get_track_outputs():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -857,7 +857,7 @@ def get_track_outputs():
 
 @click.command(help="Get a list of points")
 def get_points():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -873,7 +873,7 @@ def get_points():
 
 @click.command(help="Get a list of signals")
 def get_signals():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -890,7 +890,7 @@ def get_signals():
 @click.command(help="Get the aspects of a point")
 @click.argument('point')
 def get_point_aspects(point):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -908,7 +908,7 @@ def get_point_aspects(point):
 @click.command(help="Get the aspects of a signal")
 @click.argument('signal')
 def get_signal_aspects(signal):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -925,7 +925,7 @@ def get_signal_aspects(signal):
 
 @click.command(help="Get a list of segments")
 def get_segments():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -941,7 +941,7 @@ def get_segments():
 
 @click.command(help="Get a list of reversers")
 def get_reversers():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -957,7 +957,7 @@ def get_reversers():
 
 @click.command(help="Get a list of peripherals")
 def get_peripherals():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -988,7 +988,7 @@ def get_verification_option():
 
 @click.command(help="Get a list of granted routes")
 def get_granted_routes():
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server
@@ -1005,7 +1005,7 @@ def get_granted_routes():
 @click.command(help="Get the details of a route")
 @click.argument('route-id')
 def get_route(route_id):
-    if(parse_config()):
+    if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
     else:
         global server

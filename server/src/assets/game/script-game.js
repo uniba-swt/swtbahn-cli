@@ -554,8 +554,7 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				this.sessionId = 0;
-				this.grabId = -1;
+				this.reset();
 				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
@@ -590,28 +589,7 @@ class Driver {
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				this.routeDetails = null;
-				
-				const msgEn = responseData.responseText;
-				const germanTranslation = {
-					"no-interlocker": "Es wurde keine Interlocker ausgewählt. ",
-					"no-routes": "Für die gewählte Strecke ist keine Route verfügbar. ",
-					"not-grantable": "Die Route steht in Konflikt zu anderen Routen. ",
-					"not-clear": "Die Route hat reservierte Schienen. ",
-					"default": "Route konnte nicht gewährt werden."
-				};
-				let msgDe = ""
-				if (msgEn.startsWith("No interlocker")) {
-					msgDe = germanTranslation["no-interlocker"];
-				} else if (msgEn.startsWith("No routes possible")) {
-					msgDe = germanTranslation["no-routes"];
-				} else if (msgEn.startsWith("Route found conflicts")) {
-					msgDe = germanTranslation["not-grantable"];
-				} else if (msgEn.startsWith("Route found has occupied tracks")) {
-					msgDe = germanTranslation["not-clear"];
-				} else {
-					msgDe = germanTranslation["default"];
-				}
-				setResponseDanger('#serverResponse', msgEn, msgDe, 'Sorry');
+				setResponseDanger('#serverResponse', "This route is not available", "Diese Route ist zurzeit leider nicht verfügbar", 'Sorry');
 			}
 		});
 	}
@@ -710,7 +688,7 @@ class Driver {
 			.then(() => this.disableDestinationReached())              // 10. Remove the destination reached behaviour
 			.then(() => this.updateCurrentBlockPromise())              // 11. Show the next possible destinations
 			.then(() => updatePossibleDestinations(driver.currentBlock))
-			.catch(() => { });                                         // 12. Execution skips to here if the safety layer was triggered (step 9)
+			.catch(() => Mutex.unlock(lock));                          // 12. Execution skips to here if the safety layer was triggered (step 9)
 	}
 }
 
@@ -868,9 +846,9 @@ function initialise() {
 
 		driver.setTrainSpeedPromise(0)
 			.then(() => wait(500))
-			.then(() => driver.releaseRoutePromise())
 			.always(() => {
 				driver.releaseTrainPromise();
+				driver.releaseRoutePromise();
 				endGameLogic();
 			});
 
