@@ -60103,66 +60103,6 @@
      d="m 836.07899,734.31495 v 21.74294"
      id="path50413" />
   <rect
-     style="fill:#f9f9f9;fill-opacity:0;stroke-width:1.92523"
-     id="bp1-1"
-     width="108.49294"
-     height="18.039276"
-     x="466.90216"
-     y="770.53815"
-     onclick="pointclick('p1')"
-     inkscape:label="bp1-1">
-    <title
-       id="title196266">Point 1</title>
-  </rect>
-  <rect
-     style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.744253"
-     id="bp1-2"
-     width="18.458431"
-     height="15.845315"
-     x="554.44043"
-     y="754.63251"
-     onclick="pointclick('p1')"
-     inkscape:label="bp1-2">
-    <title
-       id="title196266-4">Point 1</title>
-  </rect>
-  <rect
-     style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.668036"
-     id="bp1-3"
-     width="18.458431"
-     height="12.766167"
-     x="535.4342"
-     y="757.75513"
-     onclick="pointclick('p1')"
-     inkscape:label="bp1-3">
-    <title
-       id="title196266-4-0">Point 1</title>
-  </rect>
-  <rect
-     style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.779034"
-     id="bp1-4"
-     width="47.09079"
-     height="6.805037"
-     x="486.61627"
-     y="763.77325"
-     onclick="pointclick('p1')"
-     inkscape:label="bp1-4">
-    <title
-       id="title196266-4-0-8">Point 1</title>
-  </rect>
-  <rect
-     style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.628787"
-     id="bp1-5"
-     width="15.846538"
-     height="13.174275"
-     x="469.45334"
-     y="791.4873"
-     onclick="pointclick('p1')"
-     inkscape:label="bp1-5">
-    <title
-       id="title196266-4-0-8-8">Point 1</title>
-  </rect>
-  <rect
      style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.628787"
      id="bp2-5"
      width="15.846538"
