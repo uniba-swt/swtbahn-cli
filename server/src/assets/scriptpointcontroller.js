@@ -249,20 +249,13 @@ function setPointToAspect(pointId, pointAspect) {
 }
 
 async function switchPoint(pointID) {
-	if (pointID === null) {
-		return;
-	}
-	longPointID = pointID.length() > 5 ? pointID : ptIdMap.get(pointID);
-	if (longPointID === undefined) {
-		return;
-	}
 	getPointsAspectsAndUpdate();
 	await new Promise(r => setTimeout(r, 1000));
 	let aspect = "reverse";
-	if (ptAspectMap.get(longPointID) === "reverse") {
+	if (ptAspectMap.get(pointID) === "reverse") {
 		aspect = "normal";
 	}
-	setPointToAspect(longPointID, aspect);
+	setPointToAspect(pointID, aspect);
 }
 
 function pointclick(id) {
@@ -275,15 +268,11 @@ function signalclick(id) {
 
 async function updateVisuals() {
 	await new Promise(r => setTimeout(r, 1500));
-	$('rect[id^="bp"]').each(function () {
+	$('[id^="point"]').each(function () {
 		var idstr = new String($(this).prop("id"));
-		console.log("short id: " + idstr);
-		var hyphPos = idstr.indexOf("-");
-		var idSub = idstr.substring(2, hyphPos);
-		var longId = ptIdMap.get("p" +idSub);
-		console.log("long id: " + longId);
-		console.log("aspect: " + ptAspectMap.get(longId));
-		if (ptAspectMap.get(longId) === "normal") {
+		console.log("long id: " + idstr);
+		console.log("aspect: " + ptAspectMap.get(idstr));
+		if (ptAspectMap.get(idstr) === "normal") {
 			$(this).css({
 				fill: 'red',
 				fillOpacity: 0.1
@@ -295,11 +284,6 @@ async function updateVisuals() {
 			});
 		}
 	});
-	//$('rect[id^="bp"]').css({
-	//	//color: 'red'
-	//	fill: 'red',
-	//	fillOpacity: 0.1
-	//});
 }
 
 $(document).ready(
