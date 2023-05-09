@@ -248,11 +248,11 @@ function setPointToAspect(pointId, pointAspect) {
 	});
 }
 
-async function switchPoint(shortPointID) {
-	if (shortPointID === null) {
+async function switchPoint(pointID) {
+	if (pointID === null) {
 		return;
 	}
-	longPointID = ptIdMap.get(shortPointID);
+	longPointID = pointID.length() > 5 ? pointID : ptIdMap.get(pointID);
 	if (longPointID === undefined) {
 		return;
 	}
