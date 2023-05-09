@@ -69,7 +69,7 @@ const ptAspectMapperArray = [
 ];
 
 const ptIdMap = new Map(ptIdMapperArray);
-ptAspectMap = new Map(ptAspectMapperArray);
+var ptAspectMap = new Map(ptAspectMapperArray);
 
 const sigIdMapperArray = [
 	["s1", "signal1"],
@@ -256,6 +256,8 @@ async function switchPoint(pointID) {
 		aspect = "normal";
 	}
 	setPointToAspect(pointID, aspect);
+	ptAspectMap[pointID] = aspect;
+	updateVisuals();
 }
 
 function pointclick(id) {
@@ -267,28 +269,23 @@ function signalclick(id) {
 }
 
 async function updateVisuals() {
-	await new Promise(r => setTimeout(r, 1500));
 	$('[id^="point"]').each(function () {
 		var idstr = new String($(this).prop("id"));
-		console.log("long id: " + idstr);
-		console.log("aspect: " + ptAspectMap.get(idstr));
-		if (ptAspectMap.get(idstr) === "normal") {
-			$(this).css({
-				fill: 'red',
-				fillOpacity: 0.1
-			});
-		} else {
-			$(this).css({
-				fill: 'blue',
-				fillOpacity: 0.1
-			});
+		var colr = 'red';
+		if (ptAspectMap[idstr] === "reverse") {
+			colr = 'blue';
 		}
+		$(this).css({
+			fill: colr,
+			fillOpacity: 0.2
+		});
 	});
 }
 
 $(document).ready(
-	function () {
+	async function () {
 		getPointsAspectsAndUpdate();
+		await new Promise(r => setTimeout(r, 1000));
 		updateVisuals();
 	}
 );
