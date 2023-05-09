@@ -23,15 +23,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      showgrid="false"
-     inkscape:zoom="0.97387174"
-     inkscape:cx="3332.061"
-     inkscape:cy="272.62317"
+     inkscape:zoom="15.581948"
+     inkscape:cx="3316.2093"
+     inkscape:cy="764.12141"
      inkscape:window-width="2560"
      inkscape:window-height="1367"
      inkscape:window-x="1920"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg50503" />
+     inkscape:current-layer="svg50503"
+     inkscape:snap-global="false" />
   <defs
      id="defs6497">
     <clipPath
@@ -15439,14 +15440,6 @@
      d="m 3372.301,787.31336 v -9.05959"
      id="path30953" />
   <path
-     class="b"
-     d="m 3258.6038,769.19422 v 9.05955"
-     id="path30955" />
-  <path
-     class="b"
-     d="m 3263.1337,752.43406 -2.265,8.60656"
-     id="path30957" />
-  <path
      class="d"
      d="m 3258.6038,736.57982 h 2.7177 v 15.85424 h -2.7177"
      id="path30959"
@@ -15944,10 +15937,6 @@
      id="path31177" />
   <path
      class="b"
-     d="m 3258.6038,770.10017 2.2649,-9.05955"
-     id="path31179" />
-  <path
-     class="b"
      d="m 3136.2998,718.46071 -2.265,9.05956"
      id="path31181" />
   <path
@@ -15973,10 +15962,6 @@
      class="b"
      d="m 3114.5569,739.75067 h 17.213"
      id="path31193" />
-  <path
-     class="b"
-     d="m 3114.5569,735.22092 v 9.05954"
-     id="path31195" />
   <path
      class="b"
      d="m 3131.7699,753.34001 v -9.05955"
@@ -16217,24 +16202,16 @@
      id="path31299" />
   <path
      class="b"
-     d="m 3139.0175,764.21149 -25.8195,-6.34171"
+     d="m 3139.0099,764.18773 -25.8497,-7.38331"
      id="path31303" />
   <path
      class="b"
-     d="m 3136.753,773.27102 -25.82,-6.79464"
+     d="m 3136.753,773.27102 -25.82,-7.70061"
      id="path31305" />
   <path
      class="b"
      d="m 3223.7244,787.31336 v -9.05959"
      id="path31307" />
-  <path
-     class="b"
-     d="m 3110.027,770.10017 v 9.05956"
-     id="path31309" />
-  <path
-     class="b"
-     d="m 3114.5569,753.34001 -2.2649,8.6066"
-     id="path31311" />
   <path
      class="d"
      d="m 3266.7575,752.43406 h -2.7181 v -15.85424 h 2.7181"
@@ -20304,16 +20281,8 @@
      id="path33087" />
   <path
      class="b"
-     d="m 3114.5569,753.34001 v -9.05955"
-     id="path33089" />
-  <path
-     class="b"
      d="m 2988.1762,718.46071 -2.2649,9.05956"
      id="path33091" />
-  <path
-     class="b"
-     d="m 3110.027,770.10017 2.265,-9.05955"
-     id="path33093" />
   <path
      class="d"
      d="m 3254.98,770.10017 h 2.2648 v 15.85424 h -2.2648"
@@ -20357,10 +20326,6 @@
      class="b"
      d="m 3258.6038,773.72401 h -34.8794"
      id="path33113" />
-  <path
-     class="b"
-     d="m 3258.6038,787.31336 v -9.05959"
-     id="path33115" />
   <path
      class="b"
      d="m 3223.7244,769.19422 v 9.05955"
@@ -23317,7 +23282,7 @@
      style="stroke-width:4.52979" />
   <path
      class="d"
-     d="m 706.98035,769.19425 -2.71786,0.90595 -4.0768,-15.40122 2.71788,-0.45297"
+     d="m 706.98035,769.64723 -2.71786,0.90595 -4.0768,-15.40122 2.71788,-0.45297"
      id="path34457"
      style="stroke-width:4.52979" />
   <path
@@ -31066,10 +31031,6 @@
      class="b"
      d="m 708.33927,769.19422 v 9.05955"
      id="path37623" />
-  <path
-     class="b"
-     d="m 3110.027,788.21928 v -9.05955"
-     id="path37625" />
   <path
      class="d"
      d="m 393.06681,770.10017 2.26487,0.453 v 15.40124 h -2.71786"
@@ -60255,7 +60216,7 @@
      id="path50441" />
   <path
      class="m"
-     d="m 3110.4802,768.74124 v 21.28995"
+     d="m 3109.5272,768.74124 v 21.28995"
      id="path50443" />
   <path
      class="m"
@@ -60285,10 +60246,6 @@
      class="m"
      d="m 3262.6803,749.71618 -5.4355,20.83699"
      id="path50457" />
-  <path
-     class="m"
-     d="m 3115.4629,751.07511 -5.4359,20.38401"
-     id="path50459" />
   <path
      class="m"
      d="m 2942.4254,704.8714 -5.4358,20.83696"
@@ -60375,15 +60332,39 @@
      id="path50501" />
   <rect
      style="fill:#f9f9f9;fill-opacity:0;stroke-width:2.58049"
-     id="bp2"
+     id="bp2-1"
      width="120.49209"
      height="19.422859"
      x="584.67639"
      y="770.55316"
      onclick="pointclick('p2')"
-     inkscape:label="bp2">
+     inkscape:label="bp2-1">
     <title
        id="title224699">Body Point 2</title>
+  </rect>
+  <rect
+     style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.881919"
+     id="bp2-2"
+     width="18.57209"
+     height="14.71855"
+     x="686.14337"
+     y="755.83466"
+     onclick="pointclick('p2')"
+     inkscape:label="bp2-2">
+    <title
+       id="title224699-6">Body Point 2</title>
+  </rect>
+  <rect
+     style="fill:#f9f9f9;fill-opacity:0;stroke-width:0.949594"
+     id="bp2-3"
+     width="26.915079"
+     height="11.774668"
+     x="660.72003"
+     y="758.51874"
+     onclick="pointclick('p2')"
+     inkscape:label="bp2-3">
+    <title
+       id="title224699-6-5">Body Point 2</title>
   </rect>
   <rect
      style="fill:#f9f9f9;fill-opacity:0;stroke-width:2.58049"
@@ -63661,4 +63642,42 @@
        x="428.12244"
        y="558.16931"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9.28976px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#004187;fill-opacity:1;stroke-width:2.58049">showcasing modern software technologies</tspan></text>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 576.19768,770.5532 v 15.40124 h 130.78267 l 1.35892,-15.85427 -4.52976,-16.76016 -41.22097,10.8715 -52.54542,5.88869 z"
+     id="point2"
+     sodipodi:nodetypes="ccccccccc"
+     inkscape:label="point2"
+     onclick="pointclick('point2')">
+    <title
+       id="title43547">Point 2</title>
+  </path>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 464.63729,770.5532 v 15.40124 H 576.19768 V 770.5532 l -3.29882,-15.92069 6e-5,-1.2925 -38.87651,10.41852 -39.90778,5.88871 z"
+     id="point1"
+     inkscape:label="point1"
+     onclick="pointclick('point1')">
+    <title
+       id="title57837">Point 1</title>
+  </path>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 3242.7504,770.54183 -42.1279,0.0113 -39.8621,-4.98276 -46.2505,-11.32522 -4.0316,15.5811 -0.1167,17.487 132.2746,-0.49666 z"
+     id="point3"
+     inkscape:label="point3"
+     onclick="pointclick('point3')"
+     sodipodi:nodetypes="cccccccc">
+    <title
+       id="title72096">Point 3</title>
+  </path>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 3260.1187,786.80792 111.3468,0.12836 -0.1283,-18.09787 -27.2752,0.25671 -23.5529,-2.5029 -17.6486,-4.10731 -39.7255,-9.24147 -4.1073,13.73384 0.1926,19.89482 z"
+     id="point4"
+     inkscape:label="point4"
+     onclick="pointclick('point4')">
+    <title
+       id="title103807">Point 4</title>
+  </path>
 </svg>

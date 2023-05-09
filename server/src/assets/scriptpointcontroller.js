@@ -1,6 +1,7 @@
 var trackOutput = 'master';
 var sessionId = 0;
-var pointstates = [];
+
+const pointAspects = ['normal', 'reverse'];
 
 const ptIdMapperArray = [
 	["p1", "point1"],
@@ -20,7 +21,8 @@ const ptIdMapperArray = [
 	["p15", "point15"],
 	["p16", "point16"],
 	["p17", "point17"],
-	["p18", "point18"],
+	["p18a", "point18a"],
+	["p18b", "point18b"],
 	["p19", "point19"],
 	["p20", "point20"],
 	["p21", "point21"],
@@ -215,12 +217,10 @@ function getPointsAspectsAndUpdate() {
 			const ptAspRegex = /(\w+) - state: (\w+)/g;
 			var respSplit = responseData.split(/\r?\n/);
 			for (const elem of respSplit) {
-				console.log(elem);
 				matchArr = [...elem.matchAll(ptAspRegex)];
 				if (matchArr !== null) {
-					console.log(matchArr);
 					ptAspectMap[matchArr[0][1]] = matchArr[0][2];
-					console.log("Set " + matchArr[0][1] + " to " + matchArr[0][2]);
+					//console.log(matchArr[0][1] + " aspect: " + matchArr[0][2]);
 				}
 				
 			}
@@ -232,14 +232,79 @@ function getPointsAspectsAndUpdate() {
 }
 
 
-function updatePointStatesAjax() {
-	//sigAspectMap.forEach();
-	
+function setPointToAspect(pointId, pointAspect) {
+	$.ajax({
+		type: 'POST',
+		url: '/controller/set-point',
+		crossDomain: true,
+		data: { 'point': pointId, 'state': pointAspect },
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			console.log("set point " + pointId + " to " + pointAspect);
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			console.log("Error when setting point " + pointId + " to " + pointAspect);
+		}
+	});
+}
+
+async function switchPoint(shortPointID) {
+	if (shortPointID === null) {
+		return;
+	}
+	longPointID = ptIdMap.get(shortPointID);
+	if (longPointID === undefined) {
+		return;
+	}
+	getPointsAspectsAndUpdate();
+	await new Promise(r => setTimeout(r, 1000));
+	let aspect = "reverse";
+	if (ptAspectMap.get(longPointID) === "reverse") {
+		aspect = "normal";
+	}
+	setPointToAspect(longPointID, aspect);
 }
 
 function pointclick(id) {
 	console.log("Point id " + id);
+	switchPoint(id);
 }
 function signalclick(id) {
 	console.log("Signal id " + id);
 }
+
+async function updateVisuals() {
+	await new Promise(r => setTimeout(r, 1500));
+	$('rect[id^="bp"]').each(function () {
+		var idstr = new String($(this).prop("id"));
+		console.log("short id: " + idstr);
+		var hyphPos = idstr.indexOf("-");
+		var idSub = idstr.substring(2, hyphPos);
+		var longId = ptIdMap.get("p" +idSub);
+		console.log("long id: " + longId);
+		console.log("aspect: " + ptAspectMap.get(longId));
+		if (ptAspectMap.get(longId) === "normal") {
+			$(this).css({
+				fill: 'red',
+				fillOpacity: 0.1
+			});
+		} else {
+			$(this).css({
+				fill: 'blue',
+				fillOpacity: 0.1
+			});
+		}
+	});
+	//$('rect[id^="bp"]').css({
+	//	//color: 'red'
+	//	fill: 'red',
+	//	fillOpacity: 0.1
+	//});
+}
+
+$(document).ready(
+	function () {
+		getPointsAspectsAndUpdate();
+		updateVisuals();
+	}
+);
