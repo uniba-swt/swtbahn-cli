@@ -55803,10 +55803,10 @@
      id="path34331" />
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s1"
+     id="signal1"
      cx="1221.6769"
      cy="40.379738"
-     onclick="signalclick('s1')"
+     onclick="signalclick('signal1')"
      inkscape:label="s1"
      r="4.1465774">
     <title
@@ -55814,10 +55814,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s2"
+     id="signal2"
      cx="447.58463"
      cy="10.781602"
-     onclick="signalclick('s2')"
+     onclick="signalclick('signal2')"
      inkscape:label="s2"
      r="4.1465774">
     <title
@@ -55825,10 +55825,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s21"
+     id="signal21"
      cx="1797.6377"
      cy="717.48273"
-     onclick="signalclick('s21')"
+     onclick="signalclick('signal21')"
      inkscape:label="s21"
      r="4.1465774">
     <title
@@ -55836,10 +55836,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s3"
+     id="signal3"
      cx="411.65231"
      cy="41.384575"
-     onclick="signalclick('s3')"
+     onclick="signalclick('signal3')"
      inkscape:label="s3"
      r="4.1465774">
     <title
@@ -55847,21 +55847,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s4"
+     id="signal4a"
      cx="323.01624"
      cy="776.35718"
-     onclick="signalclick('s4')"
-     inkscape:label="s4"
+     onclick="signalclick('signal4a')"
+     inkscape:label="s4a"
      r="4.1465774">
     <title
        id="title613214-62">Signal 4</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s40"
+     id="signal40"
      cx="3134.7356"
      cy="375.88031"
-     onclick="signalclick('s40')"
+     onclick="signalclick('signal40')"
      inkscape:label="s40"
      r="4.1465774">
     <title
@@ -55869,10 +55869,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s41"
+     id="signal41"
      cx="2204.7949"
      cy="133.07178"
-     onclick="signalclick('s41')"
+     onclick="signalclick('signal41')"
      inkscape:label="s41"
      r="4.1465774">
     <title
@@ -55880,10 +55880,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s5"
+     id="signal5"
      cx="811.82544"
      cy="751.98065"
-     onclick="signalclick('s5')"
+     onclick="signalclick('signal5')"
      inkscape:label="s5"
      r="4.1465774">
     <title
@@ -55891,10 +55891,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s6"
+     id="signal6"
      cx="1797.5804"
      cy="752.77887"
-     onclick="signalclick('s6')"
+     onclick="signalclick('signal6')"
      inkscape:label="s6"
      r="4.1465774">
     <title
@@ -55902,21 +55902,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s7"
+     id="signal7a"
      cx="2573.5513"
      cy="785.73718"
-     onclick="signalclick('s7')"
-     inkscape:label="s7"
+     onclick="signalclick('signal7a')"
+     inkscape:label="s7a"
      r="4.1465774">
     <title
        id="title613214-4">Signal 7</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s8"
+     id="signal8"
      cx="3128.9385"
      cy="717.2547"
-     onclick="signalclick('s8')"
+     onclick="signalclick('signal8')"
      inkscape:label="s8"
      r="4.1465774">
     <title
@@ -55924,10 +55924,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s9"
+     id="signal9"
      cx="2653.595"
      cy="9.5209742"
-     onclick="signalclick('s9')"
+     onclick="signalclick('signal9')"
      inkscape:label="s9"
      r="4.1465774">
     <title
@@ -55935,10 +55935,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s10"
+     id="signal10"
      cx="2639.1826"
      cy="40.640331"
-     onclick="signalclick('s10')"
+     onclick="signalclick('signal10')"
      inkscape:label="s10"
      r="4.1465774">
     <title
@@ -55946,10 +55946,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s11"
+     id="signal11"
      cx="2276.8848"
      cy="41.626495"
-     onclick="signalclick('s11')"
+     onclick="signalclick('signal11')"
      inkscape:label="s11"
      r="4.1465774">
     <title
@@ -55957,10 +55957,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s12"
+     id="signal12"
      cx="2222.1294"
      cy="9.6929598"
-     onclick="signalclick('s12')"
+     onclick="signalclick('signal12')"
      inkscape:label="s12"
      r="4.1465774">
     <title
@@ -55968,10 +55968,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s13"
+     id="signal13"
      cx="1751.6987"
      cy="40.739452"
-     onclick="signalclick('s13')"
+     onclick="signalclick('signal13')"
      inkscape:label="s13"
      r="4.1465774">
     <title
@@ -55979,10 +55979,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s14"
+     id="signal14"
      cx="1699.363"
      cy="8.4430361"
-     onclick="signalclick('s14')"
+     onclick="signalclick('signal14')"
      inkscape:label="s14"
      r="4.1465774">
     <title
@@ -55990,10 +55990,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s15"
+     id="signal15"
      cx="747.64703"
      cy="76.624367"
-     onclick="signalclick('s15')"
+     onclick="signalclick('signal15')"
      inkscape:label="s15"
      r="4.1465774">
     <title
@@ -56001,10 +56001,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s16"
+     id="signal16"
      cx="447.58463"
      cy="43.965065"
-     onclick="signalclick('s16')"
+     onclick="signalclick('signal16')"
      inkscape:label="s16"
      r="4.1465774">
     <title
@@ -56012,10 +56012,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s17"
+     id="signal17"
      cx="411.41037"
      cy="76.946915"
-     onclick="signalclick('s17')"
+     onclick="signalclick('signal17')"
      inkscape:label="s17"
      r="4.1465774">
     <title
@@ -56023,21 +56023,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s18"
+     id="signal18a"
      cx="399.73239"
      cy="746.79309"
-     onclick="signalclick('s18')"
-     inkscape:label="s18"
+     onclick="signalclick('signal18a')"
+     inkscape:label="s18a"
      r="4.1465774">
     <title
        id="title613214-0">Signal 18</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s19"
+     id="signal19"
      cx="899.3313"
      cy="715.45642"
-     onclick="signalclick('s19')"
+     onclick="signalclick('signal19')"
      inkscape:label="s19"
      r="4.1465774">
     <title
@@ -56045,10 +56045,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s20"
+     id="signal20"
      cx="1486.9568"
      cy="748.7608"
-     onclick="signalclick('s20')"
+     onclick="signalclick('signal20')"
      inkscape:label="s20"
      r="4.1465774">
     <title
@@ -56056,21 +56056,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s22"
+     id="signal22a"
      cx="2444.6262"
      cy="748.55933"
-     onclick="signalclick('s22')"
-     inkscape:label="s22"
+     onclick="signalclick('signal22a')"
+     inkscape:label="s22a"
      r="4.1465774">
     <title
        id="title613214-5-8">Signal 22</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s23"
+     id="signal23"
      cx="3108.3533"
      cy="682.75677"
-     onclick="signalclick('s23')"
+     onclick="signalclick('signal23')"
      inkscape:label="s23"
      r="4.1465774">
     <title
@@ -56078,21 +56078,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s2-8"
+     id="signal24"
      cx="2653.21"
      cy="44.631817"
-     onclick="signalclick('s24')"
-     inkscape:label="s2"
+     onclick="signalclick('signal24')"
+     inkscape:label="s24"
      r="4.1465774">
     <title
-       id="title613214-5-29">Signal 2</title>
+       id="title613214-5-29">Signal 24</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s25"
+     id="signal25"
      cx="2639.2395"
      cy="74.453934"
-     onclick="signalclick('s25')"
+     onclick="signalclick('signal25')"
      inkscape:label="s25"
      r="4.1465774">
     <title
@@ -56100,10 +56100,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s26"
+     id="signal26"
      cx="1038.9598"
      cy="143.35417"
-     onclick="signalclick('s26')"
+     onclick="signalclick('signal26')"
      inkscape:label="s26"
      r="4.1465774">
     <title
@@ -56111,10 +56111,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s27"
+     id="signal27"
      cx="106.79896"
      cy="357.73624"
-     onclick="signalclick('s27')"
+     onclick="signalclick('signal27')"
      inkscape:label="s27"
      r="4.1465774">
     <title
@@ -56122,10 +56122,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s28"
+     id="signal28"
      cx="1195.4076"
      cy="175.89476"
-     onclick="signalclick('s28')"
+     onclick="signalclick('signal28')"
      inkscape:label="s28"
      r="4.1465774">
     <title
@@ -56133,10 +56133,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s29"
+     id="signal29"
      cx="126.85752"
      cy="425.1347"
-     onclick="signalclick('s29')"
+     onclick="signalclick('signal29')"
      inkscape:label="s29"
      r="4.1465774">
     <title
@@ -56144,10 +56144,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s30"
+     id="signal30"
      cx="1209.7484"
      cy="209.25221"
-     onclick="signalclick('s30')"
+     onclick="signalclick('signal30')"
      inkscape:label="s30"
      r="4.1465774">
     <title
@@ -56155,10 +56155,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s31"
+     id="signal31"
      cx="139.06003"
      cy="460.4024"
-     onclick="signalclick('s31')"
+     onclick="signalclick('signal31')"
      inkscape:label="s31"
      r="4.1465774">
     <title
@@ -56166,10 +56166,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s32"
+     id="signal32"
      cx="1725.2827"
      cy="137.46245"
-     onclick="signalclick('s32')"
+     onclick="signalclick('signal32')"
      inkscape:label="s32"
      r="4.1465774">
     <title
@@ -56177,10 +56177,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s33"
+     id="signal33"
      cx="1924.4061"
      cy="182.74695"
-     onclick="signalclick('s33')"
+     onclick="signalclick('signal33')"
      inkscape:label="s33"
      r="4.1465774">
     <title
@@ -56188,10 +56188,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s34"
+     id="signal34"
      cx="2268.9014"
      cy="317.33548"
-     onclick="signalclick('s34')"
+     onclick="signalclick('signal34')"
      inkscape:label="s34"
      r="4.1465774">
     <title
@@ -56199,21 +56199,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s35"
+     id="signal35a"
      cx="2458.8896"
      cy="552.68402"
-     onclick="signalclick('s35')"
-     inkscape:label="s35"
+     onclick="signalclick('signal35a')"
+     inkscape:label="s35a"
      r="4.1465774">
     <title
        id="title613214-6-4">Signal 35</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s36"
+     id="signal36"
      cx="3083.8113"
      cy="-636.38867"
-     onclick="signalclick('s36')"
+     onclick="signalclick('signal36')"
      inkscape:label="s36"
      transform="scale(1,-1)"
      r="4.1465774">
@@ -56222,10 +56222,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s37"
+     id="signal37"
      cx="2652.9104"
      cy="77.692848"
-     onclick="signalclick('s37')"
+     onclick="signalclick('signal37')"
      inkscape:label="s37"
      r="4.1465774">
     <title
@@ -56233,10 +56233,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s38"
+     id="signal38"
      cx="2638.7175"
      cy="108.88046"
-     onclick="signalclick('s38')"
+     onclick="signalclick('signal38')"
      inkscape:label="s38"
      r="4.1465774">
     <title
@@ -56244,10 +56244,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s39"
+     id="signal39"
      cx="2213.5015"
      cy="97.832741"
-     onclick="signalclick('s39')"
+     onclick="signalclick('signal39')"
      inkscape:label="s39"
      r="4.1465774">
     <title
@@ -56255,10 +56255,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s42"
+     id="signal42"
      cx="3125.2317"
      cy="411.5636"
-     onclick="signalclick('s42')"
+     onclick="signalclick('signal42')"
      inkscape:label="s42"
      r="4.1465774">
     <title
@@ -56266,10 +56266,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s43"
+     id="signal43"
      cx="1762.9688"
      cy="675.94275"
-     onclick="signalclick('s43')"
+     onclick="signalclick('signal43')"
      inkscape:label="s43"
      r="4.1465774">
     <title
@@ -56277,10 +56277,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s44"
+     id="signal44"
      cx="2090.2427"
      cy="692.55457"
-     onclick="signalclick('s44')"
+     onclick="signalclick('signal44')"
      inkscape:label="s44"
      r="4.1465774">
     <title
@@ -56288,10 +56288,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s45"
+     id="signal45"
      cx="1127.3527"
      cy="594.65894"
-     onclick="signalclick('s45')"
+     onclick="signalclick('signal45')"
      inkscape:label="s45"
      r="4.1465774">
     <title
@@ -56299,21 +56299,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s46"
+     id="signal46a"
      cx="2267.9741"
      cy="651.62317"
-     onclick="signalclick('s46')"
-     inkscape:label="s46"
+     onclick="signalclick('signal46a')"
+     inkscape:label="s46a"
      r="4.1465774">
     <title
        id="title613214-62-9">Signal 46</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s47"
+     id="signal47"
      cx="1372.0309"
      cy="489.16959"
-     onclick="signalclick('s47')"
+     onclick="signalclick('signal47')"
      inkscape:label="s47"
      r="4.1465774">
     <title
@@ -56321,21 +56321,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s48"
+     id="signal48a"
      cx="2157.5371"
      cy="585.30304"
-     onclick="signalclick('s48')"
-     inkscape:label="s48"
+     onclick="signalclick('signal48a')"
+     inkscape:label="s48a"
      r="4.1465774">
     <title
        id="title613214-62-4">Signal 48</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s49"
+     id="signal49"
      cx="1370.2061"
      cy="438.5347"
-     onclick="signalclick('s49')"
+     onclick="signalclick('signal49')"
      inkscape:label="s49"
      r="4.1465774">
     <title
@@ -56343,21 +56343,21 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s50"
+     id="signal50a"
      cx="2204.3386"
      cy="548.01556"
-     onclick="signalclick('s50')"
-     inkscape:label="s50"
+     onclick="signalclick('signal50a')"
+     inkscape:label="s50a"
      r="4.1465774">
     <title
        id="title613214-62-05">Signal 50</title>
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s51"
+     id="signal51"
      cx="781.19342"
      cy="650.62158"
-     onclick="signalclick('s51')"
+     onclick="signalclick('signal51')"
      inkscape:label="s51"
      r="4.1465774">
     <title
@@ -56365,10 +56365,10 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s52"
+     id="signal52"
      cx="1731.7096"
      cy="280.90976"
-     onclick="signalclick('s52')"
+     onclick="signalclick('signal52')"
      inkscape:label="s52"
      r="4.1465774">
     <title
@@ -56376,11 +56376,11 @@
   </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="s53"
+     id="signal53a"
      cx="2487.5171"
      cy="646.62994"
-     onclick="signalclick('s53')"
-     inkscape:label="s53"
+     onclick="signalclick('signal53a')"
+     inkscape:label="s53a"
      r="4.1465774">
     <title
        id="title613214-62-05-5">Signal 53</title>
@@ -56391,7 +56391,7 @@
      x="2454.6965"
      y="642.11407"
      id="text865013"
-     onclick="signalclick('s53')"><tspan
+     onclick="signalclick('signal53a')"><tspan
        sodipodi:role="line"
        x="2454.6965"
        y="642.11407"
@@ -56403,7 +56403,7 @@
      x="2427.2351"
      y="545.73474"
      id="text865013-1"
-     onclick="signalclick('s35')"><tspan
+     onclick="signalclick('signal35a')"><tspan
        sodipodi:role="line"
        x="2427.2351"
        y="545.73474"
@@ -56415,7 +56415,7 @@
      x="2408.2512"
      y="753.09528"
      id="text865013-4"
-     onclick="signalclick('s22')"><tspan
+     onclick="signalclick('signal22a')"><tspan
        sodipodi:role="line"
        x="2408.2512"
        y="753.09528"
@@ -56427,7 +56427,7 @@
      x="2542.2825"
      y="790.18958"
      id="text865013-4-1"
-     onclick="signalclick('s7')"><tspan
+     onclick="signalclick('signal7a')"><tspan
        sodipodi:role="line"
        x="2542.2825"
        y="790.18958"
@@ -56439,7 +56439,7 @@
      x="3138.9221"
      y="713.82343"
      id="text865013-4-1-6"
-     onclick="signalclick('s8')"><tspan
+     onclick="signalclick('signal8')"><tspan
        sodipodi:role="line"
        x="3138.9221"
        y="713.82343"
@@ -56451,7 +56451,7 @@
      x="2666.2092"
      y="13.866094"
      id="text865013-4-1-4"
-     onclick="signalclick('s9')"><tspan
+     onclick="signalclick('signal9')"><tspan
        sodipodi:role="line"
        x="2666.2092"
        y="13.866094"
@@ -56463,7 +56463,7 @@
      x="2602.6177"
      y="45.315784"
      id="text865013-4-1-4-2"
-     onclick="signalclick('s10')"><tspan
+     onclick="signalclick('signal10')"><tspan
        sodipodi:role="line"
        x="2602.6177"
        y="45.315784"
@@ -56475,7 +56475,7 @@
      x="2240.3044"
      y="46.40432"
      id="text865013-4-1-4-2-4"
-     onclick="signalclick('s11')"><tspan
+     onclick="signalclick('signal11')"><tspan
        sodipodi:role="line"
        x="2240.3044"
        y="46.40432"
@@ -56487,7 +56487,7 @@
      x="2234.8306"
      y="14.130282"
      id="text865013-4-1-4-2-2"
-     onclick="signalclick('s12')"><tspan
+     onclick="signalclick('signal12')"><tspan
        sodipodi:role="line"
        x="2234.8306"
        y="14.130282"
@@ -56499,7 +56499,7 @@
      x="1715.2277"
      y="45.263893"
      id="text865013-4-1-4-2-8"
-     onclick="signalclick('s13')"><tspan
+     onclick="signalclick('signal13')"><tspan
        sodipodi:role="line"
        x="1715.2277"
        y="45.263893"
@@ -56511,7 +56511,7 @@
      x="1712.7185"
      y="12.647737"
      id="text865013-4-1-4-2-28"
-     onclick="signalclick('s14')"><tspan
+     onclick="signalclick('signal14')"><tspan
        sodipodi:role="line"
        x="1712.7185"
        y="12.647737"
@@ -56523,7 +56523,7 @@
      x="1189.7336"
      y="45.315784"
      id="text865013-4-1-4-2-6"
-     onclick="signalclick('s1')"><tspan
+     onclick="signalclick('signal1')"><tspan
        sodipodi:role="line"
        x="1189.7336"
        y="45.315784"
@@ -56535,7 +56535,7 @@
      x="460.87375"
      y="15.270713"
      id="text865013-4-1-4-2-83"
-     onclick="signalclick('s2')"><tspan
+     onclick="signalclick('signal2')"><tspan
        sodipodi:role="line"
        x="460.87375"
        y="15.270713"
@@ -56547,7 +56547,7 @@
      x="381.26779"
      y="46.041538"
      id="text865013-4-1-4-2-3"
-     onclick="signalclick('s3')"><tspan
+     onclick="signalclick('signal3')"><tspan
        sodipodi:role="line"
        x="381.26779"
        y="46.041538"
@@ -56559,7 +56559,7 @@
      x="290.87024"
      y="777.30292"
      id="text865013-4-1-4-2-47"
-     onclick="signalclick('s4')"><tspan
+     onclick="signalclick('signal4a')"><tspan
        sodipodi:role="line"
        x="290.87024"
        y="777.30292"
@@ -56571,7 +56571,7 @@
      x="824.09924"
      y="756.09094"
      id="text865013-4-1-4-2-89"
-     onclick="signalclick('s5')"><tspan
+     onclick="signalclick('signal5')"><tspan
        sodipodi:role="line"
        x="824.09924"
        y="756.09094"
@@ -56583,7 +56583,7 @@
      x="1810.396"
      y="757.23145"
      id="text865013-4-1-4-2-68"
-     onclick="signalclick('s6')"><tspan
+     onclick="signalclick('signal6')"><tspan
        sodipodi:role="line"
        x="1810.396"
        y="757.23145"
@@ -56595,7 +56595,7 @@
      x="710.82788"
      y="81.643456"
      id="text865013-4-1-4-2-6-9"
-     onclick="signalclick('s15')"><tspan
+     onclick="signalclick('signal15')"><tspan
        sodipodi:role="line"
        x="710.82788"
        y="81.643456"
@@ -56607,7 +56607,7 @@
      x="462.1011"
      y="48.457088"
      id="text865013-4-1-4-2-6-3"
-     onclick="signalclick('s16')"><tspan
+     onclick="signalclick('signal16')"><tspan
        sodipodi:role="line"
        x="462.1011"
        y="48.457088"
@@ -56619,7 +56619,7 @@
      x="375.32724"
      y="81.68454"
      id="text865013-4-1-4-2-6-37"
-     onclick="signalclick('s17')"><tspan
+     onclick="signalclick('signal17')"><tspan
        sodipodi:role="line"
        x="375.32724"
        y="81.68454"
@@ -56631,7 +56631,7 @@
      x="363.32748"
      y="751.7312"
      id="text865013-4-1-4-2-6-6"
-     onclick="signalclick('s18')"><tspan
+     onclick="signalclick('signal18a')"><tspan
        sodipodi:role="line"
        x="363.32748"
        y="751.7312"
@@ -56643,7 +56643,7 @@
      x="912.11621"
      y="720.59723"
      id="text865013-4-1-4-2-6-2"
-     onclick="signalclick('s19')"><tspan
+     onclick="signalclick('signal19')"><tspan
        sodipodi:role="line"
        x="912.11621"
        y="720.59723"
@@ -56655,7 +56655,7 @@
      x="1494.826"
      y="753.41779"
      id="text865013-4-1-4-2-83-5"
-     onclick="signalclick('s20')"><tspan
+     onclick="signalclick('signal20')"><tspan
        sodipodi:role="line"
        x="1494.826"
        y="753.41779"
@@ -56667,7 +56667,7 @@
      x="1811.339"
      y="722.04871"
      id="text865013-4-1-4-2-83-7"
-     onclick="signalclick('s21')"><tspan
+     onclick="signalclick('signal21')"><tspan
        sodipodi:role="line"
        x="1811.339"
        y="722.04871"
@@ -56679,7 +56679,7 @@
      x="3116.4773"
      y="675.6806"
      id="text865013-4-1-4-2-83-6"
-     onclick="signalclick('s23')"><tspan
+     onclick="signalclick('signal23')"><tspan
        sodipodi:role="line"
        x="3116.4773"
        y="675.6806"
@@ -56691,7 +56691,7 @@
      x="2666.6255"
      y="49.670353"
      id="text865013-4-1-4-2-83-4"
-     onclick="signalclick('s24')"><tspan
+     onclick="signalclick('signal24')"><tspan
        sodipodi:role="line"
        x="2666.6255"
        y="49.670353"
@@ -56703,7 +56703,7 @@
      x="2601.3062"
      y="79.134521"
      id="text865013-4-1-4-2-83-0"
-     onclick="signalclick('s25')"><tspan
+     onclick="signalclick('signal25')"><tspan
        sodipodi:role="line"
        x="2601.3062"
        y="79.134521"
@@ -56715,7 +56715,7 @@
      x="1002.0334"
      y="155.71228"
      id="text865013-4-1-4-2-83-8"
-     onclick="signalclick('s26')"><tspan
+     onclick="signalclick('signal26')"><tspan
        sodipodi:role="line"
        x="1002.0334"
        y="155.71228"
@@ -56727,7 +56727,7 @@
      x="119.31626"
      y="356.08679"
      id="text865013-4-1-4-2-83-08"
-     onclick="signalclick('s27')"><tspan
+     onclick="signalclick('signal27')"><tspan
        sodipodi:role="line"
        x="119.31626"
        y="356.08679"
@@ -56739,7 +56739,7 @@
      x="1159.156"
      y="186.90472"
      id="text865013-4-1-4-2-83-2"
-     onclick="signalclick('s28')"><tspan
+     onclick="signalclick('signal28')"><tspan
        sodipodi:role="line"
        x="1159.156"
        y="186.90472"
@@ -56751,7 +56751,7 @@
      x="138.77954"
      y="423.43793"
      id="text865013-4-1-4-2-83-9"
-     onclick="signalclick('s29')"><tspan
+     onclick="signalclick('signal29')"><tspan
        sodipodi:role="line"
        x="138.77954"
        y="423.43793"
@@ -56763,7 +56763,7 @@
      x="1173.0422"
      y="221.33548"
      id="text865013-4-1-4-2-3-9"
-     onclick="signalclick('s30')"><tspan
+     onclick="signalclick('signal30')"><tspan
        sodipodi:role="line"
        x="1173.0422"
        y="221.33548"
@@ -56775,7 +56775,7 @@
      x="150.0423"
      y="459.79654"
      id="text865013-4-1-4-2-3-8"
-     onclick="signalclick('s31')"><tspan
+     onclick="signalclick('signal31')"><tspan
        sodipodi:role="line"
        x="150.0423"
        y="459.79654"
@@ -56787,7 +56787,7 @@
      x="1738.5273"
      y="141.96188"
      id="text865013-4-1-4-2-3-0"
-     onclick="signalclick('s32')"><tspan
+     onclick="signalclick('signal32')"><tspan
        sodipodi:role="line"
        x="1738.5273"
        y="141.96188"
@@ -56799,7 +56799,7 @@
      x="1887.3732"
      y="184.95593"
      id="text865013-4-1-4-2-3-7"
-     onclick="signalclick('s33')"><tspan
+     onclick="signalclick('signal33')"><tspan
        sodipodi:role="line"
        x="1887.3732"
        y="184.95593"
@@ -56811,7 +56811,7 @@
      x="2280.05"
      y="336.41699"
      id="text865013-4-1-4-2-3-91"
-     onclick="signalclick('s34')"><tspan
+     onclick="signalclick('signal34')"><tspan
        sodipodi:role="line"
        x="2280.05"
        y="336.41699"
@@ -56823,7 +56823,7 @@
      x="3083.9644"
      y="622.87921"
      id="text865013-4-1-4-2-3-4"
-     onclick="signalclick('s36')"><tspan
+     onclick="signalclick('signal36')"><tspan
        sodipodi:role="line"
        x="3083.9644"
        y="622.87921"
@@ -56835,7 +56835,7 @@
      x="2665.2681"
      y="82.31958"
      id="text865013-4-1-4-2-3-2"
-     onclick="signalclick('s37')"><tspan
+     onclick="signalclick('signal37')"><tspan
        sodipodi:role="line"
        x="2665.2681"
        y="82.31958"
@@ -56847,7 +56847,7 @@
      x="2601.6216"
      y="113.56529"
      id="text865013-4-1-4-2-3-49"
-     onclick="signalclick('s38')"><tspan
+     onclick="signalclick('signal38')"><tspan
        sodipodi:role="line"
        x="2601.6216"
        y="113.56529"
@@ -56859,7 +56859,7 @@
      x="2225.395"
      y="107.17892"
      id="text865013-4-1-4-2-3-5"
-     onclick="signalclick('s39')"><tspan
+     onclick="signalclick('signal39')"><tspan
        sodipodi:role="line"
        x="2225.395"
        y="107.17892"
@@ -56871,7 +56871,7 @@
      x="3098.1792"
      y="376.32935"
      id="text865013-4-1-4-2-47-5"
-     onclick="signalclick('s40')"><tspan
+     onclick="signalclick('signal40')"><tspan
        sodipodi:role="line"
        x="3098.1792"
        y="376.32935"
@@ -56883,7 +56883,7 @@
      x="2216.9724"
      y="142.42815"
      id="text865013-4-1-4-2-47-0"
-     onclick="signalclick('s41')"><tspan
+     onclick="signalclick('signal41')"><tspan
        sodipodi:role="line"
        x="2216.9724"
        y="142.42815"
@@ -56895,7 +56895,7 @@
      x="3087.915"
      y="412.4808"
      id="text865013-4-1-4-2-47-1"
-     onclick="signalclick('s42')"><tspan
+     onclick="signalclick('signal42')"><tspan
        sodipodi:role="line"
        x="3087.915"
        y="412.4808"
@@ -56907,7 +56907,7 @@
      x="1773.7208"
      y="673.52423"
      id="text865013-4-1-4-2-47-9"
-     onclick="signalclick('s43')"><tspan
+     onclick="signalclick('signal43')"><tspan
        sodipodi:role="line"
        x="1773.7208"
        y="673.52423"
@@ -56919,7 +56919,7 @@
      x="2053.2393"
      y="697.61475"
      id="text865013-4-1-4-2-47-2"
-     onclick="signalclick('s44')"><tspan
+     onclick="signalclick('signal44')"><tspan
        sodipodi:role="line"
        x="2053.2393"
        y="697.61475"
@@ -56931,7 +56931,7 @@
      x="1140.2542"
      y="599.23358"
      id="text865013-4-1-4-2-47-3"
-     onclick="signalclick('s45')"><tspan
+     onclick="signalclick('signal45')"><tspan
        sodipodi:role="line"
        x="1140.2542"
        y="599.23358"
@@ -56943,7 +56943,7 @@
      x="1387.7438"
      y="493.90723"
      id="text865013-4-1-4-2-47-90"
-     onclick="signalclick('s47')"><tspan
+     onclick="signalclick('signal47')"><tspan
        sodipodi:role="line"
        x="1387.7438"
        y="493.90723"
@@ -56955,7 +56955,7 @@
      x="1384.4365"
      y="442.13193"
      id="text865013-4-1-4-2-47-01"
-     onclick="signalclick('s49')"><tspan
+     onclick="signalclick('signal49')"><tspan
        sodipodi:role="line"
        x="1384.4365"
        y="442.13193"
@@ -56967,7 +56967,7 @@
      x="2230.926"
      y="651.28589"
      id="text865013-4-1-4-2-89-2"
-     onclick="signalclick('s46')"><tspan
+     onclick="signalclick('signal46a')"><tspan
        sodipodi:role="line"
        x="2230.926"
        y="651.28589"
@@ -56979,7 +56979,7 @@
      x="2119.4495"
      y="585.36932"
      id="text865013-4-1-4-2-89-7"
-     onclick="signalclick('s48')"><tspan
+     onclick="signalclick('signal48a')"><tspan
        sodipodi:role="line"
        x="2119.4495"
        y="585.36932"
@@ -56991,7 +56991,7 @@
      x="2168.5452"
      y="547.39319"
      id="text865013-4-1-4-2-89-1"
-     onclick="signalclick('s50')"><tspan
+     onclick="signalclick('signal50a')"><tspan
        sodipodi:role="line"
        x="2168.5452"
        y="547.39319"
@@ -57003,7 +57003,7 @@
      x="789.30109"
      y="641.89233"
      id="text865013-4-1-4-2-89-9"
-     onclick="signalclick('s51')"><tspan
+     onclick="signalclick('signal51')"><tspan
        sodipodi:role="line"
        x="789.30109"
        y="641.89233"
@@ -57015,7 +57015,7 @@
      x="1746.5623"
      y="284.98129"
      id="text865013-4-1-4-2-89-6"
-     onclick="signalclick('s52')"><tspan
+     onclick="signalclick('signal52')"><tspan
        sodipodi:role="line"
        x="1746.5623"
        y="284.98129"

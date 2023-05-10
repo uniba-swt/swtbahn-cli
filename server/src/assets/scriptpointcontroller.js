@@ -3,39 +3,6 @@ var sessionId = 0;
 
 const pointAspects = ['normal', 'reverse'];
 
-const ptIdMapperArray = [
-	["p1", "point1"],
-	["p2", "point2"],
-	["p3", "point3"],
-	["p4", "point4"],
-	["p5", "point5"],
-	["p6", "point6"],
-	["p7", "point7"],
-	["p8", "point8"],
-	["p9", "point9"],
-	["p10", "point10"],
-	["p11", "point11"],
-	["p12", "point12"],
-	["p13", "point13"],
-	["p14", "point14"],
-	["p15", "point15"],
-	["p16", "point16"],
-	["p17", "point17"],
-	["p18a", "point18a"],
-	["p18b", "point18b"],
-	["p19", "point19"],
-	["p20", "point20"],
-	["p21", "point21"],
-	["p22", "point22"],
-	["p23", "point23"],
-	["p24", "point24"],
-	["p25", "point25"],
-	["p26", "point26"],
-	["p27", "point27"],
-	["p28", "point28"],
-	["p29", "point29"]
-];
-
 const ptAspectMapperArray = [
 	["point1", ""],
 	["point2", ""],
@@ -54,7 +21,8 @@ const ptAspectMapperArray = [
 	["point15", ""],
 	["point16", ""],
 	["point17", ""],
-	["point18", ""],
+	["point18a", ""],
+	["point18b", ""],
 	["point19", ""],
 	["point20", ""],
 	["point21", ""],
@@ -67,125 +35,63 @@ const ptAspectMapperArray = [
 	["point28", ""],
 	["point29", ""]
 ];
-
-const ptIdMap = new Map(ptIdMapperArray);
 var ptAspectMap = new Map(ptAspectMapperArray);
 
-const sigIdMapperArray = [
-	["s1", "signal1"],
-	["s2", "signal2"],
-	["s3", "signal3"],
-	["s4", "signal4a"],
-	["s5", "signal5"],
-	["s6", "signal6"],
-	["s7", "signal7a"],
-	["s8", "signal8"],
-	["s9", "signal9"],
-	["s10", "signal10"],
-	["s11", "signal11"],
-	["s12", "signal12"],
-	["s13", "signal13"],
-	["s14", "signal14"],
-	["s15", "signal15"],
-	["s16", "signal16"],
-	["s17", "signal17"],
-	["s18", "signal18a"],
-	["s19", "signal19"],
-	["s20", "signal20"],
-	["s21", "signal21"],
-	["s22", "signal22a"],
-	["s23", "signal23"],
-	["s24", "signal24"],
-	["s25", "signal25"],
-	["s26", "signal26"],
-	["s27", "signal27"],
-	["s28", "signal28"],
-	["s29", "signal29"],
-	["s30", "signal30"],
-	["s31", "signal31"],
-	["s32", "signal32"],
-	["s33", "signal33"],
-	["s34", "signal34"],
-	["s35", "signal35a"],
-	["s36", "signal36"],
-	["s37", "signal37"],
-	["s38", "signal38"],
-	["s39", "signal39"],
-	["s40", "signal40"],
-	["s41", "signal41"],
-	["s42", "signal42"],
-	["s43", "signal43"],
-	["s44", "signal44"],
-	["s45", "signal45"],
-	["s46", "signal46a"],
-	["s47", "signal47"],
-	["s48", "signal48a"],
-	["s49", "signal49"],
-	["s50", "signal50a"],
-	["s51", "signal51"],
-	["s52", "signal52"],
-	["s53", "signal53a"]
-];
-
-
-const sigAspectMapperArray = [
-	["s1", "signal1"],
-	["s2", "signal2"],
-	["s3", "signal3"],
-	["s4", "signal4a"],
-	["s5", "signal5"],
-	["s6", "signal6"],
-	["s7", "signal7a"],
-	["s8", "signal8"],
-	["s9", "signal9"],
-	["s10", "signal10"],
-	["s11", "signal11"],
-	["s12", "signal12"],
-	["s13", "signal13"],
-	["s14", "signal14"],
-	["s15", "signal15"],
-	["s16", "signal16"],
-	["s17", "signal17"],
-	["s18", "signal18a"],
-	["s19", "signal19"],
-	["s20", "signal20"],
-	["s21", "signal21"],
-	["s22", "signal22a"],
-	["s23", "signal23"],
-	["s24", "signal24"],
-	["s25", "signal25"],
-	["s26", "signal26"],
-	["s27", "signal27"],
-	["s28", "signal28"],
-	["s29", "signal29"],
-	["s30", "signal30"],
-	["s31", "signal31"],
-	["s32", "signal32"],
-	["s33", "signal33"],
-	["s34", "signal34"],
-	["s35", "signal35a"],
-	["s36", "signal36"],
-	["s37", "signal37"],
-	["s38", "signal38"],
-	["s39", "signal39"],
-	["s40", "signal40"],
-	["s41", "signal41"],
-	["s42", "signal42"],
-	["s43", "signal43"],
-	["s44", "signal44"],
-	["s45", "signal45"],
-	["s46", "signal46a"],
-	["s47", "signal47"],
-	["s48", "signal48a"],
-	["s49", "signal49"],
-	["s50", "signal50a"],
-	["s51", "signal51"],
-	["s52", "signal52"],
-	["s53", "signal53a"]
-];
-
-const sigIdMap = new Map(sigIdMapperArray);
-sigAspectMap = new Map(sigAspectMapperArray);
+var sigAspectMap = new Map([
+	["signal1", ""],
+	["signal2", ""],
+	["signal3", ""],
+	["signal4a", ""],
+	["signal5", ""],
+	["signal6", ""],
+	["signal7a", ""],
+	["signal8", ""],
+	["signal9", ""],
+	["signal10", ""],
+	["signal11", ""],
+	["signal12", ""],
+	["signal13", ""],
+	["signal14", ""],
+	["signal15", ""],
+	["signal16", ""],
+	["signal17", ""],
+	["signal18a", ""],
+	["signal19", ""],
+	["signal20", ""],
+	["signal21", ""],
+	["signal22a", ""],
+	["signal23", ""],
+	["signal24", ""],
+	["signal25", ""],
+	["signal26", ""],
+	["signal27", ""],
+	["signal28", ""],
+	["signal29", ""],
+	["signal30", ""],
+	["signal31", ""],
+	["signal32", ""],
+	["signal33", ""],
+	["signal34", ""],
+	["signal35a", ""],
+	["signal36", ""],
+	["signal37", ""],
+	["signal38", ""],
+	["signal39", ""],
+	["signal40", ""],
+	["signal41", ""],
+	["signal42", ""],
+	["signal43", ""],
+	["signal44", ""],
+	["signal45", ""],
+	["signal46a", ""],
+	["signal47", ""],
+	["signal48a", ""],
+	["signal49", ""],
+	["signal50a", ""],
+	["signal51", ""],
+	["signal52", ""],
+	["signal53a", ""]
+]);
 
 
 function setPointAjax(pointId, pointPosition) {
@@ -196,7 +102,7 @@ function setPointAjax(pointId, pointPosition) {
 		data: { 'point': pointId, 'state': pointPosition },
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			console.log('Point ' + pointId + ' set to ' + pointPosition);
+			console.log('Point ' + pointId + ' set to ' + pointPosition + ", server says " + responseData);
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			console.log('System not running or invalid position!');
@@ -204,7 +110,7 @@ function setPointAjax(pointId, pointPosition) {
 	});
 }
 
-function getPointsAspectsAndUpdate() {
+function getPointsAspectsAndUpdateMap() {
 	$.ajax({
 		type: 'POST',
 		url: '/monitor/points',
@@ -212,7 +118,7 @@ function getPointsAspectsAndUpdate() {
 		data: null,
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			console.log('Got point states');
+			console.log('Got point aspects');
 			let matchArr;
 			const ptAspRegex = /(\w+) - state: (\w+)/g;
 			var respSplit = responseData.split(/\r?\n/);
@@ -222,13 +128,51 @@ function getPointsAspectsAndUpdate() {
 					ptAspectMap[matchArr[0][1]] = matchArr[0][2];
 					//console.log(matchArr[0][1] + " aspect: " + matchArr[0][2]);
 				}
-				
 			}
 		},
 		error: function (responseData, textStatus, errorThrown) {
-			console.log('Could not get point states');
+			console.log('Could not get point aspects');
 		}
 	});
+}
+
+function getSignalsAspectsPromise(onSuccess, onErr) {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/signals',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			onSuccess(responseData);
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			onErr(responseData);
+		}
+	});
+}
+
+function updateSignalsAspects() {
+	getSignalsAspectsPromise(
+		// Success
+		(res) => {
+			console.log('Got signal aspects');
+			let matchArr;
+			const sigAspRegex = /(\w+) - state: (\w+)/g;
+			var respSplit = res.split(/\r?\n/);
+			for (const elem of respSplit) {
+				matchArr = [...elem.matchAll(sigAspRegex)];
+				if (matchArr !== null) {
+					sigAspectMap[matchArr[0][1]] = matchArr[0][2];
+					console.log(matchArr[0][1] + " aspect: " + matchArr[0][2]);
+				}
+			}
+		},
+		// Err
+		(res) => {
+			console.log('Could not get signal aspects');
+		}
+	);
 }
 
 
@@ -249,15 +193,15 @@ function setPointToAspect(pointId, pointAspect) {
 }
 
 async function switchPoint(pointID) {
-	getPointsAspectsAndUpdate();
-	await new Promise(r => setTimeout(r, 1000));
+	getPointsAspectsAndUpdateMap();
+	await new Promise(r => setTimeout(r, 500));
 	let aspect = "reverse";
 	if (ptAspectMap.get(pointID) === "reverse") {
 		aspect = "normal";
 	}
 	setPointToAspect(pointID, aspect);
 	ptAspectMap[pointID] = aspect;
-	updateVisuals();
+	updatePointVisuals();
 }
 
 function pointclick(id) {
@@ -268,7 +212,7 @@ function signalclick(id) {
 	console.log("Signal id " + id);
 }
 
-async function updateVisuals() {
+function updatePointVisuals() {
 	$('[id^="point"]').each(function () {
 		var idstr = new String($(this).prop("id"));
 		var colr = 'red';
@@ -282,10 +226,41 @@ async function updateVisuals() {
 	});
 }
 
+async function updatePointAspectsMapAndVisuals() {
+	getPointsAspectsAndUpdateMap();
+	await new Promise(r => setTimeout(r, 750));
+	updatePointVisuals();
+}
+
+function updateSignalVisuals() {
+	$('circle[id^="signal"]').each(function () {
+		var idstr = new String($(this).prop("id"));
+		var colr = 'green';
+		if (sigAspectMap[idstr] === "aspect_caution") {
+			colr = 'yellow';
+		} else if (sigAspectMap[idstr] === "aspect_stop") {
+			colr = 'red';
+		}
+		$(this).css({
+			fill: colr,
+			fillOpacity: 0.8
+		});
+	});
+}
+class SignalUpdater {
+	async updateSignalAspectsMapAndVisuals() {
+		updateSignalsAspects().then(() => updateSignalVisuals());
+	}
+}
+
 $(document).ready(
-	async function () {
-		getPointsAspectsAndUpdate();
-		await new Promise(r => setTimeout(r, 1000));
-		updateVisuals();
+	function () {
+		var signaller = new SignalUpdater();
+		// Run the get-update-visualize every ... milliseconds	
+		let updateInterval = setInterval(function() {
+			updatePointAspectsMapAndVisuals()
+		}, 5000);
+		
+		signaller.updateSignalAspectsMapAndVisuals();
 	}
 );
