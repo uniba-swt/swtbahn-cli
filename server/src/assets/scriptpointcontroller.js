@@ -146,7 +146,7 @@ function setSignalAjax(signalId, signalAspect) {
 		data: { 'signal': signalId, 'state': signalAspect },
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			console.log('Signal ' + signalId + ' set to ' + signalAspect + ", " + responseData);
+			console.log('Signal ' + signalId + ' set to ' + signalAspect);
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			console.log('Set signal failed: ' + responseData);
@@ -200,7 +200,7 @@ function updateSignalsAspectsPromise(onSuccess, onErr) {
 				matchArr = [...elem.matchAll(sigAspRegex)];
 				if (matchArr !== null) {
 					sigAspectMap[matchArr[0][1]] = matchArr[0][2];
-					console.log(matchArr[0][1] + " aspect: " + matchArr[0][2]);
+					//console.log(matchArr[0][1] + " aspect: " + matchArr[0][2]);
 				}
 			}
 			onSuccess();
@@ -226,33 +226,48 @@ async function switchPoint(pointID) {
 	updatePointVisuals();
 }
 
-async function switchSignal(signalID) {
+function updateAndSetSignalToNextAspectPromise(signalID) {
+	return updateSignalsAspectsPromise(()=>{
+		// determine position of current aspect of signal in the list of possible aspects for this signal.
+		var currAspect = sigAspectMap[String(signalID)];
+		var posOfAspect = sigPossibleAspects.get(signalID).findIndex((elem) => elem === currAspect);
+		//console.log("Current aspect of " + signalID + ": " + currAspect);
+		if (posOfAspect != -1) {
+			var posOfNewAspect = (posOfAspect+1) % sigPossibleAspects.get(signalID).length;
+			//console.log("Pos of new Aspect: " + posOfNewAspect);
+			setSignalAjax(signalID, sigPossibleAspects.get(signalID)[posOfNewAspect]);
+			sigAspectMap[String(signalID)] = sigPossibleAspects.get(signalID)[posOfNewAspect];
+		}
+	}, ()=>{});
+}
+
+function updatePossibleSignalAspects(signalID) {
 	if (!sigPossibleAspects.has(signalID)) {
-		getPossibleSignalAspectsPromise(signalID, (resp) => {
+		return getPossibleSignalAspectsPromise(signalID, (resp) => {
 			if (resp === undefined) {
 				return;
 			}
 			var resp2 = new String(resp);
-			// Remove all spaces
-			resp2.replace(" ", "");
-			// Split into array on ","
-			var aspectsArr = resp2.split(",");
+			// Remove all spaces, Split into array on ","
+			var aspectsArr = resp2.replaceAll(" ", "").split(",");
 			sigPossibleAspects.set(signalID, aspectsArr);
-			console.log("SigPossibleAspects: " + sigPossibleAspects);
+			console.log("Updated possible aspects for " + signalID);
 		}, (resp) => {
-			return;
+			console.log("Could not update possible aspects for " + signalID);
 		});
 	}
-	updateSignalsAspectsPromise(()=>{
-		// determine position of current aspect of signal in the list of possible aspects for this signal.
-		var currAspect = sigAspectMap[signalID];
-		var posOfAspect = sigPossibleAspects[signalID].findIndex((elem) => elem === currAspect);
-		if (posOfAspect != -1) {
-			var posOfNewAspect = (posOfAspect+1) % sigPossibleAspects[signalID].length;
-			console.log("Pos of new Aspect: " + posOfNewAspect);
-			setSignalAjax(signalID, sigPossibleAspects[signalID][posOfNewAspect]);
-		}
-	}, ()=>{});
+	return new Promise((resolve, reject) => {
+		resolve();
+	})
+}
+
+function switchSignal(signalID) {
+	console.log("switchSignal: " + signalID);
+	updatePossibleSignalAspects(signalID).then(()=>{
+		return updateAndSetSignalToNextAspectPromise(signalID);
+	}).then(()=>{
+		updateSignalVisuals();
+	});
 }
 
 
@@ -262,6 +277,7 @@ function pointclick(id) {
 }
 function signalclick(id) {
 	console.log("Signal id " + id);
+	switchSignal(id);
 }
 
 function updatePointVisuals() {
@@ -278,12 +294,6 @@ function updatePointVisuals() {
 	});
 }
 
-async function updatePointAspectsMapAndVisuals() {
-	getPointsAspectsAndUpdateMap();
-	await new Promise(r => setTimeout(r, 750));
-	updatePointVisuals();
-}
-
 function updateSignalVisuals() {
 	$('circle[id^="signal"]').each(function () {
 		var idstr = new String($(this).prop("id"));
@@ -292,6 +302,8 @@ function updateSignalVisuals() {
 			colr = 'yellow';
 		} else if (sigAspectMap[idstr] === "aspect_stop") {
 			colr = 'red';
+		} else if (sigAspectMap[idstr] === "aspect_shunt") {
+			colr = 'grey';
 		}
 		$(this).css({
 			fill: colr,
@@ -299,20 +311,28 @@ function updateSignalVisuals() {
 		});
 	});
 }
-class SignalUpdater {
-	async updateSignalAspectsMapAndVisuals() {
-		updateSignalsAspects().then(() => updateSignalVisuals());
-	}
+
+async function updatePointAspectsMapAndVisuals() {
+	getPointsAspectsAndUpdateMap();
+	await new Promise(r => setTimeout(r, 750));
+	updatePointVisuals();
 }
 
+function updateSignalAspectsMapAndVisuals() {
+	updateSignalsAspectsPromise(()=>{updateSignalVisuals()},()=>{});
+}
+
+
 $(document).ready(
-	function () {
-		var signaller = new SignalUpdater();
+	async function () {
+		await new Promise(r => setTimeout(r, 150));
+		updatePointAspectsMapAndVisuals()
+		updateSignalAspectsMapAndVisuals();
+		
 		// Run the get-update-visualize every ... milliseconds	
 		let updateInterval = setInterval(function() {
 			updatePointAspectsMapAndVisuals()
 		}, 5000);
 		
-		signaller.updateSignalAspectsMapAndVisuals();
 	}
 );
