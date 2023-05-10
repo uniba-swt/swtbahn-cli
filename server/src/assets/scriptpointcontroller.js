@@ -37,6 +37,8 @@ const ptAspectMapperArray = [
 ];
 var ptAspectMap = new Map(ptAspectMapperArray);
 
+var sigPossibleAspects = new Map();
+
 var sigAspectMap = new Map([
 	["signal1", ""],
 	["signal2", ""],
@@ -168,8 +170,26 @@ function getSignalsAspectsPromise(onSuccess, onErr) {
 	});
 }
 
-function updateSignalsAspects() {
-	getSignalsAspectsPromise(
+function getPossibleSignalAspectsPromise(signalId, onSuccess, onErr) {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/signal-aspects',
+		crossDomain: true,
+		data: {
+			'signal': signalId,
+		},
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			onSuccess(responseData);
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			onErr(responseData);
+		}
+	});
+}
+
+function updateSignalsAspectsPromise(onSuccess, onErr) {
+	return getSignalsAspectsPromise(
 		// Success
 		(res) => {
 			console.log('Got signal aspects');
@@ -183,10 +203,12 @@ function updateSignalsAspects() {
 					console.log(matchArr[0][1] + " aspect: " + matchArr[0][2]);
 				}
 			}
+			onSuccess();
 		},
 		// Err
 		(res) => {
 			console.log('Could not get signal aspects');
+			onErr();
 		}
 	);
 }
@@ -204,6 +226,34 @@ async function switchPoint(pointID) {
 	updatePointVisuals();
 }
 
+async function switchSignal(signalID) {
+	if (!sigPossibleAspects.has(signalID)) {
+		getPossibleSignalAspectsPromise(signalID, (resp) => {
+			if (resp === undefined) {
+				return;
+			}
+			var resp2 = new String(resp);
+			// Remove all spaces
+			resp2.replace(" ", "");
+			// Split into array on ","
+			var aspectsArr = resp2.split(",");
+			sigPossibleAspects.set(signalID, aspectsArr);
+			console.log("SigPossibleAspects: " + sigPossibleAspects);
+		}, (resp) => {
+			return;
+		});
+	}
+	updateSignalsAspectsPromise(()=>{
+		// determine position of current aspect of signal in the list of possible aspects for this signal.
+		var currAspect = sigAspectMap[signalID];
+		var posOfAspect = sigPossibleAspects[signalID].findIndex((elem) => elem === currAspect);
+		if (posOfAspect != -1) {
+			var posOfNewAspect = (posOfAspect+1) % sigPossibleAspects[signalID].length;
+			console.log("Pos of new Aspect: " + posOfNewAspect);
+			setSignalAjax(signalID, sigPossibleAspects[signalID][posOfNewAspect]);
+		}
+	}, ()=>{});
+}
 
 
 function pointclick(id) {
