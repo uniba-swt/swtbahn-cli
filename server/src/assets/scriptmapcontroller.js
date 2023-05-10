@@ -141,18 +141,9 @@ function getMonitorPostRequestPromiseSEP(url, onSuccess, onErr) {
 	});
 }
 
-/*
-function getPointsAspectsPromiseSEP(onSuccess, onErr) {
-	return getMonitorPostRequestPromiseSEP('/monitor/points', onSuccess, onErr);
-}
-
-function getSignalsAspectsPromiseSEP(onSuccess, onErr) {
-	return getMonitorPostRequestPromiseSEP('/monitor/signals', onSuccess, onErr);
-}*/
-
 function updateParamAspectsPromise(isPoint) {
 	const url = isPoint ? '/monitor/points' : '/monitor/signals';
-	getMonitorPostRequestPromiseSEP(
+	return getMonitorPostRequestPromiseSEP(
 		url, 
 		// Success Callback with Param
 		(res) => {
@@ -248,7 +239,7 @@ function updatePointVisualsSelector(selector) {
 	});
 }
 
-function updateSignalsVisualsSelector(selector) {
+function updateSignalVisualsSelector(selector) {
 	$(selector).each(function () {
 		var idstr = new String($(this).prop("id"));
 		var colr = 'green';
@@ -275,7 +266,7 @@ function updatePointVisuals(pointID) {
 }
 
 function updateSignalsVisuals() {
-	updateSignalsVisualsSelector('circle[id^="signal"]');
+	updateSignalVisualsSelector('circle[id^="signal"]');
 }
 
 function updateSignalVisuals(signalID) {
