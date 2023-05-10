@@ -93,22 +93,22 @@ var sigAspectMap = new Map([
 	["signal53a", ""]
 ]);
 
-
-function setPointAjax(pointId, pointPosition) {
+function setPointAjax(pointId, pointAspect) {
 	$.ajax({
 		type: 'POST',
 		url: '/controller/set-point',
 		crossDomain: true,
-		data: { 'point': pointId, 'state': pointPosition },
+		data: { 'point': pointId, 'state': pointAspect },
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			console.log('Point ' + pointId + ' set to ' + pointPosition + ", server says " + responseData);
+			console.log("set point " + pointId + " to " + pointAspect);
 		},
 		error: function (responseData, textStatus, errorThrown) {
-			console.log('System not running or invalid position!');
+			console.log("Error when setting point " + pointId + " to " + pointAspect);
 		}
 	});
 }
+
 
 function getPointsAspectsAndUpdateMap() {
 	$.ajax({
@@ -132,6 +132,22 @@ function getPointsAspectsAndUpdateMap() {
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			console.log('Could not get point aspects');
+		}
+	});
+}
+
+function setSignalAjax(signalId, signalAspect) {
+	$.ajax({
+		type: 'POST',
+		url: '/controller/set-signal',
+		crossDomain: true,
+		data: { 'signal': signalId, 'state': signalAspect },
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			console.log('Signal ' + signalId + ' set to ' + signalAspect + ", " + responseData);
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			console.log('Set signal failed: ' + responseData);
 		}
 	});
 }
@@ -176,22 +192,6 @@ function updateSignalsAspects() {
 }
 
 
-function setPointToAspect(pointId, pointAspect) {
-	$.ajax({
-		type: 'POST',
-		url: '/controller/set-point',
-		crossDomain: true,
-		data: { 'point': pointId, 'state': pointAspect },
-		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			console.log("set point " + pointId + " to " + pointAspect);
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			console.log("Error when setting point " + pointId + " to " + pointAspect);
-		}
-	});
-}
-
 async function switchPoint(pointID) {
 	getPointsAspectsAndUpdateMap();
 	await new Promise(r => setTimeout(r, 500));
@@ -199,10 +199,12 @@ async function switchPoint(pointID) {
 	if (ptAspectMap.get(pointID) === "reverse") {
 		aspect = "normal";
 	}
-	setPointToAspect(pointID, aspect);
+	setPointAjax(pointID, aspect);
 	ptAspectMap[pointID] = aspect;
 	updatePointVisuals();
 }
+
+
 
 function pointclick(id) {
 	console.log("Point id " + id);
