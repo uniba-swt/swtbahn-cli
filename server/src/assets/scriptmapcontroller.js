@@ -198,7 +198,7 @@ function updatePossibleSignalAspectsPromise(signalID) {
 				}
 				var responseStr = new String(response);
 				// Remove all spaces, Split into array on ","
-				var aspectsArr = resp2.replaceAll(" ", "").split(",");
+				var aspectsArr = responseStr.replaceAll(" ", "").split(",");
 				sigPossibleAspects.set(signalID, aspectsArr);
 			},
 			// Err
@@ -278,12 +278,12 @@ function switchPoint(pointID) {
 	var next_aspect = "reverse";
 	updateParamAspectsPromise(true)
 			.then(() => {
-				if (ptAspectMap.get(pointID) === "reverse") {
+				if (ptAspectMap[pointID] === "reverse") {
 					next_aspect = "normal";
 				}
 			}).then(() => setPointPromise(pointID, next_aspect))
 			.then(() => {
-				ptAspectMap[String(pointID)] = next_aspect;
+				ptAspectMap[pointID] = next_aspect;
 			})
 			.then(() => updatePointVisuals(pointID));
 }
@@ -296,18 +296,27 @@ function switchSignal(signalID) {
 				next_aspect = getNextAspectOfSignal(signalID);
 				return setSignalPromise(signalID, next_aspect);
 			}).then(() => {
-				sigAspectMap[String(signalID)] = next_aspect;
+				sigAspectMap[signalID] = next_aspect;
 			})
 			.then(() => updateSignalVisuals(signalID));
 }
 
-
+function pointclick(id) {
+	console.log("Point id " + id);
+	switchPoint(id);
+}
+function signalclick(id) {
+	console.log("Signal id " + id);
+	switchSignal(id);
+}
 
 $(document).ready(
 	async function () {
 		await new Promise(r => setTimeout(r, 250));
-		updatePointsVisuals()
-		updateSignalsVisuals();
+		updateParamAspectsPromise(true)
+				.then(() => updatePointsVisuals());
+		updateParamAspectsPromise(false)
+				.then(() => updateSignalsVisuals());
 		
 		// Run the get-update-visualize every ... milliseconds	
 		let updateInterval = setInterval(function() {
@@ -316,6 +325,5 @@ $(document).ready(
 			updateParamAspectsPromise(false)
 					.then(() => updateSignalsVisuals());
 		}, 5000);
-		
 	}
 );
