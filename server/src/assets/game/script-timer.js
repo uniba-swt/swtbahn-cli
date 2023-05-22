@@ -9,8 +9,8 @@ class Timer {
 			this.sec = 0;
 			this.min++;
 		}
-		var _min = ('0' + this.min.toString()).substr(-2);
-		var _sec = ('0' + this.sec.toString()).substr(-2);
+		var _min = this.min.toString().padStart(2, '0');
+		var _sec = this.sec.toString().padStart(2, '0');
 		$("#timerSecond").html(_sec);
 		$("#timerMinute").html(_min);
 	}
