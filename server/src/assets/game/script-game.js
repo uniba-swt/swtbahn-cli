@@ -1,4 +1,5 @@
 var driver = null;           // Train driver logic.
+var sessionTimer = new Timer();     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
 
@@ -144,7 +145,7 @@ const speedButtons = [
 
 function disableSpeedButtons() {
 	$('.sessionTimer').hide();
-	this.sessionTimer.stop();
+	sessionTimer.stop();
 	$('#speedForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
@@ -153,7 +154,7 @@ function disableSpeedButtons() {
 
 function enableSpeedButtons(destination) {
 	$('.sessionTimer').show();
-	this.sessionTimer.start();
+	sessionTimer.start();
 	$('#speedForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
@@ -320,7 +321,6 @@ class Driver {
 	updatePossibleDestinationsInterval = null;
 	destinationReachedInterval = null;
 
-	sessionTimer = new Timer();
 
 	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
@@ -337,6 +337,8 @@ class Driver {
 		this.trainAvailabilityInterval = null;
 		this.updatePossibleDestinationsInterval = null;
 		this.destinationReachedInterval = null;
+
+	//	sessionTimer = new Timer();
 	}
 
 	reset() {
