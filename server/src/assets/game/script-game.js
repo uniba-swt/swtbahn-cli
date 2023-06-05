@@ -423,9 +423,9 @@ class Driver {
 						$(obj).prop("disabled", false);
 						$(obj).removeClass("btn-danger");
 						$(obj).addClass("btn-primary");
-						$($(obj).parent()).removeClass("bg-secondary");
+						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
 						$(obj).children().each(function(){
-							var txt=$(this).text();
+							var txt = $(this).text();
 							switch(txt){
 								case "Nicht verfügbar":  $(this).text("Fahre diesen Zug"); break;
 								case "Unavailable":  $(this).text("Drive this train"); break;
@@ -436,9 +436,9 @@ class Driver {
 						$(obj).prop("disabled", true);
 						$(obj).removeClass("btn-primary");
 						$(obj).addClass("btn-danger");
-						$($(obj).parent()).addClass("bg-secondary");
+						$($(obj).parent(".card-body").parent(".card")).addClass("unavailableTrain");
 						$(obj).children().each(function(){
-							var txt=$(this).text();
+							var txt = $(this).text();
 							switch(txt){
 								case "Fahre diesen Zug":  $(this).text("Nicht verfügbar"); break;
 								case "Drive this train":  $(this).text("Unavailable"); break;

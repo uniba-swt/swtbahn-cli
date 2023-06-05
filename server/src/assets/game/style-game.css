@@ -11,6 +11,11 @@ body {
   height: 100%;
 }
 
+.unavailableTrain {
+  opacity: 0.6;
+  background-color: MistyRose;
+}
+
 #serverAlertBox {
   height: 70px;
 }
