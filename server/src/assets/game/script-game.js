@@ -1,5 +1,5 @@
 var driver = null;           // Train driver logic.
-var drivingTimer = new Timer();     // Timer for driving a train.
+var drivingTimer = null;     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
 
@@ -336,7 +336,7 @@ class Driver {
 		this.updatePossibleDestinationsInterval = null;
 		this.destinationReachedInterval = null;
 
-	//	drivingTimer = new Timer();
+		drivingTimer = new Timer();
 	}
 
 	reset() {
