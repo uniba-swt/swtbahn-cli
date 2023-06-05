@@ -1,4 +1,5 @@
 var driver = null;           // Train driver logic.
+var drivingTimer = null;     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
 
@@ -143,17 +144,19 @@ const speedButtons = [
 ];
 
 function disableSpeedButtons() {
-	$('#speedForm').hide();
+	$('#drivingForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
 	});
+	drivingTimer.stop();
 }
 
 function enableSpeedButtons(destination) {
-	$('#speedForm').show();
+	$('#drivingForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
 	});
+	drivingTimer.start();
 }
 
 function clearChosenDestination() {
@@ -316,6 +319,7 @@ class Driver {
 	updatePossibleDestinationsInterval = null;
 	destinationReachedInterval = null;
 
+
 	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
 		this.trackOutput = trackOutput;
@@ -331,6 +335,8 @@ class Driver {
 		this.trainAvailabilityInterval = null;
 		this.updatePossibleDestinationsInterval = null;
 		this.destinationReachedInterval = null;
+
+		drivingTimer = new Timer();
 	}
 
 	reset() {
@@ -424,11 +430,10 @@ class Driver {
 						$(obj).removeClass("btn-danger");
 						$(obj).addClass("btn-primary");
 						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
-						$(obj).children().each(function(){
-							var txt = $(this).text();
-							switch(txt){
-								case "Nicht verfügbar": $(this).text("Fahre diesen Zug"); break;
-								case "Unavailable":     $(this).text("Drive this train"); break;
+						$(obj).children().each(function() {
+							switch($(this).attr('lang')){
+								case "de": $(this).text("Fahre diesen Zug"); break;
+								case "en": $(this).text("Drive this train"); break;
 							}
 						});
 					},
@@ -437,11 +442,10 @@ class Driver {
 						$(obj).removeClass("btn-primary");
 						$(obj).addClass("btn-danger");
 						$($(obj).parent(".card-body").parent(".card")).addClass("unavailableTrain");
-						$(obj).children().each(function(){
-							var txt = $(this).text();
-							switch(txt){
-								case "Fahre diesen Zug": $(this).text("Nicht verfügbar"); break;
-								case "Drive this train": $(this).text("Unavailable"); break;
+						$(obj).children().each(function() {
+							switch($(this).attr('lang')){
+								case "de": $(this).text("Nicht verfügbar"); break;
+								case "en": $(this).text("Unavailable"); break;
 							}
 						});
 					}

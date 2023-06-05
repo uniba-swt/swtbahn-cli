@@ -16,8 +16,9 @@
 	<script src="destinations-swtbahn-full.json"></script>
 	<script src="flags-swtbahn-full.json"></script>
 	
-	<script src="script-game.js"></script>
+	<script src="script-timer.js"></script>
 	<script src="script-game-mutex.js"></script>
+	<script src="script-game.js"></script>
 
 	<title>SWTbahn Driver Client</title>
 	<meta charset="utf-8" />
@@ -88,7 +89,7 @@
 	<hr />
 
 	<div id="trainSelection" class="row g-0">
-		<div class="card mb-3">
+		<div class="card mb-3 unavailableTrain">
 			<img src="train-cargo-db.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Cargo DB</h5>
@@ -108,14 +109,14 @@
 						Max. Speed: 150 km/h
 					</span>
 				</p>
-				<button class="selectTrainButton btn btn-primary" id="cargo_db">
-					<span lang="de">Fahre diesen Zug</span>
-					<span lang="en">Drive this train</span>
+				<button class="selectTrainButton btn btn-danger" id="cargo_db">
+					<span lang="de">Nicht verfügbar</span>
+					<span lang="en">Unavailable</span>
 				</button>
 			</div>
 		</div>
 
-		<div class="card mb-3">
+		<div class="card mb-3 unavailableTrain">
 			<img src="train-cargo-green.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Cargo Green</h5>
@@ -135,14 +136,14 @@
 						Max. Speed: 140 km/h
 					</span>
 				</p>
-				<button class="selectTrainButton btn btn-primary" id="cargo_green">
-					<span lang="de">Fahre diesen Zug</span>
-					<span lang="en">Drive this train</span>
+				<button class="selectTrainButton btn btn-danger" id="cargo_green">
+					<span lang="de">Nicht verfügbar</span>
+					<span lang="en">Unavailable</span>
 				</button>
 			</div>
 		 </div>
 
-		<div class="card mb-3">
+		<div class="card mb-3 unavailableTrain">
 			<img src="train-regional-odeg.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Regional ODEG</h5>
@@ -162,13 +163,13 @@
 						Max. Speed: 140 km/h
 					</span>
 				</p>
-				<button class="selectTrainButton btn btn-primary" id="regional_odeg">
-					<span lang="de">Fahre diesen Zug</span>
-					<span lang="en">Drive this train</span>
+				<button class="selectTrainButton btn btn-danger" id="regional_odeg">
+					<span lang="de">Nicht verfügbar</span>
+					<span lang="en">Unavailable</span>
 				</button>
 			</div>
 		</div>
-		<div class="card mb-3">
+		<div class="card mb-3 unavailableTrain">
 			<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="...">
 			<div class="card-body">
 				<h5 class="card-title">Regional Brengdirect</h5>
@@ -186,9 +187,9 @@
 						Max. Speed: 115 km/h
 					</span>
 				</p>
-				<button class="selectTrainButton btn btn-primary" id="regional_brengdirect">
-					<span lang="de">Fahre diesen Zug</span>
-					<span lang="en">Drive this train</span>
+				<button class="selectTrainButton btn btn-danger" id="regional_brengdirect">
+					<span lang="de">Nicht verfügbar</span>
+					<span lang="en">Unavailable</span>
 				</button>
 			</div>
 		</div>
@@ -272,20 +273,20 @@
 		</div>
 	</form>
 
-	<form id="speedForm">
+	<form id="drivingForm">
 		<div id="chosenDestination" class="row pt-4">
-			<label class="col-auto col-form-label-lg me-md-5 align-self-center"><b>
+			<label class="col-auto col-form-label-lg"><b>
 				<span lang="de">Ziel:</span>
 				<span lang="en">Destination:</span>
 			</b></label>
 			<svg class="flag" viewBox="0 0 100 100">
 				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
 			</svg>
-		</div>
+		</div> 
 		
-		<label class="col-auto col-form-label-lg me-md-5"><b>
-			<span lang="de">Geschwindigkeit</span>
-			<span lang="en">Speed</span>
+		<label class="col-auto col-form-label-lg"><b>
+			<span lang="de">Geschwindigkeit: </span>
+			<span lang="en">Speed: </span>
 		</b></label>
 		<div class="input-group row">
 			<div class="col">
@@ -307,6 +308,16 @@
 						<span lang="en">Fast</span>
 					</button>
 				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col">
+				<label class="col-form-label-lg"><b>
+					<span lang="de">Fahrzeit:</span>
+					<span lang="en">Driving Time:</span>
+				</b></label>	
+				<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
 			</div>
 		</div>
 	</form>
