@@ -417,6 +417,7 @@ class Driver {
 	// Update the styling of the train selection buttons based on the train availabilities
 	updateTrainAvailability() {
 		$('.selectTrainButton').prop("disabled", true);
+		
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
 			console.log("Checking available trains ... ");
@@ -426,12 +427,37 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => $(obj).prop("disabled", false),
-					() => $(obj).prop("disabled", true)
+					() => { 
+						$(obj).prop("disabled", false);
+						$(obj).removeClass("btn-danger");
+						$(obj).addClass("btn-primary");
+						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
+						$(obj).children().each(function(){
+							var txt = $(this).text();
+							switch(txt){
+								case "Nicht verfügbar": $(this).text("Fahre diesen Zug"); break;
+								case "Unavailable":     $(this).text("Drive this train"); break;
+							}
+						});
+					},
+					() => {
+						$(obj).prop("disabled", true);
+						$(obj).removeClass("btn-primary");
+						$(obj).addClass("btn-danger");
+						$($(obj).parent(".card-body").parent(".card")).addClass("unavailableTrain");
+						$(obj).children().each(function(){
+							var txt = $(this).text();
+							switch(txt){
+								case "Fahre diesen Zug": $(this).text("Nicht verfügbar"); break;
+								case "Drive this train": $(this).text("Unavailable"); break;
+							}
+						});
+					}
 				);
 			})
 		}, trainAvailabilityTimeout);
 	}
+
 
 	// Server request to grab a train
 	grabTrainPromise() {
