@@ -9,16 +9,18 @@ class Timer {
 			this.sec = 0;
 			this.min++;
 		}
-		var _min = this.min.toString().padStart(2, '0');
-		var _sec = this.sec.toString().padStart(2, '0');
-		$("#timerSecond").html(_sec);
-		$("#timerMinute").html(_min);
+		var minString = this.min.toString().padStart(2, '0');
+		var secString = this.sec.toString().padStart(2, '0');
+		$("#timerMinute").html(minString);
+		$("#timerSecond").html(secString);
 	}
 
 	start() {
 		this.sec = 0;
 		this.min = 0;
-		this.timerInterval = setInterval(() => { this.tick(); }, 1000);
+		this.timerInterval = setInterval(() => { 
+			this.tick(); 
+		}, 1000);
 	}
 
 	stop() {
