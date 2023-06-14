@@ -1088,7 +1088,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/admin/set-verification-option',
 				crossDomain: true,
-				data: { 'verification-enabled': toggleState},
+				data: { 'verification-option': toggleState},
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					console.log((toggleState ? "Enabled" : "Disabled") + " verification.");
