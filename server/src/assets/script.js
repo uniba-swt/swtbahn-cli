@@ -1047,7 +1047,7 @@ $(document).ready(
 		// Initialize Toggle: Check if Verification is enabled and update toggle accordingly
 		$.ajax({
 			type: 'GET',
-			url: '/monitor/verification',
+			url: '/monitor/verification-option',
 			crossDomain: true,
 			dataType: 'text',
 			success: function (responseData, textStatus, jqXHR) {
@@ -1086,7 +1086,7 @@ $(document).ready(
 			// Send request to server to set verification accordingly.
 			$.ajax({
 				type: 'POST',
-				url: '/admin/set-verification',
+				url: '/admin/set-verification-option',
 				crossDomain: true,
 				data: { 'verification-enabled': toggleState},
 				dataType: 'text',
