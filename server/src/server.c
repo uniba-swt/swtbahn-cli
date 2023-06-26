@@ -208,6 +208,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);
+	onion_url_add(urls, "monitor/debug", handler_get_debug_info);
 
 	onion_listen(o);
 	onion_free(o);
