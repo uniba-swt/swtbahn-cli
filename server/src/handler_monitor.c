@@ -617,6 +617,9 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 	}
 }
 
+// Returns debugging information related to the ForeC dynamic containers.
+// Provides data values seen by the environment (dyn_containers_interface.c)
+// and those set by the containers (dyn_containers.forec).
 GString *debug_info(void) {
 	GString *info_str = g_string_new("");	
 	const char info_template1[] = 
