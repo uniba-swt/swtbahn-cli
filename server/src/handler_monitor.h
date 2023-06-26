@@ -28,6 +28,10 @@
 #ifndef SWTSERVER_HANDLER_GETTER_H
 #define SWTSERVER_HANDLER_GETTER_H
 
+#include "dyn_containers_interface.h"
+
+
+extern t_dyn_containers_interface *dyn_containers_interface;
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res);

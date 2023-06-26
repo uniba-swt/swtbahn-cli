@@ -39,7 +39,6 @@
 #include "handler_driver.h"
 
 
-extern void *forec_dyn_containers(void *_);
 
 pthread_mutex_t dyn_containers_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t dyn_containers_thread;

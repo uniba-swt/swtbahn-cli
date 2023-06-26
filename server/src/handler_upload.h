@@ -29,6 +29,7 @@
 #ifndef SWTSERVER_HANDLER_UPLOAD_H
 #define SWTSERVER_HANDLER_UPLOAD_H
 
+extern pthread_mutex_t dyn_containers_mutex;
 
 bool clear_engine_dir(void);
 

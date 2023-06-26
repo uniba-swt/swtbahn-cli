@@ -40,7 +40,6 @@
 #include "param_verification.h"
 
 
-
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res) {
 	build_response_header(res);
@@ -615,6 +614,13 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
+}
+
+void debug_info(char *str) {
+	const char info_template[] = 
+	    "";
+	
+	strcpy(str, info_template);
 }
 
 onion_connection_status handler_get_debug_info(void *_, onion_request *req,
