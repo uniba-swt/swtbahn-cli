@@ -81,4 +81,45 @@ extern Shared_forec_intern_output_train_engine_0__global_0_0
 	forec_intern_output_train_engine_2__global_0_0,
 	forec_intern_output_train_engine_3__global_0_0;
 
+
+typedef struct {
+	volatile bool__global_0_0 grab;
+	volatile bool__global_0_0 release;
+	int train_engine_type;
+	int requested_speed;
+	char requested_forwards;
+} t_forec_intern_input_train_engine_instance__global_0_0;
+
+typedef struct {
+	/* shared */ t_forec_intern_input_train_engine_instance__global_0_0 value;
+	int status;
+} Shared_forec_intern_input_train_engine_instance_0__global_0_0;
+
+extern Shared_forec_intern_input_train_engine_instance_0__global_0_0
+	forec_intern_input_train_engine_instance_0__global_0_0,
+	forec_intern_input_train_engine_instance_1__global_0_0,
+	forec_intern_input_train_engine_instance_2__global_0_0,
+	forec_intern_input_train_engine_instance_3__global_0_0,
+	forec_intern_input_train_engine_instance_4__global_0_0;
+
+
+typedef struct {
+	volatile bool__global_0_0 in_use;
+	int train_engine_type;
+	int nominal_speed;
+	char nominal_forwards;
+} t_forec_intern_output_train_engine_instance__global_0_0;
+
+typedef struct {
+	/* shared */ t_forec_intern_output_train_engine_instance__global_0_0 value;
+	int status;
+} Shared_forec_intern_output_train_engine_instance_0__global_0_0;
+
+extern Shared_forec_intern_output_train_engine_instance_0__global_0_0
+	forec_intern_output_train_engine_instance_0__global_0_0,
+	forec_intern_output_train_engine_instance_1__global_0_0,
+	forec_intern_output_train_engine_instance_2__global_0_0,
+	forec_intern_output_train_engine_instance_3__global_0_0,
+	forec_intern_output_train_engine_instance_4__global_0_0;
+
 #endif

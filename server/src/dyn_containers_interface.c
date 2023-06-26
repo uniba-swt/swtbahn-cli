@@ -81,6 +81,7 @@ void dyn_containers_reset_interface(
 			.input_requested_forwards = true,
 			
 			.output_in_use = false,
+			.output_train_engine_type = -1,
 			.output_nominal_speed = 0,
 			.output_nominal_forwards = 0,
 			
@@ -111,7 +112,8 @@ void dyn_containers_reset_interface(
 			.input_train_id = "",
 
 			.output_in_use = false,
-			.output_terminated = false
+			.output_terminated = false,
+			.output_interlocker_type = -1
 		};
 	}
 }

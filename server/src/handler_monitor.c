@@ -642,16 +642,17 @@ GString *debug_info(void) {
 	    "    input_filepath: \"%s\", \"%s\" \n"
 	    "    output_in_use: %d, %d \n"
 	    "    output_name: \"%s\", \"%s\" \n"
-		"  \n"
-	    ;
+		"  \n";
 	
-	t_forec_intern_input_train_engine__global_0_0 *forec_intern_input_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
+	t_forec_intern_input_train_engine__global_0_0
+		    *forec_intern_input_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
 		&forec_intern_input_train_engine_0__global_0_0.value,
 		&forec_intern_input_train_engine_1__global_0_0.value,
 		&forec_intern_input_train_engine_2__global_0_0.value,
 		&forec_intern_input_train_engine_3__global_0_0.value
 	};
-	t_forec_intern_output_train_engine__global_0_0 *forec_intern_output_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
+	t_forec_intern_output_train_engine__global_0_0
+		    *forec_intern_output_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
 		&forec_intern_output_train_engine_0__global_0_0.value,
 		&forec_intern_output_train_engine_1__global_0_0.value,
 		&forec_intern_output_train_engine_2__global_0_0.value,
@@ -661,27 +662,92 @@ GString *debug_info(void) {
 		g_string_append_printf(
 			info_str, info_template2,
 			i,
-			dyn_containers_interface->train_engines_io[i].input_load,     forec_intern_input_train_engine[i]->load,
-			dyn_containers_interface->train_engines_io[i].input_unload,   forec_intern_input_train_engine[i]->unload,
-			dyn_containers_interface->train_engines_io[i].input_filepath, forec_intern_input_train_engine[i]->filepath,
-			dyn_containers_interface->train_engines_io[i].output_in_use,  forec_intern_output_train_engine[i]->in_use,
-			dyn_containers_interface->train_engines_io[i].output_name,    forec_intern_output_train_engine[i]->name
+			
+			dyn_containers_interface->train_engines_io[i].input_load,
+			forec_intern_input_train_engine[i]->load,
+			
+			dyn_containers_interface->train_engines_io[i].input_unload,
+			forec_intern_input_train_engine[i]->unload,
+			
+			dyn_containers_interface->train_engines_io[i].input_filepath,
+			forec_intern_input_train_engine[i]->filepath,
+			
+			dyn_containers_interface->train_engines_io[i].output_in_use,
+			forec_intern_output_train_engine[i]->in_use,
+			
+			dyn_containers_interface->train_engines_io[i].output_name,
+			forec_intern_output_train_engine[i]->name
 		);
 	}
 	
 	const char info_template3[] = 
 	    "  train_engine_instances_io[%d] \n"
+		"    input_grab: %d, %d \n"
+		"    input_release: %d, %d \n"
+		"    input_train_engine_type: %d, %d \n"
+		"    input_requested_speed: %d, %d \n"
+		"    input_requested_forwards: %d, %d \n"
+		"    output_in_use: %d, %d \n"
+		"    output_train_engine_type: %d, %d \n"
+		"    output_nominal_speed: %d, %d \n"
+		"    output_nominal_forwards: %d, %d \n"
 	    "  \n";
 	
+	t_forec_intern_input_train_engine_instance__global_0_0 
+			*forec_intern_input_train_engine_instance[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
+		&forec_intern_input_train_engine_instance_0__global_0_0.value,
+		&forec_intern_input_train_engine_instance_1__global_0_0.value,
+		&forec_intern_input_train_engine_instance_2__global_0_0.value,
+		&forec_intern_input_train_engine_instance_3__global_0_0.value,
+		&forec_intern_input_train_engine_instance_4__global_0_0.value
+	};
+	t_forec_intern_output_train_engine_instance__global_0_0
+			*forec_intern_output_train_engine_instance[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
+		&forec_intern_output_train_engine_instance_0__global_0_0.value,
+		&forec_intern_output_train_engine_instance_1__global_0_0.value,
+		&forec_intern_output_train_engine_instance_2__global_0_0.value,
+		&forec_intern_output_train_engine_instance_3__global_0_0.value,
+		&forec_intern_output_train_engine_instance_4__global_0_0.value,
+	};
 	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		
+		g_string_append_printf(
+			info_str, info_template3,
+			i,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_grab,
+			forec_intern_input_train_engine_instance[i]->grab,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_release,
+			forec_intern_input_train_engine_instance[i]->release,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_train_engine_type,
+			forec_intern_input_train_engine_instance[i]->train_engine_type,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_requested_speed,
+			forec_intern_input_train_engine_instance[i]->requested_speed,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_requested_forwards,
+			forec_intern_input_train_engine_instance[i]->requested_forwards,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_in_use,
+			forec_intern_output_train_engine_instance[i]->in_use,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_train_engine_type,
+			forec_intern_output_train_engine_instance[i]->train_engine_type,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_nominal_speed,
+			forec_intern_output_train_engine_instance[i]->nominal_speed,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_nominal_forwards,
+			forec_intern_output_train_engine_instance[i]->nominal_forwards
+		);
 	}
+	
 	return info_str;
 }
 
 onion_connection_status handler_get_debug_info(void *_, onion_request *req,
                                                onion_response *res) {
-	
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *debug_info_str = debug_info();
