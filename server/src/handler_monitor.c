@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "server.h"
+#include "handler_monitor.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "bahn_data_util.h"
@@ -616,11 +617,66 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 	}
 }
 
-void debug_info(char *str) {
-	const char info_template[] = 
-	    "";
+GString *debug_info(void) {
+	GString *info_str = g_string_new("");	
+	const char info_template1[] = 
+	    "Debug info: \n"
+	    "\n"
+	    "dyn_containers_interface: (external value, internal value) \n"
+	    "  running: %d \n"
+	    "  terminate: %d, %d \n"
+	    "  let_period_us: %d, %d \n"
+	    "  \n";
 	
-	strcpy(str, info_template);
+	g_string_append_printf(
+		info_str, info_template1, 
+		dyn_containers_interface->running,
+		dyn_containers_interface->terminate,     forec_intern_input__global_0_0.value.terminate,
+		dyn_containers_interface->let_period_us, forec_intern_input__global_0_0.value.let_period_us
+	);
+	
+	const char info_template2[] = 
+	    "  train_engines_io[%d]: \n"
+	    "    input_load: %d, %d \n"
+	    "    input_unload: %d, %d \n"
+	    "    input_filepath: \"%s\", \"%s\" \n"
+	    "    output_in_use: %d, %d \n"
+	    "    output_name: \"%s\", \"%s\" \n"
+		"  \n"
+	    ;
+	
+	t_forec_intern_input_train_engine__global_0_0 *forec_intern_input_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
+		&forec_intern_input_train_engine_0__global_0_0.value,
+		&forec_intern_input_train_engine_1__global_0_0.value,
+		&forec_intern_input_train_engine_2__global_0_0.value,
+		&forec_intern_input_train_engine_3__global_0_0.value
+	};
+	t_forec_intern_output_train_engine__global_0_0 *forec_intern_output_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
+		&forec_intern_output_train_engine_0__global_0_0.value,
+		&forec_intern_output_train_engine_1__global_0_0.value,
+		&forec_intern_output_train_engine_2__global_0_0.value,
+		&forec_intern_output_train_engine_3__global_0_0.value
+	};
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		g_string_append_printf(
+			info_str, info_template2,
+			i,
+			dyn_containers_interface->train_engines_io[i].input_load,     forec_intern_input_train_engine[i]->load,
+			dyn_containers_interface->train_engines_io[i].input_unload,   forec_intern_input_train_engine[i]->unload,
+			dyn_containers_interface->train_engines_io[i].input_filepath, forec_intern_input_train_engine[i]->filepath,
+			dyn_containers_interface->train_engines_io[i].output_in_use,  forec_intern_output_train_engine[i]->in_use,
+			dyn_containers_interface->train_engines_io[i].output_name,    forec_intern_output_train_engine[i]->name
+		);
+	}
+	
+	const char info_template3[] = 
+	    "  train_engine_instances_io[%d] \n"
+	    "  \n";
+	
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		
+	}
+	return info_str;
 }
 
 onion_connection_status handler_get_debug_info(void *_, onion_request *req,
@@ -628,12 +684,11 @@ onion_connection_status handler_get_debug_info(void *_, onion_request *req,
 	
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		GString *debug_str = g_string_new("Debug info: \n");
-
-	
-		char response[debug_str->len + 1];
-		strcpy(response, debug_str->str);
-		g_string_free(debug_str, true);
+		GString *debug_info_str = debug_info();
+		char response[strlen(debug_info_str->str) + 1];
+		strcpy(response, debug_info_str->str);
+		g_string_free(debug_info_str, true);
+		
 		onion_response_printf(res, "%s", response);
 		syslog_server(LOG_NOTICE, "Request: Get debug info");
 		return OCS_PROCESSED;

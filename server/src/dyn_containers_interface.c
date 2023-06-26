@@ -44,7 +44,7 @@ pthread_mutex_t dyn_containers_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t dyn_containers_thread;
 static pthread_t dyn_containers_actuate_thread;
 
-static t_dyn_containers_interface *dyn_containers_interface;
+t_dyn_containers_interface *dyn_containers_interface;
 #define MICROSECOND 1
 static const int let_period_us = 10000 * MICROSECOND;	// 0.01 seconds
 
@@ -65,8 +65,10 @@ void dyn_containers_reset_interface(
 		(struct t_train_engine_io) {
 			.input_load = false, 
 			.input_unload = false, 
+			.input_filepath = "",
 			
-			.output_in_use = false
+			.output_in_use = false,
+			.output_name = ""
 		};
 	}
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {

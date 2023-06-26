@@ -163,10 +163,10 @@ typedef struct {
 	volatile bool unload;				// Unload the train engine
 	char filepath[PATH_MAX + NAME_MAX];	// File path of library source code, without the file extension
 } t_forec_intern_input_train_engine;
-shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0;
-shared t_forec_intern_input_train_engine forec_intern_input_train_engine_1;
-shared t_forec_intern_input_train_engine forec_intern_input_train_engine_2;
-shared t_forec_intern_input_train_engine forec_intern_input_train_engine_3;
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_0 = {.filepath = ""};
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_1 = {.filepath = ""};
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_2 = {.filepath = ""};
+shared t_forec_intern_input_train_engine forec_intern_input_train_engine_3 = {.filepath = ""};
 
 typedef struct {
 	volatile bool in_use;				// Whether the container is still in use
@@ -210,10 +210,10 @@ typedef struct {
 	volatile bool unload;               // Unload the interlocker
 	char filepath[PATH_MAX + NAME_MAX]; // File path of library source code, without the file extension
 } t_forec_intern_input_interlocker;
-shared t_forec_intern_input_interlocker forec_intern_input_interlocker_0;
-shared t_forec_intern_input_interlocker forec_intern_input_interlocker_1;
-shared t_forec_intern_input_interlocker forec_intern_input_interlocker_2;
-shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3;
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_0 = {.filepath = ""};
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_1 = {.filepath = ""};
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_2 = {.filepath = ""};
+shared t_forec_intern_input_interlocker forec_intern_input_interlocker_3 = {.filepath = ""};
 
 typedef struct {
 	volatile bool in_use;				// Whether the container is still in use
