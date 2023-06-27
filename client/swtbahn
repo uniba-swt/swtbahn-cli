@@ -560,7 +560,7 @@ def direction(train, route_id):
             click.echo(e, err=True)
 
 
-@click.command(help="Drive along a granted route")
+@click.command(help="Drive along a granted route in automatic or manual mode")
 @click.argument('mode')
 @click.argument('route-id')
 def drive_route(mode, route_id):
