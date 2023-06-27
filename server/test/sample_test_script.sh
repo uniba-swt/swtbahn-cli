@@ -1,6 +1,7 @@
 echo "SWTbahn test script using the Python client"
 
 train=$1
+route=1
 
 if test -z "$1"; then
 	echo "Please specify a train!"
@@ -16,22 +17,20 @@ sleep 0.5
 
 while true; do
 	./swtbahn driver grab $train
+	./swtbahn monitor get-debug-info
 
-	sleep 0.5
+	./swtbahn driver request-route-id $route
 	./swtbahn monitor get-debug-info
 
 	./swtbahn driver set-dcc-speed 13
-
-	sleep 0.5
 	./swtbahn monitor get-debug-info
 
 	./swtbahn driver set-dcc-speed 0
+	./swtbahn monitor get-debug-info
 
-	sleep 0.5
+	./swtbahn controller release-route $route
 	./swtbahn monitor get-debug-info
 
 	./swtbahn driver release
-
-	sleep 0.5
 	./swtbahn monitor get-debug-info
 done
