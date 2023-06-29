@@ -622,9 +622,23 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 // and those set by the containers (dyn_containers.forec).
 GString *debug_info(void) {
 	GString *info_str = g_string_new("");	
-	const char info_template1[] = 
+
+	const char info_template0[] = 
 	    "Debug info: \n"
-	    "\n"
+	    "* dyn_containers_reaction_counter: %lld \n"
+	    "* dyn_containers_actuate_reaction_counter: %lld \n"
+	    "* dyn_containers_set_train_engine_instance_reaction_counter: %lld \n"
+	    "\n";
+	
+	g_string_append_printf(
+		info_str, info_template0, 
+		dyn_containers_actuate_reaction_counter,
+		dyn_containers_set_train_engine_instance_reaction_counter,
+		dyn_containers_set_train_engine_instance_reaction_counter
+	);
+
+
+	const char info_template1[] = 
 	    "dyn_containers_interface: (external value, internal value) \n"
 	    "  running: %d \n"
 	    "  terminate: %d, %d \n"

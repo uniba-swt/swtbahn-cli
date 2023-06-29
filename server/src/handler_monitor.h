@@ -33,7 +33,9 @@
 
 
 extern t_dyn_containers_interface *dyn_containers_interface;
-
+extern long long dyn_containers_reaction_counter;
+extern long long dyn_containers_actuate_reaction_counter;
+extern long long dyn_containers_set_train_engine_instance_reaction_counter;
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res);
