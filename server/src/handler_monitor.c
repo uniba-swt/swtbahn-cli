@@ -633,7 +633,7 @@ GString *debug_info(void) {
 	g_string_append_printf(
 		info_str, info_template0, 
 		dyn_containers_actuate_reaction_counter,
-		dyn_containers_set_train_engine_instance_reaction_counter,
+		dyn_containers_actuate_reaction_counter,
 		dyn_containers_set_train_engine_instance_reaction_counter
 	);
 
