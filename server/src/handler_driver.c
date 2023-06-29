@@ -814,6 +814,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
                                            onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		syslog_server(LOG_DEBUG, "Request received: Grab train");
 		const char *data_train = onion_request_get_post(req, "train");
 		const char *data_engine = onion_request_get_post(req, "engine");		
 		if (data_train == NULL || data_engine == NULL) {
@@ -849,7 +850,8 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 onion_connection_status handler_release_train(void *_, onion_request *req,
                                               onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {		
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		syslog_server(LOG_DEBUG, "Request received: Release train");
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		int client_session_id = params_check_session_id(data_session_id);
@@ -1075,6 +1077,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
                                                     onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		syslog_server(LOG_DEBUG, "Request received: Set train speed");
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_speed = onion_request_get_post(req, "speed");

@@ -33,7 +33,7 @@
 
 
 extern t_dyn_containers_interface *dyn_containers_interface;
-extern long long dyn_containers_reaction_counter;
+extern long long dyn_containers_reaction_counter__global_0_0;
 extern long long dyn_containers_actuate_reaction_counter;
 extern long long dyn_containers_set_train_engine_instance_reaction_counter;
 
