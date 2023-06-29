@@ -637,7 +637,6 @@ GString *debug_info(void) {
 		dyn_containers_set_train_engine_instance_reaction_counter
 	);
 
-
 	const char info_template1[] = 
 	    "dyn_containers_interface: (external value, internal value) \n"
 	    "  running: %d \n"
@@ -777,6 +776,47 @@ onion_connection_status handler_get_debug_info(void *_, onion_request *req,
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get debug info - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+// Returns extra debugging information related to the ForeC thread scheduler
+// in dyn_containers.forec.
+GString *debug_info_extra(void) {
+	GString *info_str = g_string_new("");	
+
+	const char info_template[] = 
+	    "Debug info extra: \n"
+	    "* mainParReactionCounter: %d \n"
+	    "* mainParCore1.reactionCounter: %d \n"
+	    "* mainParCore2.reactionCounter: %d \n"
+	    "\n";
+
+	g_string_append_printf(
+		info_str, info_template, 
+		mainParReactionCounter,
+		mainParCore1.reactionCounter,
+		mainParCore2.reactionCounter
+	);
+	
+	return info_str;
+}
+
+onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req,
+                                                     onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *debug_info_extra_str = debug_info_extra();
+		char response[strlen(debug_info_extra_str->str) + 1];
+		strcpy(response, debug_info_extra_str->str);
+		g_string_free(debug_info_extra_str, true);
+		
+		onion_response_printf(res, "%s", response);
+		syslog_server(LOG_NOTICE, "Request: Get debug info extra");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get debug info extra - system not running or "
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}

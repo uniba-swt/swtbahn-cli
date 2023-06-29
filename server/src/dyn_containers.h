@@ -122,4 +122,42 @@ extern Shared_forec_intern_output_train_engine_instance_0__global_0_0
 	forec_intern_output_train_engine_instance_3__global_0_0,
 	forec_intern_output_train_engine_instance_4__global_0_0;
 
+
+typedef enum {
+	// PAR
+	FOREC_PAR_OFF,				// 0
+	FOREC_PAR_ON,				// 1
+
+	// Core
+	FOREC_CORE_REACTING,		// 2
+	FOREC_CORE_REACTED,			// 3
+	FOREC_CORE_TERMINATED,		// 4
+	
+	// Shared variables
+	FOREC_SHARED_UNMODIFIED,	// 5
+	FOREC_SHARED_MODIFIED,		// 6
+	FOREC_SHARED_WAS_MODIFIED,	// 7
+	
+	// Program termination
+	RUNNING,					// 8
+	TERMINATED					// 9
+} Status;
+
+typedef struct {
+	volatile int sync;
+	volatile int activeThreads;
+	volatile Status status;
+	pthread_cond_t statusCond;
+	pthread_mutex_t statusLock;
+	volatile int reactionCounter;
+	pthread_cond_t reactionCounterCond;
+	pthread_mutex_t reactionCounterLock;
+} Core;
+
+extern Core mainParCore0;
+extern Core mainParCore1;
+extern Core mainParCore2;
+
+extern int mainParReactionCounter;
+
 #endif
