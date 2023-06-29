@@ -659,7 +659,7 @@ GString *debug_info(void) {
 	    "    input_filepath: \"%s\", \"%s\" \n"
 	    "    output_in_use: %d, %d \n"
 	    "    output_name: \"%s\", \"%s\" \n"
-		"  \n";
+	    "  \n";
 	
 	t_forec_intern_input_train_engine__global_0_0
 		    *forec_intern_input_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
@@ -699,15 +699,15 @@ GString *debug_info(void) {
 	
 	const char info_template3[] = 
 	    "  train_engine_instances_io[%d] \n"
-		"    input_grab: %d, %d \n"
-		"    input_release: %d, %d \n"
-		"    input_train_engine_type: %d, %d \n"
-		"    input_requested_speed: %d, %d \n"
-		"    input_requested_forwards: %d, %d \n"
-		"    output_in_use: %d, %d \n"
-		"    output_train_engine_type: %d, %d \n"
-		"    output_nominal_speed: %d, %d \n"
-		"    output_nominal_forwards: %d, %d \n"
+	    "    input_grab: %d, %d \n"
+	    "    input_release: %d, %d \n"
+	    "    input_train_engine_type: %d, %d \n"
+	    "    input_requested_speed: %d, %d \n"
+	    "    input_requested_forwards: %d, %d \n"
+	    "    output_in_use: %d, %d \n"
+	    "    output_train_engine_type: %d, %d \n"
+	    "    output_nominal_speed: %d, %d \n"
+	    "    output_nominal_forwards: %d, %d \n"
 	    "  \n";
 	
 	t_forec_intern_input_train_engine_instance__global_0_0 
