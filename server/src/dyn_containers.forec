@@ -254,6 +254,9 @@ shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocke
 shared t_forec_intern_output_interlocker_instance forec_intern_output_interlocker_instance_3 = {.in_use = false, .has_reset = false, .interlocker_type = -1, .route_id = ""};
 
 
+long long dyn_containers_reaction_counter = 0;
+
+
 // Create shared memory
 shared t_dyn_containers_interface *dyn_containers_interface;
 
@@ -403,6 +406,7 @@ thread letInterface(void) {
 
 		pthread_mutex_unlock(&dyn_containers_mutex);
 
+		dyn_containers_reaction_counter++;
 		pause;
 		
 		if (initialised) {

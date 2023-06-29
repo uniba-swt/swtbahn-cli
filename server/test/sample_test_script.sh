@@ -19,8 +19,8 @@ while true; do
 	./swtbahn driver grab $train
 	./swtbahn monitor get-debug-info
 
-	./swtbahn driver request-route-id $route
-	./swtbahn monitor get-debug-info
+#	./swtbahn driver request-route-id $route
+#	./swtbahn monitor get-debug-info
 
 	./swtbahn driver set-dcc-speed 13
 	./swtbahn monitor get-debug-info
@@ -28,8 +28,8 @@ while true; do
 	./swtbahn driver set-dcc-speed 0
 	./swtbahn monitor get-debug-info
 
-	./swtbahn controller release-route $route
-	./swtbahn monitor get-debug-info
+#	./swtbahn controller release-route $route
+#	./swtbahn monitor get-debug-info
 
 	./swtbahn driver release
 	./swtbahn monitor get-debug-info
