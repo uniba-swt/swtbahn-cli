@@ -109,6 +109,8 @@ typedef struct {
 
 extern pthread_mutex_t dyn_containers_mutex;
 
+// Main function of dyn_containers.forec
+extern void *forec_dyn_containers(void *_);
 
 int dyn_containers_start(void);
 

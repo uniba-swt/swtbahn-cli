@@ -48,7 +48,6 @@ static const char interlocker_extensions[][5] = { "bahn" };
 static const int interlocker_extensions_count = 1;
 
 
-extern pthread_mutex_t dyn_containers_mutex;
 
 
 bool clear_dir(const char dir[]) {

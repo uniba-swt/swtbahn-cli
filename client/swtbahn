@@ -560,7 +560,7 @@ def direction(train, route_id):
             click.echo(e, err=True)
 
 
-@click.command(help="Drive along a granted route")
+@click.command(help="Drive along a granted route in automatic or manual mode")
 @click.argument('mode')
 @click.argument('route-id')
 def drive_route(mode, route_id):
@@ -988,6 +988,37 @@ def get_route(route_id):
             click.echo(e, err=True)
 
 
+@click.command(help="Get debug information")
+def get_debug_info():
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/debug")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+@click.command(help="Get extra debug information")
+def get_debug_info_extra():
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/debug_extra")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 # --- assign commands to groups ---
 
 cli.add_command(config)
@@ -1040,6 +1071,8 @@ monitor.add_command(get_reversers)
 monitor.add_command(get_peripherals)
 monitor.add_command(get_granted_routes)
 monitor.add_command(get_route)
+monitor.add_command(get_debug_info)
+monitor.add_command(get_debug_info_extra)
 
 if __name__ == '__main__':
     cli()
