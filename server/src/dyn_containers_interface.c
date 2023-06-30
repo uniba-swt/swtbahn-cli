@@ -53,7 +53,6 @@ static const int shm_permissions = (IPC_CREAT | 0666);
 static const key_t shm_key = 1234; 
 
 long long dyn_containers_actuate_reaction_counter = 0;
-long long dyn_containers_set_train_engine_instance_reaction_counter = 0;
 
 
 void dyn_containers_reset_interface(
@@ -358,9 +357,7 @@ GString *dyn_containers_get_train_engines(void) {
 }
 
 int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
-                                             const char *train, const char *engine) {
-	dyn_containers_set_train_engine_instance_reaction_counter = 0;
-	
+                                             const char *train, const char *engine) {	
 	if (engine == NULL) {
 		syslog_server(LOG_ERR, "Could not set train engine because engine was NULL");
 		return 1;
@@ -395,9 +392,7 @@ int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train,
 
 			do {
 				usleep(let_period_us);
-				dyn_containers_set_train_engine_instance_reaction_counter++;
 			} while (!train_engine_instance_io->output_in_use);
-			dyn_containers_set_train_engine_instance_reaction_counter = 0;
 			
 			pthread_mutex_lock(&dyn_containers_mutex);
 			train_engine_instance_io->input_grab = false;

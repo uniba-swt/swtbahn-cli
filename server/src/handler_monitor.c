@@ -627,14 +627,12 @@ GString *debug_info(void) {
 	    "Debug info: \n"
 	    "* dyn_containers_reaction_counter: %lld \n"
 	    "* dyn_containers_actuate_reaction_counter: %lld \n"
-	    "* dyn_containers_set_train_engine_instance_reaction_counter: %lld \n"
 	    "\n";
 	
 	g_string_append_printf(
 		info_str, info_template0, 
 		dyn_containers_reaction_counter__global_0_0,
-		dyn_containers_actuate_reaction_counter,
-		dyn_containers_set_train_engine_instance_reaction_counter
+		dyn_containers_actuate_reaction_counter
 	);
 
 	const char info_template1[] = 
