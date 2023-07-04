@@ -25,8 +25,12 @@
  *
  */
 
-#ifndef SWTSERVER_DYN_CONTAINERS_H
-#define SWTSERVER_DYN_CONTAINERS_H
+#ifndef DYN_CONTAINERS_H
+#define DYN_CONTAINERS_H
+
+#include <pthread.h>
+#include <stdbool.h>
+#include <limits.h>
 
 // Copy of the data structures defined in the generated C code of dyn_containers.forec.
 
@@ -160,4 +164,4 @@ extern Core mainParCore2;
 
 extern int mainParReactionCounter;
 
-#endif
+#endif  // DYN_CONTAINERS_H

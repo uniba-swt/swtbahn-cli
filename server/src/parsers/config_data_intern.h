@@ -125,4 +125,4 @@ typedef struct {
 } t_config_peripheral_type;
 
 
-#endif //CONFIG_DATA_INTERN_H
+#endif  // CONFIG_DATA_INTERN_H

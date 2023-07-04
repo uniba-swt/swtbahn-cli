@@ -34,4 +34,4 @@
 GHashTable *parse_interlocking_table(const char *config_dir);
 
 
-#endif // INTERLOCKING_PARSER_H
+#endif  // INTERLOCKING_PARSER_H

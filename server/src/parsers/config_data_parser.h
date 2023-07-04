@@ -35,4 +35,4 @@ bool parse_config_data(const char *config_dir, t_config_data *config_data);
 
 void free_config_data(t_config_data config_data);
 
-#endif //CONFIG_DATA_PARSER_H
+#endif  // CONFIG_DATA_PARSER_H

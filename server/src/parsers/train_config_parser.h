@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef SCCHARTS_GEN_TRAIN_CONFIG_PARSER_H
-#define SCCHARTS_GEN_TRAIN_CONFIG_PARSER_H
+#ifndef TRAIN_CONFIG_PARSER_H
+#define TRAIN_CONFIG_PARSER_H
 
 #include <yaml.h>
 #include "config_data_intern.h"
@@ -35,4 +35,4 @@ void nullify_train_config_table(void);
 
 void parse_train_yaml(yaml_parser_t *parser, t_config_data *data);
 
-#endif //SCCHARTS_GEN_TRAIN_CONFIG_PARSER_H
+#endif  // TRAIN_CONFIG_PARSER_H

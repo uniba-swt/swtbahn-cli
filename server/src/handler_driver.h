@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_DRIVER_H
-#define SWTSERVER_HANDLER_DRIVER_H
+#ifndef HANDLER_DRIVER_H
+#define HANDLER_DRIVER_H
 
 #include <onion/onion.h>
 #include <glib.h>
@@ -86,5 +86,4 @@ onion_connection_status handler_set_train_emergency_stop(void *_, onion_request 
                                                          onion_response *res);
 
 
-#endif
-
+#endif  // HANDLER_DRIVER_H
