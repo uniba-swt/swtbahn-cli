@@ -26,8 +26,10 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_UPLOAD_H
-#define SWTSERVER_HANDLER_UPLOAD_H
+#ifndef HANDLER_UPLOAD_H
+#define HANDLER_UPLOAD_H
+
+#include <onion/onion.h>
 
 extern pthread_mutex_t dyn_containers_mutex;
 
@@ -54,5 +56,5 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
                                                    onion_response *res);
 
 
-#endif	// SWTSERVER_HANDLER_UPLOAD_H
+#endif  // HANDLER_UPLOAD_H
 

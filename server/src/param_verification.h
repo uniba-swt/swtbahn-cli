@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_ADMIN_H
-#define SWTSERVER_HANDLER_ADMIN_H
+#ifndef PARAM_VERIFICATION_H
+#define PARAM_VERIFICATION_H
 
 #include <stdbool.h>
 
@@ -48,5 +48,4 @@ const char *params_check_mode(const char *data_mode);
 bool params_check_is_number(const char *string);
 
 
-#endif	// SWTSERVER_HANDLER_ADMIN_H
-
+#endif  // PARAM_VERIFICATION_H

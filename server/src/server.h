@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef SWTSERVER_SERVER_H
-#define SWTSERVER_SERVER_H
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <syslog.h>
 
@@ -42,5 +42,5 @@ void syslog_server(int priority, const char *format, ...);
 void build_response_header(onion_response *res);
 
 
-#endif	// SWTSERVER_SERVER_H
+#endif  // SERVER_H
 

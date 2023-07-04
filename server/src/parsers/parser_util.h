@@ -50,4 +50,5 @@ void parse_yaml_content(yaml_parser_t *parser,
 bool str_equal(const char *str1, const char *str2);
 
 float parse_float(const char *str);
-#endif //PARSER_UTIL_H
+
+#endif  // PARSER_UTIL_H
