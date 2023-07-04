@@ -611,6 +611,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			              "Drive route decoupled: Unable to determine position of train %s on route id %s",
 			              train_id, route->id);
 			// Train position unknown, perhaps temporarily lost -> skip this iteration. 
+			usleep(TRAIN_DRIVE_TIME_STEP);
 			continue;
 		}
 		
@@ -875,6 +876,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
 			train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+			usleep(TRAIN_DRIVE_TIME_STEP);
 		}
 		bidib_free_train_state_query(train_state_query);
 		
