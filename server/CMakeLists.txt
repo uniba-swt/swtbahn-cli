@@ -57,7 +57,7 @@ set(FOREC_MAIN dyn_containers)
 set(FOREC_SRC ${CMAKE_SOURCE_DIR}/src)
 add_custom_command(
 	OUTPUT ${FOREC_MAIN}.c debug.txt information.xml ${FOREC_MAIN}.dot ${FOREC_MAIN}.pdf
-	COMMAND forecc -mforec_dyn_containers ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
+	COMMAND forecc -mforec_dyn_containers -t1 ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
 	COMMAND dot -T pdf ${FOREC_MAIN}.dot -o ${FOREC_MAIN}.pdf
 	DEPENDS ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
 )
