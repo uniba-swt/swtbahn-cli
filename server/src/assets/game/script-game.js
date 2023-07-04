@@ -226,8 +226,8 @@ const modalMessages = {
 			en: '👎 Driving Infringement!'
 		},
 		body: {
-			de: 'Du hast deinen Zug nicht vor dem Zielsignal gestoppt! <br/><br/> Glücklicherweise konnten wir deinen Zug stoppen, bevor dieser mit einem anderen kollidieren oder die Schienen beschädigen konnte.',
-			en: 'You did not stop your train before the destination signal! <br/> <svg class="flag" viewBox="0 0 100 100"><use href="#flagDef" class="`${destination}`"></use></svg> <br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.'
+			de: 'Du hast deinen Zug nicht vor dem Zielsignal gestoppt! <br/><br/> <svg class="flag" viewBox="0 0 100 100"><use href="#flagDef" class="${destination}"></use></svg> <br/><br/> Glücklicherweise konnten wir deinen Zug stoppen, bevor dieser mit einem anderen kollidieren oder die Schienen beschädigen konnte.',
+			en: 'You did not stop your train before the destination signal! <br/><br/> <svg class="flag" viewBox="0 0 100 100"><use href="#flagDef" class="${destination}"></use></svg> <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.'
 		},
 		button: {
 			de: 'Verstanden',
@@ -644,7 +644,13 @@ class Driver {
 					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
 				} else {
 					this.routeDetails = null;
-					setModalDanger(modalMessages.drivingInfringement, 'STOP, STOP, STOP');
+					
+					// Copy the driving infringement message and fill in the destination flag
+					const destinationClass = $('#destination').attr('class');
+					let drivingInfringement = JSON.parse(JSON.stringify(modalMessages.drivingInfringement));
+					drivingInfringement['body']['de'] = drivingInfringement['body']['de'].replace('${destination}', destinationClass);
+					drivingInfringement['body']['en'] = drivingInfringement['body']['en'].replace('${destination}', destinationClass);
+					setModalDanger(drivingInfringement, 'STOP, STOP, STOP');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
