@@ -92,7 +92,7 @@ static bool start_bidib(void) {
 	if (!succ_config) {
 		syslog_server(LOG_ERR, "Request: Start - Could not initialise interlocking tables");
 		return false;
-    }
+	}
 
 	const int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {

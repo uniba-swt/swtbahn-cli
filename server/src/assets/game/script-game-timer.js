@@ -1,7 +1,7 @@
 class Timer {
 	sec = 0;
 	min = 0;
-	timerInterval;
+	timerInterval = null;
 
 	tick() {
 		this.sec++;
