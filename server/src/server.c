@@ -145,7 +145,8 @@ int main(int argc, char **argv) {
 
 	openlog("swtbahn", 0, LOG_LOCAL0);
 	syslog_server(LOG_NOTICE, "SWTbahn server started");
-
+	///TODO: Consider making configurable a max_thread count to limit 
+	// overloading on weaker setups. Default by onion is 16
 	onion *o = onion_new(O_THREADED);
 	onion_set_hostname(o, argv[3]);
 	onion_set_port(o, argv[4]);

@@ -196,7 +196,10 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {		
 		const char *data_train = onion_request_get_post(req, "train");
 		const int grab_id = train_get_grab_id(data_train);
+		
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			pthread_mutex_unlock(&grabbed_trains_mutex);
 			syslog_server(LOG_ERR, "Request: Admin release train - invalid train id " 
 			              "or train not grabbed (%s)",
 			              data_train);
@@ -204,17 +207,20 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		}
 		
 		// Ensure that the train has stopped moving
-		pthread_mutex_lock(&grabbed_trains_mutex);	
 		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
+		char *train_id = strdup(grabbed_trains[grab_id].name->str);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		t_bidib_train_state_query train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
-			train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+			///TODO: Change to TRAIN_DRIVE_TIME_STEP like in handler_driver
+			usleep(10000); // 0.01 s (TRAIN_DRIVE_TIME_STEP)
+			train_state_query = bidib_get_train_state(train_id);
 		}
 		bidib_free_train_state_query(train_state_query);
+		free(train_id);
 		
 		if (!release_train(grab_id)) {
 			syslog_server(LOG_ERR, "Request: Admin release train - invalid grab id");
