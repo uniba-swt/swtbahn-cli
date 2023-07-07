@@ -359,6 +359,7 @@ void set_verifier_url(const char *upd_verifier_url) {
 	              "Websocket set verifier url: verifier URL set to: %s", verifier_url);
 }
 
+
 const char * get_verifier_url() {
    return verifier_url;
 }
@@ -385,6 +386,12 @@ void load_cached_verifier_url() {
 			// url read, update verifier_url accordingly
 			free_verifier_url();
 			verifier_url = strdup(buffer);
+			// Ensure no newline at the end, necessary on e.g. raspbian (but not Ubuntu 22.04)
+			int len = strlen(verifier_url);
+			if (len > 0 && verifier_url[len-1] == '\n') {
+				verifier_url[len-1] = '\0';
+			}
+			
 			free(buffer);
 			syslog_server(LOG_INFO, 
 			              "Websocket load cached verifier url: loaded %s from cache", 
