@@ -39,12 +39,13 @@ typedef struct {
 	GString* message;
 } ws_verif_data;
 
+
+char *verifier_url = NULL;
+
+static const char cache_file_verifier_url[] = "verifier_url_cache.txt";
+
 static const unsigned int websocket_single_poll_length_ms = 250;
 static const unsigned int websocket_max_polls_before_start = 60;
-
-static const char verifier_url[] = "ws://141.13.106.29:8080/engineverification/";
-// For development, local verification server.
-//static const char verifier_url[] = "ws://127.0.0.1:8080/engineverification/";
 
 static const char msg_type_field_key[] = "\"__MESSAGE_TYPE__\"";
 static const char msg_type_start_sig[] = "\"__MESSAGE_TYPE__\":\"ENG_VERIFICATION_REQUEST_START\"";
@@ -136,7 +137,7 @@ void send_verif_req_message(struct mg_connection *ws_connection, ws_verif_data* 
 		                                g_verif_msg_str->len, WEBSOCKET_OP_TEXT);
 		if (sent_bytes <= 0) {
 			syslog_server(LOG_ERR, 
-			          "Websocket upload engine: Sending verification request failed");
+			              "Websocket upload engine: Sending verification request failed");
 			ws_data_ptr->finished = true;
 			ws_data_ptr->success = false;
 		}
@@ -194,6 +195,7 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 	}
 }
 
+
 /**
  * @brief Process a reply message from a verification server. Depending on the contents 
  * of the message (ws_msg), updates ws_verif_data contents.
@@ -242,6 +244,7 @@ void process_verif_server_reply(struct mg_ws_message *ws_msg, ws_verif_data *ws_
 	}
 }
 
+
 /**
  * @brief Function destined to be used as the callback for when
  * an event occurs on a websocket connection to a verifier server.
@@ -282,9 +285,20 @@ void websocket_verification_callback(struct mg_connection *ws_connection,
 	}
 }
 
+
 verif_result verify_engine_model(const char* f_filepath) {
 	struct mg_mgr event_manager;
 	ws_verif_data ws_verif_data = {false, false, false, g_string_new(f_filepath), NULL};
+	
+	if (verifier_url == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Websocket upload engine: No verifier URL has been set, abort");
+		verif_result result_data;
+		result_data.success = false;
+		result_data.message = g_string_new("No verifier URL has been set, "
+		                                   "thus no verification was possible");
+		return result_data;
+	}
 	
 	// Client connection, init event manager
 	struct mg_connection *ws_connection;
@@ -327,4 +341,83 @@ verif_result verify_engine_model(const char* f_filepath) {
 	// Free string allocated for filepath of model file
 	g_string_free(ws_verif_data.file_path, true);
 	return result_data;
+}
+
+
+void set_verifier_url(const char *upd_verifier_url) {
+	if (upd_verifier_url == NULL) {
+		syslog_server(LOG_WARNING, 
+		              "Websocket set verifier url: proposed URL is NULL, URL not updated");
+		return;
+	}
+	if (verifier_url != NULL) {
+		free(verifier_url);
+		verifier_url = NULL;
+	}
+	verifier_url = strdup(upd_verifier_url);
+	syslog_server(LOG_NOTICE, 
+	              "Websocket set verifier url: verifier URL set to: %s", verifier_url);
+}
+
+const char * get_verifier_url() {
+   return verifier_url;
+}
+
+
+void free_verifier_url() {
+	if (verifier_url != NULL) {
+		free(verifier_url);
+		verifier_url = NULL;
+	}
+}
+
+
+void load_cached_verifier_url() {
+	// load verifier url from cache file
+	FILE *file = fopen(cache_file_verifier_url, "r");
+	if (file) {
+		// Adapted from https://stackoverflow.com/a/174743
+		// Read entire file into buffer
+		char *buffer = NULL;
+		size_t length = 0;
+		ssize_t bytes_read_count = getdelim(&buffer, &length, '\0', file);
+		if (bytes_read_count != -1 && buffer != NULL) {
+			// url read, update verifier_url accordingly
+			free_verifier_url();
+			verifier_url = strdup(buffer);
+			free(buffer);
+			syslog_server(LOG_INFO, 
+			              "Websocket load cached verifier url: loaded %s from cache", 
+			              verifier_url);
+		} else {
+			syslog_server(LOG_NOTICE, 
+			              "Websocket load cached verifier url: no content in cache file");
+		}
+	} else {
+		syslog_server(LOG_NOTICE, 
+		              "Websocket load cached verifier url: url cache file could not be opened");
+	}
+}
+
+
+void cache_verifier_url() {
+	// write current verifier url to cache file unless url is null
+	if (verifier_url == NULL) {
+		syslog_server(LOG_NOTICE, "Websocket cache verifier url: url not cached as it is NULL");
+		return;
+	}
+	
+	// Open file, write string into file, close file.
+	FILE* file = fopen(cache_file_verifier_url, "w");
+	if (file == NULL) {
+		syslog_server(LOG_ERR, "Websocket cache verifier url: file opening failed");
+		return;
+	}
+
+	// Write the content to the file
+	fputs(verifier_url, file);
+	syslog_server(LOG_INFO, "Websocket cache verifier url: cached url %s", verifier_url);
+	
+	// Close the file
+	fclose(file);
 }

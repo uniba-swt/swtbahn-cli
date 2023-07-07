@@ -36,6 +36,8 @@ typedef struct {
    GString* message;
 } verif_result;
 
+extern char *verifier_url;
+
 /**
  * Verifies sctx engine model located in file at f_filepath.
  * 
@@ -43,5 +45,38 @@ typedef struct {
  * @return verif_result Result of the verification
  */
 verif_result verify_engine_model(const char* f_filepath);
+
+/**
+ * @brief Set the verifier url, i.e. the address + port + endpoint where the verification
+ * server accepts verification requests via websocket connection.
+ * 
+ * @param verifier_url URL with address, port and endpoint of the verification server endpoint
+ */
+void set_verifier_url(const char *verifier_url);
+
+/**
+ * @brief Get the verifier url. The returned pointer shall not be freed or modified by the caller.
+ * 
+ * @return const char* the currently configured url to the verification server.
+ */
+const char *get_verifier_url();
+
+/**
+ * @brief Free the verifier url.
+ * 
+ */
+void free_verifier_url();
+
+/**
+ * @brief Load the verifier url from the verifier-url-cache-file.
+ * 
+ */
+void load_cached_verifier_url();
+
+/**
+ * @brief Write the current verifier url to the verifier-url-cache-file.
+ * 
+ */
+void cache_verifier_url();
 
 #endif // ENGINE_UPLOADER_H

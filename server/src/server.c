@@ -44,6 +44,7 @@
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "handler_upload.h"
+#include "websocket_uploader/engine_uploader.h"
 
 #define INPUT_MAX_LEN 256
 
@@ -161,6 +162,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
 	onion_url_add(urls, "admin/set-verification-option", handler_set_verification_option);
+	onion_url_add(urls, "admin/set-verification-url", handler_set_verification_url);
 	onion_url_add(urls, "admin/release-train", handler_admin_release_train);
 	onion_url_add(urls, "admin/set-dcc-train-speed", handler_admin_set_dcc_train_speed);
 	
@@ -209,14 +211,20 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/reversers", handler_get_reversers);
 	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
 	onion_url_add(urls, "monitor/verification-option", handler_get_verification_option);
+	onion_url_add(urls, "monitor/verification-url", handler_get_verification_url);
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);
+	
+	load_cached_verifier_url();
 
 	onion_listen(o);
 	onion_free(o);
 	if (running) {
 		stop_bidib();
 	}
+	cache_verifier_url();
+	free_verifier_url();
+	
 	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 

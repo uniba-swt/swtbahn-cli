@@ -206,7 +206,25 @@ onion_connection_status handler_set_verification_option(void *_, onion_request *
 		              verification_enabled ? "enabled" : "disabled");
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set verification option - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Set verification option - wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_set_verification_url(void *_, onion_request *req,
+                                                     onion_response *res) {
+    build_response_header(res);
+	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
+		const char *data_verification_url = onion_request_get_post(req, "verification-url");
+		if (data_verification_url == NULL) {
+			syslog_server(LOG_ERR, "Request: Set verification url - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		syslog_server(LOG_NOTICE, "Request: Set verification url - url: %s", 
+		              data_verification_url);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Set verification url - wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

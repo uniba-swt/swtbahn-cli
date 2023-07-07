@@ -195,12 +195,28 @@ def set_verification_option(verification_option):
             response = requests.post(server + "/admin/set-verification-option",
                                      data = {'verification-option': verification_option})
             if (response.status_code == requests.codes.ok):
-                click.echo("Verification set to " + verification_option + "\n")
+                click.echo("Verification option set to " + verification_option + "\n")
             else:
                 click.echo("System not running!\n", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+@click.command(help="Set the url of the verification server to use for verification on upload")
+@click.argument('verification-url', type=click.STRING)
+def set_verification_url(verification_url):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/admin/set-verification-url",
+                                     data = {'verification-url': verification_url})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Verification url set to " + verification_url + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
 
 @click.command(name="release", help="Release a train")
 @click.argument('train')
@@ -985,6 +1001,20 @@ def get_verification_option():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+@click.command(help="Get the url to the verification server")
+def get_verification_url():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.get(server + "/monitor/verification-url")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
 
 @click.command(help="Get a list of granted routes")
 def get_granted_routes():
@@ -1032,6 +1062,7 @@ admin.add_command(startup)
 admin.add_command(shutdown)
 admin.add_command(set_track_output)
 admin.add_command(set_verification_option)
+admin.add_command(set_verification_url)
 admin.add_command(admin_release)
 admin.add_command(admin_set_dcc_speed)
 
@@ -1072,6 +1103,7 @@ monitor.add_command(get_segments)
 monitor.add_command(get_reversers)
 monitor.add_command(get_peripherals)
 monitor.add_command(get_verification_option)
+monitor.add_command(get_verification_url)
 monitor.add_command(get_granted_routes)
 monitor.add_command(get_route)
 

@@ -38,7 +38,7 @@
 #include "bahn_data_util.h"
 #include "interlocking.h"
 #include "param_verification.h"
-
+#include "websocket_uploader/engine_uploader.h"
 
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
@@ -512,8 +512,22 @@ onion_connection_status handler_get_verification_option(void *_, onion_request *
 		syslog_server(LOG_NOTICE, "Request: Get verification option");
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Get verification option - system not running or "
-		              "wrong request type");
+		syslog_server(LOG_ERR, "Request: Get verification option - wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_get_verification_url(void *_, onion_request *req,
+                                                     onion_response *res) {
+    build_response_header(res);
+	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
+		const char *verif_url = get_verifier_url();
+		onion_response_printf(res, "verification-url: %s", 
+		                      verif_url == NULL ? "null" : verif_url);
+		syslog_server(LOG_NOTICE, "Request: Get verification url");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get verification url - wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
