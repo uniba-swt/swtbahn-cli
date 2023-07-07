@@ -173,9 +173,9 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 				syslog_server(LOG_NOTICE, "Request: Upload Engine - Engine verification failed");
 				remove_engine_files(libname);
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
-				if (engine_verif_result.srv_result_full_msg != NULL) {
-					onion_response_printf(res, "%s", engine_verif_result.srv_result_full_msg->str);
-					g_string_free(engine_verif_result.srv_result_full_msg, true);
+				if (engine_verif_result.message != NULL) {
+					onion_response_printf(res, "%s", engine_verif_result.message->str);
+					g_string_free(engine_verif_result.message, true);
 				} else {
 					onion_response_printf(res, "Engine Verification failed due to unknown reason.");
 				}
@@ -244,7 +244,9 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		const char *name = onion_request_get_post(req, "engine-name");
 		if (name == NULL || plugin_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Remove engine - engine name is invalid or engine is unremovable");
+			              "Request: Remove engine - engine name \"%s\" is "
+			              "invalid or engine is unremovable",
+			              (name == NULL) ? "null" : name);
 			onion_response_printf(res, "Engine name is invalid or engine is unremovable");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;

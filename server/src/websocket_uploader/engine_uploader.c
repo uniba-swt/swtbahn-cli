@@ -322,7 +322,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 	mg_mgr_free(&event_manager);
 	verif_result result_data;
 	result_data.success = ws_verif_data.success;
-	result_data.srv_result_full_msg = ws_verif_data.message;
+	result_data.message = ws_verif_data.message;
 	
 	// Free string allocated for filepath of model file
 	g_string_free(ws_verif_data.file_path, true);

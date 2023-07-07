@@ -33,7 +33,7 @@
 
 typedef struct {
    bool success;
-   GString* srv_result_full_msg;
+   GString* message;
 } verif_result;
 
 /**
