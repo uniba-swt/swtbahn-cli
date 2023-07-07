@@ -71,6 +71,7 @@
 			</div>
 		</div>
 		<script>
+			current_toggle_pos = false;
 			// Admin
 			// Initialize Toggle: Check if Verification is enabled and update toggle accordingly
 			function update_verification_toggle() {
@@ -87,9 +88,11 @@
 									// second bootstrap setter is needed for some Chromium browsers
 									$('#verificationToggle').prop('checked',true);
 									$('#verificationToggle').bootstrapToggle('on');
+									current_toggle_pos = true;
 								} else if (responseData === "verification-enabled: false") {
 									$('#verificationToggle').prop('checked',false);
 									$('#verificationToggle').bootstrapToggle('off');
+									current_toggle_pos = false;
 								}
 							}
 							// Mark toggle initialized
@@ -105,10 +108,10 @@
 					}
 				});
 			}
-			
+			update_verification_toggle();
 			verif_toggle_update_interval = setInterval(() => { 
 				update_verification_toggle();
-			}, 10000);
+			}, 20000);
 			
 			// User changes toggle
 			$('#verificationToggle').change(function () {
@@ -116,6 +119,9 @@
 					return;
 				}
 				var toggleState = $('#verificationToggle').prop('checked');
+				if (toggleState == current_toggle_pos) {
+					return;
+				}
 				// Send request to server to set verification accordingly.
 				$.ajax({
 					type: 'POST',
@@ -127,6 +133,7 @@
 						console.log((toggleState ? "Enabled" : "Disabled") + " verification.");
 						$('#verificationSettingResponse').parent().removeClass('alert-danger');
 						$('#verificationSettingResponse').parent().addClass('alert-success');
+						current_toggle_pos = toggleState;
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						console.log("Failed to " + (toggleState ? "enable" : "disable") + " verification.");
