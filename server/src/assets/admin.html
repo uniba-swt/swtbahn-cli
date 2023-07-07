@@ -4,13 +4,13 @@
 <head>
 	<link rel="icon" type="image/png" id=favIcon href="favicon.jpg" />
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" />
-
-	<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
-
+	<link rel="stylesheet" href="./dependencies/bootstrap.min.css" />
+	<link rel="stylesheet" href="./dependencies/bootstrap4-toggle.min.css" />
 	<link rel="stylesheet" href="style.css" />
+
+	<script src="./dependencies/jquery.min.js"></script>
+	<script src="./dependencies/bootstrap4-toggle.min.js"></script>
+
 
 	<script src="script.js"></script>
 
@@ -70,6 +70,67 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			// Admin
+			// Initialize Toggle: Check if Verification is enabled and update toggle accordingly
+			$.ajax({
+				type: 'GET',
+				url: '/monitor/verification-option',
+				crossDomain: true,
+				dataType: 'text',
+				success: function (responseData, textStatus, jqXHR) {
+					try {
+						if (typeof responseData === 'string') {
+							if (responseData === "verification-enabled: true") {
+								//First option for Gecko/Firefox default; 
+								// second bootstrap setter is needed for some Chromium browsers
+								$('#verificationToggle').prop('checked',true);
+								$('#verificationToggle').bootstrapToggle('on');
+							} else if (responseData === "verification-enabled: false") {
+								$('#verificationToggle').prop('checked',false);
+								$('#verificationToggle').bootstrapToggle('off');
+							}
+						}
+						// Mark toggle initialized
+						toggleInit = true;
+					} catch (error) {
+						console.log("Get Verification encountered error: " + error);
+					}
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					// Mark as initialized on error as well, as else nothing about the toggle will work
+					toggleInit = true;
+					console.log("ERROR GET Verification: " + responseData);
+				}
+			});
+			
+			
+			// User changes toggle
+			$('#verificationToggle').change(function () {
+				if (!toggleInit) { //if not yet initialized, skip
+					return;
+				}
+				var toggleState = $('#verificationToggle').prop('checked');
+				// Send request to server to set verification accordingly.
+				$.ajax({
+					type: 'POST',
+					url: '/admin/set-verification-option',
+					crossDomain: true,
+					data: { 'verification-option': toggleState},
+					dataType: 'text',
+					success: function (responseData, textStatus, jqXHR) {
+						console.log((toggleState ? "Enabled" : "Disabled") + " verification.");
+						$('#verificationSettingResponse').parent().removeClass('alert-danger');
+						$('#verificationSettingResponse').parent().addClass('alert-success');
+					},
+					error: function (responseData, textStatus, errorThrown) {
+						console.log("Failed to " + (toggleState ? "enable" : "disable") + " verification.");
+						$('#verificationSettingResponse').parent().removeClass('alert-success');
+						$('#verificationSettingResponse').parent().addClass('alert-danger');
+					}
+				});
+			});
+		</script>
 	</div>
 </body>
 

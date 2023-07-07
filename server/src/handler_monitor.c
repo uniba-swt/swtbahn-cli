@@ -506,7 +506,7 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req,
 onion_connection_status handler_get_verification_option(void *_, onion_request *req,
                                                         onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
+	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		onion_response_printf(res, "verification-enabled: %s", 
 		                      verification_enabled ? "true" : "false");
 		syslog_server(LOG_NOTICE, "Request: Get verification option");

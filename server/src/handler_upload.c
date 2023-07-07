@@ -35,12 +35,12 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
-#include <dirent.h>
 
 #include "handler_upload.h"
 #include "server.h"
 #include "dynlib.h"
 #include "dyn_containers_interface.h"
+#include "websocket_uploader/engine_uploader.h"
 
 static const char engine_dir[] = "engines";
 static const char engine_extensions[][5] = { "c", "h", "sctx" };
@@ -59,7 +59,7 @@ bool clear_dir(const char dir[]) {
 	DIR *dir_handle = opendir(dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "clear_dir: Directory %s could not be opened", dir);
+		syslog_server(LOG_ERR, "Upload clear dir: Directory %s could not be opened", dir);
 		return false;
 	}
 	
@@ -98,7 +98,7 @@ bool engine_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(engine_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
-		syslog_server(LOG_ERR, "engine_file_exists Directory %s could not be opened", engine_dir);
+		syslog_server(LOG_ERR, "Upload engine file exists: Directory %s could not be opened", engine_dir);
 		return true;
 	}
 	struct dirent *dir_entry = NULL;
@@ -167,15 +167,15 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		              temp_filepath, final_filepath);
 
 		if (verification_enabled) {
-			verif_result v_result = verify_engine_model(final_filepath);
-			if (!v_result.success) {
+			verif_result engine_verif_result = verify_engine_model(final_filepath);
+			if (!engine_verif_result.success) {
 				// Stop upload if verification did not succeed
 				syslog_server(LOG_NOTICE, "Request: Upload Engine - Engine verification failed");
 				remove_engine_files(libname);
 				onion_response_set_code(res, HTTP_BAD_REQUEST);
-				if (v_result.srv_result_full_msg != NULL) {
-					onion_response_printf(res, "%s", v_result.srv_result_full_msg->str);
-					g_string_free(v_result.srv_result_full_msg, true);
+				if (engine_verif_result.srv_result_full_msg != NULL) {
+					onion_response_printf(res, "%s", engine_verif_result.srv_result_full_msg->str);
+					g_string_free(engine_verif_result.srv_result_full_msg, true);
 				} else {
 					onion_response_printf(res, "Engine Verification failed due to unknown reason.");
 				}
@@ -244,8 +244,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		const char *name = onion_request_get_post(req, "engine-name");
 		if (name == NULL || plugin_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Remove engine - engine name is invalid or engine is unremovable", 
-			              name);
+			              "Request: Remove engine - engine name is invalid or engine is unremovable");
 			onion_response_printf(res, "Engine name is invalid or engine is unremovable");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;

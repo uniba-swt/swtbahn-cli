@@ -91,8 +91,8 @@ function adminReleaseRoute(routeId) {
 
 $(document).ready(
 	function () {
-		$('#verificationLogDownload').hide();
-		$('#clearVerificationMsg').hide();
+		$('#verificationLogDownloadButton').hide();
+		$('#clearVerificationMsgButton').hide();
 		
 		// Configuration
 		$('#pingButton').click(function () {
@@ -502,14 +502,14 @@ $(document).ready(
 			driveRoute(routeId, "automatic");
 		});
 		
-		$('#clearVerificationMsg').click(function () {
-			$('#verificationLogDownload').hide();
-			$('#clearVerificationMsg').hide();
+		$('#clearVerificationMsgButton').click(function () {
+			$('#verificationLogDownloadButton').hide();
+			$('#clearVerificationMsgButton').hide();
 			$('#uploadResponse').text('');
 			$('#uploadResponse').parent().removeClass('alert-danger');
 		});
 		
-		$('#verificationLogDownload').click(function () {
+		$('#verificationLogDownloadButton').click(function () {
 			//Create zip file that contains the logs
 			//then trigger download of that file.
 			try {
@@ -559,8 +559,8 @@ $(document).ready(
 					$('#uploadResponse').parent().removeClass('alert-danger');
 					$('#uploadResponse').parent().addClass('alert-success');
 					$('#uploadResponse').text('Engine ' + file.name + ' ready for use');
-					$('#verificationLogDownload').hide();
-					$('#clearVerificationMsg').hide();
+					$('#verificationLogDownloadButton').hide();
+					$('#clearVerificationMsgButton').hide();
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					console.log("Upload Failed");
@@ -573,14 +573,14 @@ $(document).ready(
 						});
 						verificationObj = resJson;
 						$('#uploadResponse').text(msg);
-						$('#verificationLogDownload').show();
+						$('#verificationLogDownloadButton').show();
 					} catch (e) {
-						console.log("Perhaps Expected: " + e);
+						console.log("Unable to parse Server's reply in upload-engine failure case: " + e);
 						$('#uploadResponse').text(responseData.responseText.toString());
 					}
 					$('#uploadResponse').parent().removeClass('alert-success');
 					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#clearVerificationMsg').show();
+					$('#clearVerificationMsgButton').show();
 				}
 			});
 		});
@@ -1041,67 +1041,6 @@ $(document).ready(
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
 		
-		
-		// Admin
-		
-		// Initialize Toggle: Check if Verification is enabled and update toggle accordingly
-		$.ajax({
-			type: 'GET',
-			url: '/monitor/verification-option',
-			crossDomain: true,
-			dataType: 'text',
-			success: function (responseData, textStatus, jqXHR) {
-				try {
-					if (typeof responseData === 'string') {
-						if (responseData === "verification-enabled: true") {
-							//First option for Gecko/Firefox default; 
-							// second bootstrap setter is needed for some Chromium browsers
-							$('#verificationToggle').prop('checked',true);
-							$('#verificationToggle').bootstrapToggle('on');
-						} else if (responseData === "verification-enabled: false") {
-							$('#verificationToggle').prop('checked',false);
-							$('#verificationToggle').bootstrapToggle('off');
-						}
-					}
-					// Mark toggle initialized
-					toggleInit = true;
-				} catch (error) {
-					console.log("Get Verification encountered error: " + error);
-				}
-			},
-			error: function (responseData, textStatus, errorThrown) {
-				// Mark as initialized on error as well, as else nothing about the toggle will work
-				toggleInit = true;
-				console.log("ERROR GET Verification: " + responseData);
-			}
-		});
-		
-		
-		// User changes toggle
-		$('#verificationToggle').change(function () {
-			if (!toggleInit) { //if not yet initialized, skip
-				return;
-			}
-			var toggleState = $('#verificationToggle').prop('checked');
-			// Send request to server to set verification accordingly.
-			$.ajax({
-				type: 'POST',
-				url: '/admin/set-verification-option',
-				crossDomain: true,
-				data: { 'verification-option': toggleState},
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					console.log((toggleState ? "Enabled" : "Disabled") + " verification.");
-					$('#verificationSettingResponse').parent().removeClass('alert-danger');
-					$('#verificationSettingResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					console.log("Failed to " + (toggleState ? "enable" : "disable") + " verification.");
-					$('#verificationSettingResponse').parent().removeClass('alert-success');
-					$('#verificationSettingResponse').parent().addClass('alert-danger');
-				}
-			});
-		});
 		
 		
 	}

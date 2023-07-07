@@ -30,9 +30,7 @@
 #ifndef SWTSERVER_HANDLER_UPLOAD_H
 #define SWTSERVER_HANDLER_UPLOAD_H
 
-#include <onion/types.h>
-#include <glib.h>
-#include "websocket_uploader/engine_uploader.h"
+#include <onion/onion.h>
 
 bool clear_engine_dir(void);
 
