@@ -432,8 +432,8 @@ class Driver {
 						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
 						$(obj).children().each(function() {
 							switch($(this).attr('lang')){
-								case "de": $(this).text("Fahre diesen Zug"); break;
-								case "en": $(this).text("Drive this train"); break;
+								case "de": $(this).html("<span lang='easy'>Drücke hier um den Zug zu steuern</span><span lang='normal'>Fahre den Zug</span>"); break;
+								case "en": $(this).html("<span lang='easy'>Press here to control this train</span><span lang='normal'>Drive this train</span>"); break;
 							}
 						});
 					},
@@ -810,6 +810,14 @@ function initialise() {
 		$('span:lang(de)').toggle();
 		language = (language == 'en') ? 'de' : 'en';
 	});
+
+	$('span.lang(easy)').hide();
+	$('span.lang(normal)').show();
+
+	$('#changeDescription').click(function (){
+		$('span:lang(easy)').toggle();
+		$('span:lang(normal)').toggle();
+	})
 
 	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
