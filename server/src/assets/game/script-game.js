@@ -826,6 +826,8 @@ function initialise() {
 		}else{
 			isEasyMode = true;
 		}
+		$('.normal').toggle();
+		$('.easy').toggle();
 	});
 
 	// Hide the train driving buttons (destination selections).
