@@ -432,10 +432,18 @@ class Driver {
 						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
 						$(obj).children().each(function() {
 							switch($(this).attr('lang')){
-								case "de": $(this).html("<span lang='easy'>Drücke hier um den Zug zu steuern</span><span lang='normal'>Fahre den Zug</span>"); break;
-								case "en": $(this).html("<span lang='easy'>Press here to control this train</span><span lang='normal'>Drive this train</span>"); break;
+								case "de": $(this).html("<span class='easy'>Drücke hier um den Zug zu steuern</span><span class='normal'>Fahre den Zug</span>"); break;
+								case "en": $(this).html("<span class='easy'>Press here to control this train</span><span class='normal'>Drive this train</span>"); break;
 							}
+
 						});
+						if(isEasyMode){
+							$('.normal').hide();
+							$('.easy').show();
+						}else{
+							$('.normal').show();
+							$('.easy').hide();
+						}
 					},
 					() => {
 						$(obj).prop("disabled", true);
@@ -811,13 +819,14 @@ function initialise() {
 		language = (language == 'en') ? 'de' : 'en';
 	});
 
-	$('span.lang(easy)').hide();
-	$('span.lang(normal)').show();
-
+	isEasyMode = false;
 	$('#changeDescription').click(function (){
-		$('span:lang(easy)').toggle();
-		$('span:lang(normal)').toggle();
-	})
+		if(isEasyMode){
+			isEasyMode = false;
+		}else{
+			isEasyMode = true;
+		}
+	});
 
 	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
