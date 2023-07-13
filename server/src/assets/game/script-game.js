@@ -2,6 +2,7 @@ var driver = null;           // Train driver logic.
 var drivingTimer = null;     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
+var isEasyMode = false;      // User interface verbosity.
 
 /**************************************************
  * Destination related information and UI elements
@@ -431,19 +432,13 @@ class Driver {
 						$(obj).addClass("btn-primary");
 						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
 						$(obj).children().each(function() {
-							switch($(this).attr('lang')){
-								case "de": $(this).html("<span class='easy'>Drücke hier um den Zug zu steuern</span><span class='normal'>Fahre den Zug</span>"); break;
-								case "en": $(this).html("<span class='easy'>Press here to control this train</span><span class='normal'>Drive this train</span>"); break;
+							switch ($(this).attr('lang')) {
+								case "de": $(this).html(`<span class='easy' ${isEasyMode ? '' : style='display: none;'}>Clicke um den Zug zu fahren</span><span class='normal' ${!isEasyMode ? '' : style='display: none;'}>Fahre den Zug</span>`);
+								           break;
+								case "en": $(this).html(`<span class='easy' ${isEasyMode ? '' : style='display: none;'}>Click to drive this train</span><span class='normal' ${!isEasyMode ? '' : style='display: none;'}>Drive this train</span>`);
+								           break;
 							}
-
 						});
-						if(isEasyMode){
-							$('.normal').hide();
-							$('.easy').show();
-						}else{
-							$('.normal').show();
-							$('.easy').hide();
-						}
 					},
 					() => {
 						$(obj).prop("disabled", true);
@@ -819,15 +814,16 @@ function initialise() {
 		language = (language == 'en') ? 'de' : 'en';
 	});
 
+	// Set the text verbosity.
 	isEasyMode = false;
-	$('#changeDescription').click(function (){
-		if(isEasyMode){
-			isEasyMode = false;
-		}else{
-			isEasyMode = true;
-		}
+	$('.normal').show();
+	$('.easy').hide();
+	
+	// Handle the verbosity selection.
+	$('#changeDescription').click(function () {
 		$('.normal').toggle();
 		$('.easy').toggle();
+		isEasyMode = !isEasyMode
 	});
 
 	// Hide the train driving buttons (destination selections).
