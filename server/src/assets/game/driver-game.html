@@ -65,24 +65,34 @@
 </svg>
 
 <body>
-	<div class="row">
+	<div class="row justify-content-between">
 		<div class="col p-2">
 			<img class="img-fluid" src="../swtbahn-logo.png">
 		</div>
-		<div class="col p-2 d-flex justify-content-end align-items-end">
-			<button id="endGameButton" type="button" class="btn btn-primary me-2">
-				<span lang="de">Beenden</span>
-				<span lang="en">End Trip</span>
-			</button>
-			
-			<button id="changeDescription" class="btn btn-outline-primary me-2">
-				<span lang="de"><span class="easy">Mehr Tipps</span><span class="normal">Weniger Tipps</span></span>
-				<span lang="en"><span class="easy">More Tips</span><span class="normal">Less Tips</span></span>
-			</button>
-			<button id="changeLang" class="btn btn-outline-primary">
-				<span lang="en">🇬🇧</span>
-				<span lang="de">🇩🇪</span>
-			</button>
+		<div class="col-auto p-2 align-self-end">
+			<div class="row justify-content-end">
+				<div class="col-auto gx-0">
+					<button id="endGameButton" type="button" class="btn btn-outline-primary">
+						<span lang="de">Beenden</span>
+						<span lang="en">End Trip</span>
+					</button>
+				</div>
+					
+				<div class="col-auto">
+					<div class="btn-group gx-0">
+						<input id="changeTips" type="checkbox" class="btn-check">
+						<label class="btn btn-outline-primary" for="changeTips">
+							<span lang="de">Tipps</span>
+							<span lang="en">Tips</span>
+						</label>
+						
+						<button id="changeLang" class="btn btn-outline-primary">
+							<span lang="de">🇩🇪</span>
+							<span lang="en">🇬🇧</span>
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	
@@ -289,8 +299,8 @@
 		</div> 
 		
 		<label class="col-auto col-form-label-lg"><b>
-			<span lang="de"><span class='easy'>Geschwindigkeitssteuerung: </span><span class='normal'>Geschwindigkeit: </span></span>
-			<span lang="en"><span class='easy'>Speed control: </span><span class='normal'>Speed: </span></span>
+			<span lang="de">Geschwindigkeitssteuerung: </span>
+			<span lang="en">Speed control: </span>
 		</b></label>
 		<div class="input-group row">
 			<div class="col">
