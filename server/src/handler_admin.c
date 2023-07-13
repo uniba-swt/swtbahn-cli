@@ -220,13 +220,15 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 			train_state_query = bidib_get_train_state(train_id);
 		}
 		bidib_free_train_state_query(train_state_query);
-		free(train_id);
+		
 		
 		if (!release_train(grab_id)) {
-			syslog_server(LOG_ERR, "Request: Admin release train - invalid grab id");
+			syslog_server(LOG_ERR, "Request: Admin release train %s - invalid grab id", train_id);
+			free(train_id);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Admin release train");
+			syslog_server(LOG_NOTICE, "Request: Admin release train %s", train_id);
+			free(train_id);
 			return OCS_PROCESSED;
 		}
 	} else {

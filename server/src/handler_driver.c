@@ -869,8 +869,8 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		
 		pthread_mutex_lock(&grabbed_trains_mutex);	
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
@@ -892,13 +892,14 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 			train_state_query = bidib_get_train_state(train_id);
 		}
 		bidib_free_train_state_query(train_state_query);
-		free(train_id);
 		
 		if (!release_train(grab_id)) {
-			syslog_server(LOG_ERR, "Request: Release train - invalid grab id");
+			syslog_server(LOG_ERR, "Request: Release train %s - invalid grab id", train_id);
+			free(train_id);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Release train");
+			syslog_server(LOG_NOTICE, "Request: Release train %s", train_id);
+			free(train_id);
 			return OCS_PROCESSED;
 		}
 	} else {

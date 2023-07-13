@@ -1021,7 +1021,9 @@ bool train_state_set_speed(const char *train_id, int speed) {
     bool result = false;
     if (g_hash_table_contains(config_data.table_trains, train_id)) {
         const int grab_id = train_get_grab_id(train_id);
+        pthread_mutex_lock(&grabbed_trains_mutex);
         result = bidib_set_train_speed(train_id, speed, grabbed_trains[grab_id].track_output) == 0;
+        pthread_mutex_unlock(&grabbed_trains_mutex);
         bidib_flush();
     } else {
         syslog_server(LOG_ERR, "Invalid train id: %s", train_id);
