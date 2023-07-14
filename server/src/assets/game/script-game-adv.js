@@ -328,6 +328,7 @@ class TrainSelector {
 	activateTrainAvailCheckInterval_adv() {
 		console.log("Train availability checking interval started");
 		$('.selectTrainButton').prop("disabled", true);
+		this.checkTrainAvailability_adv();
 		this.trainAvailabilityInterval = setInterval(() => {
 			this.checkTrainAvailability_adv();
 		}, this.trainAvailabilityTimeout);
