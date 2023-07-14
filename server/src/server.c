@@ -178,6 +178,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "driver/request-route-id", handler_request_route_id);
 	onion_url_add(urls, "driver/direction", handler_driving_direction);
 	onion_url_add(urls, "driver/drive-route", handler_drive_route);
+	onion_url_add(urls, "driver/drive-route-guarded", handler_drive_route_guarded);
 	onion_url_add(urls, "driver/set-dcc-train-speed", handler_set_dcc_train_speed);
 	onion_url_add(urls, "driver/set-calibrated-train-speed",
 	              handler_set_calibrated_train_speed);

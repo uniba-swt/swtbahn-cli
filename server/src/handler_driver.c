@@ -88,6 +88,16 @@ typedef struct {
 	e_route_pos_error_code err_code;
 } t_train_index_on_route_query;
 
+typedef enum {
+	ERR_INVALID_INPUT,
+	ERR_ROUTE_LEFT,
+	ERR_ROUTE_END_OVERRUN,
+	ERR_INTERNAL_ERROR,
+	ERR_ROUTE_PARAM_INVALID,
+	OKAY_ROUTE_IN_PROGRESS,
+	OKAY_STOPPED_AT_ROUTE_END
+} e_route_drive_status_code;
+
 static void increment_next_grab_id(void) {
 	if (next_grab_id == TRAIN_ENGINE_INSTANCE_COUNT_MAX - 1) {
 		next_grab_id = 0;
@@ -193,6 +203,26 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	syslog_server(LOG_NOTICE, "Driving is forwards: %s",
 				  requested_forwards ? "yes" : "no");
 	return requested_forwards;
+}
+
+static char *get_train_name_for_grab_id(int grab_id) {
+	pthread_mutex_lock(&grabbed_trains_mutex);
+	char *train_id = strdup(grabbed_trains[grab_id].name->str);
+	pthread_mutex_unlock(&grabbed_trains_mutex);
+	return train_id;
+}
+
+static const char *route_drive_status_code_to_str(e_route_drive_status_code drive_status) {
+	static const char *status_strings[] = {
+		"ERR_INVALID_INPUT",
+		"ERR_ROUTE_LEFT",
+		"ERR_ROUTE_END_OVERRUN",
+		"ERR_INTERNAL_ERROR",
+		"ERR_ROUTE_PARAM_INVALID",
+		"OKAY_ROUTE_IN_PROGRESS",
+		"OKAY_STOPPED_AT_ROUTE_END"
+	};
+	return status_strings[drive_status];
 }
 
 static bool drive_route_params_valid(const char *train_id, t_interlocking_route *route) {
@@ -465,33 +495,36 @@ static t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated
 // If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
 // If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
 // If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
-__attribute__ ((unused))
 static t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train_id, 
                                                                const t_interlocking_route *route) {
 	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
 	if (train_id == NULL || route == NULL || route->path == NULL) {
 		return ret_query;
 	}
-	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
-	if (train_position_query.segments == NULL || train_position_query.length == 0) {
-		bidib_free_train_position_query(train_position_query);
+	t_bidib_train_position_query train_pos_query = bidib_get_train_position(train_id);
+	if (train_pos_query.segments == NULL || train_pos_query.length == 0) {
+		bidib_free_train_position_query(train_pos_query);
 		ret_query.err_code = ERR_TRAIN_NOT_ON_TRACKS;
 		return ret_query;
 	}
 	ret_query.err_code = ERR_TRAIN_NOT_ON_ROUTE;
 	const size_t path_count = route->path->len;
-	for (size_t i = 0; i < train_position_query.length; ++i) {
+	for (size_t i = 0; i < train_pos_query.length; ++i) {
 		// Search starting at most recent pos_index to skip unnecessary comparisons
-		for (size_t n = ret_query.pos_index; n < path_count; ++n) {
+		if ((ret_query.pos_index + 1) >= path_count) {
+			// pos_index at max, stop.
+			break;
+		}
+		for (size_t n = ret_query.pos_index + 1; n < path_count; ++n) {
 			const char *path_item = g_array_index(route->path, char *, n);
-			if (n > ret_query.pos_index && strcmp(path_item, train_position_query.segments[i]) == 0) {
+			if (strcmp(path_item, train_pos_query.segments[i]) == 0) {
 				ret_query.pos_index = n;
 				ret_query.err_code = OKAY_TRAIN_ON_ROUTE;
 				break;
 			}
 		}
 	}
-	bidib_free_train_position_query(train_position_query);
+	bidib_free_train_position_query(train_pos_query);
 	return ret_query;
 }
 
@@ -692,6 +725,119 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 	}
 	
 	return true;
+}
+
+static e_route_drive_status_code drive_route_guarded_start(const char *train_id, t_interlocking_route *route) {
+	if (train_id == NULL || route == NULL || !drive_route_params_valid(train_id, route)) {
+		syslog_server(LOG_ERR, "Drive route guarded: Invalid Input");
+		return ERR_INVALID_INPUT;
+	}
+	// Driving starts: Driving direction is computed from the route orientation
+	syslog_server(LOG_NOTICE, "Drive route guarded: Driving route %s with train %s starts "
+	              "in guarded mode", route->id, train_id);
+	
+	// Set the signals along the route to Stop as the train drives past them
+	const bool result = drive_route_progressive_stop_signals_decoupled(train_id, route);
+	
+	if (!result) {
+		syslog_server(LOG_ERR, 
+		              "Drive route guarded: drive route progr. "
+		              "stop signals failed for route %s driven by train %s",
+		              route->id, train_id);
+		return ERR_INTERNAL_ERROR;
+	}
+	
+	return OKAY_ROUTE_IN_PROGRESS;
+}
+
+static e_route_drive_status_code drive_route_guarded_check_for_end(t_interlocking_route *route, const char *train_id) {
+	e_route_drive_status_code drive_status = OKAY_ROUTE_IN_PROGRESS;
+	///TODO: Check if -2 is correct here, and deal with a/b segments
+	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 2);
+	const char *overlap_segment = g_array_index(route->path, char *, route->path->len - 1);
+	
+	while (drive_status == OKAY_ROUTE_IN_PROGRESS && running) {
+		// Check where the train is:
+		// If stopped on segment before destination signal, route end reach successfully.
+		// If train reached segment after destination signal, route end overrun.
+		// If train on tracks but not on route, route left illegally.
+		usleep(TRAIN_DRIVE_TIME_STEP);
+		
+		t_bidib_train_state_query train_state = bidib_get_train_state(train_id);
+		bool train_stopped = train_state.known && train_state.data.set_speed_step == 0;
+		bidib_free_train_state_query(train_state);
+		
+		if (!drive_route_params_valid(train_id, route)) {
+			// Route not granted to train anymore
+			drive_status = ERR_ROUTE_PARAM_INVALID;
+		} else if (train_stopped && train_position_is_at(train_id, dest_segment)) {
+			// Route end reached successfully
+			drive_status = OKAY_STOPPED_AT_ROUTE_END;
+		} else if (is_segment_occupied(overlap_segment)) {
+			// Route end overrun
+			drive_status = ERR_ROUTE_END_OVERRUN;
+		} else if (get_train_pos_index_in_route_path(train_id,route).err_code == ERR_TRAIN_NOT_ON_ROUTE) {
+			// Train not on route but still on tracks -> stop immediately
+			drive_status = ERR_ROUTE_LEFT;
+		}
+	}
+	if (!running) {
+		drive_status = ERR_INTERNAL_ERROR;
+	}
+	return drive_status;
+}
+
+static void drive_route_guarded_process_end(const char *route_id, const char *train_id, 
+                                            e_route_drive_status_code drive_status, 
+                                            int engine_instance, char requested_forwards) {
+	if (drive_status != OKAY_STOPPED_AT_ROUTE_END) {
+		// Stop train
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		///TODO: Think about directly setting speed to 0 with bidib instead
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		syslog_server(LOG_WARNING, 
+		              "Drive route guarded: Train %s on route %s stopped automatically, status %s",
+		              train_id, route_id, route_drive_status_code_to_str(drive_status));
+	} else {
+		syslog_server(LOG_NOTICE, 
+		              "Drive route guarded: Train %s on route %s ending, status %s",
+		              train_id, route_id, route_drive_status_code_to_str(drive_status));
+	}
+}
+
+static e_route_drive_status_code drive_route_guarded(const int grab_id, const char *route_id) {
+	char *train_id = get_train_name_for_grab_id(grab_id);
+	t_interlocking_route *route = get_route(route_id);
+	
+	// In some cases, we will need to stop the train ASAP. Precompute engine_instance and
+	// requested_forwards such as not to waste time in that case.
+	pthread_mutex_lock(&grabbed_trains_mutex);
+	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+	const char requested_forwards = is_forward_driving(route, train_id);
+	pthread_mutex_unlock(&grabbed_trains_mutex);
+	
+	// Handles start of route until last signal with permissive aspect is passed
+	e_route_drive_status_code drive_status = drive_route_guarded_start(train_id, route);
+	
+	if (drive_status != OKAY_ROUTE_IN_PROGRESS) {
+		free(train_id);
+		return drive_status;
+	}
+	
+	// Handles end of route
+	drive_status = drive_route_guarded_check_for_end(route, train_id);
+	
+	// Processes result of end of route monitoring/supervision
+	drive_route_guarded_process_end(route_id, train_id, drive_status, engine_instance, requested_forwards);
+	
+	// Release the route
+	if (drive_route_params_valid(train_id, route)) {
+		release_route(route_id);
+	}
+	free(train_id);
+	
+	return drive_status;
 }
 
 static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic) {
@@ -1073,6 +1219,43 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 		syslog_server(LOG_ERR, "Request: Drive route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}  
+}
+
+onion_connection_status handler_drive_route_guarded(void *_, onion_request *req,
+                                                    onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_session_id = onion_request_get_post(req, "session-id");
+		const char *data_grab_id = onion_request_get_post(req, "grab-id");
+		const char *data_route_id = onion_request_get_post(req, "route-id");
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const char *route_id = params_check_route_id(data_route_id);
+		if (client_session_id != session_id) {
+			syslog_server(LOG_ERR, "Request: Drive route guarded - invalid session id");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			syslog_server(LOG_ERR, "Request: Drive route guarded - bad grab id");
+			return OCS_NOT_IMPLEMENTED;			
+		} else if (strcmp(route_id, "") == 0) {
+			syslog_server(LOG_ERR, "Request: Drive route guarded - bad route id");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			syslog_server(LOG_NOTICE, "Request: Drive route guarded start - route: %s train: %s",
+			              route_id, get_train_name_for_grab_id(grab_id));
+			e_route_drive_status_code result;
+			result = drive_route_guarded(grab_id, route_id);
+			syslog_server(LOG_NOTICE, 
+			              "Request: Drive route guarded end - route: %s train: %s result: %s",
+			              route_id, get_train_name_for_grab_id(grab_id), 
+			              route_drive_status_code_to_str(result));
+			onion_response_printf(res, "%s", route_drive_status_code_to_str(result));
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_ERR, "Request: Drive route - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
 }
 
 onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,

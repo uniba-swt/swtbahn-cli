@@ -628,21 +628,33 @@ class Driver {
 	driveRoutePromise() {
 		return $.ajax({
 			type: 'POST',
-			url: serverAddress + '/driver/drive-route',
+			url: serverAddress + '/driver/drive-route-guarded',
 			crossDomain: true,
 			data: {
 				'session-id': this.sessionId,
 				'grab-id': this.grabId,
-				'route-id': this.routeDetails["route-id"],
-				'mode': 'manual'
+				'route-id': this.routeDetails["route-id"]//,
+				//'mode': 'manual'
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
+				console.log("drive-route-guarded returned success with response: " + responseData);
+				this.isDestinationReached = true;
 				if (!this.hasValidTrainSession) {
+					console.log("    d-r-g ret no valid train session");
 					// Ignore, driver has ended their trip
-				} else if (!this.hasRouteGranted) {
+				}
+				let res = String(responseData.responseText);
+				if (res === "OKAY_STOPPED_AT_ROUTE_END") {
+					console.log("    d-r-g ret juhuu-case");
+					this.routeDetails = null;
 					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
+					$('#endGameButton').show();
+					// The page can be refreshed without ill consequences.
+					$(window).unbind('beforeunload', pageRefreshWarning);
 				} else {
+					///TODO: Adjust based on returned code
+					console.log("    d-r-g ret driving infringement");
 					this.routeDetails = null;
 					
 					// Copy the driving infringement message and fill in the destination flag
@@ -708,7 +720,7 @@ class Driver {
 			.then(() => this.setTrainSpeedPromise(0))
 			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver
 			.then(() => enableSpeedButtons(destinationSignal))
-			.then(() => this.enableDestinationReachedPromise())        // 6. Start monitoring whether the train has reached the destination
+			//.then(() => this.enableDestinationReachedPromise())        // 6. Start monitoring whether the train has reached the destination
 
 			.then(() => this.driveRoutePromise())                      // 7. Start the manual driving mode for the granted route
 
@@ -859,15 +871,17 @@ function initialise() {
 			if (!driver.isDestinationReached) {
 				$('#endGameButton').hide();
 
-				if (speedButton.val() == '0') {
-					setModal(modalMessages.drivingContinue);
-				}
+				///TODO: First update/check actual position of the train. Then show this if needed.
+				//if (speedButton.val() == '0') {
+				//	setModal(modalMessages.drivingContinue);
+				//}
 				
 				// The page cannot be refreshed without ill consequences.
 				// The train might not stop sensibly on the main segment of the destination
 				$(window).bind("beforeunload", pageRefreshWarning);
 			} else if (speedButton.val() == '0') {
-				driver.releaseRoutePromise();
+				//driver.releaseRoutePromise();
+				console.log("Driver set speed 0");
 			}
 		});
 	});
