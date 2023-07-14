@@ -115,6 +115,7 @@ function activateUpdatePossibleDestinationsInterval_adv(blockId) {
 }
 
 function getRouteIdFromRouteInfo_adv(routeInfo) {
+	console.log("Trying regex match on " + routeInfo);
 	const regexMatch = /route id: (\w+) /g.exec(routeInfo);
 	return regexMatch[1];
 }
@@ -144,8 +145,9 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
+			console.log("routes by ids response: " + responseData);
 			const responseDataSplit = responseData.split(';');
-			for (let routeInfo in responseDataSplit) {
+			for (routeInfo in responseDataSplit) {
 				const rc = routeChoiceMap.get(getRouteIdFromRouteInfo_adv(routeInfo));
 				if (isRouteAvailable_adv(routeInfo)) {
 					setDestinationButtonAvailable_adv(rc.index, rc.route);
