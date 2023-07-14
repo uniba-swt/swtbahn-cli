@@ -16,17 +16,17 @@ var language_ = "";           // User interface language.
 const numberOfDestinationsMax_ = 42;           // Maximum destinations to display
 const destNamePrefix_ = "destination";  // HTML element ID prefix of the destination buttons
 
-var allPossibleDests_ = null;           // Platform specific lookup table for destinations
+var allPossibleDestinations_ = null;           // Platform specific lookup table for destinations
 var signalFlagMap_ = null;                     // Platform specific lookup table for signal flags
 
 var defaultInterval_ = 5000;
 
 // Returns the destinations possible from a given block
 function getDestinations_adv(blockId) {
-	if (allPossibleDests_ == null || !allPossibleDests_.hasOwnProperty(blockId)) {
+	if (allPossibleDestinations_ == null || !allPossibleDestinations_.hasOwnProperty(blockId)) {
 		return null;
 	}
-	return allPossibleDests_[blockId];
+	return allPossibleDestinations_[blockId];
 }
 
 function unpackRoute_adv(route) {
@@ -662,18 +662,21 @@ function startGameLogic_adv() {
 
 // Update the user interface for driving when the user decides to release their train
 function endGameLogic_adv() {
+	console.log("Pressed end game");
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
-	driver_.clearUpdatePossibleDestsInterval_adv();
-	driver_.reset_adv();
+	$('#chosenTrain').hide();
 	driver_.isDestinationReached = false;
+	driver_.releaseTrainPromise_adv().then(() => {
+		driver_.reset_adv();
+	});
+	driver_.clearUpdatePossibleDestsInterval_adv();
 	disableAllDestButtons_adv();
 	
 	disableSpeedButtons_adv();
 	clearChosenDestination_adv();
 
 	$('#trainSelection').show();
-	$('#chosenTrain').hide();
 	trainSelector_.checkTrainAvailability_adv();
 	trainSelector_.activateTrainAvailCheckInterval_adv();
 }
