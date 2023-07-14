@@ -37,6 +37,7 @@ function unpackRoute_adv(route) {
 }
 
 function disableAllDestButtons_adv() {
+	console.log("Disable All Destination Buttons");
 	driver_.clearUpdatePossibleDestsInterval_adv();
 	for (let i = 0; i < numberOfDestinationsMax_; i++) {
 		$(`#${destNamePrefix_}${i}`).val("");
@@ -83,6 +84,7 @@ class RouteChoice {
 function updatePossibleDestinations_adv(blockId) {
 	const routes = getDestinations_adv(blockId);
 	if (routes == null) {
+		console.log("Routes = null, return from updatePossibleDestinations_adv");
 		return;
 	}
 	let rcMap = new Map();
@@ -109,6 +111,7 @@ function activateUpdatePossibleDestinationsInterval_adv(blockId) {
 	driver_.updatePossibleDestsInterval = setInterval(() => {
 		updatePossibleDestinations_adv(blockId);
 	}, updatePossibleDestinationsTimeout);
+	console.log("Activated the interval for checking destinations for block " + blockId);
 }
 
 function getRouteIdFromRouteInfo_adv(routeInfo) {
