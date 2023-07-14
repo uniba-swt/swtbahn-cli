@@ -117,7 +117,10 @@ function activateUpdatePossibleDestinationsInterval_adv(blockId) {
 function getRouteIdFromRouteInfo_adv(routeInfo) {
 	console.log("Trying regex match on " + routeInfo);
 	const regexMatch = /route id: (\w+) /g.exec(routeInfo);
-	return regexMatch[1];
+	if (regexMatch.length >= 1) {
+		return regexMatch[1];
+	}
+	return "";
 }
 
 function isRouteAvailable_adv(routeInfo) {
@@ -149,12 +152,15 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 			const responseDataSplit = responseData.split(';');
 			for (let i = 0; i < responseDataSplit.length; i++) {
 				routeInfo = responseDataSplit[i];
-				if (routeInfo != null) {
-					const rc = routeChoiceMap.get(getRouteIdFromRouteInfo_adv(routeInfo));
-					if (isRouteAvailable_adv(routeInfo)) {
-						setDestinationButtonAvailable_adv(rc.index, rc.route);
-					} else {
-						setDestinationButtonUnavailable_adv(rc.index, rc.route);
+				if (routeInfo != null && routeInfo.length > 0) {
+					const rId = getRouteIdFromRouteInfo_adv(routeInfo);
+					if (rId != "") {
+						const rc = routeChoiceMap.get();
+						if (isRouteAvailable_adv(routeInfo)) {
+							setDestinationButtonAvailable_adv(rc.index, rc.route);
+						} else {
+							setDestinationButtonUnavailable_adv(rc.index, rc.route);
+						}
 					}
 				} 
 			}
@@ -209,8 +215,6 @@ function trainIsAvailablePromise_adv(trainId, success, error) {
 		;}
 	);
 }
-
-
 
 /**************************************************
  * Train speed UI elements
@@ -686,9 +690,7 @@ function endGameLogic_adv() {
 	disableSpeedButtons_adv();
 	clearChosenDestination_adv();
 
-	$('#trainSelection').show();
-	trainSelector_.checkTrainAvailability_adv();
-	trainSelector_.activateTrainAvailCheckInterval_adv();
+	initialise_adv();
 }
 
 // Asynchronous wait for a duration in milliseconds.
