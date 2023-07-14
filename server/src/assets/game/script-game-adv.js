@@ -45,23 +45,24 @@ function disableAllDestButtons_adv() {
 	}
 }
 
-function setDestinationButton_adv(choice, route) {
+function setDestinationButton_adv(index, route) {
 	const [destinationSignal, routeDetails] = unpackRoute_adv(route);
+	console.log("setDestinationButton_adv: Index " + index + "; destinationSignal " + destinationSignal);
 	const destination = destinationSignal.replace(/(a|b)$/, '');
 
 	// Route details are stored in the value parameter of the destination button
-	$(`#${destNamePrefix_}${choice}`).val(JSON.stringify(route));
-	$(`#${destNamePrefix_}${choice}`).attr("class", signalFlagMap_[destination]);
+	$(`#${destNamePrefix_}${index}`).val(JSON.stringify(route));
+	$(`#${destNamePrefix_}${index}`).attr("class", signalFlagMap_[destination]);
 }
 
-function setDestinationButtonAvailable_adv(choice, route) {
-	setDestinationButton_adv(choice, route);
-	$(`#${destNamePrefix_}${choice}`).removeClass("flagThemeDisabled");
+function setDestinationButtonAvailable_adv(index, route) {
+	setDestinationButton_adv(index, route);
+	$(`#${destNamePrefix_}${index}`).removeClass("flagThemeDisabled");
 }
 
-function setDestinationButtonUnavailable_adv(choice, route) {
-	setDestinationButton_adv(choice, route);
-	$(`#${destNamePrefix_}${choice}`).addClass("flagThemeDisabled");
+function setDestinationButtonUnavailable_adv(index, route) {
+	setDestinationButton_adv(index, route);
+	$(`#${destNamePrefix_}${index}`).addClass("flagThemeDisabled");
 }
 
 /**
@@ -776,7 +777,9 @@ function initialise_speedcontrol_adv() {
 }
 
 function initialise_endbutton_adv() {
+	console.log("Registering endbutton click");
 	$('#endGameButton').click(function () {
+		console.log("Endbutton clicked");
 		if (!driver_.hasValidTrainSession_adv()) {
 			endGameLogic_adv();
 			return;
@@ -784,7 +787,8 @@ function initialise_endbutton_adv() {
 		setResponseSuccess_adv('#serverResponse', '⏳ Waiting...', '⏳ Bitte Warten...');
 		driver_.setTrainSpeedPromise_adv(0)
 			.then(() => wait_adv(500))
-			.then(() => endGameLogic_adv());
+			.then(() => endGameLogic_adv())
+			.catch(() => endGameLogic_adv());
 		setResponseSuccess_adv('#serverResponse', 'Thank you for playing', 'Danke fürs Spielen');
 	});
 }
