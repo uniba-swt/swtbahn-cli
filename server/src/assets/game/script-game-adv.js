@@ -155,6 +155,7 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 				routeInfo = responseDataSplit[i];
 				if (routeInfo != null && routeInfo.length > 0) {
 					const rId = getRouteIdFromRouteInfo_adv(routeInfo);
+					console.log("Extracted route id: " + rId);
 					if (rId != "") {
 						const rc = routeChoiceMap.get(rId);
 						if (isRouteAvailable_adv(routeInfo)) {
@@ -162,9 +163,14 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 						} else {
 							setDestinationButtonUnavailable_adv(rc.index, rc.route);
 						}
+					} else {
+						console.log("Not continued with route id extraction, route id empty");
 					}
-				} 
+				} else {
+					console.log("Not continued with route id extraction");
+				}
 			}
+			console.log("Split into array of length: " + responseDataSplit.length);
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log("/monitor/routes-by-ids err, response: " + responseData);
