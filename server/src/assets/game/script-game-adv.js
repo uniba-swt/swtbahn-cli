@@ -115,7 +115,7 @@ function activateUpdatePossibleDestinationsInterval_adv(blockId) {
 }
 
 function getRouteIdFromRouteInfo_adv(routeInfo) {
-	const regexMatch = /route id: (.*?) /g.exec(routeInfo);
+	const regexMatch = /route id: (\w+) /g.exec(routeInfo);
 	return regexMatch[1];
 }
 
