@@ -40,6 +40,7 @@
 #include "interlocking.h"
 #include "param_verification.h"
 
+static const int mon_loglvl = LOG_INFO;
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res) {
@@ -57,7 +58,7 @@ onion_connection_status handler_get_trains(void *_, onion_request *req,
 		strcpy(response, trains->str);
 		g_string_free(trains, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get available trains");
+		syslog_server(mon_loglvl, "Request: Get available trains");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get available trains - system not running or "
@@ -119,7 +120,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req,
 				g_string_free(seg_string, true);
 				g_string_free(ret_string, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_NOTICE, "Request: Get train state");
+				syslog_server(mon_loglvl, "Request: Get train state");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_train_position_query(train_position_query);
@@ -160,7 +161,7 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 				strcpy(response, train_peripherals->str);
 				g_string_free(train_peripherals, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_NOTICE, "Request: Get train peripherals");
+				syslog_server(mon_loglvl, "Request: Get train peripherals");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
@@ -226,7 +227,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 		strcpy(response, track_outputs->str);
 		g_string_free(track_outputs, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get track outputs");
+		syslog_server(mon_loglvl, "Request: Get track outputs");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get track outputs - system not running or "
@@ -268,7 +269,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req,
 		strcpy(response, points->str);
 		g_string_free(points, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get points");
+		syslog_server(mon_loglvl, "Request: Get points");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get points - system not running or wrong "
@@ -298,7 +299,7 @@ onion_connection_status handler_get_signals(void *_, onion_request *req,
 		strcpy(response, signals->str);
 		g_string_free(signals, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get signals");
+		syslog_server(mon_loglvl, "Request: Get signals");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get signals - system not running or wrong "
@@ -329,7 +330,7 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_NOTICE, "Request: Get point aspects");
+				syslog_server(mon_loglvl, "Request: Get point aspects");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
@@ -365,7 +366,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 				strcpy(response, aspects->str);
 				g_string_free(aspects, true);
 				onion_response_printf(res, "%s", response);
-				syslog_server(LOG_NOTICE, "Request: Get signal aspects");
+				syslog_server(mon_loglvl, "Request: Get signal aspects");
 				return OCS_PROCESSED;
 			} else {
 				bidib_free_id_list_query(query);
@@ -414,7 +415,7 @@ onion_connection_status handler_get_segments(void *_, onion_request *req,
 		strcpy(response, segments->str);
 		g_string_free(segments, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get segments");
+		syslog_server(mon_loglvl, "Request: Get segments");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get segments - system not running or "
@@ -464,7 +465,7 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req,
 			strcpy(response, reversers->str);
 			g_string_free(reversers, true);
 			onion_response_printf(res, "%s", response);
-			syslog_server(LOG_NOTICE, "Request: Get reversers");
+			syslog_server(mon_loglvl, "Request: Get reversers");
 			return OCS_PROCESSED;
 		}
 	} else {
@@ -494,7 +495,7 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req,
 		strcpy(response, peripherals->str);
 		g_string_free(peripherals, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get peripherals");
+		syslog_server(mon_loglvl, "Request: Get peripherals");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get peripherals - system not running or "
@@ -528,7 +529,7 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 		strcpy(response, granted_routes->str);
 		g_string_free(granted_routes, true);
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get granted routes");
+		syslog_server(mon_loglvl, "Request: Get granted routes");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get granted routes - system not running or "
@@ -561,6 +562,42 @@ void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
 	}
 }
 
+void collect_route_info_in_gstr(GString *route_str, const char *route_id) {
+	t_interlocking_route *route = get_route(route_id);
+	if (route == NULL || route_str == NULL) {
+		return;
+	}
+	g_string_append_printf(route_str, "route id: %s\n", route->id);
+	g_string_append_printf(route_str, "  source signal: %s\n", route->source);
+	g_string_append_printf(route_str, "  destination signal: %s\n", route->destination);
+	g_string_append_printf(route_str, "  orientation: %s\n", route->orientation);
+	g_string_append_printf(route_str, "  length: %f\n", route->length);
+	g_string_append_printf(route_str, "  path: ");
+	sprintf_garray_char(route_str, route->path);
+	g_string_append_printf(route_str, "\n  sections: ");
+	sprintf_garray_char(route_str, route->sections);
+	g_string_append_printf(route_str, "\n  points: ");
+	sprintf_garray_interlocking_point(route_str, route->points);
+	g_string_append_printf(route_str, "\n  signals: ");
+	sprintf_garray_char(route_str, route->signals);
+	g_string_append_printf(route_str, "\n  conflicting route ids: ");
+	sprintf_garray_char(route_str, route->conflicts);
+	
+	g_string_append_printf(route_str, "\nstatus:");
+	g_string_append_printf(route_str, "\n  granted conflicting route ids: ");
+	GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
+	sprintf_garray_char(route_str, granted_route_conflicts);
+	g_array_free(granted_route_conflicts, true);
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	g_string_append_printf(route_str, "\n  route clear: %s", 
+	                       get_route_is_clear(route_id) ? "yes": "no");
+	pthread_mutex_unlock(&interlocker_mutex);
+	
+	g_string_append_printf(route_str, "\n  granted train: %s", 
+	                       route->train == NULL ? "none" : route->train);
+}
+
 onion_connection_status handler_get_route(void *_, onion_request *req,
                                           onion_response *res) {
 	build_response_header(res);
@@ -572,46 +609,56 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			GString *route_str = g_string_new("");
-			t_interlocking_route *route = get_route(route_id);
-			g_string_append_printf(route_str, "route id: %s\n", route->id);
-			g_string_append_printf(route_str, "  source signal: %s\n", route->source);
-			g_string_append_printf(route_str, "  destination signal: %s\n", route->destination);
-			g_string_append_printf(route_str, "  orientation: %s\n", route->orientation);
-			g_string_append_printf(route_str, "  length: %f\n", route->length);
-			g_string_append_printf(route_str, "  path: ");
-			sprintf_garray_char(route_str, route->path);
-			g_string_append_printf(route_str, "\n  sections: ");
-			sprintf_garray_char(route_str, route->sections);
-			g_string_append_printf(route_str, "\n  points: ");
-			sprintf_garray_interlocking_point(route_str, route->points);
-			g_string_append_printf(route_str, "\n  signals: ");
-			sprintf_garray_char(route_str, route->signals);
-			g_string_append_printf(route_str, "\n  conflicting route ids: ");
-			sprintf_garray_char(route_str, route->conflicts);
-			
-			g_string_append_printf(route_str, "\nstatus:");
-			g_string_append_printf(route_str, "\n  granted conflicting route ids: ");
-			GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
-			sprintf_garray_char(route_str, granted_route_conflicts);
-			g_array_free(granted_route_conflicts, true);
-			
-			pthread_mutex_lock(&interlocker_mutex);
-			g_string_append_printf(route_str, "\n  route clear: %s", 
-			                       get_route_is_clear(route_id) ? "yes": "no");
-			pthread_mutex_unlock(&interlocker_mutex);
-			
-			g_string_append_printf(route_str, "\n  granted train: %s", 
-			                       route->train == NULL ? "none" : route->train);
-			
+			collect_route_info_in_gstr(route_str, route_id);
 			char response[route_str->len + 1];
 			strcpy(response, route_str->str);
 			g_string_free(route_str, true);
 			onion_response_printf(res, "%s", response);
-			syslog_server(LOG_NOTICE, "Request: Get route");
+			syslog_server(mon_loglvl, "Request: Get route");
 			return OCS_PROCESSED;
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Get route - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_get_routes_by_ids(void *_, onion_request *req,
+                                                 onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_route_ids = onion_request_get_post(req, "route-ids");
+		if (data_route_ids == NULL) {
+			syslog_server(LOG_ERR, "Request: Get routes by ids - invalid parameter");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		gchar **str_split_vec = g_strsplit(data_route_ids, ",", -1);
+		if (!str_split_vec || !str_split_vec[0] || g_strv_length(str_split_vec) <= 0) {
+			if (data_route_ids == NULL) {
+				syslog_server(LOG_ERR, "Request: Get routes by ids - invalid route id list");
+				g_strfreev(str_split_vec);
+				return OCS_NOT_IMPLEMENTED;
+			}
+		}
+		GString *routes_str = g_string_new("");
+		
+		for (size_t i = 0; str_split_vec[i] != NULL; ++i) {
+			const char *i_route_id = str_split_vec[i];
+			GString *route_str = g_string_new("");
+			collect_route_info_in_gstr(route_str, i_route_id);
+			g_string_append_printf(routes_str, "%s;", route_str->str);
+			g_string_free(route_str, true);
+		}
+		g_strfreev(str_split_vec);
+		onion_response_printf(res, "%s", routes_str->str);
+		syslog_server(mon_loglvl, "Request: Get routes by ids");
+		syslog_server(LOG_WARNING, "Request: Get routes by ids, requested list: %s", data_route_ids);
+		syslog_server(LOG_WARNING, "Request: Get routes by ids, answer: %s", routes_str->str);
+		g_string_free(routes_str, true);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get routes by ids - system not running or "
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
@@ -770,7 +817,7 @@ onion_connection_status handler_get_debug_info(void *_, onion_request *req,
 		g_string_free(debug_info_str, true);
 		
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get debug info");
+		syslog_server(mon_loglvl, "Request: Get debug info");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get debug info - system not running or "
@@ -811,7 +858,7 @@ onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req
 		g_string_free(debug_info_extra_str, true);
 		
 		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get debug info extra");
+		syslog_server(mon_loglvl, "Request: Get debug info extra");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get debug info extra - system not running or "

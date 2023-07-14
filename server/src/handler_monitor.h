@@ -75,6 +75,9 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 onion_connection_status handler_get_route(void *_, onion_request *req,
                                           onion_response *res);
 
+onion_connection_status handler_get_routes_by_ids(void *_, onion_request *req,
+                                                  onion_response *res);
+
 onion_connection_status handler_get_debug_info(void *_, onion_request *req,
                                                onion_response *res);
 

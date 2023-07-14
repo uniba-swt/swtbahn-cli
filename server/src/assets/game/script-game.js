@@ -49,7 +49,7 @@ function setDestinationButton(choice, route) {
 
 function setDestinationButtonAvailable(choice, route) {
 	setDestinationButton(choice, route);
-	$(`#${destinationNamePrefix}${choice}`).removeClass("flagThemeDisabled");
+	$(`#${destNamePrefix}${choice}`).removeClass("flagThemeDisabled");
 }
 
 function setDestinationButtonUnavailable(choice, route) {
@@ -73,7 +73,7 @@ function updatePossibleDestinations(blockId) {
 	// Set up a timer interval to periodically update the availability
 	const updatePossibleDestinationsTimeout = 1000;
 	driver.updatePossibleDestinationsInterval = setInterval(() => {
-		console.log("Checking available destinations ...");
+		//console.log("Checking available destinations ...");
 
 		const routes = getDestinations(blockId);
 		if (routes == null) {
@@ -418,7 +418,7 @@ class Driver {
 		
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
-			console.log("Checking available trains ... ");
+			//console.log("Checking available trains ... ");
 
 			// Enable a train if it is on the tracks and has not been grabbed
 			$('.selectTrainButton').each((index, obj) => {
@@ -643,20 +643,19 @@ class Driver {
 				if (!this.hasValidTrainSession) {
 					console.log("    d-r-g ret no valid train session");
 					// Ignore, driver has ended their trip
+					return;
 				}
-				let res = String(responseData.responseText);
-				if (res === "OKAY_STOPPED_AT_ROUTE_END") {
+				$('#endGameButton').show();
+				// The page can be refreshed without ill consequences.
+				$(window).unbind('beforeunload', pageRefreshWarning);
+				this.routeDetails = null;
+				
+				if (responseData === "OKAY_STOPPED_AT_ROUTE_END") {
 					console.log("    d-r-g ret juhuu-case");
-					this.routeDetails = null;
 					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
-					$('#endGameButton').show();
-					// The page can be refreshed without ill consequences.
-					$(window).unbind('beforeunload', pageRefreshWarning);
 				} else {
 					///TODO: Adjust based on returned code
-					console.log("    d-r-g ret driving infringement");
-					this.routeDetails = null;
-					
+					console.log("    d-r-g ret driving infringement");					
 					// Copy the driving infringement message and fill in the destination flag
 					const destinationClass = $('#destination').attr('class');
 					let drivingInfringement = JSON.parse(JSON.stringify(modalMessages.drivingInfringement));
