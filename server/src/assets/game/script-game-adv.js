@@ -116,7 +116,7 @@ function activateUpdatePossibleDestinationsInterval_adv(blockId) {
 }
 
 function getRouteIdFromRouteInfo_adv(routeInfo) {
-	console.log("Trying regex match on " + routeInfo);
+	//console.log("Trying regex match on " + routeInfo);
 	const regexMatch = /route id: (\w+) /g.exec(routeInfo);
 	if (regexMatch != null && regexMatch.length >= 1) {
 		return regexMatch[1];
@@ -149,14 +149,14 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
-			console.log("routes by ids response: " + responseData);
+			//console.log("routes by ids response: " + responseData);
 			const responseDataSplit = responseData.split(';');
 			for (let i = 0; i < responseDataSplit.length; i++) {
 				routeInfo = responseDataSplit[i];
 				if (routeInfo != null && routeInfo.length > 0) {
 					const rId = getRouteIdFromRouteInfo_adv(routeInfo);
 					if (rId != "") {
-						const rc = routeChoiceMap.get();
+						const rc = routeChoiceMap.get(rId);
 						if (isRouteAvailable_adv(routeInfo)) {
 							setDestinationButtonAvailable_adv(rc.index, rc.route);
 						} else {
@@ -787,8 +787,9 @@ function initialise_endbutton_adv() {
 		setResponseSuccess_adv('#serverResponse', '⏳ Waiting...', '⏳ Bitte Warten...');
 		driver_.setTrainSpeedPromise_adv(0)
 			.then(() => wait_adv(500))
-			.then(() => endGameLogic_adv())
-			.catch(() => endGameLogic_adv());
+			.then(() => endGameLogic_adv());
+		
+		endGameLogic_adv();
 		setResponseSuccess_adv('#serverResponse', 'Thank you for playing', 'Danke fürs Spielen');
 	});
 }
