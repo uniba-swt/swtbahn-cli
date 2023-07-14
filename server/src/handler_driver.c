@@ -1258,6 +1258,23 @@ onion_connection_status handler_drive_route_guarded(void *_, onion_request *req,
 	}
 }
 
+bool train_has_route(const char *trainId) {
+	bool ret = false;
+	pthread_mutex_lock(&interlocker_mutex);
+	GArray *route_ids = interlocking_table_get_all_route_ids();
+	for (size_t i = 0; i < route_ids->len; i++) {
+		const char *route_id = g_array_index(route_ids, char *, i);
+		t_interlocking_route *route = get_route(route_id);
+		if (strcmp(route->train, trainId) == 0) {
+			ret = true;
+			break;
+		}
+	}
+	pthread_mutex_unlock(&interlocker_mutex);
+	g_array_free(route_ids, true);
+	return ret;
+}
+
 onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
                                                     onion_response *res) {
 	build_response_header(res);
@@ -1284,13 +1301,24 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
+			char *trainId = get_train_name_for_grab_id(grab_id);
+			// Restrictive mode: non-zero speed only allowed if train has a route
+			if (speed != 0 && !train_has_route(trainId)) {
+				syslog_server(LOG_WARNING, 
+				              "Request: Set train speed - restrictive driving mode forbids"
+							  "train %s without a route to set a non-zero speed.", trainId);
+				///TODO: return message
+				free(trainId);
+				return OCS_PROCESSED;
+			}
+			free(trainId);
 			strcpy(grabbed_trains[grab_id].track_output, data_track_output);
-			int dyn_containers_engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+			const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 			if (speed < 0) {
-				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
+				dyn_containers_set_train_engine_instance_inputs(engine_instance,
 				                                                -speed, false);
 			} else {
-				dyn_containers_set_train_engine_instance_inputs(dyn_containers_engine_instance,
+				dyn_containers_set_train_engine_instance_inputs(engine_instance,
 				                                                speed, true);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);
