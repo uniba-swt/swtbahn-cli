@@ -54,12 +54,12 @@ function setDestinationButton_adv(choice, route) {
 }
 
 function setDestinationButtonAvailable_adv(choice, route) {
-	setDestinationButton(choice, route);
+	setDestinationButton_adv(choice, route);
 	$(`#${destNamePrefix_}${choice}`).removeClass("flagThemeDisabled");
 }
 
 function setDestinationButtonUnavailable_adv(choice, route) {
-	setDestinationButton(choice, route);
+	setDestinationButton_adv(choice, route);
 	$(`#${destNamePrefix_}${choice}`).addClass("flagThemeDisabled");
 }
 
@@ -139,17 +139,17 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		success: (responseData, textStatus, jqXHR) => {
 			const responseDataSplit = responseData.split(';');
 			for (let routeInfo in responseDataSplit) {
-				const rc = routeChoiceMap.get(getRouteIdFromRouteInfo(routeInfo));
-				if (isRouteAvailable(routeInfo)) {
-					setDestinationButtonAvailable(rc.index, rc.route);
+				const rc = routeChoiceMap.get(getRouteIdFromRouteInfo_adv(routeInfo));
+				if (isRouteAvailable_adv(routeInfo)) {
+					setDestinationButtonAvailable_adv(rc.index, rc.route);
 				} else {
-					setDestinationButtonUnavailable(rc.index, rc.route);
+					setDestinationButtonUnavailable_adv(rc.index, rc.route);
 				}
 			}
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log("/monitor/routes-by-ids err, response: " + responseData);
-			setResponseDanger('#serverResponse', 
+			setResponseDanger_adv('#serverResponse', 
 				'There was a problem checking the destinations', 
 				'Es ist ein Problem beim Überprüfen der Ziele aufgetreten',
 				'Sorry'
@@ -239,22 +239,24 @@ function setChosenDestination_adv(destination) {
 // ################################################################################################
 //       Skipped the response/modal stuff to some degree
 
-function setResponse_adv(responseId, messageEn, messageDe, callback) {
-	clearTimeout(responseTimer);
+var responseTimer_ = null;
 
-	const message = (language == 'en') ? messageEn : messageDe;
+function setResponse_adv(responseId, messageEn, messageDe, callback) {
+	clearTimeout(responseTimer_);
+
+	const message = (language_ == 'en') ? messageEn : messageDe;
 	$(responseId).text(message);
 	callback();
 
 	$(responseId).parent().fadeIn("fast");
 	const responseTimeout = 7000;
-	responseTimer = setTimeout(() => {
+	responseTimer_ = setTimeout(() => {
 		$(responseId).parent().fadeOut("slow");
 	}, responseTimeout);
 }
 
 function setResponseDanger_adv(responseId, messageEn, messageDe) {
-	setResponse(responseId, messageEn, messageDe, function() {
+	setResponse_adv(responseId, messageEn, messageDe, function() {
 		$(responseId).parent().addClass('alert-danger');
 		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
@@ -262,7 +264,7 @@ function setResponseDanger_adv(responseId, messageEn, messageDe) {
 }
 
 function setResponseSuccess_adv(responseId, messageEn, messageDe) {
-	setResponse(responseId, messageEn, messageDe, function() {
+	setResponse_adv(responseId, messageEn, messageDe, function() {
 		$(responseId).parent().removeClass('alert-danger');
 		$(responseId).parent().removeClass('alert-danger-blink');
 		$(responseId).parent().addClass('alert-success');
@@ -277,6 +279,11 @@ class TrainSelector {
 	trainAvailabilityTimeout = defaultInterval_;
 	
 	constructor() {}
+	
+	clearTrainAvailInterval_adv() {
+		console.log("clearTrainAvailInterval_adv");
+		clearInterval(this.trainAvailabilityInterval);
+	}
 	
 	checkTrainAvailability_adv() {
 		// Enable a train if it is on the tracks and has not been grabbed
@@ -355,15 +362,11 @@ class DriverAdv {
 	hasValidTrainSession_adv() {
 		return (this.sessionId != 0 && this.grabId != -1);
 	}
+	
 	hasRouteGranted_adv() {
 		return (this.routeDetails != null);
 	}
 	
-	clearTrainAvailInterval_adv() {
-		console.log("clearTrainAvailInterval_adv");
-		clearInterval(this.trainAvailabilityInterval);
-	}
-
 	clearUpdatePossibleDestsInterval_adv() {
 		console.log("clearUpdatePossibleDestsInterval_adv");
 		clearInterval(this.updatePossibleDestsInterval);
@@ -480,7 +483,7 @@ class DriverAdv {
 			},
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
-				this.reset();
+				this.reset_adv();
 				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
@@ -599,7 +602,7 @@ class DriverAdv {
 		}
 		
 		this.isDestinationReached = false;
-		const [destinationSignal, routeDetails] = unpackRoute(route);
+		const [destinationSignal, routeDetails] = unpackRoute_adv(route);
         console.log("requestAndDriveRoutePromise_adv: " + routeDetails);
         
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
@@ -651,7 +654,7 @@ function startGameLogic_adv() {
 		.then(() => $('#endGameButton').show())
 		.then(() => driver_.updateCurrentBlockPromise_adv())
 		.then(() => activateUpdatePossibleDestinationsInterval_adv(driver_.currentBlock))
-		.always(() => driver_.clearTrainAvailInterval_adv());
+		.always(() => trainSelector_.clearTrainAvailInterval_adv());
 }
 
 // Update the user interface for driving when the user decides to release their train
@@ -681,12 +684,12 @@ function initialise_language_adv() {
 	// Set the initial language.
 	$('span:lang(en)').hide();
 	$('span:lang(de)').show();
-	language = 'de';
+	language_ = 'de';
 	// Handle language selection.
 	$('#changeLang').click(function () {
 		$('span:lang(en)').toggle();
 		$('span:lang(de)').toggle();
-		language = (language == 'en') ? 'de' : 'en';
+		language_ = (language_ == 'en') ? 'de' : 'en';
 	});
 }
 
@@ -713,7 +716,7 @@ function initialise_destinations_adv() {
 				setResponseDanger_adv('#serverResponse', "This route is not available", "Diese Route ist zurzeit nicht verfügbar");
 			} else {
 				const route = JSON.parse(destinationButton.val());
-				driver_.driveToPromise(route);
+				driver_.requestAndDriveRoutePromise_adv(route);
 			}
 		});
 	}
