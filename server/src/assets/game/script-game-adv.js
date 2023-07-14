@@ -149,12 +149,14 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 			const responseDataSplit = responseData.split(';');
 			for (let i = 0; i < responseDataSplit.length; i++) {
 				routeInfo = responseDataSplit[i];
-				const rc = routeChoiceMap.get(getRouteIdFromRouteInfo_adv(routeInfo));
-				if (isRouteAvailable_adv(routeInfo)) {
-					setDestinationButtonAvailable_adv(rc.index, rc.route);
-				} else {
-					setDestinationButtonUnavailable_adv(rc.index, rc.route);
-				}
+				if (routeInfo != null) {
+					const rc = routeChoiceMap.get(getRouteIdFromRouteInfo_adv(routeInfo));
+					if (isRouteAvailable_adv(routeInfo)) {
+						setDestinationButtonAvailable_adv(rc.index, rc.route);
+					} else {
+						setDestinationButtonUnavailable_adv(rc.index, rc.route);
+					}
+				} 
 			}
 		},
 		error: (responseData, textStatus, errorThrown) => {
@@ -780,11 +782,7 @@ function initialise_endbutton_adv() {
 		setResponseSuccess_adv('#serverResponse', '⏳ Waiting...', '⏳ Bitte Warten...');
 		driver_.setTrainSpeedPromise_adv(0)
 			.then(() => wait_adv(500))
-			.always(() => {
-				driver_.releaseTrainPromise_adv();
-				driver_.releaseRoutePromise_adv();
-				endGameLogic_adv();
-			});
+			.then(() => endGameLogic_adv());
 		setResponseSuccess_adv('#serverResponse', 'Thank you for playing', 'Danke fürs Spielen');
 	});
 }
