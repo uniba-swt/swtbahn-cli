@@ -119,7 +119,9 @@ function getRouteIdFromRouteInfo_adv(routeInfo) {
 	//console.log("Trying regex match on " + routeInfo);
 	const regexMatch = /route id: (\w+) /g.exec(routeInfo);
 	if (regexMatch != null && regexMatch.length >= 1) {
-		return regexMatch[1];
+		console.log("Regexmatch: ");
+		console.log(regexMatch);
+		return regexMatch[0];
 	}
 	return "";
 }
@@ -151,8 +153,8 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		success: (responseData, textStatus, jqXHR) => {
 			//console.log("routes by ids response: " + responseData);
 			const responseDataSplit = responseData.split(';');
-			console.log("ResponseDataSplit: ");
-			console.log(responseDataSplit);
+			//console.log("ResponseDataSplit: ");
+			//console.log(responseDataSplit);
 			for (let i = 0; i < responseDataSplit.length; i++) {
 				routeInfo = responseDataSplit[i];
 				if (routeInfo != null && routeInfo.length > 0) {
@@ -166,10 +168,10 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 							setDestinationButtonUnavailable_adv(rc.index, rc.route);
 						}
 					} else {
-						console.log("Not continued with route id extraction, route id empty");
+						//console.log("Not continued with route id extraction, route id empty");
 					}
 				} else {
-					console.log("Not continued with route id extraction");
+					//console.log("Not continued with route id extraction");
 				}
 			}
 			console.log("Split into array of length: " + responseDataSplit.length);
