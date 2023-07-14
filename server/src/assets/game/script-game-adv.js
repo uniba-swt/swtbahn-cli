@@ -131,12 +131,16 @@ function isRouteAvailable_adv(routeInfo) {
  * @param {Map<String,RouteChoice>} routeChoiceMap 
  */
 function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
+	rtlist = [];
+	for (let k in routeChoiceMap) {
+		rtlist += k + ",";
+	}
 	$.ajax({
 		type: 'POST',
 		url: serverAddress_ + '/monitor/routes-by-ids',
 		crossDomain: true,
 		data: {
-			'route-ids': routsIdListStr,
+			'route-ids': rtlist,
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
