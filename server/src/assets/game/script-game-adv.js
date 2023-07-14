@@ -147,7 +147,8 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		success: (responseData, textStatus, jqXHR) => {
 			console.log("routes by ids response: " + responseData);
 			const responseDataSplit = responseData.split(';');
-			for (routeInfo in responseDataSplit) {
+			for (let i = 0; i < responseDataSplit.length; i++) {
+				routeInfo = responseDataSplit[i];
 				const rc = routeChoiceMap.get(getRouteIdFromRouteInfo_adv(routeInfo));
 				if (isRouteAvailable_adv(routeInfo)) {
 					setDestinationButtonAvailable_adv(rc.index, rc.route);

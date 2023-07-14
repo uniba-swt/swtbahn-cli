@@ -653,8 +653,8 @@ onion_connection_status handler_get_routes_by_ids(void *_, onion_request *req,
 		g_strfreev(str_split_vec);
 		onion_response_printf(res, "%s", routes_str->str);
 		syslog_server(mon_loglvl, "Request: Get routes by ids");
-		syslog_server(LOG_WARNING, "Request: Get routes by ids, requested list: %s", data_route_ids);
-		syslog_server(LOG_WARNING, "Request: Get routes by ids, answer: %s", routes_str->str);
+		//syslog_server(LOG_WARNING, "Request: Get routes by ids, requested list: %s", data_route_ids);
+		//syslog_server(LOG_WARNING, "Request: Get routes by ids, answer: %s", routes_str->str);
 		g_string_free(routes_str, true);
 		return OCS_PROCESSED;
 	} else {
