@@ -151,6 +151,8 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		success: (responseData, textStatus, jqXHR) => {
 			//console.log("routes by ids response: " + responseData);
 			const responseDataSplit = responseData.split(';');
+			console.log("ResponseDataSplit: ");
+			console.log(responseDataSplit);
 			for (let i = 0; i < responseDataSplit.length; i++) {
 				routeInfo = responseDataSplit[i];
 				if (routeInfo != null && routeInfo.length > 0) {
