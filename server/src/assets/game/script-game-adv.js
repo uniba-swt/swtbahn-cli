@@ -14,7 +14,7 @@ var language_ = "";           // User interface language.
  */
 
 const numberOfDestinationsMax_ = 42;           // Maximum destinations to display
-const destNamePrefix_ = "destination";  // HTML element ID prefix of the destination buttons
+const destNamePrefix_ = "destination";         // HTML element ID prefix of the destination buttons
 
 var allPossibleDestinations_ = null;           // Platform specific lookup table for destinations
 var signalFlagMap_ = null;                     // Platform specific lookup table for signal flags
@@ -101,32 +101,36 @@ function updatePossibleDestinations_adv(blockId) {
 }
 
 function activateUpdatePossibleDestinationsInterval_adv(blockId) {
-	console.log("Possible dest checking interval started");
+	console.log("Activating the interval for checking destinations for block " + blockId);
 	$('#destinationsForm').show();
 	disableAllDestButtons_adv();
 
 	// Update once first
 	updatePossibleDestinations_adv(blockId);
+	
 	// Set up a timer interval to periodically update the availability
 	const updatePossibleDestinationsTimeout = defaultInterval_;
 	driver_.updatePossibleDestsInterval = setInterval(() => {
 		updatePossibleDestinations_adv(blockId);
 	}, updatePossibleDestinationsTimeout);
-	console.log("Activated the interval for checking destinations for block " + blockId);
 }
 
+/**
+ * @param {string} routeInfo 
+ * @returns {string}
+ */
 function getRouteIdFromRouteInfo_adv(routeInfo) {
-	//console.log("Trying regex match on " + routeInfo);
-	///TODO: FIX THIS BROKEN REGEX
 	const regexMatch = /route id: (\w+)/g.exec(routeInfo);
 	if (regexMatch != null && regexMatch.length >= 1) {
-		console.log("Regexmatch: ");
-		console.log(regexMatch);
 		return regexMatch[0];
 	}
 	return "";
 }
 
+/**
+ * @param {string} routeInfo 
+ * @returns {boolean}
+ */
 function isRouteAvailable_adv(routeInfo) {
 	const isNotConflicting = routeInfo.includes("granted conflicting route ids: none");
 	const isRouteClear = routeInfo.includes("route clear: yes");
@@ -135,14 +139,45 @@ function isRouteAvailable_adv(routeInfo) {
 }
 
 /**
- * 
- * @param {Map<String,RouteChoice>} routeChoiceMap 
+ * @param {Map<string,RouteChoice>} routeChoiceMap 
+ */
+function routeChoiceMapToIdList(routeChoiceMap) {
+	rtlist = "";
+	counter = 0;
+	for (let k in routeChoiceMap.keys()) {
+		counter++;
+		rtlist += k;
+		if (counter < routeChoiceMap.size) {
+			rtlist += ","
+		}
+	}
+	return rtlist;
+}
+
+/**
+ * @param {string} routeInfoStr 
+ * @param {Map<string,RouteChoice>} routeChoiceMap 
+ */
+function updateDestinationButtonFromRouteInfo(routeInfoStr, routeChoiceMap) {
+	if (routeInfoStr != null && routeInfoStr.length > 0) {
+		const rId = getRouteIdFromRouteInfo_adv(routeInfo);
+		console.log("Extracted route id: " + rId);
+		if (rId != "") {
+			const rc = routeChoiceMap.get(rId);
+			if (isRouteAvailable_adv(routeInfoStr)) {
+				setDestinationButtonAvailable_adv(rc.index, rc.route);
+			} else {
+				setDestinationButtonUnavailable_adv(rc.index, rc.route);
+			}
+		}
+	}
+}
+
+/**
+ * @param {Map<string,RouteChoice>} routeChoiceMap 
  */
 function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
-	rtlist = [];
-	for (let k in routeChoiceMap) {
-		rtlist += k + ",";
-	}
+	rtlist = routeChoiceMapToIdList(routeChoiceMap);
 	$.ajax({
 		type: 'POST',
 		url: serverAddress_ + '/monitor/routes-by-ids',
@@ -152,37 +187,17 @@ function getDestinationStatusAndUpdateView_adv(routeChoiceMap) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
-			//console.log("routes by ids response: " + responseData);
 			const responseDataSplit = responseData.split(';');
-			//console.log("ResponseDataSplit: ");
-			//console.log(responseDataSplit);
 			for (let i = 0; i < responseDataSplit.length; i++) {
 				routeInfo = responseDataSplit[i];
-				if (routeInfo != null && routeInfo.length > 0) {
-					const rId = getRouteIdFromRouteInfo_adv(routeInfo);
-					console.log("Extracted route id: " + rId);
-					if (rId != "") {
-						const rc = routeChoiceMap.get(rId);
-						if (isRouteAvailable_adv(routeInfo)) {
-							setDestinationButtonAvailable_adv(rc.index, rc.route);
-						} else {
-							setDestinationButtonUnavailable_adv(rc.index, rc.route);
-						}
-					} else {
-						//console.log("Not continued with route id extraction, route id empty");
-					}
-				} else {
-					//console.log("Not continued with route id extraction");
-				}
+				updateDestinationButtonFromRouteInfo(routeInfo, routeChoiceMap);
 			}
-			console.log("Split into array of length: " + responseDataSplit.length);
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log("/monitor/routes-by-ids err, response: " + responseData);
 			setResponseDanger_adv('#serverResponse', 
 				'There was a problem checking the destinations', 
-				'Es ist ein Problem beim Überprüfen der Ziele aufgetreten',
-				'Sorry'
+				'Es ist ein Problem beim Überprüfen der Ziele aufgetreten'
 			);
 		}
 	});
@@ -347,7 +362,7 @@ class TrainSelector {
 	}
 	
 	activateTrainAvailCheckInterval_adv() {
-		console.log("Train availability checking interval started");
+		console.log("Activating Train availability checking interval");
 		$('.selectTrainButton').prop("disabled", true);
 		this.checkTrainAvailability_adv();
 		this.trainAvailabilityInterval = setInterval(() => {
@@ -397,7 +412,7 @@ class DriverAdv {
 	}
 	
 	clearUpdatePossibleDestsInterval_adv() {
-		console.log("clearUpdatePossibleDestsInterval_adv");
+		console.log("Stopping Destination Update Interval");
 		clearInterval(this.updatePossibleDestsInterval);
 	}
 	
@@ -406,7 +421,9 @@ class DriverAdv {
 		return trainStateCallbackPromise_adv(this.trainId,
 			(_t_id, response) => { // Success
 				const regexMatch = /on block: (.*?) /g.exec(response);
-				this.currentBlock =  regexMatch[1];
+				if (regexMatch != null && regexMatch.length >= 1) {
+					this.currentBlock =  regexMatch[1];
+				}
 			}, (_t_id, _response) => { // Err
 				setResponseDanger_adv('#serverResponse', 
 					'Could not find your train', 
@@ -431,7 +448,7 @@ class DriverAdv {
 				const responseDataSplit = responseData.split(',');
 				this.sessionId = responseDataSplit[0];
 				this.grabId = responseDataSplit[1];
-				setResponseSuccess_adv('#serverResponse', '😁 Your train is ready', '😁 Dein Zug ist bereit');
+				setResponseSuccess_adv('#serverResponse', 'Your train is ready', 'Dein Zug ist bereit');
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				console.log("grabTrainPromise_adv: /driver/grab-train err case, response: " + responseData);
@@ -483,7 +500,6 @@ class DriverAdv {
 			dataType: 'text',
 			success: (responseData, textStatus, jqXHR) => {
 				console.log("Speed was successfully set to " + speed);
-				console.log("Server response: " + responseData);
 				// If speed was not 0, and routeDetails are null by now, set the speed to 0
 				if (speed != 0 && this.routeDetails == null) {
 					console.log("Set train speed success: route now null and set speed was not 0, brake now.");
@@ -688,21 +704,17 @@ function startGameLogic_adv() {
 
 // Update the user interface for driving when the user decides to release their train
 function endGameLogic_adv() {
-	console.log("Pressed end game");
+	console.log("Pressed end game logic");
 	$('#endGameButton').hide();
 	$('#destinationsForm').hide();
 	$('#chosenTrain').hide();
 	driver_.isDestinationReached = false;
-	driver_.releaseTrainPromise_adv().then(() => {
-		driver_.reset_adv();
-	});
+	
 	driver_.clearUpdatePossibleDestsInterval_adv();
 	disableAllDestButtons_adv();
-	
 	disableSpeedButtons_adv();
 	clearChosenDestination_adv();
-
-	initialise_adv();
+	$('#trainSelection').show();
 }
 
 // Asynchronous wait for a duration in milliseconds.
@@ -772,10 +784,6 @@ function initialise_speedcontrol_adv() {
 			if (!driver_.isDestinationReached) {
 				$('#endGameButton').hide();
 				driver_.updateCurrentBlockPromise_adv().then(
-					///TODO:
-					//if (speedButton.val() == '0') {
-					//	setModal(modalMessages.drivingContinue);
-					//}
 					() => {console.log("TODO: the *keep driving* model should appear here.");}
 				);
 				// The page cannot be refreshed without ill consequences.
@@ -791,16 +799,20 @@ function initialise_endbutton_adv() {
 	console.log("Registering endbutton click");
 	$('#endGameButton').click(function () {
 		console.log("Endbutton clicked");
-		if (!driver_.hasValidTrainSession_adv()) {
-			endGameLogic_adv();
-			return;
-		}
 		setResponseSuccess_adv('#serverResponse', '⏳ Waiting...', '⏳ Bitte Warten...');
+		
 		driver_.setTrainSpeedPromise_adv(0)
-			.then(() => wait_adv(500))
+			.then(() => wait_adv(50))
+			.then(() => {
+				if (driver_.hasRouteGranted_adv()) {
+					driver_.releaseRoutePromise_adv();
+				}
+			})
+			.then(() => wait_adv(50))
+			.then(() => driver_.releaseTrainPromise_adv())
+			.then(() => wait_adv(50))
 			.then(() => endGameLogic_adv());
 		
-		endGameLogic_adv();
 		setResponseSuccess_adv('#serverResponse', 'Thank you for playing', 'Danke fürs Spielen');
 	});
 }
@@ -827,6 +839,7 @@ function initialise_adv() {
 	initialise_trainselection_adv();
 	initialise_speedcontrol_adv();
 	initialise_endbutton_adv();
+	$('#trainSelection').show();
 }
 
 $(document).ready(() => {
