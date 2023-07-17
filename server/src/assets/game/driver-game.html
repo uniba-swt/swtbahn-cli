@@ -104,7 +104,7 @@
 
 	<div id="trainSelection" class="row g-0">
 		<div class="card mb-3 unavailableTrain">
-			<img src="train-cargo-db.jpg" class="card-img-top" alt="...">
+			<img src="train-cargo-db.jpg" class="card-img-top" alt="Train Cargo DB">
 			<div class="card-body">
 				<h5 class="card-title">Cargo DB</h5>
 				<p class="card-text">
@@ -131,7 +131,7 @@
 		</div>
 
 		<div class="card mb-3 unavailableTrain">
-			<img src="train-cargo-green.jpg" class="card-img-top" alt="...">
+			<img src="train-cargo-green.jpg" class="card-img-top" alt="Train Cargo Green">
 			<div class="card-body">
 				<h5 class="card-title">Cargo Green</h5>
 				<p class="card-text">
@@ -158,7 +158,7 @@
 		 </div>
 
 		<div class="card mb-3 unavailableTrain">
-			<img src="train-regional-odeg.jpg" class="card-img-top" alt="...">
+			<img src="train-regional-odeg.jpg" class="card-img-top" alt="Train Regional ODEG">
 			<div class="card-body">
 				<h5 class="card-title">Regional ODEG</h5>
 				<p class="card-text">
@@ -184,7 +184,7 @@
 			</div>
 		</div>
 		<div class="card mb-3 unavailableTrain">
-			<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="...">
+			<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="Train Regional BrengDirect">
 			<div class="card-body">
 				<h5 class="card-title">Regional Brengdirect</h5>
 				<p class="card-text">
@@ -236,8 +236,14 @@
 	<form id="destinationsForm">
 		<label class="col-form-label-lg me-md-5">
 			<b>
-				<span lang="de"><span class='easy'>Klicke auf das Symbol, zu der du fahren möchtest: </span><span class='normal'>Mögliche Ziele: </span></span>
-				<span lang="en"><span class='easy'>Click the symbol you wish to drive to: </span><span class='normal'>Possible destinations:</span></span>
+				<span lang="de">
+					<span class='easy'>Klicke auf das Symbol, zu dem du fahren möchtest: </span>
+					<span class='normal'>Mögliche Ziele: </span>
+				</span>
+				<span lang="en">
+					<span class='easy'>Click the symbol you wish to drive to: </span>
+					<span class='normal'>Possible destinations:</span>
+				</span>
 			</b>
 		</label>
 		<div class="input-group row">
@@ -288,7 +294,19 @@
 	</form>
 
 	<form id="drivingForm">
-		<div id="chosenDestination" class="row pt-4">
+		<div class="row">
+			<label class="col-auto col-form-label-lg"><b>
+				<span lang="de">Fahrzeit:</span>
+				<span lang="en">Driving Time:</span>
+			</b></label>	
+			<label class="col-auto col-form-label-lg">
+			<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
+			</label>
+		</div>
+
+		<div class="m-3"></div>
+
+		<div id="chosenDestination" class="row">
 			<label class="col-auto col-form-label-lg"><b>
 				<span lang="de">Ziel:</span>
 				<span lang="en">Destination:</span>
@@ -296,7 +314,13 @@
 			<svg class="flag" viewBox="0 0 100 100">
 				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
 			</svg>
-		</div> 
+			<label class="col-form-label-lg">
+				<span lang="en"><span class="easy">Please drive your train to the destination and then stop</span></span>
+				<span lang="de"><span class="easy">Bitte fahren Sie mit Ihrem Zug zum Zielort und halten Sie dann an</span></span>
+			</span>
+		</div>
+		
+		<div class="m-3"></div>
 		
 		<label class="col-auto col-form-label-lg"><b>
 			<span lang="de">Geschwindigkeitssteuerung: </span>
@@ -322,16 +346,6 @@
 						<span lang="en">Fast</span>
 					</button>
 				</div>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col">
-				<label class="col-form-label-lg"><b>
-					<span lang="de">Fahrzeit:</span>
-					<span lang="en">Driving Time:</span>
-				</b></label>	
-				<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
 			</div>
 		</div>
 	</form>
