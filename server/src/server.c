@@ -75,7 +75,7 @@ void build_response_header(onion_response *res) {
 static onion_connection_status handler_root(void *_, onion_request *req,
                                             onion_response *res) {
 	build_response_header(res);
-	onion_response_printf(res, "<script>window.location.href='/assets/';</script>");
+	onion_response_printf(res, "<script>window.location.href='/assets/index.html';</script>");
 	return OCS_PROCESSED;
 }
 
