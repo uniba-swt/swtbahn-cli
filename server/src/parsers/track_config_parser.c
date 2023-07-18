@@ -93,7 +93,30 @@ void free_signal(void *pointer) {
 
 void free_point(void *pointer) {
     t_config_point *point = (t_config_point *) pointer;
-    log_debug("free point: %s", point->id);
+    if (point == NULL) {
+        return;
+    }
+    if (point->id != NULL) {
+        log_debug("free point: %s", point->id);
+        free(point->id);
+        point->id = NULL;
+    }
+    if (point->initial != NULL) {
+        free(point->initial);
+        point->initial = NULL;
+    }
+    if (point->normal_aspect != NULL) {
+        free(point->normal_aspect);
+        point->normal_aspect = NULL;
+    }
+    if (point->reverse_aspect != NULL) {
+        free(point->reverse_aspect);
+        point->reverse_aspect = NULL;
+    }
+    if (point->segment != NULL) {
+        free(point->segment);
+        point->segment = NULL;
+    }
     free(point);
 }
 
