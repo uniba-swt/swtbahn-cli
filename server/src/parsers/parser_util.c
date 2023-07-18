@@ -140,7 +140,9 @@ void parse_yaml_content(yaml_parser_t *parser,
                 error = true;
                 break;
         }
-
+        if (last_scalar != NULL) {
+            free(last_scalar);
+        }
         last_scalar = cur_scalar;
     } while(!error);
 }
