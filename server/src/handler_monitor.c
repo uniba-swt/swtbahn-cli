@@ -642,19 +642,24 @@ onion_connection_status handler_get_routes_by_ids(void *_, onion_request *req,
 			}
 		}
 		GString *routes_str = g_string_new("");
-		
+		// For each id in str_split_vec, get route info and append it to routes_str
 		for (size_t i = 0; str_split_vec[i] != NULL; ++i) {
 			const char *i_route_id = str_split_vec[i];
 			GString *route_str = g_string_new("");
 			collect_route_info_in_gstr(route_str, i_route_id);
-			g_string_append_printf(routes_str, "%s;", route_str->str);
+			if (route_str->len > 0) {
+				if (i == 0) {
+					// First route-str -> no ";" at the start needed
+					g_string_append_printf(routes_str, "%s", route_str->str);
+				} else {
+					g_string_append_printf(routes_str, ";%s", route_str->str);
+				}
+			}
 			g_string_free(route_str, true);
 		}
 		g_strfreev(str_split_vec);
 		onion_response_printf(res, "%s", routes_str->str);
 		syslog_server(mon_loglvl, "Request: Get routes by ids");
-		//syslog_server(LOG_WARNING, "Request: Get routes by ids, requested list: %s", data_route_ids);
-		//syslog_server(LOG_WARNING, "Request: Get routes by ids, answer: %s", routes_str->str);
 		g_string_free(routes_str, true);
 		return OCS_PROCESSED;
 	} else {
