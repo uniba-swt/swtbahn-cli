@@ -65,6 +65,7 @@ void create_interlocking_hashtable(void) {
 
         if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
             void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);
+            free(route_string);
             GArray *route_ids = (GArray *) route_ids_ptr;
             g_array_append_val(route_ids, route->id);
         } else {
