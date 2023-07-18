@@ -148,6 +148,7 @@ void free_route(void *item) {
     if (route->conflicts != NULL) {
         g_array_free(route->conflicts, true);
     }
+    free(route);
 }
 
 void free_interlocking_point(void *item) {

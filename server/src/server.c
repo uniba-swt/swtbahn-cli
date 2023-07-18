@@ -105,6 +105,7 @@ static onion_connection_status handler_assets(void *_, onion_request *req,
 	
 	const char *filename = onion_request_get_path(req);
 	GString *full_filename = g_string_new(global_path);
+	onion_low_free(global_path);
 	g_string_append(full_filename, filename);
 
 	onion_connection_status status = 
