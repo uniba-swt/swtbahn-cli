@@ -80,7 +80,19 @@ void free_extras_id_key(void *pointer) {
 
 void free_block(void *pointer) {
     t_config_block *block = (t_config_block *) pointer;
-    log_debug("free block: %s", block->id);
+    if (block == NULL) {
+        return;
+    }
+    if (block->id != NULL) {
+        log_debug("free block: %s", block->id);
+        free(block->id);
+        block->id = NULL;
+    }
+    if (block->direction != NULL) {
+        log_debug("free direction");
+        free(block->direction);
+        block->direction = NULL;
+    }
 
     if (block->main_segments != NULL) {
         log_debug("free block main segments");
@@ -107,19 +119,56 @@ void free_block(void *pointer) {
 
 void free_reverser(void *pointer) {
     t_config_reverser *reverser = (t_config_reverser *) pointer;
-    log_debug("free crossing: %s", reverser->id);
+    if (reverser == NULL) {
+        return;
+    }
+    if (reverser->id != NULL) {
+        log_debug("free reverser: %s", reverser->id);
+        free(reverser->id);
+        reverser->id = NULL;
+    }
+    if (reverser->board != NULL) {
+        free(reverser->board);
+        reverser->board = NULL;
+    }
+    if (reverser->block != NULL) {
+        free(reverser->block);
+        reverser->block = NULL;
+    }
     free(reverser);
 }
 
 void free_crossing(void *pointer) {
     t_config_crossing *crossing = (t_config_crossing *) pointer;
-    log_debug("free crossing: %s", crossing->id);
+    if (crossing == NULL) {
+        return;
+    }
+    if (crossing->id != NULL) {
+        log_debug("free crossing: %s", crossing->id);
+        free(crossing->id);
+        crossing->id = NULL;
+    }
+    if (crossing->main_segment != NULL) {
+        free(crossing->main_segment);
+        crossing->main_segment = NULL;
+    }
     free(crossing);
 }
 
 void free_signal_type(void *pointer) {
     t_config_signal_type *signal_type = (t_config_signal_type *) pointer;
-    log_debug("free signal type: %s", signal_type->id);
+    if (signal_type == NULL) {
+        return;
+    }
+    if (signal_type->id != NULL) {
+        log_debug("free signal type: %s", signal_type->id);
+        free(signal_type->id);
+        signal_type->id = NULL;
+    }
+    if (signal_type->initial != NULL) {
+        free(signal_type->initial);
+        signal_type->initial = NULL;
+    }
     if (signal_type->aspects != NULL) {
         log_debug("free signal type aspects");
         g_array_free(signal_type->aspects, true);
@@ -129,13 +178,47 @@ void free_signal_type(void *pointer) {
 
 void free_composite_signal(void *pointer) {
     t_config_composite_signal *composite_signal = (t_config_composite_signal *) pointer;
-    log_debug("free composite signal: %s", composite_signal->id);
+    if (composite_signal == NULL) {
+        return;
+    }
+    if (composite_signal->id != NULL) {
+        log_debug("free composite signal: %s", composite_signal->id);
+        free(composite_signal->id);
+        composite_signal->id = NULL;
+    }
+    if (composite_signal->distant != NULL) {
+        free(composite_signal->distant);
+        composite_signal->distant = NULL;
+    }
+    if (composite_signal->entry != NULL) {
+        free(composite_signal->entry);
+        composite_signal->entry = NULL;
+    }
+    if (composite_signal->exit != NULL) {
+        free(composite_signal->exit);
+        composite_signal->exit = NULL;
+    }
+    if (composite_signal->block != NULL) {
+        free(composite_signal->block);
+        composite_signal->block = NULL;
+    }
     free(composite_signal);
 }
 
 void free_peripheral_type(void *pointer) {
     t_config_peripheral_type *peripheral_type = (t_config_peripheral_type *) pointer;
-    log_debug("free peripheral type: %s", peripheral_type->id);
+    if (peripheral_type == NULL) {
+        return;
+    }
+    if (peripheral_type->id != NULL) {
+        log_debug("free peripheral type: %s", peripheral_type->id);
+        free(peripheral_type->id);
+        peripheral_type->id = NULL;
+    }
+    if (peripheral_type->initial != NULL) {
+        free(peripheral_type->initial);
+        peripheral_type->initial = NULL;
+    }
     if (peripheral_type->aspects != NULL) {
         log_debug("free peripheral type aspects");
         g_array_free(peripheral_type->aspects, true);

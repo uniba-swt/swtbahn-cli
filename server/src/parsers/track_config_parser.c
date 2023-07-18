@@ -72,14 +72,27 @@ void free_track_id_key(void *pointer) {
 
 void free_segment(void *pointer) {
     t_config_segment *segment = (t_config_segment *) pointer;
-    log_debug("free segment: %s", segment->id);
+    if (segment == NULL) {
+        return;
+    }
+    if (segment->id != NULL) {
+        log_debug("free segment: %s", segment->id);
+        free(segment->id);
+        segment->id = NULL;
+    }
     free(segment);
 }
 
 void free_signal(void *pointer) {
     t_config_signal *signal = (t_config_signal *) pointer;
-    log_debug("free signal: %s", signal->id);
-
+    if (signal == NULL) {
+        return;
+    }
+    if (signal->id != NULL) {
+        log_debug("free signal: %s", signal->id);
+        free(signal->id);
+        signal->id = NULL;
+    }
     if (signal->aspects != NULL) {
         log_debug("\tfree aspects:");
         for (int i = 0; i < signal->aspects->len; ++i) {
@@ -87,7 +100,15 @@ void free_signal(void *pointer) {
         }
         g_array_free(signal->aspects, true);
     }
-
+    if (signal->initial != NULL) {
+        free(signal->initial);
+        signal->initial = NULL;
+    }
+    if (signal->type != NULL) {
+        free(signal->type);
+        signal->type = NULL;
+    }
+    
     free(signal);
 }
 
@@ -122,7 +143,14 @@ void free_point(void *pointer) {
 
 void free_peripheral(void *pointer) {
     t_config_peripheral *peripheral = (t_config_peripheral *) pointer;
-    log_debug("free peripheral: %s", peripheral->id);
+    if (peripheral == NULL) {
+        return;
+    }
+    if (peripheral->id != NULL) {
+        log_debug("free peripheral: %s", peripheral->id);
+        free(peripheral->id);
+        peripheral->id = NULL;
+    }
 
     if (peripheral->aspects != NULL) {
         log_debug("\tfree aspects:");
@@ -131,7 +159,14 @@ void free_peripheral(void *pointer) {
         }
         g_array_free(peripheral->aspects, true);
     }
-
+    if (peripheral->initial != NULL) {
+        free(peripheral->initial);
+        peripheral->initial = NULL;
+    }
+    if (peripheral->type != NULL) {
+        free(peripheral->type);
+        peripheral->type = NULL;
+    }
     free(peripheral);
 }
 

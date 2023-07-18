@@ -121,12 +121,28 @@ void free_route_key(void *pointer) {
 
 void free_route(void *item) {
     t_interlocking_route *route = (t_interlocking_route *) item;
-    free(route->id);
-    free(route->source);
-    free(route->destination);
-    free(route->orientation);
+    if (route == NULL) {
+        return;
+    }
+    if (route->id != NULL) {
+        free(route->id);
+        route->id = NULL;
+    }
+    if (route->source != NULL) {
+        free(route->source);
+        route->source = NULL;
+    }
+    if (route->destination != NULL) {
+        free(route->destination);
+        route->destination = NULL;
+    }
+    if (route->orientation != NULL) {
+        free(route->orientation);
+        route->orientation = NULL;
+    }
     if (route->train != NULL) {
         free(route->train);
+        route->train = NULL;
     }
 
     if (route->path != NULL) {
@@ -153,7 +169,14 @@ void free_route(void *item) {
 
 void free_interlocking_point(void *item) {
     t_interlocking_point *point = (t_interlocking_point *) item;
-    free(point->id);
+    if (point == NULL) {
+        return;
+    }
+    if (point->id != NULL) {
+        free(point->id);
+        point->id = NULL;
+    }
+    // free(point); is probably not necessary as it is not malloced for the hashtable
 }
 
 GHashTable *parse(yaml_parser_t *parser) {

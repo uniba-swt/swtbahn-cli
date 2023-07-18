@@ -53,7 +53,18 @@ void free_train_id_key(void *pointer) {
 
 void free_train(void *pointer) {
     t_config_train *train = (t_config_train *) pointer;
-    log_debug("free train: %s", train->id);
+    if (train == NULL) {
+        return;
+    }
+    if (train->id != NULL) {
+        log_debug("free train: %s", train->id);
+        free(train->id);
+        train->id = NULL;
+    }
+    if (train->type != NULL) {
+        free(train->type);
+        train->type = NULL;
+    }
     if (train->peripherals != NULL) {
         log_debug("\tfree peripherals");
         for (int i = 0; i < train->peripherals->len; ++i) {
