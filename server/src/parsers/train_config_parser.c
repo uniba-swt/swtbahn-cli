@@ -69,6 +69,7 @@ void free_train(void *pointer) {
         log_debug("\tfree peripherals");
         for (int i = 0; i < train->peripherals->len; ++i) {
             log_debug("\t\t%s", g_array_index(train->peripherals, char *, i));
+            free(g_array_index(train->peripherals, char *, i));
         }
         g_array_free(train->peripherals, true);
     }
