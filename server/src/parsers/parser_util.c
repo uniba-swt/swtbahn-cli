@@ -140,10 +140,11 @@ void parse_yaml_content(yaml_parser_t *parser,
                 error = true;
                 break;
         }
-        if (last_scalar != NULL && !error && event.type == YAML_SCALAR_EVENT) {
-            free(last_scalar);
-            last_scalar = NULL;
-        }
+        ///TODO: FIXME
+        //if (last_scalar != NULL && !error && event.type == YAML_SCALAR_EVENT) {
+        //    free(last_scalar);
+        //    last_scalar = NULL;
+        //}
         last_scalar = cur_scalar;
     } while(!error);
 }
