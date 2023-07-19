@@ -97,6 +97,7 @@ void free_signal(void *pointer) {
         log_debug("\tfree aspects:");
         for (int i = 0; i < signal->aspects->len; ++i) {
             log_debug("\t\t%s", g_array_index(signal->aspects, char *, i));
+            free(g_array_index(signal->aspects, char *, i));
         }
         g_array_free(signal->aspects, true);
     }
@@ -436,6 +437,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
         case SIGNAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
+                // Leaking!
                 char *tmp_scalar = strdup(cur_scalar);
                 g_array_append_val(cur_signal->aspects, tmp_scalar);
                 free(cur_scalar);
@@ -461,6 +463,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
         case PERIPHERAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
+                // Leaking!
                 char *tmp_scalar = strdup(cur_scalar);
                 g_array_append_val(cur_peripheral->aspects, tmp_scalar);
                 free(cur_scalar);
