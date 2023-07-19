@@ -333,7 +333,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                 error = true;
                 break;
             case YAML_SCALAR_EVENT:
-                cur_scalar = (char *)event.data.scalar.value;
+                cur_scalar = strdup((char *)event.data.scalar.value);
 
                 if (last_scalar == NULL) {
                     break;
@@ -424,7 +424,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                 error = true;
                 break;
         }
-
+        yaml_event_delete(&event);
         last_scalar = cur_scalar;
     } while (!error);
 

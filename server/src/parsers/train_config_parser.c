@@ -166,6 +166,8 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
     if (train_sequence == CALIBRATIONS) {
         int cal = (int)strtol(cur_scalar, NULL, 10);
         g_array_append_val(cur_train->calibration, cal);
+        free(cur_scalar);
+        cur_scalar = NULL;
         return;
     }
 
@@ -178,12 +180,12 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
             if (str_equal(last_scalar, "length")) {
                 cur_train->length = parse_float(cur_scalar);
-                return;
+                break;
             }
 
             if (str_equal(last_scalar, "weight")) {
                 cur_train->weight = parse_float(cur_scalar);
-                return;
+                break;
             }
 
             if (str_equal(last_scalar, "type")) {
@@ -194,11 +196,14 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case PERIPHERAL:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_train->peripherals, cur_scalar);
+                return;
             }
             break;
         default:
             break;
     }
+    free(cur_scalar);
+    cur_scalar = NULL;
 }
 
 void parse_train_yaml(yaml_parser_t *parser, t_config_data *data) {

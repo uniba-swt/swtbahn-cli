@@ -513,7 +513,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             
             if (str_equal(last_scalar, "is_reversed")) {
                 cur_block->is_reversed = strcmp(cur_scalar, "true") == 0;
-                return;
+                break;
             }
 
             if (str_equal(last_scalar, "direction")) {
@@ -599,6 +599,8 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
         default:
             break;
     }
+    free(cur_scalar);
+    cur_scalar = NULL;
 }
 
 void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data) {
