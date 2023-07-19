@@ -429,6 +429,10 @@ GHashTable *parse(yaml_parser_t *parser) {
                 break;
         }
         yaml_event_delete(&event);
+        if (last_scalar != NULL && last_scalar != cur_scalar) {
+            free(last_scalar);
+            last_scalar = NULL;
+        }
         if (cur_scalar != NULL) {
             last_scalar = strdup(cur_scalar);
             free(cur_scalar);
