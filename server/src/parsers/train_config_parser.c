@@ -196,7 +196,7 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case PERIPHERAL:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_train->peripherals, cur_scalar);
-                break;
+                return;
             }
             break;
         default:
