@@ -56,6 +56,8 @@ t_config_data config_data = {};
 // Needed to temporarily store new strings created by config_get_... 
 GArray *cached_allocated_str = NULL;
 
+char *static_empty_str = "";
+
 bool bahn_data_util_initialise_config(const char *config_dir) {
     if (!interlocking_table_initialise(config_dir)) {
         return false;
@@ -487,7 +489,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
         }
     }
 
-    result = result != NULL ? result : new_empty_str();
+    result = result != NULL ? result : static_empty_str;
     return result;
 }
 
