@@ -365,7 +365,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                     }
 
                     if (is_str_equal(last_scalar, "length")) {
-                        route->length = strtof(strdup(cur_scalar), NULL);
+                        route->length = strtof(cur_scalar, NULL);
                         break;
                     }
 
@@ -398,7 +398,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                     }
 
                     if (is_str_equal(last_scalar, "position")) {
-                        point->position = is_str_equal(strdup(cur_scalar), "reverse")
+                        point->position = is_str_equal(cur_scalar, "reverse")
                                           ? REVERSE
                                           : NORMAL;
                     }
@@ -452,8 +452,8 @@ GHashTable *parse(yaml_parser_t *parser) {
         free(last_scalar);
         last_scalar = NULL;
     }
-    printf("Number of routes allocated: %zu", route_alloc_counter);
-    printf("Number of routes inserted:  %zu", route_inserted_counter);
+    syslog_server(LOG_WARNING, "Number of routes allocated: %zu", route_alloc_counter);
+    syslog_server(LOG_WARNING, "Number of routes inserted:  %zu", route_inserted_counter);
     return routes;
 }
 
