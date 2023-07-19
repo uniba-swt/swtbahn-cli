@@ -291,15 +291,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	// Set the signals to their required aspects
 	for (size_t i = 0; i < route->signals->len - 1; i++) {
 		const char *signal = g_array_index(route->signals, char *, i);
-		char *signal_type = config_get_scalar_string_value("signal", signal, "type");
-		
-		// If config_get_scalar_string_value returns an empty string, the caller (we, i.e. here)
-		// is responsible for freeing that string. But not if a non-empty string is returned.
-		// -> should be changed to return NULL instead!
-		if (signal_type != NULL && strcmp(signal_type, "") == 0) {
-			free(signal_type);
-		}
-		
+		const char *signal_type = config_get_scalar_string_value("signal", signal, "type");
 		const char *signal_aspect = strcmp(signal_type, "shunting") == 0 ? "aspect_shunt" : "aspect_go";
 		bidib_set_signal(signal, signal_aspect);
 		bidib_flush();
@@ -341,17 +333,10 @@ const bool reversers_state_update(void) {
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
 	for (size_t i = 0; i < rev_query.length; i++) {
 		const char *reverser_id = rev_query.ids[i];
-		char *reverser_board =
+		const char *reverser_board =
 				config_get_scalar_string_value("reverser", reverser_id, "board");
 		error |= bidib_request_reverser_state(reverser_id, reverser_board);
 		bidib_flush();
-		
-		// If config_get_scalar_string_value returns an empty string, the caller (we, i.e. here)
-		// is responsible for freeing that string. But not if a non-empty string is returned.
-		// -> should be changed to return NULL instead!
-		if (reverser_board != NULL && strcmp(reverser_board, "") == 0) {
-			free(reverser_board);
-		}
 		
 		bool state_unknown = true;
 		for (int retry = 0; retry < max_retries && state_unknown; retry++) {

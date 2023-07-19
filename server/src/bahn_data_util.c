@@ -487,8 +487,12 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
         }
     }
 
-    result = result != NULL ? result : new_empty_str();
-    syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => \"%s\"", type, id, prop_name, result);
+    //result = result != NULL ? result : new_empty_str();
+    if (result != NULL) {
+        syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => \"%s\"", type, id, prop_name, result);
+    } else {
+        syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => \"NULL\"", type, id, prop_name);
+    }
     return result;
 }
 

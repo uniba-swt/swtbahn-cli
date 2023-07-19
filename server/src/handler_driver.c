@@ -170,7 +170,7 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
 	for (size_t i = 0; i < rev_query.length; i++) {
 		const char *reverser_id = rev_query.ids[i];
-		char *reverser_block = 
+		const char *reverser_block = 
 				config_get_scalar_string_value("reverser", reverser_id, "block");
 
 		if (strcmp(block_id, reverser_block) == 0) {
@@ -183,12 +183,6 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 						(rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
 			}
 			break;
-		}
-		// If config_get_scalar_string_value returns an empty string, the caller (we, i.e. here)
-		// is responsible for freeing that string. But not if a non-empty string is returned.
-		// -> should be changed to return NULL instead!
-		if (reverser_block != NULL && strcmp(reverser_block, "") == 0) {
-			free(reverser_block);
 		}
 	}
 	bidib_free_id_list_query(rev_query);
