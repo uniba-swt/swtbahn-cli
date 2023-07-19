@@ -342,27 +342,27 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // route
                 if (cur_mapping == MAPPING_ROUTE) {
                     if (is_str_equal(last_scalar, "id")) {
-                        route->id = cur_scalar;
+                        route->id = strdup(cur_scalar);
                         break;
                     }
 
                     if (is_str_equal(last_scalar, "source")) {
-                        route->source = cur_scalar;
+                        route->source = strdup(cur_scalar);
                         break;
                     }
 
                     if (is_str_equal(last_scalar, "destination")) {
-                        route->destination = cur_scalar;
+                        route->destination = strdup(cur_scalar);
                         break;
                     }
                     
                     if (is_str_equal(last_scalar, "orientation")) {
-                        route->orientation = cur_scalar;
+                        route->orientation = strdup(cur_scalar);
                         break;
                     }
 
                     if (is_str_equal(last_scalar, "length")) {
-                        route->length = strtof(cur_scalar, NULL);
+                        route->length = strtof(strdup(cur_scalar), NULL);
                         break;
                     }
 
@@ -372,7 +372,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // segment
                 if (cur_mapping == MAPPING_SEGMENT) {
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->path, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->path, tmp_scalar);
                     }
                     break;
                 }
@@ -380,7 +381,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // block
                 if (cur_mapping == MAPPING_BLOCK) {
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->sections, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->sections, tmp_scalar);
                     }
                     break;
                 }
@@ -388,12 +390,12 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // point
                 if (cur_mapping == MAPPING_POINT) {
                     if (is_str_equal(last_scalar, "id")) {
-                        point->id = cur_scalar;
+                        point->id = strdup(cur_scalar);
                         break;
                     }
 
                     if (is_str_equal(last_scalar, "position")) {
-                        point->position = is_str_equal(cur_scalar, "reverse")
+                        point->position = is_str_equal(strdup(cur_scalar), "reverse")
                                           ? REVERSE
                                           : NORMAL;
                     }
@@ -404,7 +406,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // signal
                 if (cur_mapping == MAPPING_SIGNAL) {
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->signals, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->signals, tmp_scalar);
                     }
 
                     break;
@@ -413,7 +416,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // conflict
                 if (cur_mapping == MAPPING_CONFLICT) {
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->conflicts, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->conflicts, tmp_scalar);
                     }
 
                     break;
@@ -425,7 +429,13 @@ GHashTable *parse(yaml_parser_t *parser) {
                 break;
         }
         yaml_event_delete(&event);
-        last_scalar = cur_scalar;
+        if (cur_scalar != NULL) {
+            last_scalar = strdup(cur_scalar);
+            free(cur_scalar);
+            cur_scalar = NULL;
+        } else {
+            last_scalar = cur_scalar;
+        }
     } while (!error);
 
     return routes;
