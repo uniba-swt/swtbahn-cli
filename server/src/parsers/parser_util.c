@@ -142,10 +142,10 @@ void parse_yaml_content(yaml_parser_t *parser,
         }
         yaml_event_delete(&event);
         ///TODO: FIXME
-        if (last_scalar != NULL) {
-            free(last_scalar);
-            last_scalar = NULL;
-        }
+        //if (last_scalar != NULL) {
+        //    free(last_scalar);
+        //    last_scalar = NULL;
+        //}
         last_scalar = cur_scalar;
     } while(!error);
 }
