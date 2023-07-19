@@ -157,6 +157,7 @@ void free_peripheral(void *pointer) {
         log_debug("\tfree aspects:");
         for (int i = 0; i < peripheral->aspects->len; ++i) {
             log_debug("\t\t%s", g_array_index(peripheral->aspects, char *, i));
+            free(g_array_index(peripheral->aspects, char *, i));
         }
         g_array_free(peripheral->aspects, true);
     }
@@ -362,8 +363,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
     switch (track_mapping) {
         case SEGMENT:
             if (str_equal(last_scalar, "id")) {
-                cur_segment->id = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_segment->id = cur_scalar;
                 //cur_segment->id = cur_scalar;
                 return;
             }
@@ -377,67 +377,58 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
         case SIGNAL:
             if (str_equal(last_scalar, "id")) {
-                cur_signal->id = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_signal->id = cur_scalar;
                 return;
             }
 
             if (str_equal(last_scalar, "initial")) {
-                cur_signal->initial = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_signal->initial = cur_scalar;
                 return;
             }
 
             if (str_equal(last_scalar, "type")) {
-                cur_signal->type = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_signal->type = cur_scalar;
                 return;
             }
             break;
 
         case POINT:
             if (str_equal(last_scalar, "id")) {
-                cur_point->id = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_point->id = cur_scalar;
                 return;
             }
 
             if (str_equal(last_scalar, "initial")) {
-                cur_point->initial = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_point->initial = cur_scalar;
                 return;
             }
 
             if (str_equal(last_scalar, "segment")) {
-                cur_point->segment = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_point->segment = cur_scalar;
                 return;
             }
             break;
 
         case PERIPHERAL:
             if (str_equal(last_scalar, "id")) {
-                cur_peripheral->id = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_peripheral->id = cur_scalar;
                 return;
             }
 
             if (str_equal(last_scalar, "initial")) {
-                cur_peripheral->initial = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_peripheral->initial = cur_scalar;
                 return;
             }
 
             if (str_equal(last_scalar, "type")) {
-                cur_peripheral->type = strdup(cur_scalar);
-                free(cur_scalar);
+                cur_peripheral->type = cur_scalar;
                 return;
             }
             break;
 
         case SIGNAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
-                // Leaking!
+                // remove additional strdup after debugging
                 char *tmp_scalar = strdup(cur_scalar);
                 g_array_append_val(cur_signal->aspects, tmp_scalar);
                 free(cur_scalar);
@@ -448,14 +439,12 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case POINT_ASPECT:
             if (str_equal(last_scalar, "id")) {
                 if (str_equal(cur_scalar, "normal")) {
-                    cur_point->normal_aspect = strdup(cur_scalar);
-                    free(cur_scalar);
+                    cur_point->normal_aspect = cur_scalar;
                     return;
                 }
 
                 if (str_equal(cur_scalar, "reverse")) {
-                    cur_point->reverse_aspect = strdup(cur_scalar);
-                    free(cur_scalar);
+                    cur_point->reverse_aspect = cur_scalar;
                     return;
                 }
             }
@@ -463,7 +452,6 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
         case PERIPHERAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
-                // Leaking!
                 char *tmp_scalar = strdup(cur_scalar);
                 g_array_append_val(cur_peripheral->aspects, tmp_scalar);
                 free(cur_scalar);

@@ -96,21 +96,33 @@ void free_block(void *pointer) {
 
     if (block->main_segments != NULL) {
         log_debug("free block main segments");
+        for (int i = 0; i < block->main_segments->len; ++i) {
+            free(g_array_index(block->main_segments, char *, i));
+        }
         g_array_free(block->main_segments, true);
     }
 
     if (block->overlaps != NULL) {
         log_debug("free block overlaps");
+        for (int i = 0; i < block->overlaps->len; ++i) {
+            free(g_array_index(block->overlaps, char *, i));
+        }
         g_array_free(block->overlaps, true);
     }
 
     if (block->signals != NULL) {
         log_debug("free block signals");
+        for (int i = 0; i < block->signals->len; ++i) {
+            free(g_array_index(block->signals, char *, i));
+        }
         g_array_free(block->signals, true);
     }
 
     if (block->train_types != NULL) {
         log_debug("free block train types");
+        for (int i = 0; i < block->train_types->len; ++i) {
+            free(g_array_index(block->train_types, char *, i));
+        }
         g_array_free(block->train_types, true);
     }
 
@@ -171,6 +183,9 @@ void free_signal_type(void *pointer) {
     }
     if (signal_type->aspects != NULL) {
         log_debug("free signal type aspects");
+        for (int i = 0; i < signal_type->aspects->len; ++i) {
+            free(g_array_index(signal_type->aspects, char *, i));
+        }
         g_array_free(signal_type->aspects, true);
     }
     free(signal_type);
@@ -221,6 +236,9 @@ void free_peripheral_type(void *pointer) {
     }
     if (peripheral_type->aspects != NULL) {
         log_debug("free peripheral type aspects");
+        for (int i = 0; i < peripheral_type->aspects->len; ++i) {
+            free(g_array_index(peripheral_type->aspects, char *, i));
+        }
         g_array_free(peripheral_type->aspects, true);
     }
     free(peripheral_type);
