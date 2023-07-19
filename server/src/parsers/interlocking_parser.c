@@ -375,8 +375,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // segment
                 if (cur_mapping == MAPPING_SEGMENT) {
                     if (is_str_equal(last_scalar, "id")) {
-                        char *tmp_scalar = strdup(cur_scalar);
-                        g_array_append_val(route->path, tmp_scalar);
+                        //char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->path, cur_scalar);
                     }
                     break;
                 }
@@ -384,8 +384,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // block
                 if (cur_mapping == MAPPING_BLOCK) {
                     if (is_str_equal(last_scalar, "id")) {
-                        char *tmp_scalar = strdup(cur_scalar);
-                        g_array_append_val(route->sections, tmp_scalar);
+                        //char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->sections, cur_scalar);
                     }
                     break;
                 }
@@ -409,8 +409,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // signal
                 if (cur_mapping == MAPPING_SIGNAL) {
                     if (is_str_equal(last_scalar, "id")) {
-                        char *tmp_scalar = strdup(cur_scalar);
-                        g_array_append_val(route->signals, tmp_scalar);
+                        //char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->signals, cur_scalar);
                     }
 
                     break;
@@ -419,8 +419,8 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // conflict
                 if (cur_mapping == MAPPING_CONFLICT) {
                     if (is_str_equal(last_scalar, "id")) {
-                        char *tmp_scalar = strdup(cur_scalar);
-                        g_array_append_val(route->conflicts, tmp_scalar);
+                        //char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->conflicts, cur_scalar);
                     }
 
                     break;
