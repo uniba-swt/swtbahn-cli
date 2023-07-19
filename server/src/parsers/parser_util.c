@@ -129,7 +129,7 @@ void parse_yaml_content(yaml_parser_t *parser,
                 error = true;
                 break;
             case YAML_SCALAR_EVENT:
-                cur_scalar = (char*)event.data.scalar.value;
+                cur_scalar = strdup((char*)event.data.scalar.value);
                 if (last_scalar == NULL) {
                     break;
                 }
@@ -140,6 +140,7 @@ void parse_yaml_content(yaml_parser_t *parser,
                 error = true;
                 break;
         }
+        yaml_event_delete(&event);
         ///TODO: FIXME
         //if (last_scalar != NULL && !error && event.type == YAML_SCALAR_EVENT) {
         //    free(last_scalar);

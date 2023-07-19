@@ -451,10 +451,6 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         default:
             return;
     }
-    if (last_scalar != NULL) {
-        free(last_scalar);
-        last_scalar = NULL;
-    }
 }
 
 void parse_track_yaml(yaml_parser_t *parser, t_config_data *data) {
