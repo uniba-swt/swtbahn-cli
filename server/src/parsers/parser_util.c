@@ -133,7 +133,7 @@ void parse_yaml_content(yaml_parser_t *parser,
                 if (last_scalar == NULL) {
                     break;
                 }
-                scalar_handler(last_scalar, cur_scalar);
+                scalar_handler(last_scalar, strdup(cur_scalar));
 
                 break;
             default:
@@ -142,14 +142,11 @@ void parse_yaml_content(yaml_parser_t *parser,
         }
         yaml_event_delete(&event);
         ///TODO: FIXME
-        //if (last_scalar != NULL && !error && event.type == YAML_SCALAR_EVENT) {
-        //    free(last_scalar);
-        //    last_scalar = NULL;
-        //}
-        last_scalar = strdup(cur_scalar);
-        if (cur_scalar != NULL) {
-            free(cur_scalar);
+        if (last_scalar != NULL) {
+            free(last_scalar);
+            last_scalar = NULL;
         }
+        last_scalar = cur_scalar;
     } while(!error);
 }
 

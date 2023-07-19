@@ -367,7 +367,8 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
             if (str_equal(last_scalar, "length")) {
                 cur_segment->length = parse_float(cur_scalar);
-                return;
+                // no return here intentional, have to free cur_scalar since no ownership is 
+                // transfered here.
             }
             break;
 
@@ -449,8 +450,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             break;
             
         default:
-            return;
+            break;
     }
+    free(cur_scalar);
+    cur_scalar = NULL;
 }
 
 void parse_track_yaml(yaml_parser_t *parser, t_config_data *data) {
