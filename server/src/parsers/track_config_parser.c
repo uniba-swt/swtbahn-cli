@@ -426,6 +426,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case SIGNAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_signal->aspects, cur_scalar);
+                return;
             }
             break;
 
@@ -446,6 +447,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case PERIPHERAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_peripheral->aspects, cur_scalar);
+                return;
             }
             break;
             
