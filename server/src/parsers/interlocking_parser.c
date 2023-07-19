@@ -146,22 +146,35 @@ void free_route(void *item) {
     }
 
     if (route->path != NULL) {
+        for (int i = 0; i < route->path->len; ++i) {
+            free(g_array_index(route->path, char *, i));
+        }
         g_array_free(route->path, true);
     }
 
     if (route->sections != NULL) {
+        for (int i = 0; i < route->sections->len; ++i) {
+            free(g_array_index(route->sections, char *, i));
+        }
         g_array_free(route->sections, true);
     }
 
     if (route->points != NULL) {
+        //differently allocated than other g_arrays.
         g_array_free(route->points, true);
     }
 
     if (route->signals != NULL) {
+        for (int i = 0; i < route->signals->len; ++i) {
+            free(g_array_index(route->signals, char *, i));
+        }
         g_array_free(route->signals, true);
     }
 
     if (route->conflicts != NULL) {
+        for (int i = 0; i < route->conflicts->len; ++i) {
+            free(g_array_index(route->conflicts, char *, i));
+        }
         g_array_free(route->conflicts, true);
     }
     free(route);
