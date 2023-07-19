@@ -148,6 +148,14 @@ void parse_yaml_content(yaml_parser_t *parser,
         //}
         last_scalar = cur_scalar;
     } while(!error);
+    if (cur_scalar != NULL) {
+        free(cur_scalar);
+        cur_scalar = NULL;
+    }
+    if (last_scalar != NULL) {
+        free(last_scalar);
+        last_scalar = NULL;
+    }
 }
 
 bool str_equal(const char *str1, const char *str2) {
