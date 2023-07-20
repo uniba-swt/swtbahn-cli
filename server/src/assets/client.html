@@ -393,8 +393,8 @@
 			crossDomain: true,
 			dataType: 'text',
 			success: function (responseData, textStatus, jqXHR) {
-				responseData.replace("verification-url: ",'');
-				$('#verificationUrlInUse').text(responseData);
+				var ret = responseData.replace("verification-url: ",'');
+				$('#verificationUrlInUse').text(ret);
 			},
 			error: function (responseData, textStatus, errorThrown) {
 				$('#verificationUrlInUse').text("Unknown");
