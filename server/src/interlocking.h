@@ -115,5 +115,5 @@ int interlocking_table_get_route_id(const char *source_id, const char *destinati
  */
 t_interlocking_route *get_route(const char *route_id);
 
-#endif // INTERLOCKING_H
+#endif  // INTERLOCKING_H
 

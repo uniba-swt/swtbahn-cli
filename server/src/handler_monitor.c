@@ -33,13 +33,13 @@
 #include <string.h>
 
 #include "server.h"
+#include "handler_monitor.h"
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "bahn_data_util.h"
 #include "interlocking.h"
 #include "param_verification.h"
 #include "websocket_uploader/engine_uploader.h"
-
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res) {
@@ -641,6 +641,209 @@ onion_connection_status handler_get_route(void *_, onion_request *req,
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Get route - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+// Returns debugging information related to the ForeC dynamic containers.
+// Provides data values seen by the environment (dyn_containers_interface.c)
+// and those set by the containers (dyn_containers.forec).
+GString *debug_info(void) {
+	GString *info_str = g_string_new("");	
+
+	const char info_template0[] = 
+	    "Debug info: \n"
+	    "* dyn_containers_reaction_counter: %lld \n"
+	    "* dyn_containers_actuate_reaction_counter: %lld \n"
+	    "\n";
+	
+	g_string_append_printf(
+		info_str, info_template0, 
+		dyn_containers_reaction_counter__global_0_0,
+		dyn_containers_actuate_reaction_counter
+	);
+
+	const char info_template1[] = 
+	    "dyn_containers_interface: (external value, internal value) \n"
+	    "  running: %d \n"
+	    "  terminate: %d, %d \n"
+	    "  let_period_us: %d, %d \n"
+	    "  \n";
+	
+	g_string_append_printf(
+		info_str, info_template1, 
+		dyn_containers_interface->running,
+		dyn_containers_interface->terminate,     forec_intern_input__global_0_0.value.terminate,
+		dyn_containers_interface->let_period_us, forec_intern_input__global_0_0.value.let_period_us
+	);
+	
+	const char info_template2[] = 
+	    "  train_engines_io[%d]: \n"
+	    "    input_load: %d, %d \n"
+	    "    input_unload: %d, %d \n"
+	    "    input_filepath: \"%s\", \"%s\" \n"
+	    "    output_in_use: %d, %d \n"
+	    "    output_name: \"%s\", \"%s\" \n"
+	    "  \n";
+	
+	t_forec_intern_input_train_engine__global_0_0
+		    *forec_intern_input_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
+		&forec_intern_input_train_engine_0__global_0_0.value,
+		&forec_intern_input_train_engine_1__global_0_0.value,
+		&forec_intern_input_train_engine_2__global_0_0.value,
+		&forec_intern_input_train_engine_3__global_0_0.value
+	};
+	t_forec_intern_output_train_engine__global_0_0
+		    *forec_intern_output_train_engine[TRAIN_ENGINE_COUNT_MAX] = {
+		&forec_intern_output_train_engine_0__global_0_0.value,
+		&forec_intern_output_train_engine_1__global_0_0.value,
+		&forec_intern_output_train_engine_2__global_0_0.value,
+		&forec_intern_output_train_engine_3__global_0_0.value
+	};
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+		g_string_append_printf(
+			info_str, info_template2,
+			i,
+			
+			dyn_containers_interface->train_engines_io[i].input_load,
+			forec_intern_input_train_engine[i]->load,
+			
+			dyn_containers_interface->train_engines_io[i].input_unload,
+			forec_intern_input_train_engine[i]->unload,
+			
+			dyn_containers_interface->train_engines_io[i].input_filepath,
+			forec_intern_input_train_engine[i]->filepath,
+			
+			dyn_containers_interface->train_engines_io[i].output_in_use,
+			forec_intern_output_train_engine[i]->in_use,
+			
+			dyn_containers_interface->train_engines_io[i].output_name,
+			forec_intern_output_train_engine[i]->name
+		);
+	}
+	
+	const char info_template3[] = 
+	    "  train_engine_instances_io[%d] \n"
+	    "    input_grab: %d, %d \n"
+	    "    input_release: %d, %d \n"
+	    "    input_train_engine_type: %d, %d \n"
+	    "    input_requested_speed: %d, %d \n"
+	    "    input_requested_forwards: %d, %d \n"
+	    "    output_in_use: %d, %d \n"
+	    "    output_train_engine_type: %d, %d \n"
+	    "    output_nominal_speed: %d, %d \n"
+	    "    output_nominal_forwards: %d, %d \n"
+	    "  \n";
+	
+	t_forec_intern_input_train_engine_instance__global_0_0 
+			*forec_intern_input_train_engine_instance[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
+		&forec_intern_input_train_engine_instance_0__global_0_0.value,
+		&forec_intern_input_train_engine_instance_1__global_0_0.value,
+		&forec_intern_input_train_engine_instance_2__global_0_0.value,
+		&forec_intern_input_train_engine_instance_3__global_0_0.value,
+		&forec_intern_input_train_engine_instance_4__global_0_0.value
+	};
+	t_forec_intern_output_train_engine_instance__global_0_0
+			*forec_intern_output_train_engine_instance[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
+		&forec_intern_output_train_engine_instance_0__global_0_0.value,
+		&forec_intern_output_train_engine_instance_1__global_0_0.value,
+		&forec_intern_output_train_engine_instance_2__global_0_0.value,
+		&forec_intern_output_train_engine_instance_3__global_0_0.value,
+		&forec_intern_output_train_engine_instance_4__global_0_0.value,
+	};
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		g_string_append_printf(
+			info_str, info_template3,
+			i,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_grab,
+			forec_intern_input_train_engine_instance[i]->grab,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_release,
+			forec_intern_input_train_engine_instance[i]->release,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_train_engine_type,
+			forec_intern_input_train_engine_instance[i]->train_engine_type,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_requested_speed,
+			forec_intern_input_train_engine_instance[i]->requested_speed,
+			
+			dyn_containers_interface->train_engine_instances_io[i].input_requested_forwards,
+			forec_intern_input_train_engine_instance[i]->requested_forwards,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_in_use,
+			forec_intern_output_train_engine_instance[i]->in_use,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_train_engine_type,
+			forec_intern_output_train_engine_instance[i]->train_engine_type,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_nominal_speed,
+			forec_intern_output_train_engine_instance[i]->nominal_speed,
+			
+			dyn_containers_interface->train_engine_instances_io[i].output_nominal_forwards,
+			forec_intern_output_train_engine_instance[i]->nominal_forwards
+		);
+	}
+	
+	return info_str;
+}
+
+onion_connection_status handler_get_debug_info(void *_, onion_request *req,
+                                               onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *debug_info_str = debug_info();
+		char response[strlen(debug_info_str->str) + 1];
+		strcpy(response, debug_info_str->str);
+		g_string_free(debug_info_str, true);
+		
+		onion_response_printf(res, "%s", response);
+		syslog_server(LOG_NOTICE, "Request: Get debug info");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get debug info - system not running or "
+		              "wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+// Returns extra debugging information related to the ForeC thread scheduler
+// in dyn_containers.forec.
+GString *debug_info_extra(void) {
+	GString *info_str = g_string_new("");	
+
+	const char info_template[] = 
+	    "Debug info extra: \n"
+	    "* mainParReactionCounter: %d \n"
+	    "* mainParCore1.reactionCounter: %d \n"
+	    "* mainParCore2.reactionCounter: %d \n"
+	    "\n";
+
+	g_string_append_printf(
+		info_str, info_template, 
+		mainParReactionCounter,
+		mainParCore1.reactionCounter,
+		mainParCore2.reactionCounter
+	);
+	
+	return info_str;
+}
+
+onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req,
+                                                     onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *debug_info_extra_str = debug_info_extra();
+		char response[strlen(debug_info_extra_str->str) + 1];
+		strcpy(response, debug_info_extra_str->str);
+		g_string_free(debug_info_extra_str, true);
+		
+		onion_response_printf(res, "%s", response);
+		syslog_server(LOG_NOTICE, "Request: Get debug info extra");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Get debug info extra - system not running or "
 		              "wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}

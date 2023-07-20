@@ -38,4 +38,4 @@ typedef struct {
   bool terminated;          // Output (internal variable)
 } TickData_drive_route;
 
-#endif	// TICK_DATA_H
+#endif  // TICK_DATA_H

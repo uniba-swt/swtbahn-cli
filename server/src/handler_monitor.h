@@ -25,10 +25,17 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_GETTER_H
-#define SWTSERVER_HANDLER_GETTER_H
+#ifndef HANDLER_MONITOR_H
+#define HANDLER_MONITOR_H
 
 #include <onion/types.h>
+#include "dyn_containers_interface.h"
+#include "dyn_containers.h"
+
+
+extern t_dyn_containers_interface *dyn_containers_interface;
+extern long long dyn_containers_reaction_counter__global_0_0;
+extern long long dyn_containers_actuate_reaction_counter;
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,
                                            onion_response *res);
@@ -75,5 +82,11 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 onion_connection_status handler_get_route(void *_, onion_request *req,
                                           onion_response *res);
 
-#endif
+onion_connection_status handler_get_debug_info(void *_, onion_request *req,
+                                               onion_response *res);
+
+onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req,
+                                                     onion_response *res);
+
+#endif  // HANDLER_MONITOR_H
 

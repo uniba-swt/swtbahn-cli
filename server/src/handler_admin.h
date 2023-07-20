@@ -25,8 +25,10 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_ADMIN_H
-#define SWTSERVER_HANDLER_ADMIN_H
+#ifndef HANDLER_ADMIN_H
+#define HANDLER_ADMIN_H
+
+#include <onion/onion.h>
 
 #include <onion/types.h>
 
@@ -54,5 +56,4 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
                                                           onion_response *res);
 
 
-#endif
-
+#endif  // HANDLER_ADMIN_H

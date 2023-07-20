@@ -84,4 +84,4 @@ void log_float(float value);
 
 void log_string(const char *value);
 
-#endif // BAHN_DATA_UTIL_H
+#endif  // BAHN_DATA_UTIL_H
