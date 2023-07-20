@@ -322,13 +322,24 @@
 	<br />
 	
 	<h1>Verification</h1>
-	<div class="form-group">
+	<div class="form-group" style="height: 2em;">
 		<label>Verification for Train Engines </label>
 		<input type="checkbox" id="verificationToggle" data-toggle="toggle" data-size="xs">
-		<br />
-		<div class="alert" style="width: 30%; height: 2em; padding-top: 4px;" role="alert">
-			<span style="margin: auto; margin-top: 0px;" id=verificationSettingResponse></span>
+		<div class="alert" style="width: auto; height: 1.5em; padding-top: 4px; padding-bottom: 4px; display: inline;" role="alert">
+			<span style="margin: auto; margin-top: 0px; height: 1.5em;" id=verificationSettingResponse></span>
 		</div>
+	</div>
+	<div class="form-group" style="height: 2em;">
+		<label>Verification Server URL:</label>
+		<input type="url" id=verificationServerUrlInput />
+		<button id="setVerificationServerUrlButton">Set</button>
+		<div class="alert" style="width: auto; height: 1.5em; padding-top: 4px; padding-bottom: 4px; display: inline;" role="alert">
+			<span style="margin: auto; margin-top: 0px; height: 1.5em;" id=setVerificationServerUrlResponse></span>
+		</div>
+	</div>
+	<div class="form-group" style="height: 2em;">
+		<label>Current Verification Server URL:</label>
+		<span id="verificationUrlInUse"></span>
 	</div>
 </body>
 
@@ -343,6 +354,57 @@
 	const grantedRoutesInterval = setInterval(() => {
 		updateGrantedRoutes($('#grantedRoutes'));
 	}, grantedRoutesTimeout);
+</script>
+
+<script type="text/javascript">
+	// Script for handling Verification Server URL setting and getting
+	$('#setVerificationServerUrlButton').click(function () {
+		$('#setVerificationServerUrlResponse').text('Waiting');
+		var verif_url = $('#verificationServerUrlInput').val();
+		$.ajax({
+			type: 'POST',
+			url: '/admin/set-verification-url',
+			crossDomain: true,
+			data: { 'verification-url': verif_url},
+			dataType: 'text',
+			success: function (responseData, textStatus, jqXHR) {
+				info_str = "Set verification server url to " + verif_url + ".";
+				console.log(info_str);
+				$('#setVerificationServerUrlResponse').parent().show();
+				$('#setVerificationServerUrlResponse').text(info_str);
+				$('#setVerificationServerUrlResponse').parent().removeClass('alert-danger');
+				$('#setVerificationServerUrlResponse').parent().addClass('alert-success');
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				info_str = "Failed to set verification server url to " + verif_url + ".";
+				console.log(info_str);
+				$('#setVerificationServerUrlResponse').parent().show();
+				$('#setVerificationServerUrlResponse').text(info_str);
+				$('#setVerificationServerUrlResponse').parent().removeClass('alert-success');
+				$('#setVerificationServerUrlResponse').parent().addClass('alert-danger');
+			}
+		});
+	});
+	
+	function update_verification_url_display() {
+		$.ajax({
+			type: 'GET',
+			url: '/monitor/verification-url',
+			crossDomain: true,
+			dataType: 'text',
+			success: function (responseData, textStatus, jqXHR) {
+				responseData.replace("verification-url: ",'');
+				$('#verificationUrlInUse').text(responseData);
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				$('#verificationUrlInUse').text("Unknown");
+			}
+		});
+	}
+	update_verification_url_display();
+	verif_url_update_interval = setInterval(() => { 
+		update_verification_url_display();
+	}, 10000);
 </script>
 
 <script type="text/javascript">
