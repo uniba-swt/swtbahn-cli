@@ -387,6 +387,7 @@
 	});
 	
 	function update_verification_url_display() {
+		$('#setVerificationServerUrlResponse').parent().hide();
 		$.ajax({
 			type: 'GET',
 			url: '/monitor/verification-url',
