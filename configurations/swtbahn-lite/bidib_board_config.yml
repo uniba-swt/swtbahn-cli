@@ -8,6 +8,6 @@ boards:
       - number: 0x6E
         value: 0x00
   - id: lightcontrol
-    unique-id: 0x05000D6B0083EC
+    unique-id: 0x45000D6B0083EC
   - id: onecontrol
     unique-id: 0x05000D7500DBED
