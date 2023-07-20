@@ -345,11 +345,12 @@
 	}, grantedRoutesTimeout);
 </script>
 
-<script>
+<script type="text/javascript">
 	current_toggle_pos = false;
-	// Verification
-	// Initialize Toggle: Check if Verification is enabled and update toggle accordingly
+	toggleInit = false;
+	// Update Toggle: Check if Verification is enabled and update toggle accordingly
 	function update_verification_toggle() {
+		$('#verificationSettingResponse').parent().hide();
 		$.ajax({
 			type: 'GET',
 			url: '/monitor/verification-option',
@@ -357,22 +358,22 @@
 			dataType: 'text',
 			success: function (responseData, textStatus, jqXHR) {
 				try {
-					if (typeof responseData === 'string') {
-						if (responseData === "verification-enabled: true") {
-							//First option for Gecko/Firefox default; 
-							// second bootstrap setter is needed for some Chromium browsers
-							$('#verificationToggle').prop('checked',true);
-							$('#verificationToggle').bootstrapToggle('on');
-							current_toggle_pos = true;
-						} else if (responseData === "verification-enabled: false") {
-							$('#verificationToggle').prop('checked',false);
-							$('#verificationToggle').bootstrapToggle('off');
-							current_toggle_pos = false;
-						}
-					}
 					// Mark toggle initialized
 					toggleInit = true;
+					if (responseData === "verification-enabled: true") {
+						// First option for Gecko/Firefox default; 
+						// second bootstrap setter is needed for some Chromium browsers
+						current_toggle_pos = true;
+						$('#verificationToggle').prop('checked',true);
+						$('#verificationToggle').bootstrapToggle('on');
+					} else if (responseData === "verification-enabled: false") {
+						current_toggle_pos = false;
+						$('#verificationToggle').prop('checked',false);
+						$('#verificationToggle').bootstrapToggle('off');
+					}
 				} catch (error) {
+					// This is expected when a browser is used that does not
+					// support "bootstrapToggle". 
 					console.log("Get Verification success case parsing error: " + error);
 				}
 			},
@@ -386,14 +387,18 @@
 	update_verification_toggle();
 	verif_toggle_update_interval = setInterval(() => { 
 		update_verification_toggle();
-	}, 20000);
+	}, 10000);
 	
-	// User changes toggle
+	// Something (User or script) changes toggle
 	$('#verificationToggle').change(function () {
-		if (!toggleInit) { //if not yet initialized, skip
+		if (!toggleInit) { 
+			//if not yet initialized, skip
 			return;
 		}
 		var toggleState = $('#verificationToggle').prop('checked');
+		// Check that the toggle state is different than the current aspect because this also
+		// triggers when the toggle is adjusted in update_verification_toggle, in which case the
+		// toggle is already in the correct aspect, thus no request has to be sent to the server
 		if (toggleState == current_toggle_pos) {
 			return;
 		}
@@ -405,15 +410,27 @@
 			data: { 'verification-option': toggleState},
 			dataType: 'text',
 			success: function (responseData, textStatus, jqXHR) {
-				console.log((toggleState ? "Enabled" : "Disabled") + " verification.");
+				info_str = (toggleState ? "Enabled" : "Disabled") + " verification.";
+				console.log(info_str);
+				$('#verificationSettingResponse').parent().show();
+				$('#verificationSettingResponse').text(info_str);
 				$('#verificationSettingResponse').parent().removeClass('alert-danger');
 				$('#verificationSettingResponse').parent().addClass('alert-success');
 				current_toggle_pos = toggleState;
 			},
 			error: function (responseData, textStatus, errorThrown) {
-				console.log("Failed to " + (toggleState ? "enable" : "disable") + " verification.");
+				info_str = "Failed to " + (toggleState ? "enable" : "disable") + " verification.";
+				console.log(info_str);
+				$('#verificationSettingResponse').parent().show();
+				$('#verificationSettingResponse').text(info_str);
 				$('#verificationSettingResponse').parent().removeClass('alert-success');
 				$('#verificationSettingResponse').parent().addClass('alert-danger');
+				try {
+					$('#verificationToggle').prop('checked',current_toggle_pos);
+					$('#verificationToggle').bootstrapToggle(current_toggle_pos ? 'on' : 'off');
+				} catch (error) {
+					// expected err for missing bootstrapToggle on some browsers
+				}
 			}
 		});
 	});
