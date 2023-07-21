@@ -509,21 +509,23 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		bool needNewLine = false;
 		GString *granted_routes = g_string_new("");
-		GArray *route_ids = interlocking_table_get_all_route_ids();
-		for (size_t i = 0; i < route_ids->len; i++) {
-			const char *route_id = g_array_index(route_ids, char *, i);
-			t_interlocking_route *route = get_route(route_id);
-			if (route->train != NULL) {
-				g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
-				                       needNewLine ? "\n" : "",
-				                       route->id, route->train);
-				needNewLine = true;
-			}
-		}
 		if (strcmp(granted_routes->str, "") == 0) {
 			g_string_append_printf(granted_routes, "No granted routes");
+		} else {
+			GArray *route_ids = interlocking_table_get_all_route_ids();
+			if (route_ids != NULL) {
+				for (size_t i = 0; i < route_ids->len; i++) {
+					const char *route_id = g_array_index(route_ids, char *, i);
+					t_interlocking_route *route = get_route(route_id);
+					if (route->train != NULL) {
+						g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
+						                       needNewLine ? "\n" : "", route->id, route->train);
+						needNewLine = true;
+					}
+				}
+				g_array_free(route_ids, true);
+			}
 		}
-		g_array_free(route_ids, true);
 		char response[granted_routes->len + 1];
 		strcpy(response, granted_routes->str);
 		g_string_free(granted_routes, true);

@@ -212,6 +212,11 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		char *train_id = strdup(grabbed_trains[grab_id].name->str);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
+		if (train_id == NULL) {
+			syslog_server(LOG_ERR, "Request: Admin release train - failed to allocate memory for train_id");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);

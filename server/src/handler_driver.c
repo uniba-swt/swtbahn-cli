@@ -698,10 +698,15 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
-	t_interlocking_route *route = get_route(route_id);
-	if (train_id == NULL || route == NULL || !drive_route_params_valid(train_id, route)) {
+	if (train_id == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Drive route: Unable to start driving because train or route are invalid");
+		              "Drive route: Unable to allocate memory for train_id");
+		return false;
+	}
+	
+	t_interlocking_route *route = get_route(route_id);
+	if (route == NULL || !drive_route_params_valid(train_id, route)) {
+		syslog_server(LOG_ERR, "Drive route: Unable to start driving route is invalid");
 		free(train_id);
 		return false;
 	}
@@ -879,6 +884,11 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		char *train_id = strdup(grabbed_trains[grab_id].name->str);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
+		if (train_id == NULL) {
+			syslog_server(LOG_ERR, 
+			              "Request: Release train - unable to allocate memory for train_id");
+			return false;
+		}
 		
 		///TODO: Think about: What if a non-zero speed is set by some other thread whilst
 		// the thread executing this function is past the call to set the speed to 0 and
@@ -934,6 +944,12 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 		} else {
 			char *train_id = strdup(grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			if (train_id == NULL) {
+				syslog_server(LOG_ERR, 
+				              "Request: Request train route - unable to allocate memory for train_id");
+				return false;
+			}
+			
 			// Use interlocker to find and grant a route
 			
 			GString *route_id = grant_route(train_id,
@@ -1004,6 +1020,12 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 		} else {
 			char *train_id = strdup(grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			if (train_id == NULL) {
+				syslog_server(LOG_ERR, 
+				              "Request: Request train route - unable to allocate memory for train_id");
+				return false;
+			}
+			
 			// Grant the route ID using an internal algorithm
 			
 			const char *result = grant_route_id(train_id, route_id);

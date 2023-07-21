@@ -98,6 +98,7 @@ void add_cache_str(char *state) {
 
 char *new_empty_str() {
     char *result = strdup("");
+    // Append to 'collection' array such that the pointer is retained for deletion later
     g_array_append_val(cached_allocated_str, result);
     return result;
 }
@@ -698,6 +699,9 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
             // Set train
             t_interlocking_route *route = (t_interlocking_route *) obj;
             route->train = strdup(value);
+            if (value != NULL && route->train == NULL) {
+                syslog_server(LOG_ERR, "config set scalar string value: unable to allocate memory for route->train");
+            }
             result = true;
         }
     }
@@ -748,48 +752,49 @@ char *get_signal_state(const char *id) {
     t_bidib_unified_accessory_state_query state_query = bidib_get_signal_state(id);
     if (state_query.known) {
         raw_state = strdup(state_query.board_accessory_state.state_id);
+        if (state_query.board_accessory_state.state_id != NULL && raw_state == NULL) {
+            syslog_server(LOG_ERR, "get signal state: unable to allocate memory for raw_state");
+        }
     }
     bidib_free_unified_accessory_state_query(state_query);
 
     // load signalling aspect based on signal type
     char *result = NULL;
-    if (string_equals(raw_state, "aspect_stop")) {
-        if (string_equals(type, "entry")
-            || string_equals(type, "exit")
-            || string_equals(type, "block")
-            || string_equals(type, "distant")
-            || string_equals(type, "shunting")
-            || string_equals(type, "halt")) {
-
-            result = "stop";
-        }
-    } else if (string_equals(raw_state, "aspect_go")){
-        if (string_equals(type, "entry")
-            || string_equals(type, "exit")
-            || string_equals(type, "block")
-            || string_equals(type, "distant")) {
-
-            result = "go";
-        }
-    } else if (string_equals(raw_state, "aspect_caution")){
-        if (string_equals(type, "entry")
-            || string_equals(type, "exit")
-            || string_equals(type, "distant")) {
-
-            result = "caution";
-        }
-    } else if (string_equals(raw_state, "aspect_shunt")){
-        if (string_equals(type, "exit")
-            || string_equals(type, "shunting")) {
-            result = "shunt";
-        }
-    }
-
-    // free
     if (raw_state != NULL) {
+        if (string_equals(raw_state, "aspect_stop")) {
+            if (string_equals(type, "entry")
+                || string_equals(type, "exit")
+                || string_equals(type, "block")
+                || string_equals(type, "distant")
+                || string_equals(type, "shunting")
+                || string_equals(type, "halt")) {
+
+                result = "stop";
+            }
+        } else if (string_equals(raw_state, "aspect_go")){
+            if (string_equals(type, "entry")
+                || string_equals(type, "exit")
+                || string_equals(type, "block")
+                || string_equals(type, "distant")) {
+
+                result = "go";
+            }
+        } else if (string_equals(raw_state, "aspect_caution")){
+            if (string_equals(type, "entry")
+                || string_equals(type, "exit")
+                || string_equals(type, "distant")) {
+
+                result = "caution";
+            }
+        } else if (string_equals(raw_state, "aspect_shunt")){
+            if (string_equals(type, "exit")
+                || string_equals(type, "shunting")) {
+                
+                result = "shunt";
+            }
+        }
         free(raw_state);
     }
-
     return result;
 }
 
@@ -926,6 +931,10 @@ char *track_state_get_value(const char *id) {
             t_bidib_unified_accessory_state_query state_query = bidib_get_point_state(id);
             if (state_query.known) {
                 result = strdup(state_query.board_accessory_state.state_id);
+                if (state_query.board_accessory_state.state_id != NULL && result == NULL) {
+                    syslog_server(LOG_ERR, 
+                                  "track state get value: unable to allocate memory for result for TYPE_POINT");
+                }
             }
             bidib_free_unified_accessory_state_query(state_query);
         } else if (config_type == TYPE_SIGNAL) {
@@ -934,6 +943,10 @@ char *track_state_get_value(const char *id) {
             t_bidib_peripheral_state_query state_query = bidib_get_peripheral_state(id);
             if (state_query.available) {
                 result = strdup(state_query.data.state_id);
+                if (state_query.data.state_id != NULL && result == NULL) {
+                    syslog_server(LOG_ERR, 
+                                  "track state get value: unable to allocate memory for result for TYPE_PERIPHERAL");
+                }
             }
             bidib_free_peripheral_state_query(state_query);
         }
