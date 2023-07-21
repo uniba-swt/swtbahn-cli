@@ -140,10 +140,12 @@ void free_reverser(void *pointer) {
         reverser->id = NULL;
     }
     if (reverser->board != NULL) {
+        log_debug("\tfree reverser board");
         free(reverser->board);
         reverser->board = NULL;
     }
     if (reverser->block != NULL) {
+        log_debug("\tfree reverser block");
         free(reverser->block);
         reverser->block = NULL;
     }
@@ -161,6 +163,7 @@ void free_crossing(void *pointer) {
         crossing->id = NULL;
     }
     if (crossing->main_segment != NULL) {
+        log_debug("\tfree crossing main segment");
         free(crossing->main_segment);
         crossing->main_segment = NULL;
     }
@@ -178,11 +181,12 @@ void free_signal_type(void *pointer) {
         signal_type->id = NULL;
     }
     if (signal_type->initial != NULL) {
+        log_debug("\tfree signal type initial");
         free(signal_type->initial);
         signal_type->initial = NULL;
     }
     if (signal_type->aspects != NULL) {
-        log_debug("free signal type aspects");
+        log_debug("\tfree signal type aspects");
         for (int i = 0; i < signal_type->aspects->len; ++i) {
             free(g_array_index(signal_type->aspects, char *, i));
         }
@@ -202,18 +206,22 @@ void free_composite_signal(void *pointer) {
         composite_signal->id = NULL;
     }
     if (composite_signal->distant != NULL) {
+        log_debug("\tfree composite signal distant");
         free(composite_signal->distant);
         composite_signal->distant = NULL;
     }
     if (composite_signal->entry != NULL) {
+        log_debug("\tfree composite signal entry");
         free(composite_signal->entry);
         composite_signal->entry = NULL;
     }
     if (composite_signal->exit != NULL) {
+        log_debug("\tfree composite signal exit");
         free(composite_signal->exit);
         composite_signal->exit = NULL;
     }
     if (composite_signal->block != NULL) {
+        log_debug("\tfree composite signal block");
         free(composite_signal->block);
         composite_signal->block = NULL;
     }
@@ -231,11 +239,12 @@ void free_peripheral_type(void *pointer) {
         peripheral_type->id = NULL;
     }
     if (peripheral_type->initial != NULL) {
+        log_debug("\tfree peripheral type initial");
         free(peripheral_type->initial);
         peripheral_type->initial = NULL;
     }
     if (peripheral_type->aspects != NULL) {
-        log_debug("free peripheral type aspects");
+        log_debug("\tfree peripheral type aspects");
         for (int i = 0; i < peripheral_type->aspects->len; ++i) {
             free(g_array_index(peripheral_type->aspects, char *, i));
         }

@@ -94,18 +94,19 @@ void free_signal(void *pointer) {
         signal->id = NULL;
     }
     if (signal->aspects != NULL) {
-        log_debug("\tfree aspects:");
+        log_debug("\tfree signal aspects");
         for (int i = 0; i < signal->aspects->len; ++i) {
-            log_debug("\t\t%s", g_array_index(signal->aspects, char *, i));
             free(g_array_index(signal->aspects, char *, i));
         }
         g_array_free(signal->aspects, true);
     }
     if (signal->initial != NULL) {
+        log_debug("\tfree signal initial");
         free(signal->initial);
         signal->initial = NULL;
     }
     if (signal->type != NULL) {
+        log_debug("\tfree signal type");
         free(signal->type);
         signal->type = NULL;
     }
@@ -124,18 +125,22 @@ void free_point(void *pointer) {
         point->id = NULL;
     }
     if (point->initial != NULL) {
+        log_debug("\tfree point initial");
         free(point->initial);
         point->initial = NULL;
     }
     if (point->normal_aspect != NULL) {
+        log_debug("\tfree point normal aspect");
         free(point->normal_aspect);
         point->normal_aspect = NULL;
     }
     if (point->reverse_aspect != NULL) {
+        log_debug("\tfree point reverse aspect");
         free(point->reverse_aspect);
         point->reverse_aspect = NULL;
     }
     if (point->segment != NULL) {
+        log_debug("\tfree point segment");
         free(point->segment);
         point->segment = NULL;
     }
@@ -154,18 +159,19 @@ void free_peripheral(void *pointer) {
     }
 
     if (peripheral->aspects != NULL) {
-        log_debug("\tfree aspects:");
+        log_debug("\tfree peripheral aspects");
         for (int i = 0; i < peripheral->aspects->len; ++i) {
-            log_debug("\t\t%s", g_array_index(peripheral->aspects, char *, i));
             free(g_array_index(peripheral->aspects, char *, i));
         }
         g_array_free(peripheral->aspects, true);
     }
     if (peripheral->initial != NULL) {
+        log_debug("\tfree peripheral initial");
         free(peripheral->initial);
         peripheral->initial = NULL;
     }
     if (peripheral->type != NULL) {
+        log_debug("\tfree peripheral type");
         free(peripheral->type);
         peripheral->type = NULL;
     }

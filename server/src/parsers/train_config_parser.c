@@ -62,22 +62,19 @@ void free_train(void *pointer) {
         train->id = NULL;
     }
     if (train->type != NULL) {
+        log_debug("\tfree train type");
         free(train->type);
         train->type = NULL;
     }
     if (train->peripherals != NULL) {
-        log_debug("\tfree peripherals");
+        log_debug("\tfree train peripherals");
         for (int i = 0; i < train->peripherals->len; ++i) {
-            log_debug("\t\t%s", g_array_index(train->peripherals, char *, i));
             free(g_array_index(train->peripherals, char *, i));
         }
         g_array_free(train->peripherals, true);
     }
     if (train->calibration != NULL) {
-        log_debug("\tfree calibration");
-        for (int i = 0; i < train->calibration->len; ++i) {
-            log_debug("\t\t%d", g_array_index(train->calibration, int, i));
-        }
+        log_debug("\tfree train calibration");
         g_array_free(train->calibration, true);
     }
     free(train);
