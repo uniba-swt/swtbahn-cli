@@ -203,44 +203,22 @@ void initialise_hashtables(void) {
 void track_yaml_sequence_start(char *scalar) {
     if (track_mapping == TRACK_ROOT && str_equal(scalar, "boards")) {
         track_sequence = BOARDS;
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "segments")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "segments")) {
         track_sequence = SEGMENTS;
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "signals-board")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "signals-board")) {
         track_sequence = SIGNALS;
-        return;
-    }
-
-    if (track_mapping == SIGNAL && str_equal(scalar, "aspects")) {
+    } else if (track_mapping == SIGNAL && str_equal(scalar, "aspects")) {
         track_sequence = SIGNAL_ASPECTS;
         cur_signal->aspects = g_array_sized_new(false, false, sizeof(char *), 4);
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "points-board")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "points-board")) {
         track_sequence = POINTS;
-        return;
-    }
-
-    if (track_mapping == POINT && str_equal(scalar, "aspects")) {
+    } else if (track_mapping == POINT && str_equal(scalar, "aspects")) {
         track_sequence = POINT_ASPECTS;
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "peripherals")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "peripherals")) {
         track_sequence = PERIPHERALS;
-        return;
-    }
-
-    if (track_mapping == PERIPHERAL && str_equal(scalar, "aspects")) {
+    } else if (track_mapping == PERIPHERAL && str_equal(scalar, "aspects")) {
         track_sequence = PERIPHERAL_ASPECTS;
         cur_peripheral->aspects = g_array_sized_new(false, false, sizeof(char *), 4);
-        return;
     }
 }
 
@@ -371,9 +349,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_segment->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "length")) {
+            } else if (str_equal(last_scalar, "length")) {
                 cur_segment->length = parse_float(cur_scalar);
                 // no return here intentional, have to free cur_scalar since no ownership is 
                 // transfered here.
@@ -384,14 +360,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_signal->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_signal->initial = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "type")) {
+            } else if (str_equal(last_scalar, "type")) {
                 cur_signal->type = cur_scalar;
                 return;
             }
@@ -401,14 +373,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_point->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_point->initial = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "segment")) {
+            } else if (str_equal(last_scalar, "segment")) {
                 cur_point->segment = cur_scalar;
                 return;
             }
@@ -418,14 +386,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_peripheral->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_peripheral->initial = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "type")) {
+            } else if (str_equal(last_scalar, "type")) {
                 cur_peripheral->type = cur_scalar;
                 return;
             }
@@ -443,9 +407,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 if (str_equal(cur_scalar, "normal")) {
                     cur_point->normal_aspect = cur_scalar;
                     return;
-                }
-
-                if (str_equal(cur_scalar, "reverse")) {
+                } else if (str_equal(cur_scalar, "reverse")) {
                     cur_point->reverse_aspect = cur_scalar;
                     return;
                 }

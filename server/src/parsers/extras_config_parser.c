@@ -270,85 +270,52 @@ void extras_yaml_sequence_start(char *scalar) {
                 extras_sequence = BLOCKS;
                 if (tb_blocks == NULL)
                     tb_blocks = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_block);
-                return;
-            }
-
-            if (str_equal(scalar, "reversers")) {
+            } else if (str_equal(scalar, "reversers")) {
                 extras_sequence = REVERSERS;
                 tb_reversers = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_reverser);
-                return;
-            }
-
-            if (str_equal(scalar, "crossings")) {
+            } else if (str_equal(scalar, "crossings")) {
                 extras_sequence = CROSSINGS;
                 tb_crossings = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_crossing);
-                return;
-            }
-
-            if (str_equal(scalar, "signaltypes")) {
+            } else if (str_equal(scalar, "signaltypes")) {
                 extras_sequence = SIGNAL_TYPES;
                 tb_signal_types = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_signal_type);
-                return;
-            }
-
-            if (str_equal(scalar, "compositions")) {
+            } else if (str_equal(scalar, "compositions")) {
                 extras_sequence = COMPOSITE_SIGNALS;
                 tb_composite_signals = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_composite_signal);
-                return;
-            }
-            if (str_equal(scalar, "peripheraltypes")) {
+            } else if (str_equal(scalar, "peripheraltypes")) {
                 extras_sequence = PERIPHERAL_TYPES;
                 tb_peripheral_types = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_peripheral_type);
-                return;
             }
             break;
         case BLOCK:
             if (str_equal(scalar, "main")) {
                 extras_sequence = BLOCK_MAIN_SEGMENTS;
                 cur_block->main_segments = g_array_sized_new(false, false, sizeof(char *), 2);
-                return;
-            }
-
-            if (str_equal(scalar, "overlaps")) {
+            } else if (str_equal(scalar, "overlaps")) {
                 extras_sequence = BLOCK_OVERLAPS;
                 cur_block->overlaps = g_array_sized_new(false, false, sizeof(char *), 2);
-                return;
-            }
-
-            if (str_equal(scalar, "signals")) {
+            } else if (str_equal(scalar, "signals")) {
                 extras_sequence = BLOCK_SIGNALS;
                 cur_block->signals = g_array_sized_new(false, false, sizeof(char *), 2);
-                return;
-            }
-
-            if (str_equal(scalar, "trains")) {
+            } else if (str_equal(scalar, "trains")) {
                 extras_sequence = BLOCK_TRAIN_TYPES;
                 cur_block->train_types = g_array_sized_new(false, false, sizeof(char *), 8);
-                return;
             }
             break;
         case SIGNAL_TYPE:
             if (str_equal(scalar, "initial")) {
                 extras_sequence = SIGNAL_TYPE_INITIAL;
-                return;
-            }
-            
-			if (str_equal(scalar, "aspects")) {
+            } else if (str_equal(scalar, "aspects")) {
                 extras_sequence = SIGNAL_TYPE_ASPECTS;
                 cur_signal_type->aspects = g_array_sized_new(false, false, sizeof(char *), 3);
-                return;
             }
             break;
         case PERIPHERAL_TYPE:
-			if (str_equal(scalar, "initial")) {
+            if (str_equal(scalar, "initial")) {
                 extras_sequence = PERIPHERAL_TYPE_INITIAL;
-                return;
-            }
-        
-            if (str_equal(scalar, "aspects")) {
+            } else if (str_equal(scalar, "aspects")) {
                 extras_sequence = PERIPHERAL_TYPE_ASPECTS;
                 cur_peripheral_type->aspects = g_array_sized_new(false, false, sizeof(char *), 3);
-                return;
             }
             break;
         default:
@@ -492,30 +459,20 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
     if (extras_sequence == BLOCK_MAIN_SEGMENTS) {
         g_array_append_val(cur_block->main_segments, cur_scalar);
         return;
-    }
-    
-    if (extras_sequence == BLOCK_OVERLAPS) {
+    } else if (extras_sequence == BLOCK_OVERLAPS) {
         g_array_append_val(cur_block->overlaps, cur_scalar);
         return;
-    }
-
-    if (extras_sequence == BLOCK_SIGNALS) {
+    } else if (extras_sequence == BLOCK_SIGNALS) {
         g_array_append_val(cur_block->signals, cur_scalar);
         return;
-    }
-
-    if (extras_sequence == BLOCK_TRAIN_TYPES) {
+    } else if (extras_sequence == BLOCK_TRAIN_TYPES) {
         g_array_append_val(cur_block->train_types, cur_scalar);
         return;
-    }
-
-    if (extras_sequence == SIGNAL_TYPE_ASPECTS) {
+    } else if (extras_sequence == SIGNAL_TYPE_ASPECTS) {
         log_debug("insert aspect to signal type: %s, %s", cur_signal_type->id, cur_scalar);
         g_array_append_val(cur_signal_type->aspects, cur_scalar);
         return;
-    }
-
-    if (extras_sequence == PERIPHERAL_TYPE_ASPECTS) {
+    } else if (extras_sequence == PERIPHERAL_TYPE_ASPECTS) {
         log_debug("insert aspect to peripheral type: %s, %s", cur_peripheral_type->id, cur_scalar);
         g_array_append_val(cur_peripheral_type->aspects, cur_scalar);
         return;
@@ -526,24 +483,13 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_block->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "length")) {
+            } else if (str_equal(last_scalar, "length")) {
                 cur_block->length = strtof(cur_scalar, NULL);
-                break;
-            }
-
-            if (str_equal(last_scalar, "limit")) {
+            } else if (str_equal(last_scalar, "limit")) {
                 cur_block->limit_speed = strtof(cur_scalar, NULL);
-                break;
-            }
-            
-            if (str_equal(last_scalar, "is_reversed")) {
+            } else if (str_equal(last_scalar, "is_reversed")) {
                 cur_block->is_reversed = strcmp(cur_scalar, "true") == 0;
-                break;
-            }
-
-            if (str_equal(last_scalar, "direction")) {
+            } else if (str_equal(last_scalar, "direction")) {
                 cur_block->direction = cur_scalar;
                 return;
             }
@@ -552,14 +498,10 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_reverser->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "board")) {
+            } else if (str_equal(last_scalar, "board")) {
                 cur_reverser->board = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "block")) {
+            } else if (str_equal(last_scalar, "block")) {
                 cur_reverser->block = cur_scalar;
                 return;
             }
@@ -568,9 +510,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_crossing->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "segment")) {
+            } else if (str_equal(last_scalar, "segment")) {
                 cur_crossing->main_segment = cur_scalar;
                 return;
             }
@@ -579,9 +519,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_signal_type->id = cur_scalar;
                 return;
-            }
-            
-			if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_signal_type->initial = cur_scalar;
                 return;
             }
@@ -590,24 +528,16 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_composite_signal->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "entry")) {
+            } else if (str_equal(last_scalar, "entry")) {
                 cur_composite_signal->entry = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "exit")) {
+            } else if (str_equal(last_scalar, "exit")) {
                 cur_composite_signal->exit = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "block")) {
+            } else if (str_equal(last_scalar, "block")) {
                 cur_composite_signal->block = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "distant")) {
+            } else if (str_equal(last_scalar, "distant")) {
                 cur_composite_signal->distant = cur_scalar;
                 return;
             }
@@ -616,9 +546,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_peripheral_type->id = cur_scalar;
                 return;
-            }
-
-			if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_peripheral_type->initial = cur_scalar;
                 return;
             }
@@ -631,7 +559,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
 }
 
 void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data) {
-	extras_mapping = EXTRAS_ROOT;
+    extras_mapping = EXTRAS_ROOT;
     extras_sequence = EXTRAS_SEQ_NONE;
     
     parse_yaml_content(parser, extras_yaml_sequence_start, extras_yaml_sequence_end, extras_yaml_mapping_start, extras_yaml_mapping_end, extras_yaml_scalar);

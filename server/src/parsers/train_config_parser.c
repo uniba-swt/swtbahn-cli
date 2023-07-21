@@ -92,15 +92,11 @@ void train_yaml_sequence_start(char *scalar) {
             tb_trains = g_hash_table_new_full(g_str_hash, g_str_equal, free_train_id_key, free_train);
         }
         return;
-    }
-
-    if (train_mapping == TRAIN && str_equal(scalar, "peripherals")) {
+    } else if (train_mapping == TRAIN && str_equal(scalar, "peripherals")) {
         train_sequence = PERIPHERALS;
         cur_train->peripherals = g_array_sized_new(false, false, sizeof(char *), 4);
         return;
-    }
-
-    if (train_mapping == TRAIN && str_equal(scalar, "calibration")) {
+    } else if (train_mapping == TRAIN && str_equal(scalar, "calibration")) {
         train_sequence = CALIBRATIONS;
         cur_train->calibration = g_array_sized_new(false, false, sizeof(int), 10);
         return;
@@ -174,19 +170,11 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_train->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "length")) {
+            } else if (str_equal(last_scalar, "length")) {
                 cur_train->length = parse_float(cur_scalar);
-                break;
-            }
-
-            if (str_equal(last_scalar, "weight")) {
+            } else if (str_equal(last_scalar, "weight")) {
                 cur_train->weight = parse_float(cur_scalar);
-                break;
-            }
-
-            if (str_equal(last_scalar, "type")) {
+            } else if (str_equal(last_scalar, "type")) {
                 cur_train->type = cur_scalar;
                 return;
             }

@@ -262,29 +262,17 @@ GHashTable *parse(yaml_parser_t *parser) {
                     if (is_str_equal(last_scalar, "path")) {
                         route->path = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_PATH;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "sections")) {
+                    } else if (is_str_equal(last_scalar, "sections")) {
                         route->sections = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_SECTIONS;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "points")) {
+                    } else if (is_str_equal(last_scalar, "points")) {
                         route->points = g_array_sized_new(FALSE, TRUE, sizeof(t_interlocking_point), 8);
                         g_array_set_clear_func(route->points, free_interlocking_point);
                         cur_sequence = SEQUENCE_POINTS;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "signals")) {
+                    } else if (is_str_equal(last_scalar, "signals")) {
                         route->signals = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_SIGNALS;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "conflicts")) {
+                    } else if (is_str_equal(last_scalar, "conflicts")) {
                         route->conflicts = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_CONFLICTS;
                     }
@@ -317,29 +305,16 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // path -> create segment
                 if (cur_sequence == SEQUENCE_PATH) {
                     cur_mapping = MAPPING_SEGMENT;
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_SECTIONS) {
+                } else if (cur_sequence == SEQUENCE_SECTIONS) {
                     cur_mapping = MAPPING_BLOCK;
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_POINTS) {
+                } else if (cur_sequence == SEQUENCE_POINTS) {
                     cur_mapping = MAPPING_POINT;
                     g_array_append_val(route->points, (t_interlocking_point){});
                     point = &g_array_index(route->points, t_interlocking_point, route->points->len - 1);
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_SIGNALS) {
+                } else if (cur_sequence == SEQUENCE_SIGNALS) {
                     cur_mapping = MAPPING_SIGNAL;
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_CONFLICTS) {
+                } else if (cur_sequence == SEQUENCE_CONFLICTS) {
                     cur_mapping = MAPPING_CONFLICT;
-                    break;
                 }
                 break;
             case YAML_MAPPING_END_EVENT:
@@ -367,84 +342,48 @@ GHashTable *parse(yaml_parser_t *parser) {
                 if (cur_mapping == MAPPING_ROUTE) {
                     if (is_str_equal(last_scalar, "id")) {
                         route->id = strdup(cur_scalar);
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "source")) {
+                    } else if (is_str_equal(last_scalar, "source")) {
                         route->source = strdup(cur_scalar);
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "destination")) {
+                    } else if (is_str_equal(last_scalar, "destination")) {
                         route->destination = strdup(cur_scalar);
-                        break;
-                    }
-                    
-                    if (is_str_equal(last_scalar, "orientation")) {
+                    } else if (is_str_equal(last_scalar, "orientation")) {
                         route->orientation = strdup(cur_scalar);
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "length")) {
+                    } else if (is_str_equal(last_scalar, "length")) {
                         route->length = strtof(cur_scalar, NULL);
-                        break;
                     }
-
-                    break;
-                }
-
-                // segment
-                if (cur_mapping == MAPPING_SEGMENT) {
+                } else if (cur_mapping == MAPPING_SEGMENT) {
+                    // segment
                     if (is_str_equal(last_scalar, "id")) {
                         char *tmp_scalar = strdup(cur_scalar);
                         g_array_append_val(route->path, tmp_scalar);
                     }
-                    break;
-                }
-
-                // block
-                if (cur_mapping == MAPPING_BLOCK) {
+                } else if (cur_mapping == MAPPING_BLOCK) {
+                    // block
                     if (is_str_equal(last_scalar, "id")) {
                         char *tmp_scalar = strdup(cur_scalar);
                         g_array_append_val(route->sections, tmp_scalar);
                     }
-                    break;
-                }
-
-                // point
-                if (cur_mapping == MAPPING_POINT) {
+                } else if (cur_mapping == MAPPING_POINT) {
+                    // point
                     if (is_str_equal(last_scalar, "id")) {
                         point->id = strdup(cur_scalar);
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "position")) {
+                    } else if (is_str_equal(last_scalar, "position")) {
                         point->position = is_str_equal(cur_scalar, "reverse")
                                           ? REVERSE
                                           : NORMAL;
                     }
-
-                    break;
-                }
-
-                // signal
-                if (cur_mapping == MAPPING_SIGNAL) {
+                } else if (cur_mapping == MAPPING_SIGNAL) {
+                    // signal
                     if (is_str_equal(last_scalar, "id")) {
                         char *tmp_scalar = strdup(cur_scalar);
                         g_array_append_val(route->signals, tmp_scalar);
                     }
-
-                    break;
-                }
-
-                // conflict
-                if (cur_mapping == MAPPING_CONFLICT) {
+                } else if (cur_mapping == MAPPING_CONFLICT) {
+                    // conflict
                     if (is_str_equal(last_scalar, "id")) {
                         char *tmp_scalar = strdup(cur_scalar);
                         g_array_append_val(route->conflicts, tmp_scalar);
                     }
-
-                    break;
                 }
 
                 break;
