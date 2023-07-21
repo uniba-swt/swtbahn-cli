@@ -81,7 +81,7 @@ void free_train(void *pointer) {
 }
 
 void nullify_train_config_table(void) {
-	tb_trains = NULL;
+    tb_trains = NULL;
 }
 
 void train_yaml_sequence_start(char *scalar) {	
