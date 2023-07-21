@@ -253,11 +253,19 @@ void track_yaml_mapping_start(char *scalar) {
         case SEGMENTS:
             track_mapping = SEGMENT;
             cur_segment = malloc(sizeof(t_config_segment));
+            if (cur_segment == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_segment");
+                exit(1);
+            }
             cur_segment->id = NULL;
             break;
         case SIGNALS:
             track_mapping = SIGNAL;
             cur_signal = malloc(sizeof(t_config_signal));
+            if (cur_signal == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_signal");
+                exit(1);
+            }
             cur_signal->id = NULL;
             cur_signal->initial = NULL;
             cur_signal->aspects = NULL;
@@ -269,6 +277,10 @@ void track_yaml_mapping_start(char *scalar) {
         case POINTS:
             track_mapping = POINT;
             cur_point = malloc(sizeof(t_config_point));
+            if (cur_point == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_point");
+                exit(1);
+            }
             cur_point->id = NULL;
             cur_point->initial = NULL;
             cur_point->segment = NULL;
@@ -281,6 +293,10 @@ void track_yaml_mapping_start(char *scalar) {
         case PERIPHERALS:
             track_mapping = PERIPHERAL;
             cur_peripheral = malloc(sizeof(t_config_peripheral));
+            if (cur_peripheral == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_peripheral");
+                exit(1);
+            }
             cur_peripheral->id = NULL;
             cur_peripheral->initial = NULL;
             cur_peripheral->aspects = NULL;

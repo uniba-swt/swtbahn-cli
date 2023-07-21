@@ -288,6 +288,10 @@ GHashTable *parse(yaml_parser_t *parser) {
                 if (cur_sequence == SEQUENCE_ROUTES) {
                     cur_mapping = MAPPING_ROUTE;
                     route = malloc(sizeof(t_interlocking_route));
+                    if (route == NULL) {
+                        log_debug("interlocking parser parse: failed to allocate memory for route");
+                        exit(1);
+                    }
                     route->id = NULL;
                     route->source = NULL;
                     route->destination = NULL;

@@ -120,6 +120,10 @@ void train_yaml_mapping_start(char *scalar) {
         case TRAINS:
             train_mapping = TRAIN;
             cur_train = malloc(sizeof(t_config_train));
+            if (cur_train == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_train");
+                exit(1);
+            }
             cur_train->id = NULL;
             cur_train->type = NULL;
             cur_train->peripherals = NULL;

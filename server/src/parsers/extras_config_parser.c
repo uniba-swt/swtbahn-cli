@@ -358,6 +358,10 @@ void extras_yaml_mapping_start(char *scalar) {
         case BLOCKS:
             extras_mapping = BLOCK;
             cur_block = malloc(sizeof(t_config_block));
+            if (cur_block == NULL) {
+                log_debug("extras_yaml_mapping_start: failed to allocate memory for cur_block");
+                exit(1);
+            }
             cur_block->id = NULL;
             cur_block->train_types = NULL;
             cur_block->signals = NULL;
@@ -369,6 +373,10 @@ void extras_yaml_mapping_start(char *scalar) {
         case REVERSERS:
             extras_mapping = REVERSER;
             cur_reverser = malloc(sizeof(t_config_reverser));
+            if (cur_reverser == NULL) {
+                log_debug("extras_yaml_mapping_start: failed to allocate memory for cur_reverser");
+                exit(1);
+            }
             cur_reverser->id = NULL;
             cur_reverser->board = NULL;
             cur_reverser->block = NULL;
@@ -376,12 +384,20 @@ void extras_yaml_mapping_start(char *scalar) {
         case CROSSINGS:
             extras_mapping = CROSSING;
             cur_crossing = malloc(sizeof(t_config_crossing));
+            if (cur_crossing == NULL) {
+                log_debug("extras_yaml_mapping_start: failed to allocate memory for cur_crossing");
+                exit(1);
+            }
             cur_crossing->id = NULL;
             cur_crossing->main_segment = NULL;
             break;
         case SIGNAL_TYPES:
             extras_mapping = SIGNAL_TYPE;
             cur_signal_type = malloc(sizeof(t_config_signal_type));
+            if (cur_signal_type == NULL) {
+                log_debug("extras_yaml_mapping_start: failed to allocate memory for cur_signal_type");
+                exit(1);
+            }
             cur_signal_type->id = NULL;
             cur_signal_type->initial = NULL;
             cur_signal_type->aspects = NULL;
@@ -389,6 +405,10 @@ void extras_yaml_mapping_start(char *scalar) {
         case COMPOSITE_SIGNALS:
             extras_mapping = COMPOSITE_SIGNAL;
             cur_composite_signal = malloc(sizeof(t_config_composite_signal));
+            if (cur_composite_signal == NULL) {
+                log_debug("extras_yaml_mapping_start: failed to allocate memory for cur_composite_signal");
+                exit(1);
+            }
             cur_composite_signal->id = NULL;
             cur_composite_signal->entry = NULL;
             cur_composite_signal->exit = NULL;
@@ -398,6 +418,10 @@ void extras_yaml_mapping_start(char *scalar) {
         case PERIPHERAL_TYPES:
             extras_mapping = PERIPHERAL_TYPE;
             cur_peripheral_type = malloc(sizeof(t_config_peripheral_type));
+            if (cur_peripheral_type == NULL) {
+                log_debug("extras_yaml_mapping_start: failed to allocate memory for cur_peripheral_type");
+                exit(1);
+            }
             cur_peripheral_type->id = NULL;
             cur_peripheral_type->initial = NULL;
             cur_peripheral_type->aspects = NULL;
