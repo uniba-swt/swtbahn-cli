@@ -364,7 +364,6 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case SEGMENT:
             if (str_equal(last_scalar, "id")) {
                 cur_segment->id = cur_scalar;
-                //cur_segment->id = cur_scalar;
                 return;
             }
 
@@ -428,10 +427,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
         case SIGNAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
-                // remove additional strdup after debugging
-                char *tmp_scalar = strdup(cur_scalar);
-                g_array_append_val(cur_signal->aspects, tmp_scalar);
-                free(cur_scalar);
+                g_array_append_val(cur_signal->aspects, cur_scalar);
                 return;
             }
             break;
@@ -452,9 +448,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
         case PERIPHERAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
-                char *tmp_scalar = strdup(cur_scalar);
-                g_array_append_val(cur_peripheral->aspects, tmp_scalar);
-                free(cur_scalar);
+                g_array_append_val(cur_peripheral->aspects, cur_scalar);
                 return;
             }
             break;

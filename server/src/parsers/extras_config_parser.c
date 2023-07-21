@@ -89,13 +89,13 @@ void free_block(void *pointer) {
         block->id = NULL;
     }
     if (block->direction != NULL) {
-        log_debug("free direction");
+        log_debug("\tfree block direction");
         free(block->direction);
         block->direction = NULL;
     }
 
     if (block->main_segments != NULL) {
-        log_debug("free block main segments");
+        log_debug("\tfree block main segments");
         for (int i = 0; i < block->main_segments->len; ++i) {
             free(g_array_index(block->main_segments, char *, i));
         }
@@ -103,7 +103,7 @@ void free_block(void *pointer) {
     }
 
     if (block->overlaps != NULL) {
-        log_debug("free block overlaps");
+        log_debug("\tfree block overlaps");
         for (int i = 0; i < block->overlaps->len; ++i) {
             free(g_array_index(block->overlaps, char *, i));
         }
@@ -111,7 +111,7 @@ void free_block(void *pointer) {
     }
 
     if (block->signals != NULL) {
-        log_debug("free block signals");
+        log_debug("\tfree block signals");
         for (int i = 0; i < block->signals->len; ++i) {
             free(g_array_index(block->signals, char *, i));
         }
@@ -119,7 +119,7 @@ void free_block(void *pointer) {
     }
 
     if (block->train_types != NULL) {
-        log_debug("free block train types");
+        log_debug("\tfree block train types");
         for (int i = 0; i < block->train_types->len; ++i) {
             free(g_array_index(block->train_types, char *, i));
         }

@@ -140,7 +140,9 @@ void parse_yaml_content(yaml_parser_t *parser,
                 error = true;
                 break;
         }
+        
         yaml_event_delete(&event);
+        
         if (last_scalar != NULL && last_scalar != cur_scalar) {
             free(last_scalar);
             last_scalar = NULL;
@@ -152,8 +154,8 @@ void parse_yaml_content(yaml_parser_t *parser,
         } else {
             last_scalar = cur_scalar;
         }
-        //last_scalar = cur_scalar;
     } while(!error);
+    
     if (cur_scalar != NULL) {
         free(cur_scalar);
         cur_scalar = NULL;

@@ -204,8 +204,6 @@ GHashTable *parse(yaml_parser_t *parser) {
     bool error = false;
     char *cur_scalar = NULL;
     char *last_scalar = NULL;
-    size_t route_alloc_counter = 0;
-    size_t route_inserted_counter = 0;
     do {
         if (!yaml_parser_parse(parser, &event)) {
             syslog_server(LOG_ERR, "Parser error %d\n", (*parser).error);
@@ -289,7 +287,6 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // routes -> create route
                 if (cur_sequence == SEQUENCE_ROUTES) {
                     cur_mapping = MAPPING_ROUTE;
-                    route_alloc_counter++;
                     route = malloc(sizeof(t_interlocking_route));
                     route->id = NULL;
                     route->source = NULL;
@@ -337,7 +334,6 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // insert route
                 if (cur_mapping == MAPPING_ROUTE && route != NULL && route->id != NULL) {
                     g_hash_table_insert(routes, strdup(route->id), route);
-                    route_inserted_counter++;
                 }
 
                 // move up one level
@@ -444,7 +440,9 @@ GHashTable *parse(yaml_parser_t *parser) {
                 error = true;
                 break;
         }
+        
         yaml_event_delete(&event);
+        
         if (last_scalar != NULL && last_scalar != cur_scalar) {
             free(last_scalar);
             last_scalar = NULL;
@@ -457,6 +455,7 @@ GHashTable *parse(yaml_parser_t *parser) {
             last_scalar = cur_scalar;
         }
     } while (!error);
+    
     if (cur_scalar != NULL) {
         free(cur_scalar);
         cur_scalar = NULL;
@@ -465,8 +464,7 @@ GHashTable *parse(yaml_parser_t *parser) {
         free(last_scalar);
         last_scalar = NULL;
     }
-    syslog_server(LOG_WARNING, "Number of routes allocated: %zu", route_alloc_counter);
-    syslog_server(LOG_WARNING, "Number of routes inserted:  %zu", route_inserted_counter);
+    
     return routes;
 }
 
