@@ -428,15 +428,13 @@
 						// second bootstrap setter is needed for some Chromium browsers
 						current_toggle_pos = true;
 						$('#verificationToggle').prop('checked',true);
-						$('#verificationToggle').bootstrapToggle('on');
 					} else if (responseData === "verification-enabled: false") {
 						current_toggle_pos = false;
 						$('#verificationToggle').prop('checked',false);
-						$('#verificationToggle').bootstrapToggle('off');
 					}
 				} catch (error) {
 					// This is expected when a browser is used that does not
-					// support "bootstrapToggle". 
+					// support the toggle setter
 					console.log("Get Verification success case parsing error: " + error);
 				}
 			},
@@ -490,9 +488,8 @@
 				$('#verificationSettingResponse').parent().addClass('alert-danger');
 				try {
 					$('#verificationToggle').prop('checked',current_toggle_pos);
-					$('#verificationToggle').bootstrapToggle(current_toggle_pos ? 'on' : 'off');
 				} catch (error) {
-					// expected err for missing bootstrapToggle on some browsers
+					// expected err for missing toggle setter on some browsers
 				}
 			}
 		});
