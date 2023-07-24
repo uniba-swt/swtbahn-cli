@@ -57,7 +57,7 @@ set(FOREC_MAIN dyn_containers)
 set(FOREC_SRC ${CMAKE_SOURCE_DIR}/src)
 add_custom_command(
 	OUTPUT ${FOREC_MAIN}.c debug.txt information.xml ${FOREC_MAIN}.dot ${FOREC_MAIN}.pdf
-	COMMAND forecc -mforec_dyn_containers ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
+	COMMAND forecc -mforec_dyn_containers -t1 ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
 	COMMAND dot -T pdf ${FOREC_MAIN}.dot -o ${FOREC_MAIN}.pdf
 	DEPENDS ${FOREC_SRC}/${FOREC_MAIN}.forec ${FOREC_SRC}/${FOREC_MAIN}.foreh
 )
@@ -102,6 +102,6 @@ set(UNIT_TESTS server_parser_tests server_bahn_util_tests)
 
 foreach(UNIT_TEST ${UNIT_TESTS})
 	add_executable(${UNIT_TEST} test src/bahn_data_util.c src/parsers/ test/unit/${UNIT_TEST}.c)
-	target_link_libraries(${UNIT_TEST} glib-2.0 cmocka pthread yaml onion bidib ${FOREC_MAIN})
+	target_link_libraries(${UNIT_TEST} glib-2.0 cmocka pthread yaml onion bidib ${FOREC_MAIN} ${CMAKE_DL_LIBS})
 	add_test(${UNIT_TEST} ${UNIT_TEST})
 endforeach()
