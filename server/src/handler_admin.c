@@ -41,6 +41,7 @@
 #include "dyn_containers_interface.h"
 #include "param_verification.h"
 #include "bahn_data_util.h"
+#include "websocket_uploader/engine_uploader.h"
 
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t poll_bidib_messages_thread;
@@ -220,6 +221,7 @@ onion_connection_status handler_set_verification_url(void *_, onion_request *req
 			syslog_server(LOG_ERR, "Request: Set verification url - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		}
+		set_verifier_url(data_verification_url);
 		syslog_server(LOG_NOTICE, "Request: Set verification url - url: %s", 
 		              data_verification_url);
 		return OCS_PROCESSED;
