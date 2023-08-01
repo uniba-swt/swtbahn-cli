@@ -343,7 +343,7 @@
 	
 	<h1>Verification</h1>
 	
-	<label>Verification for Train Engines:</label>
+	<label style="line-height: 2em">Verification for Train Engines:</label>
 	<input id="verificationToggle" type="checkbox" />
 	<div class="alert" style="padding: 4px; display: inline;">
 		<span id=verificationSettingResponse></span>
@@ -386,7 +386,7 @@
 			type: 'POST',
 			url: '/admin/set-verification-url',
 			crossDomain: true,
-			data: { 'verification-url': verif_url},
+			data: { 'verification-url': verif_url },
 			dataType: 'text',
 			success: function (responseData, textStatus, jqXHR) {
 				info_str = "Set verification server url to " + verif_url + ".";
@@ -448,10 +448,10 @@
 						// First option for Gecko/Firefox default; 
 						// second bootstrap setter is needed for some Chromium browsers
 						current_toggle_pos = true;
-						$('#verificationToggle').prop('checked',true);
+						$('#verificationToggle').prop('checked', true);
 					} else if (responseData === "verification-enabled: false") {
 						current_toggle_pos = false;
-						$('#verificationToggle').prop('checked',false);
+						$('#verificationToggle').prop('checked', false);
 					}
 				} catch (error) {
 					// This is expected when a browser is used that does not
@@ -489,7 +489,7 @@
 			type: 'POST',
 			url: '/admin/set-verification-option',
 			crossDomain: true,
-			data: { 'verification-option': toggleState},
+			data: { 'verification-option': toggleState },
 			dataType: 'text',
 			success: function (responseData, textStatus, jqXHR) {
 				info_str = (toggleState ? "Enabled" : "Disabled") + " verification.";
@@ -508,7 +508,7 @@
 				$('#verificationSettingResponse').parent().removeClass('alert-success');
 				$('#verificationSettingResponse').parent().addClass('alert-danger');
 				try {
-					$('#verificationToggle').prop('checked',current_toggle_pos);
+					$('#verificationToggle').prop('checked', current_toggle_pos);
 				} catch (error) {
 					// expected err for missing toggle setter on some browsers
 				}
