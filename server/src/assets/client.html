@@ -36,15 +36,16 @@
 	<br />
 
 	<button id=pingButton>Ping SWTbahn Server</button>
-	<span id=pingResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=pingResponse></span>
+	</div>
 	<br />
 
 	<button id=startupButton>Startup</button>
-	<span id=startupResponse></span>
-	<br />
-
 	<button id=shutdownButton>Shutdown</button>
-	<span id=shutdownResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=startupShutdownResponse></span>
+	</div>
 	<br />
 	<br />
 
@@ -282,6 +283,7 @@
 	
 	<br />
 
+
 	<h1>Custom Engines and Interlockers</h1>
 	
 	<label>SCCharts (*.sctx) or Bahn (*.bahn) File:</label>
@@ -292,7 +294,6 @@
 	<span id=uploadResponse></span>
 	<br />
 	<br/>
-	
 	
 	<label>Available Engines:</label>
 	<select id=availableEngines>
@@ -319,28 +320,31 @@
 	<label>Interlocker in use:</label>
 	<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
 	<br />
+	
 	<br />
 	
+	
 	<h1>Verification</h1>
-	<div class="form-group" style="height: 2em;">
-		<label>Verification for Train Engines </label>
-		<input type="checkbox" id="verificationToggle" data-toggle="toggle" data-size="xs">
-		<div class="alert" style="width: auto; height: 1.5em; padding-top: 4px; padding-bottom: 4px; display: inline;" role="alert">
-			<span style="margin: auto; margin-top: 0px; height: 1.5em;" id=verificationSettingResponse></span>
-		</div>
+	
+	<label>Verification for Train Engines:</label>
+	<input id="verificationToggle" type="checkbox" />
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=verificationSettingResponse></span>
 	</div>
-	<div class="form-group" style="height: 2em;">
-		<label>Verification Server URL:</label>
-		<input type="url" id=verificationServerUrlInput />
-		<button id="setVerificationServerUrlButton">Set</button>
-		<div class="alert" style="width: auto; height: 1.5em; padding-top: 4px; padding-bottom: 4px; display: inline;" role="alert">
-			<span style="margin: auto; margin-top: 0px; height: 1.5em;" id=setVerificationServerUrlResponse></span>
-		</div>
+	<br />
+
+	<label>Verification Server URL:</label>
+	<input type="url" id=verificationServerUrlInput />
+	<button id="setVerificationServerUrlButton">Set</button>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setVerificationServerUrlResponse></span>
 	</div>
-	<div class="form-group" style="height: 2em;">
-		<label>Current Verification Server URL:</label>
-		<span id="verificationUrlInUse"></span>
-	</div>
+	<br />
+	
+	<label>Current Verification Server URL:</label>
+	<span id="verificationUrlInUse"></span>
+	<br />
+	
 </body>
 
 <script type="text/javascript">
