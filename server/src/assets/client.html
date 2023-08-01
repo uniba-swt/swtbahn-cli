@@ -71,7 +71,9 @@
 	</select>
 	<button id=grabTrainButton>Grab</button>
 	<button id=releaseTrainButton>Release</button>
-	<span id=grabTrainResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=grabTrainResponse></span>
+	</div>
 	<br />
 
 	<label>DCC Speed:</label>
@@ -79,7 +81,9 @@
 	<button id=swapDirection>Swap Direction</button>
 	<button id=driveTrainButton>Drive</button>
 	<button id=stopTrainButton>Stop</button>
-	<span id=driveTrainResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=driveTrainResponse></span>
+	</div>
 	<br />
 
 	<label>Route:</label>
@@ -89,7 +93,9 @@
 	<button id=requestRouteButton>Request</button>
 	<button id=automaticDriveRouteButton>Automatic Drive Route</button>
 	<button id=manualDriveRouteButton>Manual Drive Route</button>
-	<span id=routeResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=routeResponse></span>
+	</div>
 	<br />
 	<br />
 	
@@ -134,7 +140,6 @@
 	<label>Release Route:</label>
 	<input type="text" id=routeId value="None" />
 	<button id=releaseRouteButton>Release</button>
-	<span id=releaseRouteResponse></span>
 	<br />
 
 	<label>Point:</label>
@@ -176,7 +181,9 @@
 		<option>reverse</option>
 	</select>
 	<button id=setPointButton>Set</button>
-	<span id=setPointResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setPointResponse></span>
+	</div>
 	<br />
 
 	<label>Signal:</label>
@@ -266,7 +273,9 @@
 		<option>aspect_shunt</option>
 	</select>
 	<button id=setSignalButton>Set</button>
-	<span id=setSignalResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setSignalResponse></span>
+	</div>
 	<br />
 	
 	<label>Peripheral:</label>
@@ -274,7 +283,9 @@
 	<label>Aspect:</label>
 	<input id=peripheralState>
 	<button id=setPeripheralStateButton>Set</button>
-	<span id=setPeripheralResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setPeripheralResponse></span>
+	</div>
 	<br />
 	<br />
 	
@@ -291,7 +302,9 @@
 	<br />
 	<button id=uploadEngineButton>Upload SCCharts</button>
 	<button id="uploadInterlockerButton">Upload Bahn</button>	 
-	<span id=uploadResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=uploadResponse></span>
+	</div>
 	<br />
 	<br/>
 	
@@ -302,7 +315,9 @@
 	</select>
 	<button id=refreshEnginesButton>Refresh</button>
 	<button id=removeEngineButton>Remove</button>
-	<span id=refreshRemoveEngineResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=refreshRemoveEngineResponse></span>
+	</div>
 	<br />
 
 	<label>Available Interlockers:</label>
@@ -314,7 +329,9 @@
 	<button id="setInterlockerButton">Set</button>
 	<button id="refreshInterlockersButton">Refresh</button>
 	<button id="removeInterlockerButton">Remove</button>
-	<span id="refreshRemoveInterlockerResponse"></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id="refreshRemoveInterlockerResponse"></span>
+	</div>
 	<br />
 	
 	<label>Interlocker in use:</label>
