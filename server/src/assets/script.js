@@ -445,9 +445,9 @@ $(document).ready(
 		} */
 
 		//From https://github.com/eligrey/FileSaver.js/wiki/FileSaver.js-Example
-		function SaveAsFile(t,f,m) {
+		function SaveAsFile(t, f, m) {
 			try {
-				var b = new Blob([t],{type:m});
+				var b = new Blob([t], {type:m});
 				saveAs(b, f);
 			} catch (e) {
 				//window.open("data:"+m+"," + encodeURIComponent(t), '_blank','');
@@ -565,7 +565,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					console.log("Upload Failed");
 					try {
-						var resJson = JSON.parse(responseData.responseText.toString(),null,2);
+						var resJson = JSON.parse(responseData.responseText.toString(), null, 2);
 						var msg = "Server Message: " + resJson["message"];
 						msg += "\nList of Properties:"
 						resJson["verifiedproperties"].forEach(element => {

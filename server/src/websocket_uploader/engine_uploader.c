@@ -130,7 +130,7 @@ void send_verif_req_message(struct mg_connection *ws_connection, ws_verif_data* 
 	}
 	
 	// Try to send verification request
-	if(g_verif_msg_str != NULL && g_verif_msg_str->len > 0){
+	if (g_verif_msg_str != NULL && g_verif_msg_str->len > 0) {
 		syslog_server(LOG_INFO, 
 		              "Websocket upload engine: Sending verification request to verifier server");
 		ssize_t sent_bytes = mg_ws_send(ws_connection, g_verif_msg_str->str, 
@@ -178,7 +178,7 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 		// Verification failed/unsuccessful
 		// Differentiate between status:false and unspecified failure
 		char *status_false_in_reply = strstr(ws_msg->data.ptr, msg_type_result_status_false_sig);
-		if (!status_false_in_reply){
+		if (!status_false_in_reply) {
 			// No 'status' field in answer with either true or false
 			syslog_server(LOG_INFO, "Websocket upload engine: Verification Server finished,"
 			              " verification status not specified");
@@ -188,7 +188,7 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 			syslog_server(LOG_INFO, "Websocket upload engine: Verification Server finished, "
 			              "verification did not succeed");
 			ws_data_ptr->message  = g_string_new("");
-			g_string_append_printf(ws_data_ptr->message,"%s",ws_msg->data.ptr);
+			g_string_append_printf(ws_data_ptr->message,"%s", ws_msg->data.ptr);
 		}
 		ws_data_ptr->success = false;
 		ws_data_ptr->finished = true;
@@ -316,7 +316,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 		++poll_counter;
 		
 		// Check if verification has started yet; abort if not started within certain time.
-		if (poll_counter > websocket_max_polls_before_start && !ws_verif_data.started){ 
+		if (poll_counter > websocket_max_polls_before_start && !ws_verif_data.started) { 
 			ws_verif_data.finished = true;
 			ws_verif_data.success = false;
 			syslog_server(LOG_WARNING, 
@@ -325,7 +325,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 		}
 	}
 	
-	if(ws_connection && !ws_connection->is_closing){
+	if (ws_connection && !ws_connection->is_closing) {
 		// Close if not yet closing. Then one poll, otherwise will not close.
 		// '1' is length of payload ("0"), which indicates reason for closing.
 		mg_ws_send(ws_connection, "0", 1, WEBSOCKET_OP_CLOSE);
@@ -386,7 +386,7 @@ void load_cached_verifier_url() {
 			// url read, update verifier_url accordingly
 			free_verifier_url();
 			verifier_url = strdup(buffer);
-			// Ensure no newline at the end, necessary on e.g. raspbian (but not Ubuntu 22.04)
+			// Ensure no newline at the end, necessary on e.g. Raspberry Pi OS (but not Ubuntu 22.04)
 			int len = strlen(verifier_url);
 			if (len > 0 && verifier_url[len-1] == '\n') {
 				verifier_url[len-1] = '\0';
