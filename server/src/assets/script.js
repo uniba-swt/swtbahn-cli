@@ -573,7 +573,7 @@ $(document).ready(
 						$('#uploadResponse').text(msg);
 						$('#verificationLogDownloadButton').show();
 					} catch (e) {
-						console.log("Unable to parse Server's reply in upload-engine failure case: " + e);
+						console.log("Unable to parse server's reply in upload-engine failure case: " + e);
 						$('#uploadResponse').text(responseData.responseText.toString());
 					}
 					$('#uploadResponse').parent().removeClass('alert-success');
@@ -1038,8 +1038,6 @@ $(document).ready(
 			$('#uploadResponse').parent().removeClass('alert-danger');
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
-		
-		
 		
 	}
 );

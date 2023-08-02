@@ -11,7 +11,7 @@ function update_verification_url_display() {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			var ret = responseData.replace("verification-url: ",'');
+			var ret = responseData.replace("verification-url: ", '');
 			$('#verificationUrlInUse').text(ret);
 		},
 		error: function (responseData, textStatus, errorThrown) {
@@ -119,7 +119,6 @@ function register_verification_toggle_onchange() {
 				$('#verificationSettingResponse').parent().removeClass('alert-success');
 				$('#verificationSettingResponse').parent().addClass('alert-danger');
 				$('#verificationToggle').prop('checked', current_toggle_pos);
-				
 			}
 		});
 	});
