@@ -28,6 +28,7 @@
 #ifndef HANDLER_MONITOR_H
 #define HANDLER_MONITOR_H
 
+#include <onion/types.h>
 #include "dyn_containers_interface.h"
 #include "dyn_containers.h"
 
@@ -68,6 +69,12 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req,
 
 onion_connection_status handler_get_peripherals(void *_, onion_request *req,
                                                 onion_response *res);
+
+onion_connection_status handler_get_verification_option(void *_, onion_request *req,
+                                                        onion_response *res);
+
+onion_connection_status handler_get_verification_url(void *_, onion_request *req,
+                                                     onion_response *res);
 
 onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
                                                    onion_response *res);
