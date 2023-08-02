@@ -4,7 +4,6 @@ var grabId = -1;
 var trainId = '';
 var trainEngine = '';
 var verificationObj = {};
-var toggleInit = false;
 var trainIsForwards = true;
 var lastSetSpeed = 0;			// Only needed when swapping train direction
 
