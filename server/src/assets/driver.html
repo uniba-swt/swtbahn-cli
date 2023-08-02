@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="style.css" />
 
 	<script src="./dependencies/jquery.min.js"></script>
+	<script src="./dependencies/filesaver.js"></script>
 
 	<script src="script.js"></script>
 	
@@ -70,7 +71,9 @@
 					</div>
 					<br />
 					<div class="alert alert-info" role="alert">
-						<span id="uploadResponse"></span>
+						<pre id="uploadResponse"></pre>
+						<button id=verificationLogDownloadButton type="button" class="btn btn-outline-secondary">Download Logs</button>
+						<button id=clearVerificationMsgButton type="button" class="btn btn-outline-secondary">Clear Message</button>
 					</div>
 
 					<br />

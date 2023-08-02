@@ -112,3 +112,26 @@ bool params_check_is_number(const char *string) {
 	return (*p == '\0');
 }
 
+bool params_check_is_bool_string(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)) {
+		return false;
+	} else if (strcmp("false", string) == 0 || strcmp("False", string) == 0 || strcmp("FALSE", string) == 0
+		       || strcmp("true", string) == 0 || strcmp("True", string) == 0 || strcmp("TRUE", string) == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool params_check_verification_option(const char *string) {
+	if (string == NULL || *string == '\0' || isspace(*string)) {
+		return false;
+	} else if (strcmp("false", string) == 0 || strcmp("False", string) == 0 || strcmp("FALSE", string) == 0) {
+		return false;
+	} else if (strcmp("true", string) == 0 || strcmp("True", string) == 0 || strcmp("TRUE", string) == 0) {
+		return true;
+	}
+	
+	return false;
+}
+

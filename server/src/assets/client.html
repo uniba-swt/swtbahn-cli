@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="style.css"/>
 	
 	<script src="script.js"></script>
+	<script src="script-verificationtoggle.js"></script>
 
 	<title>SWTbahn Client</title>
 </head>
@@ -36,15 +37,16 @@
 	<br />
 
 	<button id=pingButton>Ping SWTbahn Server</button>
-	<span id=pingResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=pingResponse></span>
+	</div>
 	<br />
 
 	<button id=startupButton>Startup</button>
-	<span id=startupResponse></span>
-	<br />
-
 	<button id=shutdownButton>Shutdown</button>
-	<span id=shutdownResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=startupShutdownResponse></span>
+	</div>
 	<br />
 	<br />
 
@@ -70,7 +72,9 @@
 	</select>
 	<button id=grabTrainButton>Grab</button>
 	<button id=releaseTrainButton>Release</button>
-	<span id=grabTrainResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=grabTrainResponse></span>
+	</div>
 	<br />
 
 	<label>DCC Speed:</label>
@@ -78,7 +82,9 @@
 	<button id=swapDirection>Swap Direction</button>
 	<button id=driveTrainButton>Drive</button>
 	<button id=stopTrainButton>Stop</button>
-	<span id=driveTrainResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=driveTrainResponse></span>
+	</div>
 	<br />
 
 	<label>Route:</label>
@@ -88,7 +94,9 @@
 	<button id=requestRouteButton>Request</button>
 	<button id=automaticDriveRouteButton>Automatic Drive Route</button>
 	<button id=manualDriveRouteButton>Manual Drive Route</button>
-	<span id=routeResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=routeResponse></span>
+	</div>
 	<br />
 	<br />
 	
@@ -133,7 +141,6 @@
 	<label>Release Route:</label>
 	<input type="text" id=routeId value="None" />
 	<button id=releaseRouteButton>Release</button>
-	<span id=releaseRouteResponse></span>
 	<br />
 
 	<label>Point:</label>
@@ -175,7 +182,9 @@
 		<option>reverse</option>
 	</select>
 	<button id=setPointButton>Set</button>
-	<span id=setPointResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setPointResponse></span>
+	</div>
 	<br />
 
 	<label>Signal:</label>
@@ -265,7 +274,9 @@
 		<option>aspect_shunt</option>
 	</select>
 	<button id=setSignalButton>Set</button>
-	<span id=setSignalResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setSignalResponse></span>
+	</div>
 	<br />
 	
 	<label>Peripheral:</label>
@@ -273,7 +284,9 @@
 	<label>Aspect:</label>
 	<input id=peripheralState>
 	<button id=setPeripheralStateButton>Set</button>
-	<span id=setPeripheralResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setPeripheralResponse></span>
+	</div>
 	<br />
 	<br />
 	
@@ -282,6 +295,7 @@
 	
 	<br />
 
+
 	<h1>Custom Engines and Interlockers</h1>
 	
 	<label>SCCharts (*.sctx) or Bahn (*.bahn) File:</label>
@@ -289,10 +303,11 @@
 	<br />
 	<button id=uploadEngineButton>Upload SCCharts</button>
 	<button id="uploadInterlockerButton">Upload Bahn</button>	 
-	<span id=uploadResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=uploadResponse></span>
+	</div>
 	<br />
 	<br/>
-	
 	
 	<label>Available Engines:</label>
 	<select id=availableEngines>
@@ -301,7 +316,9 @@
 	</select>
 	<button id=refreshEnginesButton>Refresh</button>
 	<button id=removeEngineButton>Remove</button>
-	<span id=refreshRemoveEngineResponse></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=refreshRemoveEngineResponse></span>
+	</div>
 	<br />
 
 	<label>Available Interlockers:</label>
@@ -313,13 +330,39 @@
 	<button id="setInterlockerButton">Set</button>
 	<button id="refreshInterlockersButton">Refresh</button>
 	<button id="removeInterlockerButton">Remove</button>
-	<span id="refreshRemoveInterlockerResponse"></span>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id="refreshRemoveInterlockerResponse"></span>
+	</div>
 	<br />
 	
 	<label>Interlocker in use:</label>
 	<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
 	<br />
+	
 	<br />
+	
+	
+	<h1>Verification</h1>
+	
+	<label style="line-height: 2em">Verification for Train Engines:</label>
+	<input id="verificationToggle" type="checkbox" />
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=verificationSettingResponse></span>
+	</div>
+	<br />
+
+	<label>Verification Server URL:</label>
+	<input type="url" id=verificationServerUrlInput />
+	<button id="setVerificationServerUrlButton">Set</button>
+	<div class="alert" style="padding: 4px; display: inline;">
+		<span id=setVerificationServerUrlResponse></span>
+	</div>
+	<br />
+	
+	<label>Current Verification Server URL:</label>
+	<span id="verificationUrlInUse"></span>
+	<br />
+	
 </body>
 
 <script type="text/javascript">
