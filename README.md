@@ -140,7 +140,7 @@ Raspberry Pi via the user `pi`, use the command `scp pi@141.13.106.30:/var/log/s
 ## Verification
 Train engines (and ther plugins) defined as SCCharts (*.sctx) files can be verified against certain
 properties before they are uploaded to the sever. Verification is on by default and 
-can be configured to `OFF` or `ON` via the `/admin/set-verification-option` endpoint. 
+can be configured to `true` (On) or `false` (Off) via the `/admin/set-verification-option` endpoint. 
 For the command line client, use the command `swtbahn admin set-verification-option <true/false>`.
 
 When verification has been turned on and an SCCharts file is uploaded, the server sends a 

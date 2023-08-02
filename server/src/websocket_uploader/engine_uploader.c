@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2022 University of Bamberg, Software Technologies Research Group
+ * Copyright (C) 2023 University of Bamberg, Software Technologies Research Group
  * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
  * 
  * This file is part of the SWTbahn command line interface (swtbahn-cli), which is

@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
+#include <dirent.h>
 
 #include "handler_upload.h"
 #include "server.h"

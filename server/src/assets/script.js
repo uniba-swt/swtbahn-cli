@@ -445,13 +445,12 @@ $(document).ready(
 		} */
 
 		//From https://github.com/eligrey/FileSaver.js/wiki/FileSaver.js-Example
-		function SaveAsFile(t, f, m) {
+		function SaveAsFile(content, filename, contentTypeOptions) {
 			try {
-				var b = new Blob([t], {type:m});
-				saveAs(b, f);
+				var b = new Blob([content], {type:contentTypeOptions});
+				saveAs(b, filename);
 			} catch (e) {
-				//window.open("data:"+m+"," + encodeURIComponent(t), '_blank','');
-				console.log("SaveAsFile Fail: " + e);
+				console.log("SaveAsFile Failed to save the file. Error msg: " + e);
 			}
 	  	}
 		
