@@ -147,7 +147,7 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	const bool route_is_clockwise = (strcmp(route->orientation, "clockwise") == 0);
 	const bool is_forwards = (route_is_clockwise && train_is_left)
 	                         || (!route_is_clockwise && !train_is_left);
-	                                
+
 	// Determine whether the train is on a block controlled by a Kehrschleifenmodul
 	// 1. Get train block
 	char *block_id = NULL;
@@ -161,7 +161,7 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	
 	if (block_id == NULL) {
 		syslog_server(LOG_ERR, "Driving is forwards: %s - current block of train: %s is unknown",
-					  is_forwards ? "yes" : "no", train_id);
+		              is_forwards ? "yes" : "no", train_id);
 		return is_forwards;
 	}
 
@@ -191,7 +191,7 @@ static const bool is_forward_driving(const t_interlocking_route *route,
 	                                ? !is_forwards
 	                                : is_forwards;
 	syslog_server(LOG_NOTICE, "Driving is forwards: %s",
-				  requested_forwards ? "yes" : "no");
+	              requested_forwards ? "yes" : "no");
 	return requested_forwards;
 }
 
@@ -991,7 +991,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 	} else {
 		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
-	}                                       
+	}
 }
 
 onion_connection_status handler_request_route_id(void *_, onion_request *req,
@@ -1058,7 +1058,7 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 	} else {
 		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
-	}                                       
+	}
 }
 
 onion_connection_status handler_driving_direction(void *_, onion_request *req,
@@ -1128,7 +1128,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 	} else {
 		syslog_server(LOG_ERR, "Request: Drive route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
-	}  
+	}
 }
 
 onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
@@ -1224,7 +1224,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Set calibrated train speed - system not running "
-		       "or wrong request type");
+		              "or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -1254,7 +1254,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str,
-		                                   data_track_output)) {
+			                               data_track_output)) {
 				syslog_server(LOG_ERR, "Request: Set train emergency stop - bad "
 				              "parameter values");
 				pthread_mutex_unlock(&grabbed_trains_mutex);
