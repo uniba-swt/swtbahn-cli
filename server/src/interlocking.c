@@ -112,8 +112,8 @@ void free_interlocking_table(void) {
 }
 
 GArray *interlocking_table_get_all_route_ids(void) {
-	GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-	
+    GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+
     GHashTableIter iter;
     gpointer key, value;
     g_hash_table_iter_init (&iter, route_hash_table);
@@ -128,9 +128,9 @@ GArray *interlocking_table_get_all_route_ids(void) {
             return NULL;
         }
         g_array_append_val(route_ids, route_id_string);
-	}
-	
-	return route_ids;
+    }
+
+    return route_ids;
 }
 
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id) {

@@ -455,8 +455,8 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req,
 				}
 						
 				g_string_append_printf(reversers, "%s%s - state: %s",
-									   i != 0 ? "\n" : "",
-									   reverser_id, state_value_str);
+				                       i != 0 ? "\n" : "",
+				                       reverser_id, state_value_str);
 				bidib_free_reverser_state_query(rev_state_query);
 			}
 			bidib_free_id_list_query(rev_query);
