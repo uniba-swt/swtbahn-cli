@@ -64,7 +64,7 @@ const int set_interlocker(const char *interlocker_name) {
 					&interlocker_instances[i], interlocker_name)
 			) {
 				syslog_server(LOG_ERR, "Interlocker %s could not be used in instance %d",
-							  interlocker_name, i);
+				              interlocker_name, i);
 			} else {
 				selected_interlocker_name = g_string_new(interlocker_name);
 				selected_interlocker_instance = i;
@@ -346,7 +346,7 @@ void release_route(const char *route_id) {
 		free(route->train);
 		route->train = NULL;
 		syslog_server(LOG_NOTICE, "Release route: route %s released", route_id);
-    }
+	}
 
 	pthread_mutex_unlock(&interlocker_mutex);
 }
@@ -362,11 +362,10 @@ const bool reversers_state_update(void) {
 				config_get_scalar_string_value("reverser", reverser_id, "board");
 		error |= bidib_request_reverser_state(reverser_id, reverser_board);
 		bidib_flush();
-		
+
 		bool state_unknown = true;
 		for (int retry = 0; retry < max_retries && state_unknown; retry++) {
-			t_bidib_reverser_state_query rev_state_query =
-					bidib_get_reverser_state(reverser_id);
+			t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
 			if (rev_state_query.available) {
 				state_unknown = (rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_UNKNOWN);
 			}
@@ -421,7 +420,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s",
-				       data_point, data_state);
+				              data_point, data_state);
 				bidib_flush();
 				return OCS_PROCESSED;
 			}
