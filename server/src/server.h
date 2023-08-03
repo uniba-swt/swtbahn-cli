@@ -34,6 +34,7 @@
 
 extern volatile time_t session_id;
 extern volatile bool running;
+extern volatile bool verification_enabled;
 extern char serial_device[128];
 extern char config_directory[128];
 

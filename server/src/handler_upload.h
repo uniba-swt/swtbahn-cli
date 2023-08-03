@@ -22,6 +22,7 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Ben-Oliver Hosak <https://github.com/hosakb>
+ * - Bernhard Luedtke <https://github.com/bluedtke>
  * - Eugene Yip <https://github.com/eyip002>
  *
  */
@@ -31,11 +32,10 @@
 
 #include <onion/onion.h>
 
-extern pthread_mutex_t dyn_containers_mutex;
-
 bool clear_engine_dir(void);
 
 bool clear_interlocker_dir(void);
+
 
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res);
