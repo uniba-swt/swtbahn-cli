@@ -90,9 +90,10 @@ target_link_libraries(${FOREC_MAIN}_static bidib_static onion_static glib-2.0 ya
 add_executable(swtbahn-server src ${SRCFILES})
 target_link_libraries(swtbahn-server onion pam gnutls gcrypt pthread
 	glib-2.0 yaml bidib ${LINK_EV} ${FOREC_MAIN} ${CMAKE_DL_LIBS})
-	
-target_compile_options(swtbahn-server PRIVATE -fno-omit-frame-pointer -fsanitize=address)
-target_link_options(swtbahn-server PRIVATE -fno-omit-frame-pointer -fsanitize=address)
+
+# Comment these in if you want to enable the address sanitizer.
+# target_compile_options(swtbahn-server PRIVATE -fno-omit-frame-pointer -fsanitize=address)
+# target_link_options(swtbahn-server PRIVATE -fno-omit-frame-pointer -fsanitize=address)
 
 # Unit tests
 
