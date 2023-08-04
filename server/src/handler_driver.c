@@ -891,18 +891,6 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 			return false;
 		}
 		
-		///TODO: Think about: What if a non-zero speed is set by some other thread whilst
-		// the thread executing this function is past the call to set the speed to 0 and
-		// the speed becoming 0 as a consequence from its own call?
-		
-		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
-		while (train_state_query.data.set_speed_step != 0) {
-			bidib_free_train_state_query(train_state_query);
-			usleep(TRAIN_DRIVE_TIME_STEP);
-			train_state_query = bidib_get_train_state(train_id);
-		}
-		bidib_free_train_state_query(train_state_query);
-		
 		if (!release_train(grab_id)) {
 			syslog_server(LOG_ERR, "Request: Release train %s - invalid grab id", train_id);
 			free(train_id);
