@@ -710,7 +710,7 @@ static bool drive_route_progressive_stop_signals(const char *train_id, t_interlo
 	return true;
 }
 
-static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic, bool use_stop_emergency) {
+static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic) {
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	t_interlocking_route *route = get_route(route_id);
 	if (train_id == NULL || route == NULL || !drive_route_params_valid(train_id, route)) {
@@ -1089,7 +1089,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			const bool is_automatic = (strcmp(mode, "automatic") == 0);
-			if (drive_route(grab_id, route_id, is_automatic, false)) {
+			if (drive_route(grab_id, route_id, is_automatic)) {
 				onion_response_printf(res, "Route %s driving completed", route_id);
 				return OCS_PROCESSED;
 			} else {
