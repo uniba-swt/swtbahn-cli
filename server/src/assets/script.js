@@ -3,6 +3,7 @@ var sessionId = 0;
 var grabId = -1;
 var trainId = '';
 var trainEngine = '';
+var verificationObj = {};
 var trainIsForwards = true;
 var lastSetSpeed = 0;			// Only needed when swapping train direction
 
@@ -89,7 +90,9 @@ function adminReleaseRoute(routeId) {
 
 $(document).ready(
 	function () {
-
+		$('#verificationLogDownloadButton').hide();
+		$('#clearVerificationMsgButton').hide();
+		
 		// Configuration
 		$('#pingButton').click(function () {
 			$('#pingResponse').text('Waiting');
@@ -440,6 +443,16 @@ $(document).ready(
 			});
 		} */
 
+		//From https://github.com/eligrey/FileSaver.js/wiki/FileSaver.js-Example
+		function SaveAsFile(content, filename, contentTypeOptions) {
+			try {
+				var b = new Blob([content], {type:contentTypeOptions});
+				saveAs(b, filename);
+			} catch (e) {
+				console.log("SaveAsFile Failed to save the file. Error msg: " + e);
+			}
+	  	}
+		
 		function driveRoute(routeId, mode) {
 			if (isNaN(routeId)) {
 				$('#routeResponse').parent().removeClass('alert-success');
@@ -486,6 +499,27 @@ $(document).ready(
 			var routeId = $('#routeId').val();
 			driveRoute(routeId, "automatic");
 		});
+		
+		$('#clearVerificationMsgButton').click(function () {
+			$('#verificationLogDownloadButton').hide();
+			$('#clearVerificationMsgButton').hide();
+			$('#uploadResponse').text('');
+			$('#uploadResponse').parent().removeClass('alert-danger');
+		});
+		
+		$('#verificationLogDownloadButton').click(function () {
+			//Create zip file that contains the logs
+			//then trigger download of that file.
+			try {
+				logList = "";
+				verificationObj["verifiedproperties"].forEach(element => {
+					logList += atob(element["verificationlog"]) + "\n\n";
+				});
+				SaveAsFile(logList, "verificationLogs.txt", "text/plain;charset=utf-8");
+			} catch (e) {
+				console.log(e);
+			}
+		});
 
 		$('#manualDriveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
@@ -518,19 +552,38 @@ $(document).ready(
 				cache: false,
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
+					console.log("Upload Success");
 					refreshEnginesList();
 					$('#uploadResponse').parent().removeClass('alert-danger');
 					$('#uploadResponse').parent().addClass('alert-success');
-					$('#uploadResponse')
-						.text('Engine ' + file.name + ' ready for use');
+					$('#uploadResponse').text('Engine ' + file.name + ' ready for use');
+					$('#verificationLogDownloadButton').hide();
+					$('#clearVerificationMsgButton').hide();
 				},
 				error: function (responseData, textStatus, errorThrown) {
+					console.log("Upload Failed");
+					try {
+						var resJson = JSON.parse(responseData.responseText.toString(), null, 2);
+						var msg = "Server Message: " + resJson["message"];
+						msg += "\nList of Properties:"
+						resJson["verifiedproperties"].forEach(element => {
+							msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
+						});
+						verificationObj = resJson;
+						$('#uploadResponse').text(msg);
+						$('#verificationLogDownloadButton').show();
+					} catch (e) {
+						console.log("Unable to parse server's reply in upload-engine failure case: " + e);
+						$('#uploadResponse').text(responseData.responseText.toString());
+					}
 					$('#uploadResponse').parent().removeClass('alert-success');
 					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#uploadResponse').text(responseData.responseText);
+					$('#clearVerificationMsgButton').show();
 				}
 			});
 		});
+		
+		
 
 		function refreshEnginesList() {
 			$.ajax({
@@ -985,7 +1038,7 @@ $(document).ready(
 			$('#uploadResponse').parent().removeClass('alert-danger');
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
-
+		
 	}
 );
 

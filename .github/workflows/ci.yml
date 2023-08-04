@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install cmocka
+      run: sudo apt-get install -y --no-install-recommends libyaml-dev libcmocka-dev
+
+    - name: Build libbidib
+      run: git clone --depth 1 https://github.com/uniba-swt/libbidib.git; cd libbidib; mkdir bin; cd bin; cmake ..; make -j; sudo make -j install
+
+    - name: Install pam, gnutls
+      run: sudo apt-get install -y --no-install-recommends libpam0g-dev libgnutls28-dev
+
+    - name: Build libonion
+      run: git clone --depth 1 https://github.com/uniba-swt/onion.git; cd onion; mkdir bin; cd bin; cmake -DONION_EXAMPLES=false -DONION_USE_TESTS=false ..; make -j onion; make -j onion_static; sudo make -j install
+
+    - name: Install flex-dev, graphviz
+      run: sudo apt-get install -y libfl-dev graphviz
+
+    - name: Install forecc
+      run: git clone --depth 1 https://github.com/PRETgroup/ForeC.git; cd ForeC/ForeC\ Compiler; make -j; echo "FOREC_COMPILER_PATH=`pwd`" >> $GITHUB_ENV
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      env:
+        CC: clang
+        CXX: clang++
+      run: cd server; cmake -B ${{github.workspace}}/server/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: FOREC_COMPILER_PATH="${{ env.FOREC_COMPILER_PATH }}/"; PATH=${PATH}:${FOREC_COMPILER_PATH}; cmake --build ${{github.workspace}}/server/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/server/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+

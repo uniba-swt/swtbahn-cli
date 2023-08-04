@@ -28,6 +28,7 @@
 #include <onion/onion.h>
 #include <bidib/bidib.h>
 #include <pthread.h>
+#include <sys/syslog.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -38,7 +39,9 @@
 #include "handler_controller.h"
 #include "interlocking.h"
 #include "dyn_containers_interface.h"
+#include "param_verification.h"
 #include "bahn_data_util.h"
+#include "websocket_uploader/engine_uploader.h"
 
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t poll_bidib_messages_thread;
@@ -92,7 +95,7 @@ static bool start_bidib(void) {
 	if (!succ_config) {
 		syslog_server(LOG_ERR, "Request: Start - Could not initialise interlocking tables");
 		return false;
-    }
+	}
 
 	const int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
@@ -186,6 +189,44 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Set track output - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_set_verification_option(void *_, onion_request *req,
+                                                        onion_response *res) {
+	build_response_header(res);
+	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
+		const char *data_verification_option = onion_request_get_post(req, "verification-option");
+		if (data_verification_option == NULL || !params_check_is_bool_string(data_verification_option)) {
+			syslog_server(LOG_ERR, "Request: Set verification option - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		verification_enabled = params_check_verification_option(data_verification_option);
+		syslog_server(LOG_NOTICE, "Request: Set verification option - state: %s", 
+		              verification_enabled ? "enabled" : "disabled");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Set verification option - wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
+onion_connection_status handler_set_verification_url(void *_, onion_request *req,
+                                                     onion_response *res) {
+    build_response_header(res);
+	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
+		const char *data_verification_url = onion_request_get_post(req, "verification-url");
+		if (data_verification_url == NULL) {
+			syslog_server(LOG_ERR, "Request: Set verification url - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		set_verifier_url(data_verification_url);
+		syslog_server(LOG_NOTICE, "Request: Set verification url - url: %s", 
+		              data_verification_url);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Set verification url - wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

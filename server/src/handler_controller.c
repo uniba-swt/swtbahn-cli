@@ -135,7 +135,7 @@ GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 		if (conflict_route->train != NULL) {
 			if (!is_route_conflict_safe_sectional(conflict_routes[i],route_id)) {
 				const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
-				char *conflict_route_id_string = malloc(sizeof(char *) * conflict_route_id_string_len);
+				char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
 				snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
 				         conflict_route->id, conflict_route->train);
 				g_array_append_val(conflict_route_ids, conflict_route_id_string);
@@ -161,7 +161,7 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
 		if (conflict_route->train != NULL) {
 			const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
-			char *conflict_route_id_string = malloc(sizeof(char *) * conflict_route_id_string_len);
+			char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
 			snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
 			         conflict_route->id, conflict_route->train);
 			g_array_append_val(conflict_route_ids, conflict_route_id_string);

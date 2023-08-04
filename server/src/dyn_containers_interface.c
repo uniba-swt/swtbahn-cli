@@ -39,19 +39,20 @@
 #include "handler_driver.h"
 
 
-extern void *forec_dyn_containers(void *_);
 
 pthread_mutex_t dyn_containers_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t dyn_containers_thread;
 static pthread_t dyn_containers_actuate_thread;
 
-static t_dyn_containers_interface *dyn_containers_interface;
+t_dyn_containers_interface *dyn_containers_interface;
 #define MICROSECOND 1
 static const int let_period_us = 10000 * MICROSECOND;	// 0.01 seconds
 
 static t_dyn_shm_config shm_config;
 static const int shm_permissions = (IPC_CREAT | 0666);
 static const key_t shm_key = 1234; 
+
+long long dyn_containers_actuate_reaction_counter = 0;
 
 
 void dyn_containers_reset_interface(
@@ -66,8 +67,10 @@ void dyn_containers_reset_interface(
 		(struct t_train_engine_io) {
 			.input_load = false, 
 			.input_unload = false, 
+			.input_filepath = "",
 			
-			.output_in_use = false
+			.output_in_use = false,
+			.output_name = ""
 		};
 	}
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
@@ -80,6 +83,7 @@ void dyn_containers_reset_interface(
 			.input_requested_forwards = true,
 			
 			.output_in_use = false,
+			.output_train_engine_type = -1,
 			.output_nominal_speed = 0,
 			.output_nominal_forwards = 0,
 			
@@ -110,7 +114,8 @@ void dyn_containers_reset_interface(
 			.input_train_id = "",
 
 			.output_in_use = false,
-			.output_terminated = false
+			.output_terminated = false,
+			.output_interlocker_type = -1
 		};
 	}
 }
@@ -161,6 +166,7 @@ static void *dyn_containers_actuate(void *_) {
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 
+		dyn_containers_actuate_reaction_counter++;
 		usleep(let_period_us);
 	} while (running);
 
@@ -173,7 +179,7 @@ static void *dyn_containers_actuate(void *_) {
 
 int dyn_containers_start(void) {
 	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
-	                         &dyn_containers_interface);
+	                          &dyn_containers_interface);
 	dyn_containers_reset_interface(dyn_containers_interface);
 	pthread_create(&dyn_containers_thread, NULL, 
 	               forec_dyn_containers, NULL);
@@ -351,7 +357,7 @@ GString *dyn_containers_get_train_engines(void) {
 }
 
 int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
-                                             const char *train, const char *engine) {
+                                             const char *train, const char *engine) {	
 	if (engine == NULL) {
 		syslog_server(LOG_ERR, "Could not set train engine because engine was NULL");
 		return 1;

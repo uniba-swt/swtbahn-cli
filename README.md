@@ -1,4 +1,6 @@
 # SWTbahn Client-Server Command Line Interface
+[![CI/CD](https://github.com/uniba-swt/swtbahn-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/uniba-swt/swtbahn-cli/actions)
+[![Latest release](https://img.shields.io/github/v/release/uniba-swt/swtbahn-cli?style=version)](https://github.com/uniba-swt/swtbahn-cli/releases)
 
 This is a client-server command line interface for the SWTbahn. The server is
 connected to the BiDiB interface and provides a REST API. The client side
@@ -17,17 +19,20 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
 * ForeC command line compiler: [forecc](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
+  * Path to the folder that contains the kico.jar has to be defined in the environment variable `KIELER_PATH`
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
+* SCCharts verifier: [SWTbahn Verifier (SWT internal repository)](https://gitlab.rz.uni-bamberg.de/swt/swtbahn-verifier)
 
-#### Client
+#### Command Line Client
 * python3
 * Python libraries: click, requests, pyaml (`pip3 install click requests pyaml`)
 
+#### Web Client
+* Web browser
 
 ## Build
 1. Clone the repository
-2. Adjust `server/CMakeLists.txt` according to your installations of the
-dependencies
+2. Install the necessary dependencies (remember to run `ldconfig` after `make install` for libbidib if you are on Linux)
 3. Navigate to the directory where the build files should be generated
 4. Execute `cmake <path-to-project-root>/server`
 5. Execute `make`
@@ -132,6 +137,37 @@ Use `scp` on your client computer. For example, suppose the Raspberry Pi is loca
 `141.13.106.30` and has the user `pi`. To copy the the file `/var/log/syslog` from the 
 Raspberry Pi via the user `pi`, use the command `scp pi@141.13.106.30:/var/log/syslog syslog`
 
+## Verification
+Train engines (and ther plugins) defined as SCCharts (*.sctx) files can be verified against certain
+properties before they are uploaded to the sever. Verification is on by default and 
+can be configured to `true` (On) or `false` (Off) via the `/admin/set-verification-option` endpoint. 
+For the command line client, use the command `swtbahn admin set-verification-option <true/false>`.
+
+When verification has been turned on and an SCCharts file is uploaded, the server sends a 
+request to [SWTbahn Verifier (SWT internal repository)](https://gitlab.rz.uni-bamberg.de/swt/swtbahn-verifier), 
+which...
+1. checks that the SCCharts file defines a set of safety properties (invariants, LTLs),
+2. compiles the SCCharts file to a format that can be verified (e.g., using nuSmv),
+3. verifies the safety properties, and
+4. sends verification results back to the server.
+
+If all safety properties hold, the server processes the SCCharts file, e.g., by compiling and loading the file as a plugin. 
+Otherwise, if any safety property does not hold, the server does not process the SCCharts file any further and reports
+the failure to the client.  
+
+The sever communicates with SWTbahn Verifier via websockets with JSON messages. A typical verification session is as follows:
+1. swtbahn-cli server receives an upload request for an SCCharts file;
+2. swtbahn-cli server establishes a websocket connection with SWTbahn Verifier;
+3. swtbahn-cli server sends the SCCharts file as a JSON message to SWTbahn Verifier;
+4. SWTbahn Verifier responds by either 
+   1. acknowledging the request to verify the SCCharts file and proceeding with the verification, or
+   2. rejecting the request;
+5. swtbahn-cli responds by either
+   1. waiting for the verification results on the websocket connection, or
+   2. stopping the processing of the SCCharts file;
+6. for the case that SWTbahn Verifier proceeded with the verification, after the verification has finished, SWTbahn Verifier sends the 
+   results as a JSON message to the swtbahn-cli server; and
+7. swtbahn-cli receives the results, closes the websocket connection, and processes the results.
 
 ## Grab-id and session-id behaviour
 Grab-ids are used as tokens for trains. A client needs to grab a train before he

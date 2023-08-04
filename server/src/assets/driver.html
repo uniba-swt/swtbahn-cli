@@ -4,13 +4,11 @@
 <head>
 	<link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" />
-
-	<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
-
+	<link rel="stylesheet" href="./dependencies/bootstrap.min.css" />
 	<link rel="stylesheet" href="style.css" />
+
+	<script src="./dependencies/jquery.min.js"></script>
+	<script src="./dependencies/filesaver.js"></script>
 
 	<script src="script.js"></script>
 	
@@ -30,23 +28,23 @@
 	</div>
 	<hr />
 
-	<div class="card-deck">
-		<div class="card" style="width: 22rem">
-			<div class="card-body">
-				<h3 class="card-title">System</h3>
+	<div class="row row-cols-1 row-cols-lg-2 g-4">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h3 class="card-title">System</h3>
 
-				<div class="form-group">
-					<button id="pingButton" type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
+					<div>
+						<button id="pingButton" type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
+					</div>
 					<br />
 					<div class="alert alert-info" role="alert">
 						<span id="pingResponse"></span>
 					</div>
-				</div>
 
-				<br />
+					<br />
 
-				<div class="form-group">
-					<div style="display: flex; justify-content: space-between">
+					<div class="d-flex justify-content-between">
 						<button id="startupButton" type="button" class="btn btn-outline-primary" style="width: 49%">Startup</button>
 						<button id="shutdownButton" type="button" class="btn btn-outline-primary" style="width: 49%">Shutdown</button>
 					</div>
@@ -54,44 +52,36 @@
 					<div class="alert alert-info" role="alert">
 						<span id="startupShutdownResponse"></span>
 					</div>
-				</div>
 
-				<br />
+					<br />
 
-				<div class="alert alert-dark" role="alert">
-					<span id="sessionGrabId">Session ID: 0, Grab ID: -1</span>
-				</div>
+					<div class="alert alert-dark" role="alert">
+						<span id="sessionGrabId">Session ID: 0, Grab ID: -1</span>
+					</div>
 
-				<br />
-				<br />
+					<br />
+					<br />
 
-				<h3 class="card-title">Custom Engine</h3>
+					<h3 class="card-title">Custom Engine</h3>
 
-				<div class="form-group">
-					<div style="display: flex; justify-content: space-between">
-						<label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary"
-							style="width: 49%; margin: 0px">Select an SCCharts file (*.sctx)</label>
+					<div class="d-flex justify-content-between">
+						<label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary" style="width: 49%; margin: 0px">Select an SCCharts file (*.sctx)</label>
 						<input id="selectUploadFile" type="file" accept=".sctx" hidden />
-						<button id="uploadEngineButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Upload</button>
+						<button id="uploadEngineButton" type="button" class="btn btn-outline-primary" style="width: 49%">Upload</button>
+					</div>
+					<br />
+					<div class="alert alert-info" role="alert">
+						<pre id="uploadResponse"></pre>
+						<button id=verificationLogDownloadButton type="button" class="btn btn-outline-secondary">Download Logs</button>
+						<button id=clearVerificationMsgButton type="button" class="btn btn-outline-secondary">Clear Message</button>
 					</div>
 
 					<br />
 
-					<div class="alert alert-info" role="alert">
-						<span id="uploadResponse"></span>
-					</div>
-				</div>
-
-				<br />
-
-				<div class="form-group">
 					<label class="form-label" for="availableEngines">Available Engines:</label>
 					<div class="input-group">
-						<div class="input-group-prepend">
-							<label class="input-group-text" for="availableEngines">Engine</label>
-						</div>
-						<select class="custom-select" id="availableEngines">
+						<span class="input-group-text" for="availableEngines">Engine</span>
+						<select class="form-select" id="availableEngines">
 							<option>libtrain_engine_default (unremovable)</option>
 							<option>libtrain_engine_linear (unremovable)</option>
 						</select>
@@ -99,15 +89,11 @@
 
 					<br />
 
-					<div style="display: flex; justify-content: space-between">
-						<button id="refreshEnginesButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Refresh</button>
-						<button id="removeEngineButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Remove</button>
+					<div class="d-flex justify-content-between">
+						<button id="refreshEnginesButton" type="button" class="btn btn-outline-primary" style="width: 49%">Refresh</button>
+						<button id="removeEngineButton" type="button" class="btn btn-outline-primary" style="width: 49%">Remove</button>
 					</div>
-
 					<br />
-
 					<div class="alert alert-info" role="alert">
 						<span id="refreshRemoveEngineResponse"></span>
 					</div>
@@ -115,92 +101,70 @@
 			</div>
 		</div>
 
-		<div class="card" style="width: 22rem">
-			<div class="card-body">
-				<h3 class="card-title">Train Driver</h3>
-				<p class="card-text">
-					Grab an available train to drive it around the track.
-				</p>
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h3 class="card-title">Train Driver</h3>
+					<p class="card-text">
+						Grab an available train to drive it around the track.
+					</p>
 
-				<div class="form-group">
-					<div class="input-group">
-						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-							<label class="input-group-text" for="grabTrainId">Train</label>
+					<div class="form-group">
+						<div class="input-group mb-3">
+							<span class="input-group-text col-2" for="grabTrainId">Train</span>
+							<select class="form-select" id="grabTrainId">
+								<option>cargo_db</option>
+								<option>cargo_bayern</option>
+								<option>cargo_green</option>
+								<option>regional_odeg</option>
+								<option>regional_brengdirect</option>
+							</select>
 						</div>
-						<select class="custom-select" id="grabTrainId">
-							<option>cargo_db</option>
-							<option>cargo_bayern</option>
-							<option>cargo_green</option>
-							<option>regional_odeg</option>
-							<option>regional_brengdirect</option>
-						</select>
-					</div>
 
-					<div class="input-group">
-						<div class="input-group-prepend">
-							<label class="input-group-text" for="grabEngine">Engine</label>
+						<div class="input-group">
+							<span class="input-group-text col-2" for="grabEngine">Engine</span>
+							<select class="form-select" id="grabEngine">
+								<option>libtrain_engine_default (unremovable)</option>
+								<option>libtrain_engine_linear (unremovable)</option>
+							</select>
 						</div>
-						<select class="custom-select" id="grabEngine">
-							<option>libtrain_engine_default (unremovable)</option>
-							<option>libtrain_engine_linear (unremovable)</option>
-						</select>
+
+						<br />
+
+						<div class="d-flex justify-content-between">
+							<button id="grabTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Grab</button>
+							<button id="releaseTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Release</button>
+						</div>
+						<br />
+						<div class="alert alert-info" role="alert">
+							<span id="grabTrainResponse"></span>
+						</div>
 					</div>
 
 					<br />
 
-					<div style="display: flex; justify-content: space-between">
-						<button id="grabTrainButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Grab</button>
-						<button id="releaseTrainButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Release</button>
-					</div>
-
-					<br />
-
-					<div class="alert alert-info" role="alert">
-						<span id="grabTrainResponse"></span>
-					</div>
-				</div>
-
-				<br />
-
-				<div class="form-group">
 					<div class="input-group">
-						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-							<label class="input-group-text">DCC Speed</label>
-						</div>
+						<span class="input-group-text">DCC Speed</span>
 						<input type="text" class="form-control" id="dccSpeed" readonly value="0" />
-						
-						<div class="col-4">
-							<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
-							<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
-						</div>
+						<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
+						<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
 					</div>
 
 					<br />
 
-					<div style="display: flex; justify-content: space-between">
-						<button id="swapDirection" type="button" class="btn btn-outline-primary"
-							style="width: 32%">Swap Direction</button>
-						<button id="driveTrainButton" type="button" class="btn btn-outline-primary"
-							style="width: 32%">Drive</button>
-						<button id="stopTrainButton" type="button" class="btn btn-outline-primary"
-							style="width: 32%">Stop</button>
+					<div class="d-flex justify-content-between">
+						<button id="swapDirection" type="button" class="btn btn-outline-primary" style="width: 32%">Swap Direction</button>
+						<button id="driveTrainButton" type="button" class="btn btn-outline-primary" style="width: 32%">Drive</button>
+						<button id="stopTrainButton" type="button" class="btn btn-outline-primary" style="width: 32%">Stop</button>
 					</div>
-
 					<br />
-
 					<div class="alert alert-info" role="alert">
 						<span id="driveTrainResponse"></span>
 					</div>
-				</div>
 
-				<div class="form-group">
-					<div class="input-group">
-						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-							<label class="input-group-text">From</label>
-						</div>
-						<select class="custom-select" id="signalIdFrom">
+					<div class="input-group mb-2">
+						<span class="input-group-text col-2">From</span>
+						<select class="form-select" id="signalIdFrom">
 							<option>signal1</option>
 							<option>signal2</option>
 							<option>signal3</option>
@@ -275,11 +239,9 @@
 						</select>
 					</div>
 
-					<div class="input-group">
-						<div class="input-group-prepend" style="margin-bottom: 0.5rem">
-							<label class="input-group-text">To</label>
-						</div>
-						<select class="custom-select" id="signalIdTo">
+					<div class="input-group mb-2">
+						<span class="input-group-text col-2">To</span>
+						<select class="form-select" id="signalIdTo">
 							<option>signal1</option>
 							<option>signal2</option>
 							<option>signal3</option>
@@ -354,39 +316,32 @@
 						</select>
 					</div>
 
-					<div class="input-group">
-						<div class="input-group-prepend">
-							<label class="input-group-text">Route ID</label>
-						</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text col-2">Route ID</span>
 						<input type="text" class="form-control" id="routeId" readonly value="None" />
 					</div>
 
-					<br />
-
-					<div style="display: flex; justify-content: space-between">
+					<div class="d-flex justify-content-between mb-2">
 						<button id="requestRouteButton" type="button" class="btn btn-outline-primary"
 							style="width: 49%">Request</button>
 						<button id="releaseRouteButton" type="button" class="btn btn-outline-primary"
 							style="width: 49%">Release</button>
 					</div>
-					
-					<br />
-					
-					<div style="display: flex; justify-content: space-between">
+				
+					<div class="d-flex justify-content-between">
 						<button id="automaticDriveRouteButton" type="button" class="btn btn-outline-primary"
 							style="width: 49%">Automatic Drive Route</button>
 						<button id="manualDriveRouteButton" type="button" class="btn btn-outline-primary"
 							style="width: 49%">Manual Drive Route</button>
 					</div>
-
 					</br>
-
 					<div class="alert alert-info" role="alert">
 						<span id="routeResponse"></span>
 					</div>
 				</div>
 			</div>
 		</div>
+		
 	</div>
 </body>
 

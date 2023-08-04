@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef SWTSERVER_SERVER_H
-#define SWTSERVER_SERVER_H
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <syslog.h>
 
@@ -34,6 +34,7 @@
 
 extern volatile time_t session_id;
 extern volatile bool running;
+extern volatile bool verification_enabled;
 extern char serial_device[128];
 extern char config_directory[128];
 
@@ -42,5 +43,5 @@ void syslog_server(int priority, const char *format, ...);
 void build_response_header(onion_response *res);
 
 
-#endif	// SWTSERVER_SERVER_H
+#endif  // SERVER_H
 
