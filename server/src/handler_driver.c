@@ -758,7 +758,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	}
 
 	// Logging timestamp before trying to acquire the mutex for grabbed trains, 
-	// such that we can sort-of-measure the time it takes to acquire the mutex
+	// such that we can roughly measure the time it takes to acquire the mutex
 	struct timespec tva;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
 	syslog_server(LOG_NOTICE, "Drive route: End of route (%s) reached detected at %d.%.9ld", 
