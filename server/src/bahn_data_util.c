@@ -96,13 +96,6 @@ void add_cache_str(char *state) {
     }
 }
 
-char *new_empty_str() {
-    char *result = strdup("");
-    // Append to 'collection' array such that the pointer is retained for deletion later
-    g_array_append_val(cached_allocated_str, result);
-    return result;
-}
-
 e_config_type get_config_type(const char *type) {
     if (string_equals(type, "route")) {
         return TYPE_ROUTE;
@@ -617,50 +610,57 @@ char *get_signal_state(const char *id) {
     char *raw_state = NULL;
     t_bidib_unified_accessory_state_query state_query = bidib_get_signal_state(id);
     if (state_query.known) {
+        if (state_query.board_accessory_state.state_id == NULL) {
+            syslog_server(LOG_ERR, "get signal state: board accessory state id is NULL");
+            bidib_free_unified_accessory_state_query(state_query);
+            return NULL;
+        }
         raw_state = strdup(state_query.board_accessory_state.state_id);
-        if (state_query.board_accessory_state.state_id != NULL && raw_state == NULL) {
+        if (raw_state == NULL) {
             syslog_server(LOG_ERR, "get signal state: unable to allocate memory for raw_state");
+            bidib_free_unified_accessory_state_query(state_query);
+            return NULL;
         }
     }
     bidib_free_unified_accessory_state_query(state_query);
 
     // load signalling aspect based on signal type
     char *result = NULL;
-    if (raw_state != NULL) {
-        if (string_equals(raw_state, "aspect_stop")) {
-            if (string_equals(type, "entry")
-                || string_equals(type, "exit")
-                || string_equals(type, "block")
-                || string_equals(type, "distant")
-                || string_equals(type, "shunting")
-                || string_equals(type, "halt")) {
+    
+    if (string_equals(raw_state, "aspect_stop")) {
+        if (string_equals(type, "entry")
+            || string_equals(type, "exit")
+            || string_equals(type, "block")
+            || string_equals(type, "distant")
+            || string_equals(type, "shunting")
+            || string_equals(type, "halt")) {
 
-                result = "stop";
-            }
-        } else if (string_equals(raw_state, "aspect_go")){
-            if (string_equals(type, "entry")
-                || string_equals(type, "exit")
-                || string_equals(type, "block")
-                || string_equals(type, "distant")) {
-
-                result = "go";
-            }
-        } else if (string_equals(raw_state, "aspect_caution")){
-            if (string_equals(type, "entry")
-                || string_equals(type, "exit")
-                || string_equals(type, "distant")) {
-
-                result = "caution";
-            }
-        } else if (string_equals(raw_state, "aspect_shunt")){
-            if (string_equals(type, "exit")
-                || string_equals(type, "shunting")) {
-                
-                result = "shunt";
-            }
+            result = "stop";
         }
-        free(raw_state);
+    } else if (string_equals(raw_state, "aspect_go")) {
+        if (string_equals(type, "entry")
+            || string_equals(type, "exit")
+            || string_equals(type, "block")
+            || string_equals(type, "distant")) {
+
+            result = "go";
+        }
+    } else if (string_equals(raw_state, "aspect_caution")) {
+        if (string_equals(type, "entry")
+            || string_equals(type, "exit")
+            || string_equals(type, "distant")) {
+
+            result = "caution";
+        }
+    } else if (string_equals(raw_state, "aspect_shunt")) {
+        if (string_equals(type, "exit")
+            || string_equals(type, "shunting")) {
+            
+            result = "shunt";
+        }
     }
+    free(raw_state);
+    
     return result;
 }
 
@@ -823,7 +823,7 @@ char *track_state_get_value(const char *id) {
     if (result != NULL) {
         add_cache_str(result);
     } else {
-        result = new_empty_str();
+        result = static_empty_str;
     }
 
     syslog_server(LOG_DEBUG, "Get track state: %s => %s", id, result);
@@ -938,7 +938,7 @@ char *config_get_point_position(const char *route_id, const char *point_id) {
         }
     }
 
-    result = result != NULL ? result : new_empty_str();
+    result = result != NULL ? result : static_empty_str;
     syslog_server(LOG_DEBUG, "Get route point position: %s.%s => %s", route_id, point_id, result);
     return result;
 }

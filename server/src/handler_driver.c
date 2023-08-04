@@ -707,7 +707,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	
 	t_interlocking_route *route = get_route(route_id);
 	if (route == NULL || !drive_route_params_valid(train_id, route)) {
-		syslog_server(LOG_ERR, "Drive route: Unable to start driving route is invalid");
+		syslog_server(LOG_ERR, "Drive route: Unable to start driving because route is invalid");
 		free(train_id);
 		return false;
 	}
@@ -947,7 +947,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			if (train_id == NULL) {
 				syslog_server(LOG_ERR, 
 				              "Request: Request train route - unable to allocate memory for train_id");
-				return false;
+				return OCS_NOT_IMPLEMENTED;
 			}
 			
 			// Use interlocker to find and grant a route
@@ -1023,7 +1023,7 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 			if (train_id == NULL) {
 				syslog_server(LOG_ERR, 
 				              "Request: Request train route - unable to allocate memory for train_id");
-				return false;
+				return OCS_NOT_IMPLEMENTED;
 			}
 			
 			// Grant the route ID using an internal algorithm

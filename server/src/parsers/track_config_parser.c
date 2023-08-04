@@ -368,7 +368,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             } else if (str_equal(last_scalar, "length")) {
                 cur_segment->length = parse_float(cur_scalar);
                 // no return here intentional, have to free cur_scalar since no ownership is 
-                // transfered here.
+                // transferred here.
             }
             break;
 
