@@ -441,7 +441,7 @@ class Driver {
 						}
 						$(obj).children().each(function() {
 							switch ($(this).attr('lang')) {
-								case "de": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Klicke um den Zug zu fahren</span><span class='normal' ${setVisibility(!isEasyMode)}>Fahre den Zug</span>`);
+								case "de": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Klicke um den Zug zu fahren</span><span class='normal' ${setVisibility(!isEasyMode)}>Zug fahren</span>`);
 								           break;
 								case "en": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Click to drive this train</span><span class='normal' ${setVisibility(!isEasyMode)}>Drive this train</span>`);
 								           break;
