@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2017 University of Bamberg, Software Technologies Research Group
+ * Copyright (C) 2023 University of Bamberg, Software Technologies Research Group
  * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
  * 
  * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
@@ -74,13 +74,6 @@ void build_response_header(onion_response *res) {
 	                               "POST, GET, PUT, DELETE, OPTIONS");
 }
 
-static onion_connection_status handler_root(void *_, onion_request *req,
-                                            onion_response *res) {
-	build_response_header(res);
-	onion_response_printf(res, "<script>window.location.href='/assets/index.html';</script>");
-	return OCS_PROCESSED;
-}
-
 static onion_connection_status handler_assets(void *_, onion_request *req,
                                               onion_response *res) {
 	build_response_header(res);
@@ -152,10 +145,12 @@ int main(int argc, char **argv) {
 	onion_set_hostname(o, argv[3]);
 	onion_set_port(o, argv[4]);
 	onion_url *urls = onion_root_url(o);
-	onion_url_add(urls, "", handler_root);
 	
 	// --- assets ---
 	onion_url_add(urls, "^assets", handler_assets);
+	
+	// --- home page ---
+	onion_url_add_with_data(urls, "", onion_shortcut_internal_redirect, "assets/index.html", NULL);
 
 	// --- admin functions ---
 	onion_url_add(urls, "admin/startup", handler_startup);
