@@ -30,6 +30,8 @@
 
 #include <onion/onion.h>
 
+#include <onion/types.h>
+
 void stop_bidib(void);
 
 onion_connection_status handler_startup(void *_, onion_request *req,
@@ -40,6 +42,12 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 
 onion_connection_status handler_set_track_output(void *_, onion_request *req,
                                                  onion_response *res);
+
+onion_connection_status handler_set_verification_option(void *_, onion_request *req,
+                                                        onion_response *res);
+
+onion_connection_status handler_set_verification_url(void *_, onion_request *req,
+                                                     onion_response *res);
 
 onion_connection_status handler_admin_release_train(void *_, onion_request *req,
                                                     onion_response *res);

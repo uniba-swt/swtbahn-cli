@@ -47,5 +47,8 @@ const char *params_check_mode(const char *data_mode);
 
 bool params_check_is_number(const char *string);
 
+bool params_check_is_bool_string(const char *string);
+
+bool params_check_verification_option(const char *string);
 
 #endif  // PARAM_VERIFICATION_H

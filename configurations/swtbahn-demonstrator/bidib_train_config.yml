@@ -1,7 +1,7 @@
 # Train configuration
 trains:
   - id: cargo
-    dcc-address: 0x0001 # addr high | addr low
+    dcc-address: 0x007F # addr high | addr low
     dcc-speed-steps: 126
     calibration:
       - 5
@@ -18,7 +18,7 @@ trains:
         bit: 4          # a value in range 0..31
         initial: 1
   - id: regional
-    dcc-address: 0x0002
+    dcc-address: 0x0060
     dcc-speed-steps: 126
     calibration:
       - 5
