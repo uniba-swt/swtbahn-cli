@@ -455,8 +455,8 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req,
 				}
 						
 				g_string_append_printf(reversers, "%s%s - state: %s",
-									   i != 0 ? "\n" : "",
-									   reverser_id, state_value_str);
+				                       i != 0 ? "\n" : "",
+				                       reverser_id, state_value_str);
 				bidib_free_reverser_state_query(rev_state_query);
 			}
 			bidib_free_id_list_query(rev_query);
@@ -539,20 +539,23 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 		bool needNewLine = false;
 		GString *granted_routes = g_string_new("");
 		GArray *route_ids = interlocking_table_get_all_route_ids();
-		for (size_t i = 0; i < route_ids->len; i++) {
-			const char *route_id = g_array_index(route_ids, char *, i);
-			t_interlocking_route *route = get_route(route_id);
-			if (route->train != NULL) {
-				g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
-				                       needNewLine ? "\n" : "",
-				                       route->id, route->train);
-				needNewLine = true;
+		if (route_ids != NULL) {
+			for (size_t i = 0; i < route_ids->len; i++) {
+				const char *route_id = g_array_index(route_ids, char *, i);
+				t_interlocking_route *route = get_route(route_id);
+				if (route->train != NULL) {
+					g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
+					                       needNewLine ? "\n" : "", route->id, route->train);
+					needNewLine = true;
+				}
 			}
+			g_array_free(route_ids, true);
 		}
+		
 		if (strcmp(granted_routes->str, "") == 0) {
 			g_string_append_printf(granted_routes, "No granted routes");
 		}
-		g_array_free(route_ids, true);
+		
 		char response[granted_routes->len + 1];
 		strcpy(response, granted_routes->str);
 		g_string_free(granted_routes, true);

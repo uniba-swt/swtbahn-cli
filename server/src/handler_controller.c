@@ -64,7 +64,7 @@ const int set_interlocker(const char *interlocker_name) {
 					&interlocker_instances[i], interlocker_name)
 			) {
 				syslog_server(LOG_ERR, "Interlocker %s could not be used in instance %d",
-							  interlocker_name, i);
+				              interlocker_name, i);
 			} else {
 				selected_interlocker_name = g_string_new(interlocker_name);
 				selected_interlocker_instance = i;
@@ -136,6 +136,13 @@ GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 			if (!is_route_conflict_safe_sectional(conflict_routes[i],route_id)) {
 				const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
 				char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
+				if (conflict_route_id_string == NULL) {
+					syslog_server(LOG_ERR, 
+					              "get_granted_route_conflicts_sectional: Failed to allocate memory"
+					              " for conflict_route_id_string");
+					g_array_free(conflict_route_ids, true);
+					return NULL;
+				}
 				snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
 				         conflict_route->id, conflict_route->train);
 				g_array_append_val(conflict_route_ids, conflict_route_id_string);
@@ -162,6 +169,13 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 		if (conflict_route->train != NULL) {
 			const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
 			char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
+			if (conflict_route_id_string == NULL) {
+				syslog_server(LOG_ERR, 
+				              "get_granted_route_conflicts: Failed to allocate memory"
+				              " for conflict_route_id_string");
+				g_array_free(conflict_route_ids, true);
+				return NULL;
+			}
 			snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
 			         conflict_route->id, conflict_route->train);
 			g_array_append_val(conflict_route_ids, conflict_route_id_string);
@@ -263,6 +277,11 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	// Check whether the route can be granted
 	t_interlocking_route * const route = get_route(route_id);
 	GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
+	if (granted_conflicts == NULL) {
+		syslog_server(LOG_ERR, "grant_route_id: granted_conflicts is NULL");
+		pthread_mutex_unlock(&interlocker_mutex);
+		return "not_grantable";
+	}
 	const bool hasGrantedConflicts = (granted_conflicts->len > 0);
 	g_array_free(granted_conflicts, true);
 	if (route->train != NULL || hasGrantedConflicts) {
@@ -278,6 +297,12 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 
 	// Grant the route to the train and mark it unavailable
 	route->train = strdup(train_id);
+	
+	if (route->train == NULL) {
+		syslog_server(LOG_ERR, "grant_route_id: Unable to allocate memory for route->train");
+		pthread_mutex_unlock(&interlocker_mutex);
+		return "not_grantable";
+	}
 
 	// Set the points to their required positions
 	for (size_t i = 0; i < route->points->len; i++) {
@@ -321,7 +346,7 @@ void release_route(const char *route_id) {
 		free(route->train);
 		route->train = NULL;
 		syslog_server(LOG_NOTICE, "Release route: route %s released", route_id);
-    }
+	}
 
 	pthread_mutex_unlock(&interlocker_mutex);
 }
@@ -340,8 +365,7 @@ const bool reversers_state_update(void) {
 
 		bool state_unknown = true;
 		for (int retry = 0; retry < max_retries && state_unknown; retry++) {
-			t_bidib_reverser_state_query rev_state_query =
-					bidib_get_reverser_state(reverser_id);
+			t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
 			if (rev_state_query.available) {
 				state_unknown = (rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_UNKNOWN);
 			}
@@ -396,7 +420,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s",
-				       data_point, data_state);
+				              data_point, data_state);
 				bidib_flush();
 				return OCS_PROCESSED;
 			}

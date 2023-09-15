@@ -87,7 +87,8 @@ static bool start_bidib(void) {
 	
 	const int succ_clear_dir = clear_engine_dir() + clear_interlocker_dir();
 	if (!succ_clear_dir) {
-		syslog_server(LOG_ERR, "Request: Start - Could not clear the engine and interlocker directories");
+		syslog_server(LOG_ERR, 
+		              "Request: Start - Could not clear the engine and interlocker directories");
 		return false;
 	}
 
@@ -132,8 +133,7 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 	int retval = OCS_NOT_IMPLEMENTED;
 	
 	pthread_mutex_lock(&start_stop_mutex);
-	if (!running && ((onion_request_get_flags(req) &
-	                                           OR_METHODS) == OR_POST)) {
+	if (!running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		// Necessary when restarting the server because libbidib closes syslog on exit
 		openlog("swtbahn", 0, LOG_LOCAL0);	
 
@@ -157,8 +157,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 	int retval = OCS_NOT_IMPLEMENTED;
 	
 	pthread_mutex_lock(&start_stop_mutex);
-	if (running && ((onion_request_get_flags(req) &
-	                                          OR_METHODS) == OR_POST)) {
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		stop_bidib();
 		retval = OCS_PROCESSED;
 	} else {
@@ -188,7 +187,8 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog_server(LOG_ERR, "Request: Set track output - system not running or wrong request type");
+		syslog_server(LOG_ERR, 
+		              "Request: Set track output - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -237,7 +237,10 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {		
 		const char *data_train = onion_request_get_post(req, "train");
 		const int grab_id = train_get_grab_id(data_train);
+		
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+			pthread_mutex_unlock(&grabbed_trains_mutex);
 			syslog_server(LOG_ERR, "Request: Admin release train - invalid train id " 
 			              "or train not grabbed (%s)",
 			              data_train);
@@ -245,27 +248,39 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		}
 		
 		// Ensure that the train has stopped moving
-		pthread_mutex_lock(&grabbed_trains_mutex);	
 		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
+		char *train_id = strdup(grabbed_trains[grab_id].name->str);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		t_bidib_train_state_query train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+		if (train_id == NULL) {
+			syslog_server(LOG_ERR, 
+			              "Request: Admin release train - failed to allocate memory for train_id");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		
+		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
-			train_state_query = bidib_get_train_state(grabbed_trains[grab_id].name->str);
+			///TODO: Change to TRAIN_DRIVE_TIME_STEP like in handler_driver
+			usleep(10000); // 0.01 s (TRAIN_DRIVE_TIME_STEP)
+			train_state_query = bidib_get_train_state(train_id);
 		}
 		bidib_free_train_state_query(train_state_query);
 		
+		
 		if (!release_train(grab_id)) {
-			syslog_server(LOG_ERR, "Request: Admin release train - invalid grab id");
+			syslog_server(LOG_ERR, "Request: Admin release train %s - invalid grab id", train_id);
+			free(train_id);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Admin release train");
+			syslog_server(LOG_NOTICE, "Request: Admin release train %s", train_id);
+			free(train_id);
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog_server(LOG_ERR, "Request: Admin release train - system not running or wrong request type");
+		syslog_server(LOG_ERR, 
+		              "Request: Admin release train - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -286,20 +301,21 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_set_train_speed(data_train, speed, 
-									  data_track_output)) {
-				syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s: bad parameter values",
-							  data_train);
+			if (bidib_set_train_speed(data_train, speed, data_track_output)) {
+				syslog_server(LOG_ERR, 
+				              "Request: Admin set train speed - train: %s: bad parameter values",
+				              data_train);
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d",
-							  data_train, speed);
+				              data_train, speed);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
 		}
 	} else {
-		syslog_server(LOG_ERR, "Request: Admin set train speed - system not running or wrong request type");
+		syslog_server(LOG_ERR, 
+		              "Request: Admin set train speed - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }

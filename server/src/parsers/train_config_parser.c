@@ -53,26 +53,35 @@ void free_train_id_key(void *pointer) {
 
 void free_train(void *pointer) {
     t_config_train *train = (t_config_train *) pointer;
-    log_debug("free train: %s", train->id);
+    if (train == NULL) {
+        return;
+    }
+    if (train->id != NULL) {
+        log_debug("free train: %s", train->id);
+        free(train->id);
+        train->id = NULL;
+    }
+    if (train->type != NULL) {
+        log_debug("\tfree train type");
+        free(train->type);
+        train->type = NULL;
+    }
     if (train->peripherals != NULL) {
-        log_debug("\tfree peripherals");
+        log_debug("\tfree train peripherals");
         for (int i = 0; i < train->peripherals->len; ++i) {
-            log_debug("\t\t%s", g_array_index(train->peripherals, char *, i));
+            free(g_array_index(train->peripherals, char *, i));
         }
         g_array_free(train->peripherals, true);
     }
     if (train->calibration != NULL) {
-        log_debug("\tfree calibration");
-        for (int i = 0; i < train->calibration->len; ++i) {
-            log_debug("\t\t%d", g_array_index(train->calibration, int, i));
-        }
+        log_debug("\tfree train calibration");
         g_array_free(train->calibration, true);
     }
     free(train);
 }
 
 void nullify_train_config_table(void) {
-	tb_trains = NULL;
+    tb_trains = NULL;
 }
 
 void train_yaml_sequence_start(char *scalar) {	
@@ -83,15 +92,11 @@ void train_yaml_sequence_start(char *scalar) {
             tb_trains = g_hash_table_new_full(g_str_hash, g_str_equal, free_train_id_key, free_train);
         }
         return;
-    }
-
-    if (train_mapping == TRAIN && str_equal(scalar, "peripherals")) {
+    } else if (train_mapping == TRAIN && str_equal(scalar, "peripherals")) {
         train_sequence = PERIPHERALS;
         cur_train->peripherals = g_array_sized_new(false, false, sizeof(char *), 4);
         return;
-    }
-
-    if (train_mapping == TRAIN && str_equal(scalar, "calibration")) {
+    } else if (train_mapping == TRAIN && str_equal(scalar, "calibration")) {
         train_sequence = CALIBRATIONS;
         cur_train->calibration = g_array_sized_new(false, false, sizeof(int), 10);
         return;
@@ -115,6 +120,10 @@ void train_yaml_mapping_start(char *scalar) {
         case TRAINS:
             train_mapping = TRAIN;
             cur_train = malloc(sizeof(t_config_train));
+            if (cur_train == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_train");
+                exit(1);
+            }
             cur_train->id = NULL;
             cur_train->type = NULL;
             cur_train->peripherals = NULL;
@@ -155,6 +164,8 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
     if (train_sequence == CALIBRATIONS) {
         int cal = (int)strtol(cur_scalar, NULL, 10);
         g_array_append_val(cur_train->calibration, cal);
+        free(cur_scalar);
+        cur_scalar = NULL;
         return;
     }
 
@@ -163,19 +174,11 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_train->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "length")) {
+            } else if (str_equal(last_scalar, "length")) {
                 cur_train->length = parse_float(cur_scalar);
-                return;
-            }
-
-            if (str_equal(last_scalar, "weight")) {
+            } else if (str_equal(last_scalar, "weight")) {
                 cur_train->weight = parse_float(cur_scalar);
-                return;
-            }
-
-            if (str_equal(last_scalar, "type")) {
+            } else if (str_equal(last_scalar, "type")) {
                 cur_train->type = cur_scalar;
                 return;
             }
@@ -183,11 +186,14 @@ void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case PERIPHERAL:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_train->peripherals, cur_scalar);
+                return;
             }
             break;
         default:
             break;
     }
+    free(cur_scalar);
+    cur_scalar = NULL;
 }
 
 void parse_train_yaml(yaml_parser_t *parser, t_config_data *data) {
