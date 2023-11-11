@@ -265,32 +265,32 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	} while (!interlocker_instance_io.output_terminated);
 
 	// Return the result
-	GString *g_route_id = g_string_new(interlocker_instance_io.output_route_id);
+	GString *g_route_id_copy = g_string_new(interlocker_instance_io.output_route_id);
 	bahn_data_util_free_cached_track_state();
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	if (g_route_id->str != NULL && params_check_is_number(g_route_id->str)) {
+	if (g_route_id_copy->str != NULL && params_check_is_number(g_route_id_copy->str)) {
 		syslog_server(LOG_NOTICE, "Grant route - train: %s from: %s to: %s - "
 		              "route %s has been granted", 
-		              train_id, source_id, destination_id, g_route_id->str);
-	} else if (strcmp(g_route_id->str, "no_routes") == 0) {
+		              train_id, source_id, destination_id, g_route_id_copy->str);
+	} else if (strcmp(g_route_id_copy->str, "no_routes") == 0) {
 		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
 		              "no route possible",
 		              train_id, source_id, destination_id);
-	} else if (strcmp(g_route_id->str, "not_grantable") == 0) {
+	} else if (strcmp(g_route_id_copy->str, "not_grantable") == 0) {
 		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
 		              "conflicting routes in use",
 		              train_id, source_id, destination_id);
-	} else if (strcmp(g_route_id->str, "not_clear") == 0) {
+	} else if (strcmp(g_route_id_copy->str, "not_clear") == 0) {
 		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
 		              "route is blocked or source signal is not in aspect stop",
 		              train_id, source_id, destination_id);
 	} else {
 		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
 		              "route could not be granted for other reason (message: %s)",
-		              train_id, source_id, destination_id, g_route_id->str);
+		              train_id, source_id, destination_id, g_route_id_copy->str);
 	}
-	return g_route_id;
+	return g_route_id_copy;
 }
 
 const char *grant_route_id(const char *train_id, const char *route_id) {
@@ -366,6 +366,8 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	return "granted";
 }
 
+///TODO: This should not unconditionally set all route signals to stop, because that would
+//       sectional route release from working correctly!
 void release_route(const char *route_id) {
 	if (route_id == NULL) {
 		syslog_server(LOG_ERR, "Release route - invalid parameter, route_id is null");
