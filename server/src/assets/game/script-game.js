@@ -1,6 +1,8 @@
 var driver = null;           // Train driver logic.
+var drivingTimer = null;     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
+var isEasyMode = false;      // User interface verbosity.
 
 /**************************************************
  * Destination related information and UI elements
@@ -143,17 +145,19 @@ const speedButtons = [
 ];
 
 function disableSpeedButtons() {
-	$('#speedForm').hide();
+	$('#drivingForm').hide();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', true);
 	});
+	drivingTimer.stop();
 }
 
 function enableSpeedButtons(destination) {
-	$('#speedForm').show();
+	$('#drivingForm').show();
 	speedButtons.forEach(speed => {
 		$(`#${speed}`).prop('disabled', false);
 	});
+	drivingTimer.start();
 }
 
 function clearChosenDestination() {
@@ -223,8 +227,8 @@ const modalMessages = {
 			en: '👎 Driving Infringement!'
 		},
 		body: {
-			de: 'Du hast deinen Zug nicht vor dem Zielsignal gestoppt! <br/><br/> Glücklicherweise konnten wir deinen Zug stoppen, bevor dieser mit einem anderen kollidieren oder die Schienen beschädigen konnte.',
-			en: 'You did not stop your train before the destination signal! <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.'
+			de: 'Du hast deinen Zug nicht vor dem Zielsignal gestoppt! <br/><br/> <svg class="flag" viewBox="0 0 100 100"><use href="#flagDef" class="${destination}"></use></svg> <br/><br/> Glücklicherweise konnten wir deinen Zug stoppen, bevor dieser mit einem anderen kollidieren oder die Schienen beschädigen konnte.',
+			en: 'You did not stop your train before the destination signal! <br/><br/> <svg class="flag" viewBox="0 0 100 100"><use href="#flagDef" class="${destination}"></use></svg> <br/><br/> Luckily, we were able to stop your train before it crashed into another train or damaged the tracks.'
 		},
 		button: {
 			de: 'Verstanden',
@@ -316,6 +320,7 @@ class Driver {
 	updatePossibleDestinationsInterval = null;
 	destinationReachedInterval = null;
 
+
 	constructor(trackOutput, trainEngine, trainId) {
 		this.sessionId = 0;
 		this.trackOutput = trackOutput;
@@ -331,6 +336,8 @@ class Driver {
 		this.trainAvailabilityInterval = null;
 		this.updatePossibleDestinationsInterval = null;
 		this.destinationReachedInterval = null;
+
+		drivingTimer = new Timer();
 	}
 
 	reset() {
@@ -409,6 +416,7 @@ class Driver {
 	// Update the styling of the train selection buttons based on the train availabilities
 	updateTrainAvailability() {
 		$('.selectTrainButton').prop("disabled", true);
+		
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
 			console.log("Checking available trains ... ");
@@ -418,12 +426,45 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => $(obj).prop("disabled", false),
-					() => $(obj).prop("disabled", true)
+					() => { 
+						$(obj).prop("disabled", false);
+						$(obj).removeClass("btn-danger");
+						$(obj).addClass("btn-primary");
+						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
+						
+						function setVisibility(isShow) {
+							if (isShow) {
+								return "";
+							} else {
+								return "style='display: none;'";
+							}
+						}
+						$(obj).children().each(function() {
+							switch ($(this).attr('lang')) {
+								case "de": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Klicke um den Zug zu fahren</span><span class='normal' ${setVisibility(!isEasyMode)}>Zug fahren</span>`);
+								           break;
+								case "en": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Click to drive this train</span><span class='normal' ${setVisibility(!isEasyMode)}>Drive this train</span>`);
+								           break;
+							}
+						});
+					},
+					() => {
+						$(obj).prop("disabled", true);
+						$(obj).removeClass("btn-primary");
+						$(obj).addClass("btn-danger");
+						$($(obj).parent(".card-body").parent(".card")).addClass("unavailableTrain");
+						$(obj).children().each(function() {
+							switch($(this).attr('lang')){
+								case "de": $(this).text("Nicht verfügbar"); break;
+								case "en": $(this).text("Unavailable"); break;
+							}
+						});
+					}
 				);
 			})
 		}, trainAvailabilityTimeout);
 	}
+
 
 	// Server request to grab a train
 	grabTrainPromise() {
@@ -614,7 +655,13 @@ class Driver {
 					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
 				} else {
 					this.routeDetails = null;
-					setModalDanger(modalMessages.drivingInfringement, 'STOP, STOP, STOP');
+					
+					// Copy the driving infringement message and fill in the destination flag
+					const destinationClass = $('#destination').attr('class');
+					let drivingInfringement = JSON.parse(JSON.stringify(modalMessages.drivingInfringement));
+					drivingInfringement['body']['de'] = drivingInfringement['body']['de'].replace('${destination}', destinationClass);
+					drivingInfringement['body']['en'] = drivingInfringement['body']['en'].replace('${destination}', destinationClass);
+					setModalDanger(drivingInfringement, 'STOP, STOP, STOP');
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
@@ -764,15 +811,27 @@ function initialise() {
 	//-----------------------------------------------------
 
 	// Set the initial language.
-	$('span:lang(en)').hide();
-	$('span:lang(de)').show();
 	language = 'de';
+	$('span:lang(de):not(span span)').show();
+	$('span:lang(en):not(span span)').hide();
 	
 	// Handle language selection.
 	$('#changeLang').click(function () {
-		$('span:lang(en)').toggle();
-		$('span:lang(de)').toggle();
 		language = (language == 'en') ? 'de' : 'en';
+		$('span:lang(de):not(span span)').toggle();
+		$('span:lang(en):not(span span)').toggle();
+	});
+
+	// Set the text verbosity.
+	isEasyMode = false;
+	$('.normal').show();
+	$('.easy').hide();
+	
+	// Handle the verbosity selection.
+	$('#changeTips').click(function (event) {
+		isEasyMode = !isEasyMode
+		$('.normal').toggle();
+		$('.easy').toggle();
 	});
 
 	// Hide the train driving buttons (destination selections).

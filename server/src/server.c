@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2017 University of Bamberg, Software Technologies Research Group
+ * Copyright (C) 2023 University of Bamberg, Software Technologies Research Group
  * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
  * 
  * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
@@ -44,12 +44,14 @@
 #include "handler_driver.h"
 #include "handler_controller.h"
 #include "handler_upload.h"
+#include "websocket_uploader/engine_uploader.h"
 
 #define INPUT_MAX_LEN 256
 
 
 volatile time_t session_id = 0;
 volatile bool running = false;
+volatile bool verification_enabled = true;
 char serial_device[INPUT_MAX_LEN];
 char config_directory[INPUT_MAX_LEN];
 
@@ -70,13 +72,6 @@ void build_response_header(onion_response *res) {
 	                               "Authorization, Origin, X-Requested-With, Content-Type, Accept");
 	onion_response_set_header(res, "Access-Control-Allow-Methods", 
 	                               "POST, GET, PUT, DELETE, OPTIONS");
-}
-
-static onion_connection_status handler_root(void *_, onion_request *req,
-                                            onion_response *res) {
-	build_response_header(res);
-	onion_response_printf(res, "SWTbahn server");
-	return OCS_PROCESSED;
 }
 
 static onion_connection_status handler_assets(void *_, onion_request *req,
@@ -105,6 +100,7 @@ static onion_connection_status handler_assets(void *_, onion_request *req,
 	
 	const char *filename = onion_request_get_path(req);
 	GString *full_filename = g_string_new(global_path);
+	onion_low_free(global_path);
 	g_string_append(full_filename, filename);
 
 	onion_connection_status status = 
@@ -145,20 +141,25 @@ int main(int argc, char **argv) {
 
 	openlog("swtbahn", 0, LOG_LOCAL0);
 	syslog_server(LOG_NOTICE, "SWTbahn server started");
-
+	///TODO: Consider making configurable a max_thread count to limit 
+	// overloading on weaker setups. Default by onion is 16
 	onion *o = onion_new(O_THREADED);
 	onion_set_hostname(o, argv[3]);
 	onion_set_port(o, argv[4]);
 	onion_url *urls = onion_root_url(o);
-	onion_url_add(urls, "", handler_root);
 	
 	// --- assets ---
 	onion_url_add(urls, "^assets", handler_assets);
+	
+	// --- home page ---
+	onion_url_add_with_data(urls, "", onion_shortcut_internal_redirect, "assets/index.html", NULL);
 
 	// --- admin functions ---
 	onion_url_add(urls, "admin/startup", handler_startup);
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
 	onion_url_add(urls, "admin/set-track-output", handler_set_track_output);
+	onion_url_add(urls, "admin/set-verification-option", handler_set_verification_option);
+	onion_url_add(urls, "admin/set-verification-url", handler_set_verification_url);
 	onion_url_add(urls, "admin/release-train", handler_admin_release_train);
 	onion_url_add(urls, "admin/set-dcc-train-speed", handler_admin_set_dcc_train_speed);
 	
@@ -206,14 +207,23 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
 	onion_url_add(urls, "monitor/reversers", handler_get_reversers);
 	onion_url_add(urls, "monitor/peripherals", handler_get_peripherals);
+	onion_url_add(urls, "monitor/verification-option", handler_get_verification_option);
+	onion_url_add(urls, "monitor/verification-url", handler_get_verification_url);
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);
+	onion_url_add(urls, "monitor/debug", handler_get_debug_info);
+	onion_url_add(urls, "monitor/debug_extra", handler_get_debug_info_extra);
+	
+	load_cached_verifier_url();
 
 	onion_listen(o);
 	onion_free(o);
 	if (running) {
 		stop_bidib();
 	}
+	cache_verifier_url();
+	free_verifier_url();
+	
 	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
 	closelog();
 

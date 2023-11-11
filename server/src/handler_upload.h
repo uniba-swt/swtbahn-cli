@@ -22,17 +22,20 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Ben-Oliver Hosak <https://github.com/hosakb>
+ * - Bernhard Luedtke <https://github.com/bluedtke>
  * - Eugene Yip <https://github.com/eyip002>
  *
  */
 
-#ifndef SWTSERVER_HANDLER_UPLOAD_H
-#define SWTSERVER_HANDLER_UPLOAD_H
+#ifndef HANDLER_UPLOAD_H
+#define HANDLER_UPLOAD_H
 
+#include <onion/onion.h>
 
 bool clear_engine_dir(void);
 
 bool clear_interlocker_dir(void);
+
 
 onion_connection_status handler_upload_engine(void *_, onion_request *req,
                                               onion_response *res);
@@ -53,5 +56,5 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
                                                    onion_response *res);
 
 
-#endif	// SWTSERVER_HANDLER_UPLOAD_H
+#endif  // HANDLER_UPLOAD_H
 

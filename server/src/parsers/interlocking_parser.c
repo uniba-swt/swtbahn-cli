@@ -27,7 +27,8 @@
 
 #include "interlocking_parser.h"
 #include "../interlocking.h"
-#import "../server.h"
+#include "../server.h"
+#include "parser_util.h"
 
 #include <stdio.h>
 #include <yaml.h>
@@ -121,38 +122,86 @@ void free_route_key(void *pointer) {
 
 void free_route(void *item) {
     t_interlocking_route *route = (t_interlocking_route *) item;
-    free(route->id);
-    free(route->source);
-    free(route->destination);
-    free(route->orientation);
+    if (route == NULL) {
+        return;
+    }
+    if (route->id != NULL) {
+        log_debug("free route: %s", route->id);
+        free(route->id);
+        route->id = NULL;
+    }
+    if (route->source != NULL) {
+        log_debug("\tfree route source");
+        free(route->source);
+        route->source = NULL;
+    }
+    if (route->destination != NULL) {
+        log_debug("\tfree route destination");
+        free(route->destination);
+        route->destination = NULL;
+    }
+    if (route->orientation != NULL) {
+        log_debug("\tfree route orientation");
+        free(route->orientation);
+        route->orientation = NULL;
+    }
     if (route->train != NULL) {
+        log_debug("\tfree route train");
         free(route->train);
+        route->train = NULL;
     }
 
     if (route->path != NULL) {
+        log_debug("\tfree route path");
+        for (int i = 0; i < route->path->len; ++i) {
+            free(g_array_index(route->path, char *, i));
+        }
         g_array_free(route->path, true);
     }
 
     if (route->sections != NULL) {
+        log_debug("\tfree route sections");
+        for (int i = 0; i < route->sections->len; ++i) {
+            free(g_array_index(route->sections, char *, i));
+        }
         g_array_free(route->sections, true);
     }
 
     if (route->points != NULL) {
+        log_debug("\tfree route points");
+        //differently allocated than other g_arrays.
         g_array_free(route->points, true);
     }
 
     if (route->signals != NULL) {
+        log_debug("\tfree route signals");
+        for (int i = 0; i < route->signals->len; ++i) {
+            free(g_array_index(route->signals, char *, i));
+        }
         g_array_free(route->signals, true);
     }
 
     if (route->conflicts != NULL) {
+        log_debug("\tfree route conflicts");
+        for (int i = 0; i < route->conflicts->len; ++i) {
+            free(g_array_index(route->conflicts, char *, i));
+        }
         g_array_free(route->conflicts, true);
     }
+    free(route);
 }
 
 void free_interlocking_point(void *item) {
     t_interlocking_point *point = (t_interlocking_point *) item;
-    free(point->id);
+    if (point == NULL) {
+        return;
+    }
+    if (point->id != NULL) {
+        log_debug("free interlocking point: %s", point->id);
+        free(point->id);
+        point->id = NULL;
+    }
+    // free(point) is not necessary as it is not malloced for the hashtable
 }
 
 GHashTable *parse(yaml_parser_t *parser) {
@@ -167,7 +216,6 @@ GHashTable *parse(yaml_parser_t *parser) {
     bool error = false;
     char *cur_scalar = NULL;
     char *last_scalar = NULL;
-
     do {
         if (!yaml_parser_parse(parser, &event)) {
             syslog_server(LOG_ERR, "Parser error %d\n", (*parser).error);
@@ -214,29 +262,17 @@ GHashTable *parse(yaml_parser_t *parser) {
                     if (is_str_equal(last_scalar, "path")) {
                         route->path = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_PATH;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "sections")) {
+                    } else if (is_str_equal(last_scalar, "sections")) {
                         route->sections = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_SECTIONS;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "points")) {
+                    } else if (is_str_equal(last_scalar, "points")) {
                         route->points = g_array_sized_new(FALSE, TRUE, sizeof(t_interlocking_point), 8);
                         g_array_set_clear_func(route->points, free_interlocking_point);
                         cur_sequence = SEQUENCE_POINTS;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "signals")) {
+                    } else if (is_str_equal(last_scalar, "signals")) {
                         route->signals = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_SIGNALS;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "conflicts")) {
+                    } else if (is_str_equal(last_scalar, "conflicts")) {
                         route->conflicts = g_array_sized_new(FALSE, TRUE, sizeof(char *), 8);
                         cur_sequence = SEQUENCE_CONFLICTS;
                     }
@@ -252,6 +288,10 @@ GHashTable *parse(yaml_parser_t *parser) {
                 if (cur_sequence == SEQUENCE_ROUTES) {
                     cur_mapping = MAPPING_ROUTE;
                     route = malloc(sizeof(t_interlocking_route));
+                    if (route == NULL) {
+                        log_debug("interlocking parser parse: failed to allocate memory for route");
+                        exit(1);
+                    }
                     route->id = NULL;
                     route->source = NULL;
                     route->destination = NULL;
@@ -269,29 +309,16 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // path -> create segment
                 if (cur_sequence == SEQUENCE_PATH) {
                     cur_mapping = MAPPING_SEGMENT;
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_SECTIONS) {
+                } else if (cur_sequence == SEQUENCE_SECTIONS) {
                     cur_mapping = MAPPING_BLOCK;
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_POINTS) {
+                } else if (cur_sequence == SEQUENCE_POINTS) {
                     cur_mapping = MAPPING_POINT;
                     g_array_append_val(route->points, (t_interlocking_point){});
                     point = &g_array_index(route->points, t_interlocking_point, route->points->len - 1);
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_SIGNALS) {
+                } else if (cur_sequence == SEQUENCE_SIGNALS) {
                     cur_mapping = MAPPING_SIGNAL;
-                    break;
-                }
-
-                if (cur_sequence == SEQUENCE_CONFLICTS) {
+                } else if (cur_sequence == SEQUENCE_CONFLICTS) {
                     cur_mapping = MAPPING_CONFLICT;
-                    break;
                 }
                 break;
             case YAML_MAPPING_END_EVENT:
@@ -309,7 +336,7 @@ GHashTable *parse(yaml_parser_t *parser) {
                 error = true;
                 break;
             case YAML_SCALAR_EVENT:
-                cur_scalar = (char *)event.data.scalar.value;
+                cur_scalar = strdup((char *)event.data.scalar.value);
 
                 if (last_scalar == NULL) {
                     break;
@@ -318,81 +345,49 @@ GHashTable *parse(yaml_parser_t *parser) {
                 // route
                 if (cur_mapping == MAPPING_ROUTE) {
                     if (is_str_equal(last_scalar, "id")) {
-                        route->id = cur_scalar;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "source")) {
-                        route->source = cur_scalar;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "destination")) {
-                        route->destination = cur_scalar;
-                        break;
-                    }
-                    
-                    if (is_str_equal(last_scalar, "orientation")) {
-                        route->orientation = cur_scalar;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "length")) {
+                        route->id = strdup(cur_scalar);
+                    } else if (is_str_equal(last_scalar, "source")) {
+                        route->source = strdup(cur_scalar);
+                    } else if (is_str_equal(last_scalar, "destination")) {
+                        route->destination = strdup(cur_scalar);
+                    } else if (is_str_equal(last_scalar, "orientation")) {
+                        route->orientation = strdup(cur_scalar);
+                    } else if (is_str_equal(last_scalar, "length")) {
                         route->length = strtof(cur_scalar, NULL);
-                        break;
                     }
-
-                    break;
-                }
-
-                // segment
-                if (cur_mapping == MAPPING_SEGMENT) {
+                } else if (cur_mapping == MAPPING_SEGMENT) {
+                    // segment
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->path, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->path, tmp_scalar);
                     }
-                    break;
-                }
-
-                // block
-                if (cur_mapping == MAPPING_BLOCK) {
+                } else if (cur_mapping == MAPPING_BLOCK) {
+                    // block
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->sections, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->sections, tmp_scalar);
                     }
-                    break;
-                }
-
-                // point
-                if (cur_mapping == MAPPING_POINT) {
+                } else if (cur_mapping == MAPPING_POINT) {
+                    // point
                     if (is_str_equal(last_scalar, "id")) {
-                        point->id = cur_scalar;
-                        break;
-                    }
-
-                    if (is_str_equal(last_scalar, "position")) {
+                        point->id = strdup(cur_scalar);
+                    } else if (is_str_equal(last_scalar, "position")) {
                         point->position = is_str_equal(cur_scalar, "reverse")
                                           ? REVERSE
                                           : NORMAL;
                     }
-
-                    break;
-                }
-
-                // signal
-                if (cur_mapping == MAPPING_SIGNAL) {
+                } else if (cur_mapping == MAPPING_SIGNAL) {
+                    // signal
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->signals, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->signals, tmp_scalar);
                     }
-
-                    break;
-                }
-
-                // conflict
-                if (cur_mapping == MAPPING_CONFLICT) {
+                } else if (cur_mapping == MAPPING_CONFLICT) {
+                    // conflict
                     if (is_str_equal(last_scalar, "id")) {
-                        g_array_append_val(route->conflicts, cur_scalar);
+                        char *tmp_scalar = strdup(cur_scalar);
+                        g_array_append_val(route->conflicts, tmp_scalar);
                     }
-
-                    break;
                 }
 
                 break;
@@ -400,10 +395,31 @@ GHashTable *parse(yaml_parser_t *parser) {
                 error = true;
                 break;
         }
-
-        last_scalar = cur_scalar;
+        
+        yaml_event_delete(&event);
+        
+        if (last_scalar != NULL && last_scalar != cur_scalar) {
+            free(last_scalar);
+            last_scalar = NULL;
+        }
+        if (cur_scalar != NULL) {
+            last_scalar = strdup(cur_scalar);
+            free(cur_scalar);
+            cur_scalar = NULL;
+        } else {
+            last_scalar = cur_scalar;
+        }
     } while (!error);
-
+    
+    if (cur_scalar != NULL) {
+        free(cur_scalar);
+        cur_scalar = NULL;
+    }
+    if (last_scalar != NULL) {
+        free(last_scalar);
+        last_scalar = NULL;
+    }
+    
     return routes;
 }
 

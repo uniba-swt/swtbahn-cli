@@ -65,7 +65,7 @@ def create_config(hostname, port, default_output):
     click.echo("Connection test:")
     try:
         response = requests.get(server)
-        if (response.text != "SWTbahn server"):
+        if (response.status_code != requests.codes.ok):
             click.echo("No SWTbahn server on " + server, err=True)
         else:
             click.echo("Running SWTbahn server found on " + server)
@@ -128,7 +128,7 @@ def admin():
     pass
 
 
-@click.command(help="Start the SWTbahn up")
+@click.command(help="Start up the SWTbahn")
 def startup():
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -144,7 +144,7 @@ def startup():
             click.echo(e, err=True)
 
 
-@click.command(help="Shut the SWTbahn down")
+@click.command(help="Shut down the SWTbahn")
 def shutdown():
     if (parse_config()):
         click.echo("Corrupt config, please run the config command", err=True)
@@ -161,7 +161,7 @@ def shutdown():
             click.echo(e, err=True)
 
 
-@click.command(help="Set the power state for a track output")
+@click.command(help="Set the power state of a track output")
 @click.argument('state', type=click.Choice(['off', 'stop', 'soft_stop', 'go']))
 def set_track_output(state):
     if (parse_config()):
@@ -184,6 +184,39 @@ def set_track_output(state):
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+@click.command(help="Set whether plugins will be verified upon upload")
+@click.argument('verification-option', type=click.Choice(['true', 'false']))
+def set_verification_option(verification_option):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/admin/set-verification-option",
+                                     data = {'verification-option': verification_option})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Verification option set to " + verification_option + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+@click.command(help="Set the url of the verification server to use for verification on upload")
+@click.argument('verification-url', type=click.STRING)
+def set_verification_url(verification_url):
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/admin/set-verification-url",
+                                     data = {'verification-url': verification_url})
+            if (response.status_code == requests.codes.ok):
+                click.echo("Verification url set to " + verification_url + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
 
 @click.command(name="release", help="Release a train")
 @click.argument('train')
@@ -560,7 +593,7 @@ def direction(train, route_id):
             click.echo(e, err=True)
 
 
-@click.command(help="Drive along a granted route")
+@click.command(help="Drive along a granted route in automatic or manual mode")
 @click.argument('mode')
 @click.argument('route-id')
 def drive_route(mode, route_id):
@@ -953,6 +986,35 @@ def get_peripherals():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+@click.command(help="Get whether plugins will be verified upon upload")
+def get_verification_option():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.get(server + "/monitor/verification-option")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+@click.command(help="Get the url to the verification server")
+def get_verification_url():
+    if(parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.get(server + "/monitor/verification-url")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text + "\n")
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
 
 @click.command(help="Get a list of granted routes")
 def get_granted_routes():
@@ -988,6 +1050,37 @@ def get_route(route_id):
             click.echo(e, err=True)
 
 
+@click.command(help="Get debug information")
+def get_debug_info():
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/debug")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+@click.command(help="Get extra debug information")
+def get_debug_info_extra():
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/debug_extra")
+            if (response.status_code == requests.codes.ok):
+                click.echo(response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
 # --- assign commands to groups ---
 
 cli.add_command(config)
@@ -999,6 +1092,8 @@ cli.add_command(monitor)
 admin.add_command(startup)
 admin.add_command(shutdown)
 admin.add_command(set_track_output)
+admin.add_command(set_verification_option)
+admin.add_command(set_verification_url)
 admin.add_command(admin_release)
 admin.add_command(admin_set_dcc_speed)
 
@@ -1038,8 +1133,12 @@ monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
 monitor.add_command(get_reversers)
 monitor.add_command(get_peripherals)
+monitor.add_command(get_verification_option)
+monitor.add_command(get_verification_url)
 monitor.add_command(get_granted_routes)
 monitor.add_command(get_route)
+monitor.add_command(get_debug_info)
+monitor.add_command(get_debug_info_extra)
 
 if __name__ == '__main__':
     cli()

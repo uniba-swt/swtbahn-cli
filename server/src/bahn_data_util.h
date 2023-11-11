@@ -76,5 +76,12 @@ char *config_get_point_position(const char *route_id, const char *point_id);
 
 char *config_get_block_id_of_segment(const char *seg_id);
 
+void log_bool(bool value);
 
-#endif // BAHN_DATA_UTIL_H
+void log_int(int value);
+
+void log_float(float value);
+
+void log_string(const char *value);
+
+#endif  // BAHN_DATA_UTIL_H

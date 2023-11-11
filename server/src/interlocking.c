@@ -61,10 +61,17 @@ void create_interlocking_hashtable(void) {
         // Build key, example: signal3signal6
         size_t len = strlen(route->source) + strlen(route->destination) + 1;
         char *route_string = malloc(sizeof(char) * len);
+        if (route_string == NULL) {
+            syslog_server(LOG_ERR, 
+                          "Interlocking create interlocking hash table: "
+                          "unable to allocate memory for route_string");
+            return;
+        }
         snprintf(route_string, len, "%s%s", route->source, route->destination);
 
         if (g_hash_table_contains(route_string_to_ids_hashtable, route_string)) {
             void *route_ids_ptr = g_hash_table_lookup(route_string_to_ids_hashtable, route_string);
+            free(route_string);
             GArray *route_ids = (GArray *) route_ids_ptr;
             g_array_append_val(route_ids, route->id);
         } else {
@@ -105,20 +112,25 @@ void free_interlocking_table(void) {
 }
 
 GArray *interlocking_table_get_all_route_ids(void) {
-	GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-	
+    GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+
     GHashTableIter iter;
     gpointer key, value;
     g_hash_table_iter_init (&iter, route_hash_table);
     while (g_hash_table_iter_next (&iter, &key, &value)) {
         t_interlocking_route *route = (t_interlocking_route *) value;
-        const size_t route_id_string_len = strlen(route->id) + 1;
-        char *route_id_string = malloc(sizeof(char) * route_id_string_len);
-        strncpy(route_id_string, route->id, route_id_string_len);
+        char *route_id_string = strdup(route->id);
+        if (route_id_string == NULL) {
+            syslog_server(LOG_ERR, 
+                          "Interlocking table get all route ids: "
+                          "unable to allocate memory for route_id_string");
+            g_array_free(route_ids, true);
+            return NULL;
+        }
         g_array_append_val(route_ids, route_id_string);
-	}
-	
-	return route_ids;
+    }
+
+    return route_ids;
 }
 
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id) {

@@ -8,6 +8,8 @@
 #ifndef TICK_DATA_H
 #define TICK_DATA_H
 
+#include <stdbool.h>
+
 typedef struct {
   int requested_speed;      // Input
   char requested_forwards;  // Input
@@ -36,4 +38,4 @@ typedef struct {
   bool terminated;          // Output (internal variable)
 } TickData_drive_route;
 
-#endif	// TICK_DATA_H
+#endif  // TICK_DATA_H

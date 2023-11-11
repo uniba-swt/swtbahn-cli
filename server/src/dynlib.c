@@ -46,8 +46,8 @@ static const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 static const char sccharts_compiler_c_command[] = "java -jar \"$KIELER_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.priority";
 static const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
-static const char bahndsl_compiler_command[] = "bahnc -o %s/bahnc -m library %s/%s.bahn";
-static const char bahndsl_move_command[] = "mv %s/bahnc/libinterlocker_%s.so %s/libinterlocker_%s.so";
+static const char bahndsl_compiler_command[] = "\"$BAHNDSL_PATH\"/bahnc -o %s/bahnc -m library %s/%s.bahn";
+static const char bahndsl_move_command[] = "mv %s/bahnc/libinterlocker_%s.%s %s/libinterlocker_%s.%s";
 
 dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);
 dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library);
@@ -99,10 +99,17 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 		return DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;
 	}
 	
-	sprintf(command, bahndsl_move_command, output_dir, filename, output_dir, filename);
+	// Try and move the shared library with *.so extension out of the bahnc folder
+	sprintf(command, bahndsl_move_command, output_dir, filename, "so", output_dir, filename, "so");
 	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
-		return DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;
+		// Try and move the shared library with *.dylib extension out of the bahnc folder
+		sprintf(command, bahndsl_move_command, output_dir, filename, "dylib", output_dir, filename, "dylib");
+		ret = system(command);
+		
+		if (ret == -1 || WEXITSTATUS(ret) != 0) {
+			return DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;
+		}
 	}
 	
 	return DYNLIB_COMPILE_SUCCESS;

@@ -129,20 +129,39 @@ void parse_yaml_content(yaml_parser_t *parser,
                 error = true;
                 break;
             case YAML_SCALAR_EVENT:
-                cur_scalar = (char*)event.data.scalar.value;
+                cur_scalar = strdup((char*)event.data.scalar.value);
                 if (last_scalar == NULL) {
                     break;
                 }
-                scalar_handler(last_scalar, cur_scalar);
+                scalar_handler(last_scalar, strdup(cur_scalar));
 
                 break;
             default:
                 error = true;
                 break;
         }
-
-        last_scalar = cur_scalar;
+        
+        yaml_event_delete(&event);
+        
+        if (last_scalar != NULL && last_scalar != cur_scalar && cur_scalar != NULL) {
+            free(last_scalar);
+            last_scalar = NULL;
+        }
+        if (cur_scalar != NULL) {
+            last_scalar = strdup(cur_scalar);
+            free(cur_scalar);
+            cur_scalar = NULL;
+        }
     } while(!error);
+    
+    if (cur_scalar != NULL) {
+        free(cur_scalar);
+        cur_scalar = NULL;
+    }
+    if (last_scalar != NULL) {
+        free(last_scalar);
+        last_scalar = NULL;
+    }
 }
 
 bool str_equal(const char *str1, const char *str2) {

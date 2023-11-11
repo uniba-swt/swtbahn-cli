@@ -22,22 +22,27 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Ben-Oliver Hosak <https://github.com/hosakb>
+ * - Bernhard Luedtke <https://github.com/bluedtke>
  * - Eugene Yip <https://github.com/eyip002>
  *
  */
+ 
 
 #include <onion/onion.h>
 #include <onion/shortcuts.h>
 #include <pthread.h>
+#include <sys/syslog.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
 #include <dirent.h>
 
+#include "handler_upload.h"
+#include "response.h"
 #include "server.h"
 #include "dynlib.h"
 #include "dyn_containers_interface.h"
-
+#include "websocket_uploader/engine_uploader.h"
 
 static const char engine_dir[] = "engines";
 static const char engine_extensions[][5] = { "c", "h", "sctx" };
@@ -46,7 +51,6 @@ static const int engine_extensions_count = 3;
 static const char interlocker_dir[] = "interlockers";
 static const char interlocker_extensions[][5] = { "bahn" };
 static const int interlocker_extensions_count = 1;
-
 
 extern pthread_mutex_t dyn_containers_mutex;
 
@@ -87,9 +91,9 @@ bool clear_interlocker_dir(void) {
 void remove_file_extension(char filepath_destination[], 
                            const char filepath_source[], const char extension[]) {
 	strcpy(filepath_destination, filepath_source);
-    size_t filepath_len = strlen(filepath_source);
-    size_t extension_len = strlen(extension);
-    filepath_destination[filepath_len - extension_len] = '\0';
+	size_t filepath_len = strlen(filepath_source);
+	size_t extension_len = strlen(extension);
+	filepath_destination[filepath_len - extension_len] = '\0';
 }
 
 bool engine_file_exists(const char filename[]) {
@@ -132,17 +136,18 @@ bool plugin_is_unremovable(const char name[]) {
 	return (strstr(name, "(unremovable)") != NULL);
 }
 
-onion_connection_status handler_upload_engine(void *_, onion_request *req,
-                                              onion_response *res) {
+
+onion_connection_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
+	
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
+		
 		if (filename == NULL || temp_filepath == NULL) {
 			syslog_server(LOG_ERR, "Request: Upload engine - engine file is invalid");
-			
-			onion_response_printf(res, "Engine file is invalid");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine file is invalid");
 			return OCS_PROCESSED;
 		}
 		
@@ -151,17 +156,16 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
  		if (engine_file_exists(filename)) {
 			syslog_server(LOG_ERR, "Request: Upload engine - engine file: %s -"
 			              " engine file already exists", filename);
-			
-			onion_response_printf(res, "Engine file already exists");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine file already exists");
 			return OCS_PROCESSED;
-		}  
+		}
 		
 		char filename_noextension[NAME_MAX];
 		remove_file_extension(filename_noextension, filename, ".sctx");
 		char libname[sizeof(filename_noextension)];
 		snprintf(libname, sizeof(libname), "lib%s", filename_noextension);
-		
+
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", engine_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
@@ -169,6 +173,23 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		              " copied engine SCCharts file from %s to %s", 
 		              filename, temp_filepath, final_filepath);
 
+		if (verification_enabled) {
+			verif_result engine_verif_result = verify_engine_model(final_filepath);
+			if (!engine_verif_result.success) {
+				// Stop upload if verification did not succeed
+				syslog_server(LOG_NOTICE, "Request: Upload Engine - Engine verification failed");
+				remove_engine_files(libname);
+				onion_response_set_code(res, HTTP_BAD_REQUEST);
+				if (engine_verif_result.message != NULL) {
+					onion_response_printf(res, "%s", engine_verif_result.message->str);
+					g_string_free(engine_verif_result.message, true);
+				} else {
+					onion_response_printf(res, "Engine Verification failed due to unknown reason.");
+				}
+				return OCS_PROCESSED;
+			}
+		}
+		
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".sctx");
 		const dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
@@ -177,10 +198,10 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 
 			syslog_server(LOG_ERR, "Request: Upload engine - engine file: %s - could not be "
 			              "compiled into a C file and then to a shared library", filepath);
-			
+			///TODO: Discuss which code to return
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			onion_response_printf(res, "Engine file %s could not be compiled into a C file "
-			                      "and then a shared library", filepath);
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			                           "and then a shared library", filepath);
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_DEBUG, "Request: Upload engine - engine file: %s - engine compiled",
@@ -194,9 +215,9 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		
 			syslog_server(LOG_ERR, "Request: Upload engine - engine file: %s - "
 			              "no available engine slot", filename);
-			
+			///TODO: Discuss which code to return
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			onion_response_printf(res, "No available engine slot");
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
 		
@@ -207,9 +228,9 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req,
 		return OCS_PROCESSED;			
 	} else {
 		syslog_server(LOG_ERR, "Request: Upload engine - system not running or wrong request type");
-		
-		onion_response_printf(res, "System not running or wrong request type");
+		///TODO: Discuss which code to return
 		onion_response_set_code(res, HTTP_BAD_REQUEST);
+		onion_response_printf(res, "System not running or wrong request type");
 		return OCS_PROCESSED;
 	}
 }
@@ -238,10 +259,11 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		const char *name = onion_request_get_post(req, "engine-name");
 		if (name == NULL || plugin_is_unremovable(name)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Remove engine - engine name is invalid or engine is unremovable");
-						  
-			onion_response_printf(res, "Engine name is invalid or engine is unremovable");
+			              "Request: Remove engine - engine name \"%s\" is "
+			              "invalid or engine is unremovable",
+			              (name == NULL) ? "null" : name);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine name is invalid or engine is unremovable");
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s", name);
@@ -252,8 +274,8 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Remove engine - engine: %s - engine could not be found", 
 						  name);
 						  
-			onion_response_printf(res, "Engine %s could not be found", name);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine %s could not be found", name);
 			return OCS_PROCESSED;
 		}
 		
@@ -263,8 +285,8 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Remove engine - engine: %s - engine is still in use", 
 						  name);
 
-			onion_response_printf(res, "Engine %s is still in use", name);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine %s is still in use", name);
 			return OCS_PROCESSED;
 		}
 		
@@ -272,19 +294,17 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 			syslog_server(LOG_ERR, 
 			              "Request: Remove engine - engine: %s - files could not be removed", name);
 						  
-			onion_response_printf(res, "Engine %s files could not be removed", name);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Engine %s files could not be removed", name);
 			return OCS_PROCESSED;
 		}
-		
-		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - engine removed", name);
 		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - finished", name);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Remove engine - system not running or wrong request type");
 		
-		onion_response_printf(res, "System not running or wrong request type");
 		onion_response_set_code(res, HTTP_BAD_REQUEST);
+		onion_response_printf(res, "System not running or wrong request type");
 		return OCS_PROCESSED;
 	}
 }
@@ -328,7 +348,7 @@ bool remove_interlocker_files(const char library_name[]) {
 }
 
 onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
-	                                               onion_response *res) {
+                                                   onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
@@ -336,8 +356,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		if (filename == NULL || temp_filepath == NULL) {
 			syslog_server(LOG_ERR, "Request: Upload - interlocker file is invalid");
 			
-			onion_response_printf(res, "Interlocker file is invalid");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Interlocker file is invalid");
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, "Request: Upload interlocker - interlocker file: %s" , filename);
@@ -346,8 +366,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Upload interlocker - interlocker file: %s -"
 			              " file already exists", filename);
 			
-			onion_response_printf(res, "Interlocker file already exists");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Interlocker file already exists");
 			return OCS_PROCESSED;
 		}
 
@@ -371,8 +391,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			              "interlocker could not be compiled", filename);
 			remove_interlocker_files(libname);
 			
-			onion_response_printf(res, "Interlocker file %s could not be compiled", filepath);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "Interlocker file %s could not be compiled", filepath);
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_DEBUG, "Request: Upload interlocker - interlocker file: %s - "
@@ -387,8 +407,8 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Upload interlocker - interlocker file: %s - "
 			              "no available interlocker slot", filename);
 			
-			onion_response_printf(res, "No available interlocker slot");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_printf(res, "No available interlocker slot");
 			return OCS_PROCESSED;
 		}
 
@@ -410,7 +430,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 
 // What is being refreshed by this? Shouldn't it just be get_interlockers?
 onion_connection_status handler_refresh_interlockers(void *_, onion_request *req,
-	                                                 onion_response *res) {
+                                                     onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Refresh interlockers");
@@ -427,7 +447,7 @@ onion_connection_status handler_refresh_interlockers(void *_, onion_request *req
 }
 
 onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
-	                                               onion_response *res) {
+                                                   onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
@@ -472,8 +492,6 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
-		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - removed",
-		              name);
 		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - finished",
 		              name);
 		return OCS_PROCESSED;
