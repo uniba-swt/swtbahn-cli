@@ -221,6 +221,7 @@ We try to use a consistent logging format in all request handlers. Description:
 - During request processing, after the "start" log, there may be further logs. These start in the same way, but may have more parameter data. And after the parameters, there can be a " - " followed by a string that describes what is currently happening. If an error occurs, the log level is LOG_ERR and that is the last log message sent by this request handler (rule: whenever LOG_ERR log is logged by request handler, that is the last log it will make before returning).
 - At the "end" of the request processing, if there is no error, the "start" log is repeated, but now with " - finished" at the end.
 - Experimental Feature/To be discussed: Some (few) request handlers will not log a separate "start" and "finish" log. In that case, they log only one log, which ends on " - done".
+- Some handlers will log on LOG_INFO instead of LOG_NOTICE, primarily trivial "getters", e.g. in the monitor
 
 The above description may be a bit confusing, so lets look at a concrete example. Say, we want to change the state of point "point10" to the state "normal". We send a request, and from the request handler we will then see the following logs:
 1. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal"

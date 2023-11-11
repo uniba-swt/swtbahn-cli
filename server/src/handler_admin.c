@@ -230,7 +230,7 @@ onion_connection_status handler_set_verification_url(void *_, onion_request *req
 			return OCS_NOT_IMPLEMENTED;
 		}
 		set_verifier_url(data_verification_url);
-		syslog_server(LOG_NOTICE, "Request: Set verification url - url: %s", 
+		syslog_server(LOG_NOTICE, "Request: Set verification url - new url: %s - done", 
 		              data_verification_url);
 		return OCS_PROCESSED;
 	} else {
@@ -250,7 +250,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			syslog_server(LOG_ERR, "Request: Admin release train - invalid train id " 
-			              "or train not grabbed (%s)",
+			              "or train %s not grabbed",
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -298,23 +298,23 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		int speed = params_check_speed(data_speed);
 		
 		if (speed == 999) {
-			syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
+			syslog_server(LOG_ERR, "Request: Admin set dcc train speed - train: %s speed: %d - "
 			              "bad speed", data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
-			syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
+			syslog_server(LOG_ERR, "Request: Admin set dcc train speed - train: %s speed: %d - "
 			              "bad track output", data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d", 
+			syslog_server(LOG_NOTICE, "Request: Admin set dcc train speed - train: %s speed: %d", 
 			              data_train, speed);
 			pthread_mutex_lock(&grabbed_trains_mutex);
 			if (bidib_set_train_speed(data_train, speed, data_track_output)) {
-				syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
+				syslog_server(LOG_ERR, "Request: Admin set dcc train speed - train: %s speed: %d - "
 				              "bad parameter values", data_train, speed);
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Request: Admin set train speed - train: %s speed: %d - "
+				syslog_server(LOG_NOTICE, "Request: Admin set dcc train speed - train: %s speed: %d - "
 				              "finished", data_train, speed);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);
