@@ -296,7 +296,7 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		int speed = params_check_speed(data_speed);
-		///TODO: Check if 999 is indeed "bad" or some signal for something else.
+		
 		if (speed == 999) {
 			syslog_server(LOG_ERR, "Request: Admin set train speed - train: %s speed: %d - "
 			              "bad speed", data_train, speed);

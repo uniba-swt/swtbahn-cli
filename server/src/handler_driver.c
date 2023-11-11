@@ -972,9 +972,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 		              train_id, data_source_name, data_destination_name);
 		
 		// Use interlocker to find and grant a route
-		GString *route_id = grant_route(train_id,
-		                                data_source_name,
-		                                data_destination_name);
+		GString *route_id = grant_route(train_id, data_source_name, data_destination_name);
 		if (route_id->str != NULL && params_check_is_number(route_id->str)) {
 			// Logging of the granted route ID happens in the grant_route function
 			onion_response_printf(res, "%s", route_id->str);
@@ -1321,8 +1319,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		syslog_server(LOG_NOTICE, "Request: Set train emergency stop - train: %s",
 		              grabbed_trains[grab_id].name->str);
 		
-		if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str,
-		                               data_track_output)) {
+		if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str, data_track_output)) {
 			syslog_server(LOG_ERR, "Request: Set train emergency stop - train: %s - bad "
 			              "parameter values", grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);

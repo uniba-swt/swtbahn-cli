@@ -26,6 +26,7 @@
  *
  */
 
+#include <sys/syslog.h>
 #include <unistd.h>
 #include <onion/onion.h>
 #include <bidib/bidib.h>
@@ -65,7 +66,7 @@ const int set_interlocker(const char *interlocker_name) {
 			) {
 				syslog_server(LOG_ERR, 
 				              "Set Interlocker - Interlocker %s could not be used in instance %d",
-							  interlocker_name, i);
+				              interlocker_name, i);
 			} else {
 				selected_interlocker_name = g_string_new(interlocker_name);
 				selected_interlocker_instance = i;
@@ -228,8 +229,8 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	// Ask the interlocker to grant requested route.
 	// May take multiple ticks to process the request.
 	dyn_containers_set_interlocker_instance_inputs(&interlocker_instances[selected_interlocker_instance],
-                                                   source_id, destination_id,
-                                                   train_id);
+	                                               source_id, destination_id,
+	                                               train_id);
 
 	struct t_interlocker_instance_io interlocker_instance_io;
 	do {
@@ -250,20 +251,26 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	// Return the result
 	const char *route_id = interlocker_instance_io.output_route_id;
 	if (route_id != NULL && params_check_is_number(route_id)) {
-		syslog_server(LOG_NOTICE, "Grant route - Train %s from %s to %s - Route %s has been granted", train_id, source_id, destination_id, route_id);
+		syslog_server(LOG_NOTICE, "Grant route - Train %s from %s to %s - Route %s has been granted", 
+		              train_id, source_id, destination_id, route_id);
 
-		syslog_server(LOG_NOTICE, "Grant route - Set points and signals for route id \"%s\" - interlocker type %d",
+		syslog_server(LOG_NOTICE, "Grant route - Set points and signals "
+		              "for route id \"%s\" - interlocker type %d",
 		              interlocker_instance_io.output_route_id,
 		              interlocker_instance_io.output_interlocker_type);
 	} else {
 		if (strcmp(route_id, "no_routes") == 0) {
-			syslog_server(LOG_ERR, "Grant route - Train %s - No routes possible from %s to %s", train_id, source_id, destination_id);
+			syslog_server(LOG_ERR, "Grant route - Train %s - No routes possible from %s to %s", 
+			              train_id, source_id, destination_id);
 		} else if (strcmp(route_id, "not_grantable") == 0) {
-			syslog_server(LOG_ERR, "Grant route - Train %s - Conflicting routes are in use", train_id);
+			syslog_server(LOG_ERR, "Grant route - Train %s - Conflicting routes are in use", 
+			              train_id);
 		} else if (strcmp(route_id, "not_clear") == 0) {
-			syslog_server(LOG_ERR, "Grant route - Train %s - Route found has occupied blocks or source signal is not stop", train_id);
+			syslog_server(LOG_ERR, "Grant route - Train %s - Route found has occupied blocks "
+			              "or source signal is not stop", train_id);
 		} else {
-			syslog_server(LOG_ERR, "Grant route - Train %s - Route could not be granted (%s)", train_id, route_id);
+			syslog_server(LOG_ERR, "Grant route - Train %s - Route %s could not be granted %s", 
+			              train_id, route_id);
 		}
 	}
 	GString *route_id_copy = g_string_new(route_id);
@@ -280,7 +287,8 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	t_interlocking_route * const route = get_route(route_id);
 	GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
 	if (granted_conflicts == NULL) {
-		syslog_server(LOG_ERR, "grant_route_id: granted_conflicts is NULL");
+		syslog_server(LOG_ERR, "Grant route id - train: %s route: %s - granted_conflicts is NULL",
+		              train_id, route_id);
 		pthread_mutex_unlock(&interlocker_mutex);
 		return "not_grantable";
 	}
@@ -301,7 +309,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	route->train = strdup(train_id);
 	
 	if (route->train == NULL) {
-		syslog_server(LOG_ERR, "grant_route_id: Unable to allocate memory for route->train");
+		syslog_server(LOG_ERR, "Grant route id - train: %s route: %s - "
+		              "Unable to allocate memory for route->train",
+		              train_id, route_id);
 		pthread_mutex_unlock(&interlocker_mutex);
 		return "not_grantable";
 	}
@@ -323,6 +333,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_set_signal(signal, signal_aspect);
 		bidib_flush();
 	}
+	
+	syslog_server(LOG_NOTICE, "Grant route id - train: %s route: %s - route granted", 
+	              train_id, route_id);
 
 	pthread_mutex_unlock(&interlocker_mutex);
 	return "granted";
@@ -350,7 +363,7 @@ void release_route(const char *route_id) {
 		free(route->train);
 		route->train = NULL;
 		syslog_server(LOG_NOTICE, "Release route - Route %s - route released", route_id);
-    } else {
+	} else {
 		syslog_server(LOG_ERR, "Release route - Route %s - Route is not granted to any train", route_id);
 	}
 

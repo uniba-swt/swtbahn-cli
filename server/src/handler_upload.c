@@ -201,7 +201,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 			///TODO: Discuss which code to return
 			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			onion_response_printf(res, "Engine file %s could not be compiled into a C file "
-			                           "and then a shared library", filepath);
+			                      "and then a shared library", filepath);
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_DEBUG, "Request: Upload engine - engine file: %s - engine compiled",
@@ -225,7 +225,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		dyn_containers_set_engine(engine_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - finished", filename);
-		return OCS_PROCESSED;			
+		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Upload engine - system not running or wrong request type");
 		///TODO: Discuss which code to return
@@ -272,8 +272,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			syslog_server(LOG_ERR, "Request: Remove engine - engine: %s - engine could not be found", 
-						  name);
-						  
+			              name);
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine %s could not be found", name);
 			return OCS_PROCESSED;
@@ -283,7 +282,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		if (!engine_freed_successfully) {
 			syslog_server(LOG_ERR, "Request: Remove engine - engine: %s - engine is still in use", 
-						  name);
+			              name);
 
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine %s is still in use", name);
@@ -293,7 +292,6 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req,
 		if (!remove_engine_files(name)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Remove engine - engine: %s - files could not be removed", name);
-						  
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			onion_response_printf(res, "Engine %s files could not be removed", name);
 			return OCS_PROCESSED;

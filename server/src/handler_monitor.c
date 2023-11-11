@@ -470,7 +470,7 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req,
 						state_value_str = "unknown";
 						break;
 				}
-						
+				
 				g_string_append_printf(reversers, "%s%s - state: %s",
 				                       i != 0 ? "\n" : "",
 				                       reverser_id, state_value_str);
