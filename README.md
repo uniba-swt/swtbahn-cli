@@ -213,3 +213,25 @@ When is a grab-id reset?
 is not the same as the one at the server
 * If the user issues `swtbahn admin shutdown` and the system was running
 * If the user issues `swtbahn config`
+
+### Logging Format Notes
+We try to use a consistent logging format in all request handlers. Description:
+- Before the first log, validation of request data and server state is performed. If validation fails, a log is printed that starts with "Request: ", followed by a phrase that describes the request name. Then a " - " and afterwards the reason for why the validation/state check failed.
+- If validation has passed, a log is made that signifies the "start" of processing the request. This consists of: "Request: (request name) - (key parameters of the request)". For example, if we request to release a certain route, it looks like this: "Request: Release route - route: %s", where "%s" is replaced by the route id that is to be released.
+- During request processing, after the "start" log, there may be further logs. These start in the same way, but may have more parameter data. And after the parameters, there can be a " - " followed by a string that describes what is currently happening. If an error occurs, the log level is LOG_ERR and that is the last log message sent by this request handler (rule: whenever LOG_ERR log is logged by request handler, that is the last log it will make before returning).
+- At the "end" of the request processing, if there is no error, the "start" log is repeated, but now with " - finished" at the end.
+- Experimental Feature/To be discussed: Some (few) request handlers will not log a separate "start" and "finish" log. In that case, they log only one log, which ends on " - done".
+
+The above description may be a bit confusing, so lets look at a concrete example. Say, we want to change the state of point "point10" to the state "normal". We send a request, and from the request handler we will then see the following logs:
+1. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal"
+2. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal - finished"   
+This means the point switch has been initiated successfully.
+
+Now, to compare, let's say we forget to pass the state, so it is NULL. We then get the following logs from the request handler:
+1. Level LOG_ERR; Log: "Request: Set point - invalid parameters"   
+So, we can see that the validation failed. We get a log on the LOG_ERR level, so that will be the last log from this call to the request handler.
+
+Now, what if we pass a state that is not NULL but also not a valid state for our point? Let's pass the state "foobar" and point "point10":
+1. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: foobar"
+2. Level LOG_ERR; Log: "Request: Set point - point: point10 state: foobar - invalid parameters"
+So, now it wasn't picked up by the validation, but later. Again, since we got a log on the LOG_ERR level, this is the last log we can expect from this call to the request handler.

@@ -211,7 +211,7 @@ onion_connection_status handler_set_verification_option(void *_, onion_request *
 			return OCS_NOT_IMPLEMENTED;
 		}
 		verification_enabled = params_check_verification_option(data_verification_option);
-		syslog_server(LOG_NOTICE, "Request: Set verification option - state: %s", 
+		syslog_server(LOG_NOTICE, "Request: Set verification option - new state: %s - done", 
 		              verification_enabled ? "enabled" : "disabled");
 		return OCS_PROCESSED;
 	} else {
