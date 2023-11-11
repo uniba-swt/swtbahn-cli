@@ -54,6 +54,14 @@ bool release_train(int grab_id);
 
 void release_all_grabbed_trains(void);
 
+/**
+ * @brief Returns a heap-allocated string with the name of the train grabbed with this grab-id.
+ * Caller must free the returned string.
+ * @param grab_id Grab-id with which the desired train is grabbed
+ * @return char* the name of the train grabbed by grab-id; NULL if not grabbed or otherwise invalid.
+ */
+char *train_id_from_grab_id(int grab_id);
+
 onion_connection_status handler_grab_train(void *_, onion_request *req,
                                            onion_response *res);
 

@@ -851,6 +851,22 @@ void release_all_grabbed_trains(void) {
 	}
 }
 
+char *train_id_from_grab_id(int grab_id) {
+	pthread_mutex_lock(&grabbed_trains_mutex);
+	if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		return NULL;
+	}
+	char *train_id = strdup(grabbed_trains[grab_id].name->str);
+	pthread_mutex_unlock(&grabbed_trains_mutex);
+	if (train_id == NULL) {
+		syslog_server(LOG_ERR, "Train ID from grab ID - unable to allocate memory for train_id");
+		return NULL;
+	}
+	return train_id;
+}
+
+
 onion_connection_status handler_grab_train(void *_, onion_request *req,
                                            onion_response *res) {
 	build_response_header(res);
@@ -908,24 +924,18 @@ onion_connection_status handler_release_train(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		// Check if grab_id is valid; if valid then remember train name in train_id
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			pthread_mutex_unlock(&grabbed_trains_mutex);
-			syslog_server(LOG_ERR, "Request: Release train - grab id: %d - invalid grab id",
-			             grab_id);
+		// If grab_id is valid, train_id will be, too.
+		char *train_id = train_id_from_grab_id(grab_id);
+		if (train_id == NULL) {
+			syslog_server(LOG_ERR, "Request: Release train - grab id: %d - invalid grab id", grab_id);
 			return OCS_NOT_IMPLEMENTED;
 		}
-		char *train_id = strdup(grabbed_trains[grab_id].name->str);
-		if (train_id == NULL) {
-			pthread_mutex_unlock(&grabbed_trains_mutex);
-			syslog_server(LOG_ERR, "Request: Release train - unable to allocate memory for train_id");
-			return false;
-		}
+		
 		syslog_server(LOG_NOTICE, "Request: Release train - grab id: %d train id: %s", 
 		              grab_id, train_id);
 		
 		// Set train speed to 0
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -977,24 +987,15 @@ onion_connection_status handler_request_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} 
 		
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+		// If grab_id is valid, train_id will be, too.
+		char *train_id = train_id_from_grab_id(grab_id);
+		if (train_id == NULL) {
 			syslog_server(LOG_ERR, "Request: Request train route - from: %s to: %s - invalid grab id",
 			              data_source_name, data_destination_name);
 			return OCS_NOT_IMPLEMENTED;
-		} 
-		char *train_id = strdup(grabbed_trains[grab_id].name->str);
-		if (train_id == NULL) {
-			pthread_mutex_unlock(&grabbed_trains_mutex);
-			syslog_server(LOG_ERR, "Request: Request train route - from: %s to: %s - "
-			              "unable to allocate memory for train_id",
-			              data_source_name, data_destination_name);
-			return false;
 		}
-		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		syslog_server(LOG_NOTICE, "Request: Request train route - "
-		              "train: %s from: %s to: %s", 
+		syslog_server(LOG_NOTICE, "Request: Request train route - train: %s from: %s to: %s", 
 		              train_id, data_source_name, data_destination_name);
 		
 		// Use interlocker to find and grant a route
@@ -1056,18 +1057,11 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			pthread_mutex_unlock(&grabbed_trains_mutex);
+		// If grab_id is valid, train_id will be, too.
+		char *train_id = train_id_from_grab_id(grab_id);
+		if (train_id == NULL) {
 			syslog_server(LOG_ERR, "Request: Request train route id - route: %s - invalid grab id", 
 			              route_id);
-			return OCS_NOT_IMPLEMENTED;
-		} 
-		char *train_id = strdup(grabbed_trains[grab_id].name->str);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
-		if (train_id == NULL) {
-			syslog_server(LOG_ERR, 
-			              "Request: Request train route id - unable to allocate memory for train_id");
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
@@ -1082,11 +1076,14 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 			syslog_server(LOG_NOTICE, "Request: Request train route id - "
 			              "train: %s route: %s - finished",
 			              train_id, route_id);
+			free(train_id);
 			return OCS_PROCESSED;
 		} else {
 			syslog_server(LOG_ERR, "Request: Request train route id - "
 			              "train: %s route: %s - route not granted (%s)",
 			              train_id, route_id, result);
+			free(train_id);
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			if (strcmp(result, "not_grantable") == 0) {
 				onion_response_printf(res, "Route %s is not available "
 				                      "or has conflicts with others", route_id);
@@ -1097,7 +1094,6 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req,
 				onion_response_printf(res, "Route %s could not be granted",
 				                      route_id);
 			}
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
 		
@@ -1121,14 +1117,17 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Driving direction - train: %s - route id empty", 
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
-		} else {
-			syslog_server(LOG_INFO, "Request: Driving direction - train: %s", data_train);
-			const t_interlocking_route *route = get_route(route_id);
-			onion_response_printf(res, "%s", 
-			                      is_forward_driving(route, data_train) ? "forwards" : "backwards");
-			syslog_server(LOG_INFO, "Request: Driving direction - train: %s - finished", data_train);
-			return OCS_PROCESSED;
 		}
+		
+		syslog_server(LOG_INFO, "Request: Driving direction - train: %s", data_train);
+		pthread_mutex_lock(&interlocker_mutex);
+		const t_interlocking_route *route = get_route(route_id);
+		onion_response_printf(res, "%s", 
+		                      is_forward_driving(route, data_train) ? "forwards" : "backwards");
+		pthread_mutex_unlock(&interlocker_mutex);
+		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - finished", data_train);
+		return OCS_PROCESSED;
+		
 	} else {
 		syslog_server(LOG_ERR, "Request: Driving direction - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
@@ -1159,17 +1158,10 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			pthread_mutex_unlock(&grabbed_trains_mutex);
-			syslog_server(LOG_ERR, "Request: Drive route - route: %s - invalid grab id", route_id);
-			return OCS_NOT_IMPLEMENTED;
-		} 
-		char *train_id = strdup(grabbed_trains[grab_id].name->str);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
+		// If grab_id is valid, train_id will be, too.
+		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
-			syslog_server(LOG_ERR, 
-			              "Request: Drive route - unable to allocate memory for train_id");
+			syslog_server(LOG_ERR, "Request: Drive route - route: %s - invalid grab id", route_id);
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
@@ -1189,10 +1181,8 @@ onion_connection_status handler_drive_route(void *_, onion_request *req,
 			              "driving unsuccessful", 
 			              route_id, train_id, mode);
 			free(train_id);
-			///TODO: Discuss - we should prob. return a code indicating why driving failed
 			return OCS_NOT_IMPLEMENTED;
 		}
-		
 	} else {
 		syslog_server(LOG_ERR, "Request: Drive route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
