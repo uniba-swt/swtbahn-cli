@@ -26,22 +26,20 @@
  *
  */
 
-#include <onion/onion.h>
 #include <bidib/bidib.h>
 #include <pthread.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include <sys/syslog.h>
-#include <unistd.h>
-#include <glib.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
+#include "handler_driver.h"
 #include "server.h"
-#include "dyn_containers_interface.h"
 #include "handler_controller.h"
-#include "interlocking.h"
+#include "dyn_containers_interface.h"
 #include "param_verification.h"
+#include "interlocking.h"
 #include "bahn_data_util.h"
 
 #define MICROSECOND 1

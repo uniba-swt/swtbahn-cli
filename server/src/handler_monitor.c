@@ -26,22 +26,19 @@
  *
  */
 
-#include <onion/onion.h>
 #include <bidib/bidib.h>
 #include <pthread.h>
-#include <unistd.h>
 #include <glib.h>
 #include <string.h>
+#include <unistd.h>
 
-#include "request.h"
-#include "server.h"
 #include "handler_monitor.h"
-#include "handler_driver.h"
+#include "server.h"
 #include "handler_controller.h"
-#include "bahn_data_util.h"
-#include "interlocking.h"
+#include "handler_driver.h"
 #include "param_verification.h"
-#include "types.h"
+#include "interlocking.h"
+#include "bahn_data_util.h"
 #include "websocket_uploader/engine_uploader.h"
 
 onion_connection_status handler_get_trains(void *_, onion_request *req,

@@ -25,19 +25,18 @@
  *
  */
 
-#include <onion/onion.h>
 #include <onion/shortcuts.h>
 #include <onion/log.h>
 #include <onion/low.h>
-#include <signal.h>
 #include <bidib/bidib.h>
+#include <glib.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include <glib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "handler_monitor.h"
 #include "handler_admin.h"

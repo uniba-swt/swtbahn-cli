@@ -28,17 +28,14 @@
  */
  
 
-#include <onion/onion.h>
 #include <onion/shortcuts.h>
-#include <pthread.h>
-#include <sys/syslog.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <limits.h>
 #include <dirent.h>
+#include <limits.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #include "handler_upload.h"
-#include "response.h"
 #include "server.h"
 #include "dynlib.h"
 #include "dyn_containers_interface.h"

@@ -25,13 +25,12 @@
  *
  */
 
-#include <onion/onion.h>
 #include <bidib/bidib.h>
 #include <pthread.h>
-#include <sys/syslog.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
 
+#include "handler_admin.h"
 #include "server.h"
 #include "param_verification.h"
 #include "handler_upload.h"

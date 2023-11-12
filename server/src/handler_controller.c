@@ -27,14 +27,13 @@
  *
  */
 
-#include <sys/syslog.h>
-#include <unistd.h>
-#include <onion/onion.h>
 #include <bidib/bidib.h>
 #include <pthread.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
+#include "handler_controller.h"
 #include "server.h"
 #include "dyn_containers_interface.h"
 #include "param_verification.h"
