@@ -750,9 +750,9 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 			///TODO: Discuss - why is this re-assignment necessary? Its the same pointer, right?
 			route = get_route(route->id);
 		}
-		pthread_mutex_lock(&grabbed_trains_mutex);
 		syslog_server(LOG_NOTICE, "Drive route - route: %s train: %s - slowing for end of route", 
 		              train_id, route_id);
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 
 		                                                DRIVING_SPEED_STOPPING,
 		                                                requested_forwards);
