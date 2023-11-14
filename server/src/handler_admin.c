@@ -152,7 +152,8 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 			              session_id);
 		}
 	} else {
-		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
+		syslog_server(LOG_ERR, 
+		              "Request: Start - BiDiB system is already running or wrong request type");
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
 
@@ -171,7 +172,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 		// Can't log "finished" here since bidib closes the syslog when stopping
 		retval = OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running");
+		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running or wrong request type");
 		retval = OCS_NOT_IMPLEMENTED;
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
@@ -324,7 +325,7 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		}
 	} else {
 		syslog_server(LOG_ERR, 
-		              "Request: Admin set train speed - system not running or wrong request type");
+		              "Request: Admin set dcc train speed - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
