@@ -331,9 +331,6 @@ bool interlocker_file_exists(const char filename[]) {
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
 		if (strcmp(dir_entry->d_name, filename) == 0) {
 			closedir(dir_handle);
-			syslog_server(LOG_NOTICE, 
-			              "Interlocker file exists check - interlocker %s already exists",
-			              filename);
 			return true;
 		}
 	}
