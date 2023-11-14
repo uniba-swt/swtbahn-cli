@@ -62,6 +62,7 @@ void syslog_server(int priority, const char *format, ...) {
 	vsnprintf(string, 1024, format, arg);
 	
 	syslog(priority, "server: %s", string);
+	va_end(arg);
 }
 
 void build_response_header(onion_response *res) {
