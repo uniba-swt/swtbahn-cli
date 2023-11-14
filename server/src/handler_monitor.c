@@ -775,8 +775,7 @@ GString *debug_info(void) {
 	return info_str;
 }
 
-onion_connection_status handler_get_debug_info(void *_, onion_request *req,
-                                               onion_response *res) {
+onion_connection_status handler_get_debug_info(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *debug_info_str = debug_info();

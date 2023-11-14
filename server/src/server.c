@@ -72,8 +72,7 @@ void build_response_header(onion_response *res) {
 	                               "POST, GET, PUT, DELETE, OPTIONS");
 }
 
-static onion_connection_status handler_assets(void *_, onion_request *req,
-                                              onion_response *res) {
+static onion_connection_status handler_assets(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	onion_response_set_header(res, "Cache-Control", "max-age=43200");
 	
@@ -179,12 +178,9 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "driver/direction", handler_driving_direction);
 	onion_url_add(urls, "driver/drive-route", handler_drive_route);
 	onion_url_add(urls, "driver/set-dcc-train-speed", handler_set_dcc_train_speed);
-	onion_url_add(urls, "driver/set-calibrated-train-speed",
-	              handler_set_calibrated_train_speed);
-	onion_url_add(urls, "driver/set-train-emergency-stop",
-	              handler_set_train_emergency_stop);
-	onion_url_add(urls, "driver/set-train-peripheral",
-	              handler_set_train_peripheral);
+	onion_url_add(urls, "driver/set-calibrated-train-speed", handler_set_calibrated_train_speed);
+	onion_url_add(urls, "driver/set-train-emergency-stop", handler_set_train_emergency_stop);
+	onion_url_add(urls, "driver/set-train-peripheral", handler_set_train_peripheral);
 
 	// --- upload functions ---
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
