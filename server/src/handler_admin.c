@@ -115,18 +115,18 @@ static bool start_bidib(void) {
 
 void stop_bidib(void) {
 	session_id = 0;
-	syslog_server(LOG_NOTICE, "Stop bidib");
-	syslog_server(LOG_INFO, "Stop bidib - Will cease printing to log once stop is complete");
+	syslog_server(LOG_NOTICE, "Stop Server");
+	syslog_server(LOG_INFO, "Stop Server - Will cease printing to log once stop is complete");
 	release_all_grabbed_trains();
-	syslog_server(LOG_INFO, "Stop bidib - Released all grabbed trains");
+	syslog_server(LOG_INFO, "Stop Server - Released all grabbed trains");
 	release_all_interlockers();
-	syslog_server(LOG_INFO, "Stop bidib - Released all interlockers");
+	syslog_server(LOG_INFO, "Stop Server - Released all interlockers");
 	running = false;
 	dyn_containers_stop();
-	syslog_server(LOG_INFO, "Stop bidib - Stopped dyn-containers");
+	syslog_server(LOG_INFO, "Stop Server - Stopped dyn-containers");
 	bahn_data_util_free_config();
 	pthread_join(poll_bidib_messages_thread, NULL);
-	syslog_server(LOG_INFO, "Stop bidib - Bidib message poll thread joined, "
+	syslog_server(LOG_NOTICE, "Stop Server - Bidib message poll thread joined, "
 	              "now stopping bidib and closing log");
 	bidib_stop();
 }
