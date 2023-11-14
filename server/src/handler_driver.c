@@ -42,9 +42,6 @@
 #include "interlocking.h"
 #include "bahn_data_util.h"
 
-#define MICROSECOND 1
-#define TRAIN_DRIVE_TIME_STEP 	10000 * MICROSECOND		// 0.01 seconds
-
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned int DRIVING_SPEED_SLOW = 40;

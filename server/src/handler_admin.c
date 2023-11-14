@@ -266,8 +266,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
-			///TODO: Change to TRAIN_DRIVE_TIME_STEP like in handler_driver
-			usleep(10000); // 0.01 s (TRAIN_DRIVE_TIME_STEP)
+			usleep(TRAIN_DRIVE_TIME_STEP); // 0.01 s
 			train_state_query = bidib_get_train_state(data_train);
 		}
 		bidib_free_train_state_query(train_state_query);

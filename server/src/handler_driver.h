@@ -34,6 +34,9 @@
 #define TRAIN_ENGINE_COUNT_MAX			4
 #define TRAIN_ENGINE_INSTANCE_COUNT_MAX	5
 
+#define MICROSECOND 1
+#define TRAIN_DRIVE_TIME_STEP 	10000 * MICROSECOND		// 0.01 seconds
+
 extern pthread_mutex_t grabbed_trains_mutex;
 
 typedef struct {
