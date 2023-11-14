@@ -170,8 +170,8 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 	char *verif_success = strstr(ws_msg->data.ptr, msg_type_result_status_true_sig);
 	
 	if (verif_success) {
-		syslog_server(LOG_INFO, "Websocket upload engine: Verification Server finished,"
-		              " verification succeeded");
+		syslog_server(LOG_INFO, 
+		              "Websocket upload engine: Verification Server done, verification succeeded");
 		ws_data_ptr->success = true;
 		ws_data_ptr->finished = true;
 	} else {
@@ -180,12 +180,14 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 		char *status_false_in_reply = strstr(ws_msg->data.ptr, msg_type_result_status_false_sig);
 		if (!status_false_in_reply) {
 			// No 'status' field in answer with either true or false
-			syslog_server(LOG_INFO, "Websocket upload engine: Verification Server finished,"
+			syslog_server(LOG_INFO, 
+			              "Websocket upload engine: Verification Server done,"
 			              " verification status not specified");
-			ws_data_ptr->message  = g_string_new("Verification finished but no result status known.");
+			ws_data_ptr->message  = g_string_new("Verification done but no result status known.");
 		} else {
 			// Ordinary failure. Save server's reply (to forward to client later on)
-			syslog_server(LOG_INFO, "Websocket upload engine: Verification Server finished, "
+			syslog_server(LOG_INFO, 
+			              "Websocket upload engine: Verification Server done, "
 			              "verification did not succeed");
 			ws_data_ptr->message  = g_string_new("");
 			g_string_append_printf(ws_data_ptr->message,"%s", ws_msg->data.ptr);
@@ -356,7 +358,8 @@ void set_verifier_url(const char *upd_verifier_url) {
 	}
 	verifier_url = strdup(upd_verifier_url);
 	syslog_server(LOG_NOTICE, 
-	              "Websocket set verifier url: verifier URL set to: %s", verifier_url);
+	              "Websocket set verifier url: verifier URL set to: %s", 
+	              verifier_url);
 }
 
 

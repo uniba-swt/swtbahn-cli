@@ -61,9 +61,7 @@ const int set_interlocker(const char *interlocker_name) {
 	pthread_mutex_lock(&interlocker_mutex);
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		if (!interlocker_instances[i].is_valid) {
-			if (dyn_containers_set_interlocker_instance(
-					&interlocker_instances[i], interlocker_name)
-			) {
+			if (dyn_containers_set_interlocker_instance(&interlocker_instances[i], interlocker_name)) {
 				syslog_server(LOG_ERR, 
 				              "Set Interlocker - interlocker %s could not be used in instance %d",
 				              interlocker_name, i);
@@ -134,12 +132,14 @@ GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
 	///TODO: Discuss this hardcoded 1024
 	char *conflict_routes[1024];
-	const size_t conflict_routes_len = config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
+	const size_t conflict_routes_len = 
+			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
 	for (size_t i = 0; i < conflict_routes_len; i++) {
 		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
 		if (conflict_route->train != NULL) {
 			if (!is_route_conflict_safe_sectional(conflict_routes[i],route_id)) {
-				const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
+				const size_t conflict_route_id_string_len = strlen(conflict_route->id) 
+				                                            + strlen(conflict_route->train) + 3 + 1;
 				char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
 				if (conflict_route_id_string == NULL) {
 					syslog_server(LOG_ERR, 
@@ -171,11 +171,13 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 	}
 
 	char *conflict_routes[1024];
-	const size_t conflict_routes_len = config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
+	const size_t conflict_routes_len = 
+			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
 	for (size_t i = 0; i < conflict_routes_len; i++) {
 		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
 		if (conflict_route->train != NULL) {
-			const size_t conflict_route_id_string_len = strlen(conflict_route->id) + strlen(conflict_route->train) + 3 + 1;
+			const size_t conflict_route_id_string_len = strlen(conflict_route->id) 
+			                                            + strlen(conflict_route->train) + 3 + 1;
 			char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
 			if (conflict_route_id_string == NULL) {
 				syslog_server(LOG_ERR, 
@@ -201,7 +203,8 @@ const bool get_route_is_clear(const char *route_id) {
 
 	// Check that all route signals are in the Stop aspect
 	char *signal_ids[1024];
-	const size_t signal_ids_len = config_get_array_string_value("route", route_id, "route_signals", signal_ids);
+	const size_t signal_ids_len = config_get_array_string_value("route", route_id, 
+	                                                            "route_signals", signal_ids);
 	for (size_t i = 0; i < signal_ids_len; i++) {
 		char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
@@ -234,7 +237,8 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_instance == -1) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Grant route - train: %s from: %s to: %s - no interlocker has been set",
+		syslog_server(LOG_ERR, 
+		              "Grant route - train: %s from: %s to: %s - no interlocker has been set",
 		              train_id, source_id, destination_id);
 		return g_string_new("no_interlocker");
 	}
@@ -269,24 +273,24 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	pthread_mutex_unlock(&interlocker_mutex);
 	
 	if (g_route_id_copy->str != NULL && params_check_is_number(g_route_id_copy->str)) {
-		syslog_server(LOG_NOTICE, "Grant route - train: %s from: %s to: %s - "
-		              "route %s has been granted", 
+		syslog_server(LOG_NOTICE, 
+		              "Grant route - train: %s from: %s to: %s - route %s has been granted", 
 		              train_id, source_id, destination_id, g_route_id_copy->str);
 	} else if (strcmp(g_route_id_copy->str, "no_routes") == 0) {
-		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
-		              "no route possible",
+		syslog_server(LOG_WARNING, 
+		              "Grant route - train: %s from: %s to: %s - no route possible",
 		              train_id, source_id, destination_id);
 	} else if (strcmp(g_route_id_copy->str, "not_grantable") == 0) {
-		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
-		              "conflicting routes in use",
+		syslog_server(LOG_WARNING, 
+		              "Grant route - train: %s from: %s to: %s - conflicting routes in use",
 		              train_id, source_id, destination_id);
 	} else if (strcmp(g_route_id_copy->str, "not_clear") == 0) {
-		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
-		              "route is blocked or source signal is not in aspect stop",
+		syslog_server(LOG_WARNING, 
+		              "Grant route - train: %s from: %s to: %s - route blocked or source signal not stop",
 		              train_id, source_id, destination_id);
 	} else {
-		syslog_server(LOG_WARNING, "Grant route - train: %s from: %s to: %s - "
-		              "route could not be granted for other reason (message: %s)",
+		syslog_server(LOG_WARNING, 
+		              "Grant route - train: %s from: %s to: %s - route could not be granted (message: %s)",
 		              train_id, source_id, destination_id, g_route_id_copy->str);
 	}
 	return g_route_id_copy;
@@ -303,7 +307,8 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
 	if (granted_conflicts == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_WARNING, "Grant route id - train: %s route: %s - granted_conflicts is NULL",
+		syslog_server(LOG_WARNING, 
+		              "Grant route id - train: %s route: %s - granted_conflicts is NULL",
 		              train_id, route_id);
 		return "not_grantable";
 	}
@@ -311,8 +316,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	g_array_free(granted_conflicts, true);
 	if (route->train != NULL || hasGrantedConflicts) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_WARNING, "Grant route id - train: %s route: %s - "
-		              "route already granted or has conflicts with routes in use",
+		syslog_server(LOG_WARNING, 
+		              "Grant route id - train: %s route: %s - route already granted "
+		              "or conflicts with granted routes",
 		              train_id, route_id);
 		return "not_grantable";
 	}
@@ -320,7 +326,8 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	// Check whether the route is physically available
 	if (!get_route_is_clear(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_WARNING, "Grant route id - train: %s route: %s - route is not clear",
+		syslog_server(LOG_WARNING, 
+		              "Grant route id - train: %s route: %s - route is not clear",
 		              train_id, route_id);
 		return "not_clear";
 	}
@@ -330,20 +337,19 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	
 	if (route->train == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Grant route id - train: %s route: %s - "
-		              "unable to allocate memory for route->train",
+		syslog_server(LOG_ERR, 
+		              "Grant route id - train: %s route: %s - unable to allocate memory for route->train",
 		              train_id, route_id);
 		return "not_grantable";
 	}
 	
-	syslog_server(LOG_INFO, "Grant route id - train: %s route: %s - "
-	              "route granting in progress, setting points and signals", 
+	syslog_server(LOG_INFO, 
+	              "Grant route id - train: %s route: %s - granting in progress, setting points and signals", 
 	              train_id, route_id);
 
 	// Set the points to their required positions
 	for (size_t i = 0; i < route->points->len; i++) {
-		const t_interlocking_point point =
-				g_array_index(route->points, t_interlocking_point, i);
+		const t_interlocking_point point = g_array_index(route->points, t_interlocking_point, i);
 		const char *position = (point.position == NORMAL) ? "normal" : "reverse";
 		bidib_switch_point(point.id, position);
 		bidib_flush();
@@ -358,7 +364,8 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_flush();
 	}
 	
-	syslog_server(LOG_NOTICE, "Grant route id - train: %s route: %s - route granted", 
+	syslog_server(LOG_NOTICE, 
+	              "Grant route id - train: %s route: %s - route granted", 
 	              train_id, route_id);
 
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -366,7 +373,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 }
 
 ///TODO: This should not unconditionally set all route signals to stop, because that would
-//       sectional route release from working correctly!
+//       prevent sectional route release from working correctly!
 void release_route(const char *route_id) {
 	if (route_id == NULL) {
 		syslog_server(LOG_ERR, "Release route - invalid parameter, route_id is null");
@@ -375,7 +382,8 @@ void release_route(const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
 	if (route != NULL && route->train != NULL) {
-		syslog_server(LOG_INFO, "Release route - route: %s - route currently granted to train %s, "
+		syslog_server(LOG_INFO, 
+		              "Release route - route: %s - route currently granted to train %s, "
 		              "now setting all route signals to aspect_stop", 
 		              route_id, route->train);
 		
@@ -384,7 +392,8 @@ void release_route(const char *route_id) {
 			const char *signal_id = g_array_index(route->signals, char *, signal_index);
 
 			if (bidib_set_signal(signal_id, signal_aspect)) {
-				syslog_server(LOG_ERR, "Release route - route: %s - unable to set signal to aspect %s", 
+				syslog_server(LOG_ERR, 
+				              "Release route - route: %s - unable to set signal to aspect %s", 
 				              route_id, signal_aspect);
 			}
 			bidib_flush();
@@ -396,8 +405,7 @@ void release_route(const char *route_id) {
 	} else if (route == NULL) {
 		syslog_server(LOG_ERR, "Release route - route: %s - route does not exist", route_id);
 	} else {
-		syslog_server(LOG_ERR, "Release route - route: %s - route is not granted to any train", 
-		              route_id);
+		syslog_server(LOG_ERR, "Release route - route: %s - route is not granted to any train", route_id);
 	}
 
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -436,8 +444,7 @@ const bool reversers_state_update(void) {
 	return !error;
 }
 
-onion_connection_status handler_release_route(void *_, onion_request *req,
-                                              onion_response *res) {
+onion_connection_status handler_release_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
@@ -457,8 +464,7 @@ onion_connection_status handler_release_route(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_set_point(void *_, onion_request *req,
-                                          onion_response *res) {
+onion_connection_status handler_set_point(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
@@ -467,15 +473,18 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s",
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set point - point: %s state: %s",
 			              data_point, data_state);
 			if (bidib_switch_point(data_point, data_state)) {
-				syslog_server(LOG_ERR, "Request: Set point - point: %s state: %s - "
-				              "invalid parameters", data_point, data_state);
+				syslog_server(LOG_ERR, 
+				              "Request: Set point - point: %s state: %s - invalid parameters", 
+				              data_point, data_state);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Request: Set point - point: %s state: %s - finished",
+				syslog_server(LOG_NOTICE, 
+				              "Request: Set point - point: %s state: %s - finished",
 				              data_point, data_state);
 				return OCS_PROCESSED;
 			}
@@ -486,8 +495,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_set_signal(void *_, onion_request *req,
-                                           onion_response *res) {
+onion_connection_status handler_set_signal(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_signal = onion_request_get_post(req, "signal");
@@ -496,14 +504,16 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Set signal - signal: %s state: %s",
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set signal - signal: %s state: %s",
 			              data_signal, data_state);
 			if (bidib_set_signal(data_signal, data_state)) {
 				syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Request: Set signal - signal: %s state: %s - finished",
+				syslog_server(LOG_NOTICE, 
+				              "Request: Set signal - signal: %s state: %s - finished",
 				              data_signal, data_state);
 				return OCS_PROCESSED;
 			}
@@ -514,8 +524,7 @@ onion_connection_status handler_set_signal(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_set_peripheral(void *_, onion_request *req,
-                                               onion_response *res) {
+onion_connection_status handler_set_peripheral(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_peripheral = onion_request_get_post(req, "peripheral");
@@ -524,16 +533,19 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Set peripheral - peripheral: %s state: %s",
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set peripheral - peripheral: %s state: %s",
 			              data_peripheral, data_state);
 			if (bidib_set_peripheral(data_peripheral, data_state)) {
-				syslog_server(LOG_ERR, "Request: Set peripheral - peripheral: %s state: %s - "
-				              "invalid parameters", data_peripheral, data_state);
+				syslog_server(LOG_ERR, 
+				              "Request: Set peripheral - peripheral: %s state: %s - invalid parameters", 
+				              data_peripheral, data_state);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
-				syslog_server(LOG_NOTICE, "Request: Set peripheral - peripheral: %s state: %s - "
-				              "finished", data_peripheral, data_state);
+				syslog_server(LOG_NOTICE, 
+				              "Request: Set peripheral - peripheral: %s state: %s - finished", 
+				              data_peripheral, data_state);
 				return OCS_PROCESSED;
 			}
 		}
@@ -543,8 +555,7 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_get_interlocker(void *_, onion_request *req,
-                                                onion_response *res) {
+onion_connection_status handler_get_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get interlocker");
@@ -562,8 +573,7 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_set_interlocker(void *_, onion_request *req,
-                                                onion_response *res) {
+onion_connection_status handler_set_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
@@ -571,23 +581,28 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req,
 			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Set interlocker - interlocker: %s",
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set interlocker - interlocker: %s",
 			              selected_interlocker_name->str);
 			if (selected_interlocker_instance != -1) {
-				syslog_server(LOG_ERR, "Request: Set interlocker - interlocker: %s - another "
-				              "interlocker instance is already set", data_interlocker);
+				syslog_server(LOG_ERR, 
+				              "Request: Set interlocker - interlocker: %s - another "
+				              "interlocker instance is already set", 
+				              data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			}
 
 			set_interlocker(data_interlocker);
 			if (selected_interlocker_instance == -1) {
-				syslog_server(LOG_ERR, "Request: Set interlocker - interlocker: %s - invalid "
+				syslog_server(LOG_ERR, 
+				              "Request: Set interlocker - interlocker: %s - invalid "
 				              "parameters or no more interlocker instances can be loaded", 
 				              data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				onion_response_printf(res, "%s", selected_interlocker_name->str);
-				syslog_server(LOG_NOTICE, "Request: Set interlocker - interlocker: %s - finished",
+				syslog_server(LOG_NOTICE, 
+				              "Request: Set interlocker - interlocker: %s - finished",
 				              selected_interlocker_name->str);
 				return OCS_PROCESSED;
 			}
@@ -598,8 +613,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
-                                                  onion_response *res) {
+onion_connection_status handler_unset_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
@@ -610,18 +624,22 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
 			syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s",
 			              data_interlocker);
 			if (selected_interlocker_instance == -1) {
-				syslog_server(LOG_ERR, "Request: Unset interlocker - interlocker: %s - "
-				              "no interlocker instance to unset", data_interlocker);
+				syslog_server(LOG_ERR, 
+				              "Request: Unset interlocker - interlocker: %s - "
+				              "no interlocker instance to unset", 
+				              data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			}
 
 			unset_interlocker(data_interlocker);
 			if (selected_interlocker_instance != -1) {
-				syslog_server(LOG_ERR, "Request: Unset interlocker - interlocker: %s - "
-				              "invalid parameters", data_interlocker);
+				syslog_server(LOG_ERR, 
+				              "Request: Unset interlocker - interlocker: %s - invalid parameters", 
+				              data_interlocker);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s - finished",
+				syslog_server(LOG_NOTICE, 
+				              "Request: Unset interlocker - interlocker: %s - finished",
 				              data_interlocker);
 				return OCS_PROCESSED;
 			}
