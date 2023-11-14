@@ -215,13 +215,15 @@ is not the same as the one at the server
 * If the user issues `swtbahn config`
 
 ### Logging Format Notes
-We try to use a consistent logging format in all request handlers. Description:
-- Before the first log, validation of request data and server state is performed. If validation fails, a log is printed that starts with "Request: ", followed by a phrase that describes the request name. Then a " - " and afterwards the reason for why the validation/state check failed.
-- If validation has passed, a log is made that signifies the "start" of processing the request. This consists of: "Request: (request name) - (key parameters of the request)". For example, if we request to release a certain route, it looks like this: "Request: Release route - route: %s", where "%s" is replaced by the route id that is to be released.
-- During request processing, after the "start" log, there may be further logs. These start in the same way, but may have more parameter data. And after the parameters, there can be a " - " followed by a string that describes what is currently happening. If an error occurs, the log level is LOG_ERR and that is the last log message sent by this request handler (rule: whenever LOG_ERR log is logged by request handler, that is the last log it will make before returning).
-- At the "end" of the request processing, if there is no error, the "start" log is repeated, but now with " - finished" at the end.
-- Experimental Feature/To be discussed: Some (few) request handlers will not log a separate "start" and "finish" log. In that case, they log only one log, which ends on " - done".
-- Some handlers will log on LOG_INFO instead of LOG_NOTICE, primarily trivial "getters", e.g. in the monitor
+We try to use a consistent logging format in all request handlers. Description of the patter for the request handlers:
+1. Parse form data.
+2. Validate form data. If validation fails: make a log on ERROR level and return.
+3. Make a log on NOTICE or INFO level that represents the start of processing.
+4. Process request. If processing causes an error, (try to) make a log on the ERROR level and return.
+5. Processing concluded. Make a log to indicate this (or failed, respectively), by printing the "start of processing" log from step 3. again, but with " - finished" at the end.
+
+For request handlers that "just" return information (getters), the log level in steps 3 and 5 are INFO.
+For request handlers that barely do any "processing" at all; e.g. where only one boolean is updated, they do not have a separate log for start and end of processing. They just make one log which ends on "done".
 
 The above description may be a bit confusing, so lets look at a concrete example. Say, we want to change the state of point "point10" to the state "normal". We send a request, and from the request handler we will then see the following logs:
 1. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal"
