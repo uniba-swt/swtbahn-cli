@@ -146,8 +146,11 @@ onion_connection_status handler_startup(void *_, onion_request *req,
 
 		if (start_bidib()) { 
 			retval = OCS_PROCESSED;
+			syslog_server(LOG_NOTICE, "Request: Start - session id: %ld - finished", session_id);
+		}  else {
+			syslog_server(LOG_ERR, "Request: Start - session id: %ld - unable to start bidib", 
+			              session_id);
 		}
-		syslog_server(LOG_NOTICE, "Request: Start - session id: %ld - finished", session_id);
 	} else {
 		syslog_server(LOG_ERR, "Request: Start - BiDiB system is already running");
 	}
