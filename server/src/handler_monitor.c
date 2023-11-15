@@ -635,23 +635,24 @@ GString* get_route_json(const char *data_route_id) {
 	
 	GString *g_route_str = g_string_new("");
 	append_start_of_obj(g_route_str);
+	append_field_bare_value_from_str(g_route_str, "id", route->id, true);
 	append_field_str_value(g_route_str, "source_signal", route->source, true);
 	append_field_str_value(g_route_str, "destination_signal", route->destination, true);
 	append_field_str_value(g_route_str, "orientation", route->orientation, true);
 	append_field_float_value(g_route_str, "length", route->length, true);
-	append_field_strlist_value_garray(g_route_str, "path", route->path, true);
-	append_field_strlist_value_garray(g_route_str, "sections", route->sections, true);
-	append_field_strlist_value_garray(g_route_str, "signals", route->signals, true);
+	append_field_strlist_value_garray_strs(g_route_str, "path", route->path, true);
+	append_field_strlist_value_garray_strs(g_route_str, "sections", route->sections, true);
+	append_field_strlist_value_garray_strs(g_route_str, "signals", route->signals, true);
 	
 	GArray *g_point_ids = garray_points_to_garray_str_ids(route->points);
-	append_field_strlist_value_garray(g_route_str, "points", g_point_ids, true);
+	append_field_strlist_value_garray_strs(g_route_str, "points", g_point_ids, true);
 	free_g_strarray(g_point_ids);
 	
-	append_field_strlist_value_garray(g_route_str, "conflicting_route_ids", route->conflicts, true);
+	append_field_barelist_value_from_garray_strs(g_route_str, "conflicting_route_ids", route->conflicts, true);
 	
 	const GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
 	if (granted_route_conflicts != NULL) {
-		append_field_strlist_value_garray(g_route_str, "granted_conflicting_route_ids", granted_route_conflicts, true);
+		append_field_barelist_value_from_garray_strs(g_route_str, "granted_conflicting_route_ids", granted_route_conflicts, true);
 	} else {
 		append_field_emptylist_value(g_route_str, "granted_conflicting_route_ids", true);
 	}

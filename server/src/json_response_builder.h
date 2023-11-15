@@ -4,11 +4,11 @@
 #include <glib.h>
 #include <stdbool.h>
 
-// Note: End of object and end of list should remove the last non-whitespace/linebreak char if it is a ","
-
 GString* append_field_str_value(GString *dest, const char *field, const char *value_str, bool add_trailing_comma);
+GString* append_field_bare_value_from_str(GString *dest, const char *field, const char *value_str, bool add_trailing_comma);
 GString* append_field_strlist_value(GString *dest, const char *field, const char **value_liststr, unsigned int list_len, bool add_trailing_comma);
-GString* append_field_strlist_value_garray(GString *dest, const char *field, const GArray* g_strarray, bool add_trailing_comma);
+GString* append_field_strlist_value_garray_strs(GString *dest, const char *field, const GArray* g_strarray, bool add_trailing_comma);
+GString* append_field_barelist_value_from_garray_strs(GString *dest, const char *field, const GArray* g_strarray, bool add_trailing_comma);
 GString* append_field_emptylist_value(GString *dest, const char *field, bool add_trailing_comma);
 GString* append_field_bool_value(GString *dest, const char *field, bool value_bool, bool add_trailing_comma);
 GString* append_field_int_value(GString *dest, const char *field, int value_int, bool add_trailing_comma);
