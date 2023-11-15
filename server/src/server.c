@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
 	onion_listen(o);
 	onion_free(o);
 	if (running) {
-		stop_bidib();
+		shutdown_server();
 	}
 	cache_verifier_url();
 	free_verifier_url();

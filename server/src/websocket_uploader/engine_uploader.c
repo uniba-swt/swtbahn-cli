@@ -348,8 +348,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 
 void set_verifier_url(const char *upd_verifier_url) {
 	if (upd_verifier_url == NULL) {
-		syslog_server(LOG_WARNING, 
-		              "Websocket set verifier url: proposed URL is NULL, URL not updated");
+		syslog_server(LOG_WARNING, "Set verification url - proposed URL is NULL, URL not updated");
 		return;
 	}
 	if (verifier_url != NULL) {
@@ -357,9 +356,7 @@ void set_verifier_url(const char *upd_verifier_url) {
 		verifier_url = NULL;
 	}
 	verifier_url = strdup(upd_verifier_url);
-	syslog_server(LOG_NOTICE, 
-	              "Websocket set verifier url: verifier URL set to: %s", 
-	              verifier_url);
+	syslog_server(LOG_NOTICE,  "Set verification url - verifier URL set to: %s", verifier_url);
 }
 
 

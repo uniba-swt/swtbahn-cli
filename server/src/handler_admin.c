@@ -75,34 +75,35 @@ static void *poll_bidib_messages(void *_) {
 }
 
 // Must be called with start_stop_mutex already acquired
-static bool start_bidib(void) {
+static bool startup_server(void) {
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
-		syslog_server(LOG_ERR, "Start - Could not start BiDiB serial connection");
+		syslog_server(LOG_ERR, "Startup server - Could not start BiDiB serial connection");
 		return false;
 	}
 	
 	const int succ_clear_dir = clear_engine_dir() + clear_interlocker_dir();
 	if (!succ_clear_dir) {
-		syslog_server(LOG_ERR, "Start - Could not clear the engine and interlocker directories");
+		syslog_server(LOG_ERR, 
+		              "Startup server - Could not clear the engine and interlocker directories");
 		return false;
 	}
 
 	const int succ_config = bahn_data_util_initialise_config(config_directory);
 	if (!succ_config) {
-		syslog_server(LOG_ERR, "Start - Could not initialise interlocking tables");
+		syslog_server(LOG_ERR, "Startup server - Could not initialise interlocking tables");
 		return false;
 	}
 
 	const int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
-		syslog_server(LOG_ERR, "Start - Could not start shared library containers");
+		syslog_server(LOG_ERR, "Startup server - Could not start shared library containers");
 		return false;
 	}
 	
 	const int err_interlocker = load_default_interlocker_instance();
 	if (err_interlocker) {
-		syslog_server(LOG_ERR, "Start - Could not load default interlocker instance");
+		syslog_server(LOG_ERR, "Startup server - Could not load default interlocker instance");
 		return false;
 	}
 	
@@ -111,21 +112,21 @@ static bool start_bidib(void) {
 	return true;
 }
 
-void stop_bidib(void) {
+void shutdown_server(void) {
 	session_id = 0;
-	syslog_server(LOG_NOTICE, "Stop Server");
-	syslog_server(LOG_INFO, "Stop Server - Will cease printing to log once stop is complete");
+	syslog_server(LOG_NOTICE, "Shutdown server");
+	syslog_server(LOG_INFO, "Shutdown server - Will cease printing to log once stop is complete");
 	release_all_grabbed_trains();
-	syslog_server(LOG_INFO, "Stop Server - Released all grabbed trains");
+	syslog_server(LOG_INFO, "Shutdown server - Released all grabbed trains");
 	release_all_interlockers();
-	syslog_server(LOG_INFO, "Stop Server - Released all interlockers");
+	syslog_server(LOG_INFO, "Shutdown server - Released all interlockers");
 	running = false;
 	dyn_containers_stop();
-	syslog_server(LOG_INFO, "Stop Server - Stopped dyn-containers");
+	syslog_server(LOG_INFO, "Shutdown server - Stopped dyn-containers");
 	bahn_data_util_free_config();
 	pthread_join(poll_bidib_messages_thread, NULL);
 	syslog_server(LOG_NOTICE, 
-	              "Stop Server - Bidib message poll thread joined, now stopping bidib and closing log");
+	              "Shutdown server - Bidib message poll thread joined, now stopping bidib and closing log");
 	bidib_stop();
 }
 
@@ -139,19 +140,21 @@ onion_connection_status handler_startup(void *_, onion_request *req, onion_respo
 		openlog("swtbahn", 0, LOG_LOCAL0);
 
 		session_id = time(NULL);
-		syslog_server(LOG_NOTICE, "Request: Start - session id: %ld", session_id);
+		syslog_server(LOG_NOTICE, "Request: Startup server - session id: %ld", session_id);
 
-		if (start_bidib()) { 
+		if (startup_server()) { 
 			retval = OCS_PROCESSED;
-			syslog_server(LOG_NOTICE, "Request: Start - session id: %ld - finished", session_id);
+			syslog_server(LOG_NOTICE, 
+			              "Request: Startup server - session id: %ld - finished", 
+			              session_id);
 		}  else {
 			syslog_server(LOG_ERR, 
-			              "Request: Start - session id: %ld - unable to start bidib", 
+			              "Request: Startup server - session id: %ld - unable to start bidib", 
 			              session_id);
 		}
 	} else {
 		syslog_server(LOG_ERR, 
-		              "Request: Start - BiDiB system is already running or wrong request type");
+		              "Request: Startup server - BiDiB system is already running or wrong request type");
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
 
@@ -164,12 +167,13 @@ onion_connection_status handler_shutdown(void *_, onion_request *req, onion_resp
 	
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_NOTICE, "Request: Stop");
-		stop_bidib();
+		syslog_server(LOG_NOTICE, "Request: Shutdown server");
+		shutdown_server();
 		// Can't log "finished" here since bidib closes the syslog when stopping
 		retval = OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Stop - BiDiB system is not running or wrong request type");
+		syslog_server(LOG_ERR, 
+		              "Request: Shutdown server - BiDiB system is not running or wrong request type");
 		retval = OCS_NOT_IMPLEMENTED;
 	}
 	pthread_mutex_unlock(&start_stop_mutex);
