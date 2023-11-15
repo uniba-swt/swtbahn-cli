@@ -40,6 +40,7 @@
 #include "interlocking.h"
 #include "bahn_data_util.h"
 #include "websocket_uploader/engine_uploader.h"
+#include "json_response_builder.h"
 
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
@@ -578,6 +579,94 @@ void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
 	}
 }
 
+GArray* garray_points_to_garray_str_ids(GArray *points) {
+	if (points == NULL) {
+		return NULL;
+	}
+	GArray *g_point_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+	
+	for (int i = 0; i < points->len; ++i) {
+		t_interlocking_point *point = &g_array_index(points, t_interlocking_point, i);
+		if (point != NULL) {
+			char *point_id_dcopy = strdup(point->id);
+			if (point_id_dcopy != NULL) {
+				g_array_append_val(g_point_ids, point_id_dcopy);
+			}
+		}
+	}
+	return g_point_ids;
+}
+
+void free_g_strarray(GArray *g_strarray) {
+	if (g_strarray == NULL) {
+		return;
+	}
+	for (int i = 0; i < g_strarray->len; ++i) {
+		if (g_array_index(g_strarray, char *, i) != NULL) {
+			free(g_array_index(g_strarray, char *, i));
+		}
+	}
+	g_array_free(g_strarray, true);
+	g_strarray = NULL;
+}
+
+GString* get_route_json(const char *data_route_id) {
+	if (data_route_id == NULL) {
+		// Invalid param
+		syslog_server(LOG_NOTICE, "Get route JSON experiment - input param NULL");
+		return NULL;
+	}
+	const char *route_id = params_check_route_id(data_route_id);
+	if (route_id == NULL || strcmp(route_id, "") == 0) {
+		// Invalid route id
+		syslog_server(LOG_ERR, "Get route JSON experiment - invalid route id");
+		return NULL;
+	}
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	
+	const t_interlocking_route *route = get_route(route_id);
+	if (route == NULL) {
+		pthread_mutex_unlock(&interlocker_mutex);
+		// Invalid route / route doesn't exist
+		syslog_server(LOG_ERR, "Get route JSON experiment - invalid route id (route not found)");
+		return NULL;
+	}
+	
+	GString *g_route_str = g_string_new("");
+	append_start_of_obj(g_route_str);
+	append_field_str_value(g_route_str, "source_signal", route->source, true);
+	append_field_str_value(g_route_str, "destination_signal", route->destination, true);
+	append_field_str_value(g_route_str, "orientation", route->orientation, true);
+	append_field_float_value(g_route_str, "length", route->length, true);
+	append_field_strlist_value_garray(g_route_str, "path", route->path, true);
+	append_field_strlist_value_garray(g_route_str, "sections", route->sections, true);
+	append_field_strlist_value_garray(g_route_str, "signals", route->signals, true);
+	
+	GArray *g_point_ids = garray_points_to_garray_str_ids(route->points);
+	append_field_strlist_value_garray(g_route_str, "points", g_point_ids, true);
+	free_g_strarray(g_point_ids);
+	
+	append_field_strlist_value_garray(g_route_str, "conflicting_route_ids", route->conflicts, true);
+	
+	const GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
+	if (granted_route_conflicts != NULL) {
+		append_field_strlist_value_garray(g_route_str, "granted_conflicting_route_ids", granted_route_conflicts, true);
+	} else {
+		append_field_emptylist_value(g_route_str, "granted_conflicting_route_ids", true);
+	}
+	
+	append_field_bool_value(g_route_str, "clear", get_route_is_clear(route_id), true);
+	append_field_str_value(g_route_str, "granted_to_train", route->train == NULL ? "" : route->train, false);
+	append_end_of_obj(g_route_str, false);
+	
+	pthread_mutex_unlock(&interlocker_mutex);
+	
+	syslog_server(LOG_NOTICE, "Get route JSON experiment - route: %s, output: \n%s", route_id, g_route_str->str);
+	
+	return g_route_str;
+}
+
 onion_connection_status handler_get_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -587,6 +676,10 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 			syslog_server(LOG_ERR, "Request: Get route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		}
+		
+		///TODO: remove - Experiment
+		get_route_json(data_route_id);
+		// End of experiment
 		
 		syslog_server(LOG_INFO, "Request: Get route - route: %s", route_id);
 		GString *route_str = g_string_new("");
