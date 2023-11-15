@@ -678,7 +678,8 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 		}
 		
 		///TODO: remove - Experiment
-		get_route_json(data_route_id);
+		GString* route_json = get_route_json(data_route_id);
+		g_string_free(route_json, true);
 		// End of experiment
 		
 		syslog_server(LOG_INFO, "Request: Get route - route: %s", route_id);
