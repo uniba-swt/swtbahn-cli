@@ -1,0 +1,12 @@
+{
+	"signals": [
+		{
+			"id": "signal1",
+			"state": "aspect_go"
+		},
+		{
+			"id": "signal2",
+			"state": "unknown"
+		}
+	]
+}

@@ -1,0 +1,12 @@
+{
+	"id": "cargo_db",
+	"grabbed": true,
+	"on_track": true,
+	"occupied_segments": ["seg1", "seg2"], 
+	"occupied_blocks": ["block1"],
+	"orientation(?)": "left",
+	"direction": "forwards",
+	"speed_step": 10,
+	"detected_speed_kmh": 2,
+	"route_id": -1
+}

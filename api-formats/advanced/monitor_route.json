@@ -1,0 +1,15 @@
+{
+	"id": "54",
+	"source_signal": "s1",
+	"destination_signal": "s4",
+	"orientation": "left", 
+	"length": 1213.1,
+	"path": ["seg1", "seg2"],
+	"sections": ["x1", "x2"],
+	"points": ["p1", "p2"],
+	"signals": ["s1", "s4"],
+	"conflicting_route_ids": ["123","1","2"],
+	"granted_conflicting_route_ids": ["1"],
+	"clear": false,
+	"granted_to_train": ""
+}

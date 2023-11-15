@@ -1,0 +1,52 @@
+{
+	"trains": [
+		{
+			"id": "cargo_db",
+			"grabbed": true,
+			"on_track": true,
+			"occupied_segments": ["seg1", "seg2"], 
+			"occupied_blocks": ["block1"],
+			"orientation(?)": "left",
+			"direction": "forwards",
+			"speed_step": 10,
+			"detected_speed_kmh": 2,
+			"route_id": 54
+		},
+		{
+			"id": "cargo_green",
+			"grabbed": true,
+			"on_track": false,
+			"occupied_segments": [], 
+			"occupied_blocks": [],
+			"orientation(?)": "",
+			"direction": "",
+			"speed_step": 0,
+			"detected_speed_kmh": 0,
+			"route_id": -1
+		},
+		{
+			"id": "cargo_bayern",
+			"grabbed": false,
+			"on_track": false,
+			"occupied_segments": [], 
+			"occupied_blocks": [],
+			"orientation(?)": "",
+			"direction": "",
+			"speed_step": 0,
+			"detected_speed_kmh": 0,
+			"route_id": -1
+		},
+		{
+			"id": "regional_odeg",
+			"grabbed": false,
+			"on_track": true,
+			"occupied_segments": ["seg58"],
+			"occupied_blocks": ["platform4"],
+			"orientation(?)": "left(?)___not sure if this can be determined without a route",
+			"direction": "forwards",
+			"speed_step": 0,
+			"detected_speed_kmh": 0,
+			"route_id": -1
+		}
+	]
+}
