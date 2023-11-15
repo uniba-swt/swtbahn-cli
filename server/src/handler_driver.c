@@ -843,8 +843,8 @@ bool release_train(int grab_id) {
 		grabbed_trains[grab_id].is_valid = false;
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
 		syslog_server(LOG_NOTICE, 
-		              "Release train - train: %s grab id: %d - released", 
-		              grabbed_trains[grab_id].name->str, grab_id);
+		              "Release train - grab id: %d train: %s - released", 
+		              grab_id, grabbed_trains[grab_id].name->str);
 		g_string_free(grabbed_trains[grab_id].name, TRUE);
 		grabbed_trains[grab_id].name = NULL;
 		success = true;
@@ -1045,11 +1045,14 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		free(train_id);
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Request train route - system not running or wrong request type");
+		syslog_server(LOG_ERR, 
+		              "Request: Request train route - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
 
+///TODO: Discuss - maybe this should be called "request_route_by_id", to distinguish it from 
+// just getting a route id of/for something (similar to a monitor endpoint).
 onion_connection_status handler_request_route_id(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {

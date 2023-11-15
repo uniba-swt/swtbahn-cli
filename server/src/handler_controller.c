@@ -63,7 +63,7 @@ const int set_interlocker(const char *interlocker_name) {
 		if (!interlocker_instances[i].is_valid) {
 			if (dyn_containers_set_interlocker_instance(&interlocker_instances[i], interlocker_name)) {
 				syslog_server(LOG_ERR, 
-				              "Set Interlocker - interlocker %s could not be used in instance %d",
+				              "Set interlocker - interlocker: %s - could not be used in instance %d",
 				              interlocker_name, i);
 			} else {
 				selected_interlocker_name = g_string_new(interlocker_name);
