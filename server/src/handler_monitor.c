@@ -652,7 +652,7 @@ GString* get_route_json(const char *data_route_id) {
 	
 	const GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
 	if (granted_route_conflicts != NULL) {
-		append_field_barelist_value_from_garray_strs(g_route_str, "granted_conflicting_route_ids", granted_route_conflicts, true);
+		append_field_strlist_value_garray_strs(g_route_str, "granted_conflicting_route_ids", granted_route_conflicts, true);
 	} else {
 		append_field_emptylist_value(g_route_str, "granted_conflicting_route_ids", true);
 	}
