@@ -108,7 +108,7 @@ GString* append_field_int_value(GString *dest, const char *field, int value_int,
 	if (dest == NULL || field == NULL) {
 		return NULL;
 	}
-	g_string_append_printf(dest, "\n\"%s\": \"%d\"%s", 
+	g_string_append_printf(dest, "\n\"%s\": %d%s", 
 	                       field, value_int, add_trailing_comma ? "," : "");
 	return dest;
 }
@@ -118,7 +118,7 @@ GString* append_field_uint_value(GString *dest, const char *field, unsigned int 
 	if (dest == NULL || field == NULL) {
 		return NULL;
 	}
-	g_string_append_printf(dest, "\n\"%s\": \"%u\"%s", 
+	g_string_append_printf(dest, "\n\"%s\": %u%s", 
 	                       field, value_uint, add_trailing_comma ? "," : "");
 	return dest;
 }
@@ -128,7 +128,7 @@ GString* append_field_float_value(GString *dest, const char *field,
 	if (dest == NULL || field == NULL) {
 		return NULL;
 	}
-	g_string_append_printf(dest, "\n\"%s\": \"%f\"%s", 
+	g_string_append_printf(dest, "\n\"%s\": %f%s", 
 	                       field, value_float, add_trailing_comma ? "," : "");
 	return dest;
 }

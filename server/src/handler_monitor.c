@@ -120,6 +120,8 @@ GString *get_trains_json() {
 	}
 	append_end_of_list(g_trains, false, query.length > 0);
 	append_end_of_obj(g_trains, false);
+	
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_trains_json", 72 * (query.length + 1), g_trains->len);
 	bidib_free_id_list_query(query);
 	return g_trains;
 }
@@ -176,9 +178,10 @@ GString *get_train_state_json(const char *data_train) {
 	append_field_int_value(g_train_state, "route_id", route_id, true);
 	
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(data_train);
-	
-	append_field_bool_value(g_train_state, "on_track", train_position_query.length > 0, true);
-	if (train_position_query.length > 0) {
+	bool is_on_track = train_position_query.length > 0;
+	// is_on_track intentionally used for both value and add_trailing_comma parameters.
+	append_field_bool_value(g_train_state, "on_track", is_on_track, is_on_track);
+	if (is_on_track) {
 		// two passes likely needed, one for segments, one for blocks.
 		append_field_strlist_value(g_train_state, "occupied_segments", 
 		                          (const char **) train_position_query.segments, 
@@ -198,8 +201,8 @@ GString *get_train_state_json(const char *data_train) {
 	}
 	
 	bidib_free_train_position_query(train_position_query);
-	
 	append_end_of_obj(g_train_state, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_train_state_json", 384, g_train_state->len);
 	return g_train_state;
 }
 
@@ -263,6 +266,8 @@ GString *get_train_peripherals_json(const char *data_train) {
 	
 	append_end_of_list(g_train_peripherals, false, query.length > 0);
 	append_end_of_obj(g_train_peripherals, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_train_peripherals_json", 64 * (query.length + 1), g_train_peripherals->len);
+	
 	bidib_free_id_list_query(query);
 	return g_train_peripherals;
 }
@@ -328,10 +333,10 @@ GString *get_track_outputs_json() {
 			append_end_of_obj(g_track_outputs, false);
 		}
 	}
-	bidib_free_id_list_query(query);
-	
 	append_end_of_list(g_track_outputs, false, track_outputs_added > 0);
 	append_end_of_obj(g_track_outputs, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_track_outputs_json", 48 * (query.length + 1), g_track_outputs->len);
+	bidib_free_id_list_query(query);
 	return g_track_outputs;
 }
 
@@ -374,7 +379,8 @@ GString *get_accessory_json(bool point_accessories) {
 		                       acc_state.type == BIDIB_ACCESSORY_BOARD ?
 		                       acc_state.board_accessory_state.state_id :
 		                       acc_state.dcc_accessory_state.state_id, 
-		                       (!point_accessories || acc_state.type != BIDIB_ACCESSORY_BOARD));
+		                       (!point_accessories 
+		                           || (point_accessories && acc_state.type == BIDIB_ACCESSORY_BOARD)));
 		if (point_accessories && acc_state.type == BIDIB_ACCESSORY_BOARD) {
 			append_field_bool_value(g_accs, "target_state_reached", 
 			                        acc_state.board_accessory_state.execution_state, false);
@@ -388,7 +394,7 @@ GString *get_accessory_json(bool point_accessories) {
 	}
 	append_end_of_list(g_accs, false, query.length > 0);
 	append_end_of_obj(g_accs, false);
-	
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_accessory_json", 64 * (query.length + 1), g_accs);
 	bidib_free_id_list_query(query);
 	return g_accs;
 }
@@ -450,6 +456,7 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	}
 	append_end_of_list(g_aspects, false, query.length > 0);
 	append_end_of_obj(g_aspects, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_accessory_aspects_json", query.length * 16, g_aspects->len);
 	bidib_free_id_list_query(query);
 	return g_aspects;
 }
@@ -549,10 +556,10 @@ GString *get_segments_json() {
 		bidib_free_segment_state_query(seg_state_query);
 		
 	}
-	bidib_free_id_list_query(seg_query);
-	
 	append_end_of_list(g_segments, false, added_segments > 0);
 	append_end_of_obj(g_segments, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_segments_json", 48 * (seg_query.length + 1), g_segments->len);
+	bidib_free_id_list_query(seg_query);
 	return g_segments;
 }
 
@@ -611,6 +618,9 @@ GString *get_reversers_json() {
 		append_end_of_obj(g_reversers, false);
 		
 	}
+	append_end_of_list(g_reversers, false, added_reversers > 0);
+	append_end_of_obj(g_reversers, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_reversers_json", 48 * (rev_query.length + 1), g_reversers->len);
 	bidib_free_id_list_query(rev_query);
 	return g_reversers;
 }
@@ -637,7 +647,7 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req, onion
 GString *get_peripherals_json() {
 	// Trying out ways of estimating size. The +1 is there to avoid size 0 if query length is 0.
 	t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
-	GString *g_peripherals = g_string_sized_new(48 * (per_query.length + 1));
+	GString *g_peripherals = g_string_sized_new(64 * (per_query.length + 1));
 	g_string_assign(g_peripherals, "");
 	append_start_of_obj(g_peripherals, false);
 	append_field_start_of_list(g_peripherals, "peripherals");
@@ -664,11 +674,11 @@ GString *get_peripherals_json() {
 		append_end_of_obj(g_peripherals, false);
 		bidib_free_peripheral_state_query(per_state_query);
 	}
-	bidib_free_id_list_query(per_query);
 	
 	append_end_of_list(g_peripherals, false, added_peripherals > 0);
 	append_end_of_obj(g_peripherals, false);
-	
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_peripherals_json", 64 * (per_query.length + 1), g_peripherals->len);
+	bidib_free_id_list_query(per_query);
 	return g_peripherals;
 }
 
@@ -757,6 +767,7 @@ GString* get_granted_routes_json() {
 	
 	append_end_of_list(g_granted_routes, false, routes_added > 0);
 	append_end_of_obj(g_granted_routes, false);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_granted_routes_json", 256, g_granted_routes->len);
 	
 	return g_granted_routes;
 }
@@ -813,7 +824,7 @@ GString* get_route_json(const char *route_id) {
 	append_field_str_value(g_route, "granted_to_train", 
 	                       route->train == NULL ? "" : route->train, false);
 	append_end_of_obj(g_route, false);
-	
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_route_json", 1024, g_route->len);
 	pthread_mutex_unlock(&interlocker_mutex);
 	return g_route;
 }
