@@ -197,7 +197,7 @@ GString *get_train_state_json(const char *data_train) {
 				++added_blocks;
 			}
 		}
-		append_end_of_list(g_train_state, false, added_blocks > 0);
+		append_end_of_list(g_train_state, false, false);
 	}
 	
 	bidib_free_train_position_query(train_position_query);
