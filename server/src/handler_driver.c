@@ -941,7 +941,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Release train - grab id: %d train id: %s", 
+		              "Request: Release train - grab id: %d train: %s", 
 		              grab_id, train_id);
 		
 		// Set train speed to 0
@@ -1019,7 +1019,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 			onion_response_printf(res, "%s", route_id->str);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Request train route - train: %s from: %s to: %s - finished",
-			              train_id, route_id->str, data_source_name, data_destination_name);
+			              train_id, data_source_name, data_destination_name);
 		} else {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_WARNING, 

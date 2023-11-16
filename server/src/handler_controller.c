@@ -583,7 +583,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set interlocker - interlocker: %s",
-			              selected_interlocker_name->str);
+			              data_interlocker);
 			if (selected_interlocker_instance != -1) {
 				syslog_server(LOG_ERR, 
 				              "Request: Set interlocker - interlocker: %s - another "
@@ -603,7 +603,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 				onion_response_printf(res, "%s", selected_interlocker_name->str);
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set interlocker - interlocker: %s - finished",
-				              selected_interlocker_name->str);
+				              data_interlocker);
 				return OCS_PROCESSED;
 			}
 		}
