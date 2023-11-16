@@ -132,6 +132,33 @@ GArray *interlocking_table_get_all_route_ids(void) {
     return route_ids;
 }
 
+GArray *interlocking_table_get_all_route_ids_cpy(void) {
+    GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init (&iter, route_hash_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)) {
+        t_interlocking_route *route = (t_interlocking_route *) value;
+        g_array_append_val(route_ids, route->id);
+    }
+    return route_ids;
+}
+
+int interlocking_table_get_route_id_of_train(const char *train_id) {
+    int route_id = -1;
+
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init (&iter, route_hash_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)) {
+        const t_interlocking_route *route = (t_interlocking_route *) value;
+        if (route != NULL && route->train != NULL && strcmp(route->train, train_id) == 0)
+        return route_id;
+    }
+    return route_id;
+}
+
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id) {
     size_t len = strlen(source_id) + strlen(destination_id) + 1;
     char route_string[len];

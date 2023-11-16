@@ -98,27 +98,109 @@ void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
 	}
 }
 
+GString *get_trains_json() {
+	t_bidib_id_list_query query = bidib_get_trains();
+	GString *g_trains = g_string_sized_new(72 * (query.length + 1));
+	g_string_assign(g_trains, "");
+	
+	append_start_of_obj(g_trains, false);
+	append_field_start_of_list(g_trains, "trains");
+	
+	for (size_t i = 0; i < query.length; i++) {
+		append_start_of_obj(g_trains, true);
+		
+		append_field_str_value(g_trains, "id", query.ids[i], true);
+		append_field_bool_value(g_trains, "grabbed", train_grabbed(query.ids[i]), true);
+		
+		t_bidib_train_position_query train_position_query = bidib_get_train_position(query.ids[i]);
+		append_field_bool_value(g_trains, "on_track", train_position_query.length > 0, false);
+		bidib_free_train_position_query(train_position_query);
+		
+		append_end_of_obj(g_trains, i+1 < query.length);
+	}
+	append_end_of_list(g_trains, false, query.length > 0);
+	append_end_of_obj(g_trains, false);
+	bidib_free_id_list_query(query);
+	return g_trains;
+}
+
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get available trains");
-		GString *trains = g_string_new("");
-		t_bidib_id_list_query query = bidib_get_trains();
-		for (size_t i = 0; i < query.length; i++) {
-			g_string_append_printf(trains, "%s%s - grabbed: %s",
-			                       i != 0 ? "\n" : "", query.ids[i],
-			                       train_grabbed(query.ids[i]) ? "yes" : "no");
-		}
-		bidib_free_id_list_query(query);
-		onion_response_printf(res, "%s", trains->str);
+		GString *g_trains = get_trains_json();
+		onion_response_printf(res, "%s", g_trains->str);
 		syslog_server(LOG_INFO, "Request: Get available trains - finished");
-		g_string_free(trains, true);
+		g_string_free(g_trains, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 
 		              "Request: Get available trains - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
+}
+
+GString *get_train_state_json(const char *data_train) {
+	if (data_train == NULL) {
+		///TODO: Discuss what to return (NULL or empty string? Or "empty" JSON?)
+		return g_string_new("");
+	}
+	
+	t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
+	if (!train_state_query.known) {
+		bidib_free_train_state_query(train_state_query);
+		///TODO: Discuss what to return (NULL or empty str? Or "empty" JSON, or containing err msg?)
+		return g_string_new("");
+	}
+	
+	GString *g_train_state = g_string_sized_new(384);
+	g_string_assign(g_train_state, "");
+	append_start_of_obj(g_train_state, false);
+	append_field_str_value(g_train_state, "id", data_train, true);
+	append_field_bool_value(g_train_state, "grabbed", train_grabbed(data_train), true);
+	const char *orientation_str = (train_state_query.data.orientation ==
+			                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
+			                       "left" : "right";
+	append_field_str_value(g_train_state, "orientation", orientation_str, true);
+	const char *direction_str = train_state_query.data.set_is_forwards ? "forwards" : "backwards";
+	append_field_str_value(g_train_state, "direction", direction_str, true);
+	
+	append_field_int_value(g_train_state, "speed_step", train_state_query.data.set_speed_step, true);
+	append_field_int_value(g_train_state, "detected_kmh_speed", train_state_query.data.detected_kmh_speed, true);
+	
+	bidib_free_train_state_query(train_state_query);
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	int route_id = interlocking_table_get_route_id_of_train(data_train);
+	pthread_mutex_unlock(&interlocker_mutex);
+	append_field_int_value(g_train_state, "route_id", route_id, true);
+	
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(data_train);
+	
+	append_field_bool_value(g_train_state, "on_track", train_position_query.length > 0, true);
+	if (train_position_query.length > 0) {
+		// two passes likely needed, one for segments, one for blocks.
+		append_field_strlist_value(g_train_state, "occupied_segments", 
+		                          (const char **) train_position_query.segments, 
+		                          train_position_query.length, true);
+		
+		append_field_start_of_list(g_train_state, "occupied_blocks");
+		int added_blocks = 0;
+		for (size_t i = 0; i < train_position_query.length; i++) {
+			const char *block_id = config_get_block_id_of_segment(train_position_query.segments[i]);
+			// only add block if it does not already exist in the list (and thus in g_train_state)
+			if (block_id != NULL && strstr(g_train_state->str, block_id) == NULL) {
+				g_string_printf(g_train_state, "%s\"%s\"", added_blocks > 0 ? ", " : "", block_id);
+				++added_blocks;
+			}
+		}
+		append_end_of_list(g_train_state, false, added_blocks > 0);
+	}
+	
+	bidib_free_train_position_query(train_position_query);
+	
+	append_end_of_obj(g_train_state, false);
+	return g_train_state;
 }
 
 onion_connection_status handler_get_train_state(void *_, onion_request *req, onion_response *res) {
@@ -131,60 +213,58 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 		} 
 		
 		syslog_server(LOG_INFO, "Request: Get train state - train: %s", data_train);
-		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
-		t_bidib_train_position_query train_position_query = bidib_get_train_position(data_train);
-		
-		if (train_state_query.known) {
-			GString *seg_string = g_string_new("no");
-			GString *block_string = g_string_new("no");
-			if (train_position_query.length > 0) {
-				g_string_printf(seg_string, "%s", train_position_query.segments[0]);
-				for (size_t i = 1; i < train_position_query.length; i++) {
-					g_string_append_printf(seg_string, ", %s", train_position_query.segments[i]);
-				}
-				for (size_t i = 0; i < train_position_query.length; i++) {
-					const char *block_id =
-							config_get_block_id_of_segment(train_position_query.segments[i]);
-					if (block_id != NULL) {
-						g_string_printf(block_string, "%s", block_id);
-						break;
-					}
-				}
-			}
-			bidib_free_train_position_query(train_position_query);
-		
-			GString *ret_string = g_string_new("");
-			g_string_append_printf(ret_string, "grabbed: %s - on segment: %s - on block: %s"
-			                       " - orientation: %s"
-			                       " - speed step: %d - detected speed: %d km/h - direction: %s",
-			                       train_grabbed(data_train) ? "yes" : "no",
-			                       seg_string->str,
-			                       block_string->str,
-			                       (train_state_query.data.orientation ==
-			                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
-			                       "left" : "right",
-			                       train_state_query.data.set_speed_step,
-			                       train_state_query.data.detected_kmh_speed,
-			                       train_state_query.data.set_is_forwards
-			                       ? "forwards" : "backwards");
-			bidib_free_train_state_query(train_state_query);
-			onion_response_printf(res, "%s", ret_string->str);
-			syslog_server(LOG_INFO, "Request: Get train state - train: %s - finished", data_train);
-			g_string_free(seg_string, true);
-			g_string_free(ret_string, true);
-			return OCS_PROCESSED;
-		} else {
-			bidib_free_train_position_query(train_position_query);
-			bidib_free_train_state_query(train_state_query);
+		GString *ret_string = get_train_state_json(data_train);
+		if (ret_string == NULL || ret_string->len == 0) {
 			syslog_server(LOG_ERR, 
 			              "Request: Get train state - train: %s - invalid train", 
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
+		} else {
+			onion_response_printf(res, "%s", ret_string->str);
+			syslog_server(LOG_INFO, "Request: Get train state - train: %s - finished", data_train);
+			g_string_free(ret_string, true);
+			return OCS_PROCESSED;
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Get train state - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
+}
+
+///TODO: Discuss, change in behaviour: train with no peripherals now does not lead to an error.
+GString *get_train_peripherals_json(const char *data_train) {
+	if (data_train == NULL) {
+		///TODO: Discuss what to return (NULL or empty string? Or "empty" JSON?)
+		return g_string_new("");
+	}
+	
+	t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
+	GString *g_train_peripherals = g_string_sized_new(64 * (query.length + 1));
+	g_string_assign(g_train_peripherals, "");
+	
+	append_start_of_obj(g_train_peripherals, false);
+	append_field_start_of_list(g_train_peripherals, "peripherals");
+	
+	for (size_t i = 0; i < query.length; i++) {
+		t_bidib_train_peripheral_state_query train_peripheral_state =
+				bidib_get_train_peripheral_state(data_train, query.ids[i]);
+		char *state_string;
+		if (train_peripheral_state.available) {
+			state_string = train_peripheral_state.state == 1 ? "on" : "off";
+		} else {
+			state_string = "unknown";
+		}
+		
+		append_start_of_obj(g_train_peripherals, true);
+		append_field_str_value(g_train_peripherals, "id", query.ids[i], true);
+		append_field_str_value(g_train_peripherals, "state", state_string, false);
+		append_end_of_obj(g_train_peripherals, i+1 < query.length);
+	}
+	
+	append_end_of_list(g_train_peripherals, false, query.length > 0);
+	append_end_of_obj(g_train_peripherals, false);
+	bidib_free_id_list_query(query);
+	return g_train_peripherals;
 }
 
 onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
@@ -198,31 +278,14 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 		}
 		
 		syslog_server(LOG_INFO, "Request: Get train peripherals - train: %s", data_train);
-		t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
-		if (query.length > 0) {
-			GString *train_peripherals = g_string_new("");
-			for (size_t i = 0; i < query.length; i++) {
-				t_bidib_train_peripheral_state_query per_state =
-						bidib_get_train_peripheral_state(data_train, query.ids[i]);
-				g_string_append_printf(train_peripherals, "%s%s - state: %s",
-				                       i != 0 ? "\n" : "", query.ids[i],
-				                       per_state.state == 1 ? "on" : "off");
-			}
-			bidib_free_id_list_query(query);
-			
-			onion_response_printf(res, "%s", train_peripherals->str);
-			syslog_server(LOG_INFO, 
-			              "Request: Get train peripherals - train: %s - finished",
-			              data_train);
-			g_string_free(train_peripherals, true);
-			return OCS_PROCESSED;
-		} else {
-			bidib_free_id_list_query(query);
-			syslog_server(LOG_ERR, 
-			              "Request: Get train train peripherals - train: %s - invalid train", 
-			              data_train);
-			return OCS_NOT_IMPLEMENTED;
-		}
+		GString *g_train_peripherals = get_train_peripherals_json(data_train);
+		onion_response_printf(res, "%s", g_train_peripherals->str);
+		syslog_server(LOG_INFO, 
+		              "Request: Get train peripherals - train: %s - finished",
+		              data_train);
+		g_string_free(g_train_peripherals, true);
+		return OCS_PROCESSED;
+		
 	} else {
 		syslog_server(LOG_ERR, 
 		              "Request: Get train peripherals - system not running or wrong request type");
@@ -230,60 +293,57 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 	}
 }
 
+GString *get_track_outputs_json() {
+	t_bidib_id_list_query query = bidib_get_track_outputs();
+	GString *g_track_outputs = g_string_sized_new(48 * (query.length + 1));
+	
+	g_string_assign(g_track_outputs, "");
+	append_start_of_obj(g_track_outputs, false);
+	append_field_start_of_list(g_track_outputs, "track-outputs");
+	
+	int track_outputs_added = 0;
+	for (size_t i = 0; i < query.length; i++) {
+		t_bidib_track_output_state_query track_output_state_query = 
+				bidib_get_track_output_state(query.ids[i]);
+		if (track_output_state_query.known) {
+			char *state_string;
+			switch (track_output_state_query.cs_state) {
+				case 0x00: state_string = "off"; break;
+				case 0x01: state_string = "stop"; break;
+				case 0x02: state_string = "soft stop"; break;
+				case 0x03: state_string = "go"; break;
+				case 0x04: state_string = "go + ignore watchdog"; break;
+				case 0x08: state_string = "prog"; break;
+				case 0x09: state_string = "prog busy"; break;
+				case 0x0D: state_string = "busy"; break;
+				case 0xFF: state_string = "query"; break;
+				default:   state_string = "off"; break;
+			}
+			if (track_outputs_added++ > 0) {
+				g_string_append_c(g_track_outputs, ',');
+			}
+			append_start_of_obj(g_track_outputs, true);
+			append_field_str_value(g_track_outputs, "id", query.ids[i], true);
+			append_field_str_value(g_track_outputs, "state", state_string, false);
+			append_end_of_obj(g_track_outputs, false);
+		}
+	}
+	bidib_free_id_list_query(query);
+	
+	append_end_of_list(g_track_outputs, false, track_outputs_added > 0);
+	append_end_of_obj(g_track_outputs, false);
+	return g_track_outputs;
+}
+
 onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
                                                   onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get track outputs");
-		GString *track_outputs = g_string_new("");
-		t_bidib_id_list_query query = bidib_get_track_outputs();
-		for (size_t i = 0; i < query.length; i++) {
-			t_bidib_track_output_state_query track_output_state =
-					bidib_get_track_output_state(query.ids[i]);
-			if (track_output_state.known) {
-				char *state_string;
-				switch (track_output_state.cs_state) {
-					case 0x00:
-						state_string = "off";
-						break;
-					case 0x01:
-						state_string = "stop";
-						break;
-					case 0x02:
-						state_string = "soft stop";
-						break;
-					case 0x03:
-						state_string = "go";
-						break;
-					case 0x04:
-						state_string = "go + ignore watchdog";
-						break;
-					case 0x08:
-						state_string = "prog";
-						break;
-					case 0x09:
-						state_string = "prog busy";
-						break;
-					case 0x0D:
-						state_string = "busy";
-						break;
-					case 0xFF:
-						state_string = "query";
-						break;
-					default:
-						state_string = "off";
-						break;
-				}
-				g_string_append_printf(track_outputs, "%s%s - state: %s",
-				                       i != 0 ? "\n" : "", query.ids[i],
-				                       state_string);
-			}
-		}
-		bidib_free_id_list_query(query);
-		
-		onion_response_printf(res, "%s", track_outputs->str);
+		GString *g_track_outputs = get_track_outputs_json();
+		onion_response_printf(res, "%s", g_track_outputs->str);
 		syslog_server(LOG_INFO, "Request: Get track outputs - finished");
-		g_string_free(track_outputs, true);
+		g_string_free(g_track_outputs, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 
@@ -292,35 +352,55 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 	}
 }
 
+GString *get_accessory_json(bool point_accessories) {
+	t_bidib_id_list_query query;
+	if (point_accessories) {
+		query = bidib_get_connected_points();
+	} else {
+		query = bidib_get_connected_signals();
+	}
+	GString *g_accs = g_string_sized_new(64 * (query.length + 1));
+	g_string_assign(g_accs, "");
+	append_start_of_obj(g_accs, false);
+	append_field_start_of_list(g_accs, point_accessories ? "points" : "signals");
+	
+	for (size_t i = 0; i < query.length; i++) {
+		t_bidib_unified_accessory_state_query acc_state = 
+				point_accessories ? bidib_get_point_state(query.ids[i]) : bidib_get_signal_state(query.ids[i]);
+		
+		append_start_of_obj(g_accs, true);
+		append_field_str_value(g_accs, "id", query.ids[i], true);
+		append_field_str_value(g_accs, "state", 
+		                       acc_state.type == BIDIB_ACCESSORY_BOARD ?
+		                       acc_state.board_accessory_state.state_id :
+		                       acc_state.dcc_accessory_state.state_id, 
+		                       (!point_accessories || acc_state.type != BIDIB_ACCESSORY_BOARD));
+		if (point_accessories && acc_state.type == BIDIB_ACCESSORY_BOARD) {
+			append_field_bool_value(g_accs, "target_state_reached", 
+			                        acc_state.board_accessory_state.execution_state, false);
+		} else if (!point_accessories) {
+			append_field_str_value(g_accs, "type", 
+		                           config_get_scalar_string_value("signal", query.ids[i], "type"), 
+		                           false);
+		}
+		append_end_of_obj(g_accs, i+1 < query.length);
+		bidib_free_unified_accessory_state_query(acc_state);
+	}
+	append_end_of_list(g_accs, false, query.length > 0);
+	append_end_of_obj(g_accs, false);
+	
+	bidib_free_id_list_query(query);
+	return g_accs;
+}
+
 onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get points");
-		GString *points = g_string_new("");
-		t_bidib_id_list_query query = bidib_get_connected_points();
-		for (size_t i = 0; i < query.length; i++) {
-			t_bidib_unified_accessory_state_query point_state = bidib_get_point_state(query.ids[i]);
-			
-			GString *execution_state = g_string_new("");
-			if (point_state.type == BIDIB_ACCESSORY_BOARD) {
-				g_string_printf(execution_state, "(target state%s reached)", 
-				                point_state.board_accessory_state.execution_state ? " not" : "");
-			}
-			
-			g_string_append_printf(points, "%s%s - state: %s %s",
-			                       i != 0 ? "\n" : "", query.ids[i],
-			                       point_state.type == BIDIB_ACCESSORY_BOARD ?
-			                       point_state.board_accessory_state.state_id :
-			                       point_state.dcc_accessory_state.state_id,
-			                       execution_state->str);
-			g_string_free(execution_state, true);
-			bidib_free_unified_accessory_state_query(point_state);
-		}
-		bidib_free_id_list_query(query);
-		
-		onion_response_printf(res, "%s", points->str);
+		GString *g_points = get_accessory_json(true);
+		onion_response_printf(res, "%s", g_points->str);
 		syslog_server(LOG_INFO, "Request: Get points - finished");
-		g_string_free(points, true);
+		g_string_free(g_points, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get points - system not running or wrong request type");
@@ -332,23 +412,10 @@ onion_connection_status handler_get_signals(void *_, onion_request *req, onion_r
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get signals");
-		GString *signals = g_string_new("");
-		t_bidib_id_list_query query = bidib_get_connected_signals();
-		for (size_t i = 0; i < query.length; i++) {
-			t_bidib_unified_accessory_state_query signal_state =
-					bidib_get_signal_state(query.ids[i]);
-			g_string_append_printf(signals, "%s%s - state: %s",
-			                       i != 0 ? "\n" : "", query.ids[i],
-			                       signal_state.type == BIDIB_ACCESSORY_BOARD ?
-			                       signal_state.board_accessory_state.state_id :
-			                       signal_state.dcc_accessory_state.state_id);
-			bidib_free_unified_accessory_state_query(signal_state);
-		}
-		bidib_free_id_list_query(query);
-		
-		onion_response_printf(res, "%s", signals->str);
+		GString *g_signals = get_accessory_json(false);
+		onion_response_printf(res, "%s", g_signals->str);
 		syslog_server(LOG_INFO, "Request: Get signals - finished");
-		g_string_free(signals, true);
+		g_string_free(g_signals, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get signals - system not running or wrong request type");
@@ -356,6 +423,36 @@ onion_connection_status handler_get_signals(void *_, onion_request *req, onion_r
 	}
 }
 
+GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
+	if (data_id == NULL) {
+		///TODO: Discuss ret val
+		return g_string_new("");
+	}
+	t_bidib_id_list_query query;
+	if (is_point) {
+		query = bidib_get_point_aspects(data_id);
+	} else {
+		query = bidib_get_signal_aspects(data_id);
+	}
+	
+	if (query.length <= 0 || query.ids == NULL) {
+		///TODO: Discuss ret val
+		return g_string_new("");
+	}
+	
+	GString *g_aspects = g_string_sized_new(query.length * 16);
+	g_string_assign(g_aspects, "");
+	append_start_of_obj(g_aspects, false);
+	append_field_start_of_list(g_aspects, "aspects");
+	
+	for (size_t i = 0; i < query.length; i++) {
+		g_string_append_printf(g_aspects, "%s\"%s\"", i != 0 ? ", " : "", query.ids[i]);
+	}
+	append_end_of_list(g_aspects, false, query.length > 0);
+	append_end_of_obj(g_aspects, false);
+	bidib_free_id_list_query(query);
+	return g_aspects;
+}
 
 onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
                                                   onion_response *res) {
@@ -368,24 +465,17 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 		}
 		
 		syslog_server(LOG_INFO, "Request: Get point aspects - point: %s", data_point);
-		t_bidib_id_list_query query = bidib_get_point_aspects(data_point);
-		if (query.length > 0) {
-			GString *aspects = g_string_new("");
-			for (size_t i = 0; i < query.length; i++) {
-				g_string_append_printf(aspects, "%s%s", i != 0 ? ", " : "", query.ids[i]);
-			}
-			bidib_free_id_list_query(query);
-			
-			onion_response_printf(res, "%s", aspects->str);
-			syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - finished", data_point);
-			g_string_free(aspects, true);
-			return OCS_PROCESSED;
-		} else {
-			bidib_free_id_list_query(query);
+		GString *g_aspects = get_accessory_aspects_json(data_point, true);
+		if (g_aspects == NULL || g_aspects->len <= 0) {
 			syslog_server(LOG_ERR, 
 			              "Request: Get point aspects - point: %s - invalid point", 
 			              data_point);
 			return OCS_NOT_IMPLEMENTED;
+		} else {
+			onion_response_printf(res, "%s", g_aspects->str);
+			syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - finished", data_point);
+			g_string_free(g_aspects, true);
+			return OCS_PROCESSED;
 		}
 	} else {
 		syslog_server(LOG_ERR, 
@@ -405,26 +495,19 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 		}
 		
 		syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s", data_signal);
-		t_bidib_id_list_query query = bidib_get_signal_aspects(data_signal);
-		if (query.length > 0) {
-			GString *aspects = g_string_new("");
-			for (size_t i = 0; i < query.length; i++) {
-				g_string_append_printf(aspects, "%s%s", i != 0 ? ", " : "", query.ids[i]);
-			}
-			bidib_free_id_list_query(query);
-			
-			onion_response_printf(res, "%s", aspects->str);
-			syslog_server(LOG_INFO, 
-			              "Request: Get signal aspects - signal: %s - finished", 
-			              data_signal);
-			g_string_free(aspects, true);
-			return OCS_PROCESSED;
-		} else {
-			bidib_free_id_list_query(query);
+		GString *g_aspects = get_accessory_aspects_json(data_signal, false);
+		if (g_aspects == NULL || g_aspects->len <= 0) {
 			syslog_server(LOG_ERR, 
 			              "Request: Get signal aspects - signal: %s - invalid signal", 
 			              data_signal);
 			return OCS_NOT_IMPLEMENTED;
+		} else {
+			onion_response_printf(res, "%s", g_aspects->str);
+			syslog_server(LOG_INFO, 
+			              "Request: Get signal aspects - signal: %s - finished", 
+			              data_signal);
+			g_string_free(g_aspects, true);
+			return OCS_PROCESSED;
 		}
 	} else {
 		syslog_server(LOG_ERR, 
@@ -438,41 +521,37 @@ GString *get_segments_json() {
 	
 	GString *g_segments = g_string_sized_new(48 * (seg_query.length + 1));
 	g_string_assign(g_segments, "");
-	append_start_of_obj(g_segments);
+	append_start_of_obj(g_segments, false);
 	append_field_start_of_list(g_segments, "segments");
 	
-	bool need_comma = false;
+	int added_segments = 0;
 	for (size_t i = 0; i < seg_query.length; i++) {
 		t_bidib_segment_state_query seg_state_query = bidib_get_segment_state(seg_query.ids[i]);
-		if (!need_comma) {
-			need_comma = true;
-		} else {
+		if (added_segments++ > 0) {
 			g_string_append_c(g_segments, ',');
 		}
-		append_start_of_obj(g_segments);
+		append_start_of_obj(g_segments, true);
 		append_field_str_value(g_segments, "id", seg_query.ids[i], true);
-		if (seg_state_query.data.dcc_address_cnt > 0) {
-			append_field_start_of_list(g_segments, "occupied-by");
+		
+		append_field_start_of_list(g_segments, "occupied-by");
+		for (size_t j = 0; j < seg_state_query.data.dcc_address_cnt; j++) {
+			t_bidib_id_query id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
 			
-			for (size_t j = 0; j < seg_state_query.data.dcc_address_cnt; j++) {
-				t_bidib_id_query id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
-				g_string_append_printf(g_segments, "%s\"%s\"", 
-				                       j != 0 ? ", " : "", 
-				                       id_query.known ? id_query.id : "unknown");
-				bidib_free_id_query(id_query);
-			}
-			
-			append_end_of_list(g_segments, false);
-		} else {
-			append_field_emptylist_value(g_segments, "occupied-by", false);
+			g_string_append_printf(g_segments, "%s\"%s\"", 
+			                       j != 0 ? ", " : "", 
+			                       id_query.known ? id_query.id : "unknown");
+			bidib_free_id_query(id_query);
 		}
+		
+		append_end_of_list(g_segments, false, seg_state_query.data.dcc_address_cnt > 0);
 		append_end_of_obj(g_segments, false);
 		
 		bidib_free_segment_state_query(seg_state_query);
+		
 	}
 	bidib_free_id_list_query(seg_query);
 	
-	append_end_of_list(g_segments, false);
+	append_end_of_list(g_segments, false, added_segments > 0);
 	append_end_of_obj(g_segments, false);
 	return g_segments;
 }
@@ -482,7 +561,6 @@ onion_connection_status handler_get_segments(void *_, onion_request *req, onion_
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get segments");
 		GString *g_segments = get_segments_json();
-		
 		onion_response_printf(res, "%s", g_segments->str);
 		syslog_server(LOG_INFO, "Request: Get segments - finished");
 		g_string_free(g_segments, true);
@@ -496,28 +574,18 @@ onion_connection_status handler_get_segments(void *_, onion_request *req, onion_
 GString *get_reversers_json() {
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
 	GString *g_reversers = g_string_sized_new(48 * (rev_query.length + 1));
-	//GString *g_reversers = g_string_new("");
 	g_string_assign(g_reversers, "");
 	
-	append_start_of_obj(g_reversers);
+	append_start_of_obj(g_reversers, false);
 	append_field_start_of_list(g_reversers, "reversers");
 	
-	bool need_comma = false;
+	int added_reversers = 0;
 	for (size_t i = 0; i < rev_query.length; i++) {
 		const char *reverser_id = rev_query.ids[i];
 		t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
 		if (!rev_state_query.available) {
 			bidib_free_reverser_state_query(rev_state_query);
 			continue;
-		}
-		
-		if (!need_comma) {
-			need_comma = true;
-		} else {
-			if (g_reversers->str[g_reversers->len-1] == '}') {
-				syslog_server(LOG_WARNING, "Experiment: reverser json append comma - would be correct");
-			}
-			g_string_append_c(g_reversers, ',');
 		}
 		
 		char *state_value_str = "unknown";
@@ -532,12 +600,16 @@ GString *get_reversers_json() {
 				state_value_str = "unknown";
 				break;
 		}
-		append_start_of_obj(g_reversers);
+		bidib_free_reverser_state_query(rev_state_query);
+		
+		if (added_reversers++ > 0) {
+			g_string_append_c(g_reversers, ',');
+		}
+		append_start_of_obj(g_reversers, true);
 		append_field_str_value(g_reversers, "id", reverser_id, true);
 		append_field_str_value(g_reversers, "state", state_value_str, false);
 		append_end_of_obj(g_reversers, false);
 		
-		bidib_free_reverser_state_query(rev_state_query);
 	}
 	bidib_free_id_list_query(rev_query);
 	return g_reversers;
@@ -567,10 +639,10 @@ GString *get_peripherals_json() {
 	t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
 	GString *g_peripherals = g_string_sized_new(48 * (per_query.length + 1));
 	g_string_assign(g_peripherals, "");
-	append_start_of_obj(g_peripherals);
+	append_start_of_obj(g_peripherals, false);
 	append_field_start_of_list(g_peripherals, "peripherals");
 	
-	bool need_comma = false;
+	int added_peripherals = 0;
 	for (size_t i = 0; i < per_query.length; i++) {
 		t_bidib_peripheral_state_query per_state_query = bidib_get_peripheral_state(per_query.ids[i]);
 		if (!per_state_query.available) {
@@ -580,13 +652,11 @@ GString *get_peripherals_json() {
 			              per_query.ids[i]);
 			continue;
 		}
-		if (!need_comma) {
-			need_comma = true;
-		} else {
+		if (added_peripherals++ > 0) {
 			g_string_append_c(g_peripherals, ',');
 		}
 		
-		append_start_of_obj(g_peripherals);
+		append_start_of_obj(g_peripherals, true);
 		append_field_str_value(g_peripherals, "id", per_query.ids[i], true);
 		append_field_str_value(g_peripherals, "state-id", per_state_query.data.state_id, true);
 		///TODO: Check if this works correctly; data.state_value is uint8, not unsigned int.
@@ -596,7 +666,7 @@ GString *get_peripherals_json() {
 	}
 	bidib_free_id_list_query(per_query);
 	
-	append_end_of_list(g_peripherals, false);
+	append_end_of_list(g_peripherals, false, added_peripherals > 0);
 	append_end_of_obj(g_peripherals, false);
 	
 	return g_peripherals;
@@ -658,26 +728,23 @@ GString* get_granted_routes_json() {
 	// Old "normal" way without sized new
 	//GString *g_granted_routes = g_string_new("");
 	
-	append_start_of_obj(g_granted_routes);
+	append_start_of_obj(g_granted_routes, false);
 	append_field_start_of_list(g_granted_routes, "granted-routes");
 	
 	pthread_mutex_lock(&interlocker_mutex);
-	GArray *route_ids = interlocking_table_get_all_route_ids();
+	GArray *route_ids = interlocking_table_get_all_route_ids_cpy();
 	
-	bool need_comma = false;
+	int routes_added = 0;
 	if (route_ids != NULL) {
 		for (size_t i = 0; i < route_ids->len; i++) {
 			const char *route_id = g_array_index(route_ids, char *, i);
 			if (route_id != NULL) {
 				t_interlocking_route *route = get_route(route_id);
 				if (route != NULL && route->train != NULL) {
-					if (!need_comma) {
-						need_comma = true;
-					} else {
-						// Add comma to end of prev. object
+					if (routes_added++ > 0) {
 						g_string_append_c(g_granted_routes, ',');
 					}
-					append_start_of_obj(g_granted_routes);
+					append_start_of_obj(g_granted_routes, true);
 					append_field_bare_value_from_str(g_granted_routes, "id", route->id, true);
 					append_field_str_value(g_granted_routes, "train", route->train, false);
 					append_end_of_obj(g_granted_routes, false);
@@ -688,7 +755,7 @@ GString* get_granted_routes_json() {
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	append_end_of_list(g_granted_routes, false);
+	append_end_of_list(g_granted_routes, false, routes_added > 0);
 	append_end_of_obj(g_granted_routes, false);
 	
 	return g_granted_routes;
@@ -699,10 +766,10 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get granted routes");
-		GString *granted_routes = get_granted_routes_json();
-		onion_response_printf(res, "%s", granted_routes->str);
+		GString *g_granted_routes = get_granted_routes_json();
+		onion_response_printf(res, "%s", g_granted_routes->str);
 		syslog_server(LOG_INFO, "Request: Get granted routes - finished");
-		g_string_free(granted_routes, true);
+		g_string_free(g_granted_routes, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 
@@ -711,53 +778,44 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 	}
 }
 
-GString* get_route_json(const char *data_route_id) {
-	const char *route_id = params_check_route_id(data_route_id);
-	if (route_id == NULL || strcmp(route_id, "") == 0) {
-		// Invalid route id
-		syslog_server(LOG_ERR, "Get route JSON experiment - invalid route id");
-		return NULL;
-	}
-	
+GString* get_route_json(const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
-	
 	const t_interlocking_route *route = get_route(route_id);
 	if (route == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Get route JSON experiment - invalid route id (route not found)");
+		syslog_server(LOG_ERR, "Get route json - invalid route id (route not found)");
 		return NULL;
 	}
+	GString *g_route = g_string_sized_new(1024);
+	g_string_assign(g_route, "");
 	
-	GString *g_route_str = g_string_new("");
-	append_start_of_obj(g_route_str);
-	append_field_bare_value_from_str(g_route_str, "id", route->id, true);
-	append_field_str_value(g_route_str, "source_signal", route->source, true);
-	append_field_str_value(g_route_str, "destination_signal", route->destination, true);
-	append_field_str_value(g_route_str, "orientation", route->orientation, true);
-	append_field_float_value(g_route_str, "length", route->length, true);
-	append_field_strlist_value_garray_strs(g_route_str, "path", route->path, true);
-	append_field_strlist_value_garray_strs(g_route_str, "sections", route->sections, true);
-	append_field_strlist_value_garray_strs(g_route_str, "signals", route->signals, true);
+	append_start_of_obj(g_route, false);
+	append_field_bare_value_from_str(g_route, "id", route->id, true);
+	append_field_str_value(g_route, "source_signal", route->source, true);
+	append_field_str_value(g_route, "destination_signal", route->destination, true);
+	append_field_str_value(g_route, "orientation", route->orientation, true);
+	append_field_float_value(g_route, "length", route->length, true);
+	append_field_strlist_value_garray_strs(g_route, "path", route->path, true);
+	append_field_strlist_value_garray_strs(g_route, "sections", route->sections, true);
+	append_field_strlist_value_garray_strs(g_route, "signals", route->signals, true);
 	
 	GArray *g_point_ids = garray_points_to_garray_str_ids(route->points);
-	append_field_strlist_value_garray_strs(g_route_str, "points", g_point_ids, true);
+	append_field_strlist_value_garray_strs(g_route, "points", g_point_ids, true);
 	free_g_strarray(g_point_ids);
 	
-	append_field_barelist_value_from_garray_strs(g_route_str, "conflicting_route_ids", route->conflicts, true);
+	append_field_barelist_value_from_garray_strs(g_route, "conflicting_route_ids", 
+	                                             route->conflicts, true);
 	
-	const GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
-	if (granted_route_conflicts != NULL) {
-		append_field_strlist_value_garray_strs(g_route_str, "granted_conflicting_route_ids", granted_route_conflicts, true);
-	} else {
-		append_field_emptylist_value(g_route_str, "granted_conflicting_route_ids", true);
-	}
+	append_field_strlist_value_garray_strs(g_route, "granted_conflicting_route_ids", 
+	                                       get_granted_route_conflicts(route_id), true);
 	
-	append_field_bool_value(g_route_str, "clear", get_route_is_clear(route_id), true);
-	append_field_str_value(g_route_str, "granted_to_train", route->train == NULL ? "" : route->train, false);
-	append_end_of_obj(g_route_str, false);
+	append_field_bool_value(g_route, "clear", get_route_is_clear(route_id), true);
+	append_field_str_value(g_route, "granted_to_train", 
+	                       route->train == NULL ? "" : route->train, false);
+	append_end_of_obj(g_route, false);
 	
 	pthread_mutex_unlock(&interlocker_mutex);
-	return g_route_str;
+	return g_route;
 }
 
 onion_connection_status handler_get_route(void *_, onion_request *req, onion_response *res) {
@@ -771,10 +829,10 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 		}
 		
 		syslog_server(LOG_INFO, "Request: Get route - route: %s", route_id);
-		GString* route_json = get_route_json(data_route_id);
-		onion_response_printf(res, "%s", route_json->str);
+		GString* g_route = get_route_json(route_id);
+		onion_response_printf(res, "%s", g_route->str);
 		syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
-		g_string_free(route_json, true);
+		g_string_free(g_route, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get route - system not running or wrong request type");

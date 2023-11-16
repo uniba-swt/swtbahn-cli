@@ -52,10 +52,10 @@ GString* append_field_value_garray_strs_base(GString *dest, const char *field,
                                              const GArray* g_strarray, 
                                              bool add_value_quote_marks, 
                                              bool add_trailing_comma) {
-	if (dest == NULL || field == NULL || g_strarray == NULL) {
+	if (dest == NULL || field == NULL) {
 		return NULL;
 	}
-	if (g_strarray->len == 0) {
+	if (g_strarray == NULL || g_strarray->len == 0) {
 		g_string_append_printf(dest, "\n\"%s\": []%s", field, add_trailing_comma ? "," : "");
 		return dest;
 	}
@@ -73,7 +73,7 @@ GString* append_field_value_garray_strs_base(GString *dest, const char *field,
 }
 
 GString* append_field_strlist_value_garray_strs(GString *dest, const char *field, 
-                                           const GArray* g_strarray, bool add_trailing_comma) {
+                                                const GArray* g_strarray, bool add_trailing_comma) {
 	return append_field_value_garray_strs_base(dest, field, g_strarray, true, add_trailing_comma);
 }
 
@@ -141,19 +141,12 @@ GString* append_field_start_of_list(GString *dest, const char *field) {
 	return dest;
 }
 
-GString* append_start_of_list(GString *dest) {
+GString* append_end_of_list(GString *dest, bool add_trailing_comma, bool with_prepend_newline) {
 	if (dest == NULL) {
 		return NULL;
 	}
-	g_string_append_printf(dest, "\n[");
-	return dest;
-}
-
-GString* append_end_of_list(GString *dest, bool add_trailing_comma) {
-	if (dest == NULL) {
-		return NULL;
-	}
-	g_string_append_printf(dest, "\n]%s", add_trailing_comma ? "," : "");
+	g_string_append_printf(dest, "%s]%s", 
+	                       with_prepend_newline ? "\n" : "", add_trailing_comma ? "," : "");
 	return dest;
 }
 
@@ -165,11 +158,12 @@ GString* append_field_start_of_obj(GString *dest, const char *field) {
 	return dest;
 }
 
-GString* append_start_of_obj(GString *dest) {
+///TODO: Make newline configurable
+GString* append_start_of_obj(GString *dest, bool with_prepend_newline) {
 	if (dest == NULL) {
 		return NULL;
 	}
-	g_string_append_printf(dest, "\n{");
+	g_string_append_printf(dest, "%s{", with_prepend_newline ? "\n" : "");
 	return dest;
 }
 

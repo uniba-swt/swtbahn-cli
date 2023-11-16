@@ -16,9 +16,8 @@ GString* append_field_uint_value(GString *dest, const char *field, unsigned int 
 GString* append_field_float_value(GString *dest, const char *field, float value_float, bool add_trailing_comma);
 
 GString* append_field_start_of_list(GString *dest, const char *field);
-GString* append_start_of_list(GString *dest);
-GString* append_end_of_list(GString *dest, bool add_trailing_comma);
+GString* append_end_of_list(GString *dest, bool add_trailing_comma, bool with_prepend_newline);
 
 GString* append_field_start_of_obj(GString *dest, const char *field);
-GString* append_start_of_obj(GString *dest);
+GString* append_start_of_obj(GString *dest, bool with_prepend_newline);
 GString* append_end_of_obj(GString *dest, bool add_trailing_comma);

@@ -1,0 +1,23 @@
+{
+	"points": [
+		{
+			"id": "point1",
+			"state": "normal",
+			"target_state_reached": false
+		},
+		{
+			"id": "point2",
+			"state": "normal",
+			"target_state_reached": true
+		},
+		{
+			"id": "point3",
+			"state": "reverse",
+			"target_state_reached": true
+		},
+		{
+			"id": "point4",
+			"state": "reverse"
+		}
+	]
+}
