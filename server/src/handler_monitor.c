@@ -121,7 +121,7 @@ GString *get_trains_json() {
 	append_end_of_list(g_trains, false, query.length > 0);
 	append_end_of_obj(g_trains, false);
 	
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_trains_json", 72 * (query.length + 1), g_trains->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_trains_json", 64 * (query.length + 1), g_trains->len);
 	bidib_free_id_list_query(query);
 	return g_trains;
 }
@@ -266,7 +266,7 @@ GString *get_train_peripherals_json(const char *data_train) {
 	
 	append_end_of_list(g_train_peripherals, false, query.length > 0);
 	append_end_of_obj(g_train_peripherals, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_peripherals_json", 64 * (query.length + 1), g_train_peripherals->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_peripherals_json", 40 * (query.length + 1), g_train_peripherals->len);
 	
 	bidib_free_id_list_query(query);
 	return g_train_peripherals;
@@ -394,7 +394,7 @@ GString *get_accessory_json(bool point_accessories) {
 	}
 	append_end_of_list(g_accs, false, query.length > 0);
 	append_end_of_obj(g_accs, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_json", 64 * (query.length + 1), g_accs->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_json", 80 * (query.length + 1), g_accs->len);
 	bidib_free_id_list_query(query);
 	return g_accs;
 }
@@ -456,7 +456,7 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	}
 	append_end_of_list(g_aspects, false, false);
 	append_end_of_obj(g_aspects, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_aspects_json", query.length * 16, g_aspects->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_aspects_json", 32 * (query.length + 1), g_aspects->len);
 	bidib_free_id_list_query(query);
 	return g_aspects;
 }
@@ -767,7 +767,7 @@ GString* get_granted_routes_json() {
 	
 	append_end_of_list(g_granted_routes, false, routes_added > 0);
 	append_end_of_obj(g_granted_routes, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_granted_routes_json", 256, g_granted_routes->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_granted_routes_json", 64, g_granted_routes->len);
 	
 	return g_granted_routes;
 }
