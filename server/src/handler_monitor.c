@@ -100,7 +100,7 @@ void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
 
 GString *get_trains_json() {
 	t_bidib_id_list_query query = bidib_get_trains();
-	GString *g_trains = g_string_sized_new(64 * (query.length + 1));
+	GString *g_trains = g_string_sized_new(60 * (query.length + 1));
 	g_string_assign(g_trains, "");
 	
 	append_start_of_obj(g_trains, false);
@@ -121,7 +121,7 @@ GString *get_trains_json() {
 	append_end_of_list(g_trains, false, query.length > 0);
 	append_end_of_obj(g_trains, false);
 	
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_trains_json", 64 * (query.length + 1), g_trains->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_trains_json", 60 * (query.length + 1), g_trains->len);
 	bidib_free_id_list_query(query);
 	return g_trains;
 }
@@ -155,7 +155,7 @@ GString *get_train_state_json(const char *data_train) {
 		return g_string_new("");
 	}
 	
-	GString *g_train_state = g_string_sized_new(384);
+	GString *g_train_state = g_string_sized_new(256);
 	g_string_assign(g_train_state, "");
 	append_start_of_obj(g_train_state, false);
 	append_field_str_value(g_train_state, "id", data_train, true);
@@ -202,7 +202,7 @@ GString *get_train_state_json(const char *data_train) {
 	
 	bidib_free_train_position_query(train_position_query);
 	append_end_of_obj(g_train_state, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_state_json", 384, g_train_state->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_state_json", 256, g_train_state->len);
 	return g_train_state;
 }
 
@@ -364,7 +364,7 @@ GString *get_accessory_json(bool point_accessories) {
 	} else {
 		query = bidib_get_connected_signals();
 	}
-	GString *g_accs = g_string_sized_new(80 * (query.length + 1));
+	GString *g_accs = g_string_sized_new(70 * (query.length + 1));
 	g_string_assign(g_accs, "");
 	append_start_of_obj(g_accs, false);
 	append_field_start_of_list(g_accs, point_accessories ? "points" : "signals");
@@ -394,7 +394,7 @@ GString *get_accessory_json(bool point_accessories) {
 	}
 	append_end_of_list(g_accs, false, query.length > 0);
 	append_end_of_obj(g_accs, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_json", 80 * (query.length + 1), g_accs->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_json", 70 * (query.length + 1), g_accs->len);
 	bidib_free_id_list_query(query);
 	return g_accs;
 }
@@ -526,7 +526,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 GString *get_segments_json() {
 	t_bidib_id_list_query seg_query = bidib_get_connected_segments();
 	
-	GString *g_segments = g_string_sized_new(48 * (seg_query.length + 1));
+	GString *g_segments = g_string_sized_new(42 * (seg_query.length + 1));
 	g_string_assign(g_segments, "");
 	append_start_of_obj(g_segments, false);
 	append_field_start_of_list(g_segments, "segments");
@@ -558,7 +558,7 @@ GString *get_segments_json() {
 	}
 	append_end_of_list(g_segments, false, added_segments > 0);
 	append_end_of_obj(g_segments, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_segments_json", 48 * (seg_query.length + 1), g_segments->len);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_segments_json", 42 * (seg_query.length + 1), g_segments->len);
 	bidib_free_id_list_query(seg_query);
 	return g_segments;
 }
