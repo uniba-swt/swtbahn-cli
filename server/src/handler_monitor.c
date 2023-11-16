@@ -100,7 +100,7 @@ void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
 
 GString *get_trains_json() {
 	t_bidib_id_list_query query = bidib_get_trains();
-	GString *g_trains = g_string_sized_new(72 * (query.length + 1));
+	GString *g_trains = g_string_sized_new(64 * (query.length + 1));
 	g_string_assign(g_trains, "");
 	
 	append_start_of_obj(g_trains, false);
@@ -193,7 +193,7 @@ GString *get_train_state_json(const char *data_train) {
 			const char *block_id = config_get_block_id_of_segment(train_position_query.segments[i]);
 			// only add block if it does not already exist in the list (and thus in g_train_state)
 			if (block_id != NULL && strstr(g_train_state->str, block_id) == NULL) {
-				g_string_printf(g_train_state, "%s\"%s\"", added_blocks > 0 ? ", " : "", block_id);
+				g_string_append_printf(g_train_state, "%s\"%s\"", added_blocks > 0 ? ", " : "", block_id);
 				++added_blocks;
 			}
 		}
@@ -242,7 +242,7 @@ GString *get_train_peripherals_json(const char *data_train) {
 	}
 	
 	t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
-	GString *g_train_peripherals = g_string_sized_new(64 * (query.length + 1));
+	GString *g_train_peripherals = g_string_sized_new(40 * (query.length + 1));
 	g_string_assign(g_train_peripherals, "");
 	
 	append_start_of_obj(g_train_peripherals, false);
@@ -394,7 +394,7 @@ GString *get_accessory_json(bool point_accessories) {
 	}
 	append_end_of_list(g_accs, false, query.length > 0);
 	append_end_of_obj(g_accs, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_accessory_json", (unsigned int) 64 * (query.length + 1), g_accs);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %lu", "get_accessory_json", (size_t) (64 * (query.length + 1)), g_accs);
 	bidib_free_id_list_query(query);
 	return g_accs;
 }
@@ -446,7 +446,7 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 		return g_string_new("");
 	}
 	
-	GString *g_aspects = g_string_sized_new((query.length + 1) * 20);
+	GString *g_aspects = g_string_sized_new(32 * (query.length + 1));
 	g_string_assign(g_aspects, "");
 	append_start_of_obj(g_aspects, false);
 	append_field_start_of_list(g_aspects, "aspects");
@@ -732,7 +732,7 @@ onion_connection_status handler_get_verification_url(void *_, onion_request *req
 GString* get_granted_routes_json() {
 	///TODO: test - sized new could be nice to avoid reallocs, but now how do initialize the string?
 	//              maybe just with g_string_assign?
-	GString *g_granted_routes = g_string_sized_new(256);
+	GString *g_granted_routes = g_string_sized_new(64);
 	g_string_assign(g_granted_routes, "");
 	
 	// Old "normal" way without sized new
