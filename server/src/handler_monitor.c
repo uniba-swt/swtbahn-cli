@@ -364,7 +364,7 @@ GString *get_accessory_json(bool point_accessories) {
 	} else {
 		query = bidib_get_connected_signals();
 	}
-	GString *g_accs = g_string_sized_new(64 * (query.length + 1));
+	GString *g_accs = g_string_sized_new(80 * (query.length + 1));
 	g_string_assign(g_accs, "");
 	append_start_of_obj(g_accs, false);
 	append_field_start_of_list(g_accs, point_accessories ? "points" : "signals");
@@ -394,7 +394,7 @@ GString *get_accessory_json(bool point_accessories) {
 	}
 	append_end_of_list(g_accs, false, query.length > 0);
 	append_end_of_obj(g_accs, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_accessory_json", 64 * (query.length + 1), g_accs);
+	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_accessory_json", (unsigned int) 64 * (query.length + 1), g_accs);
 	bidib_free_id_list_query(query);
 	return g_accs;
 }
@@ -446,7 +446,7 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 		return g_string_new("");
 	}
 	
-	GString *g_aspects = g_string_sized_new(query.length * 16);
+	GString *g_aspects = g_string_sized_new((query.length + 1) * 20);
 	g_string_assign(g_aspects, "");
 	append_start_of_obj(g_aspects, false);
 	append_field_start_of_list(g_aspects, "aspects");
@@ -454,7 +454,7 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	for (size_t i = 0; i < query.length; i++) {
 		g_string_append_printf(g_aspects, "%s\"%s\"", i != 0 ? ", " : "", query.ids[i]);
 	}
-	append_end_of_list(g_aspects, false, query.length > 0);
+	append_end_of_list(g_aspects, false, false);
 	append_end_of_obj(g_aspects, false);
 	syslog_server(LOG_NOTICE, "%s - size estimate: %u, size actual: %u", "get_accessory_aspects_json", query.length * 16, g_aspects->len);
 	bidib_free_id_list_query(query);
