@@ -19,6 +19,6 @@ GString* append_field_start_of_list(GString *dest, const char *field);
 GString* append_start_of_list(GString *dest);
 GString* append_end_of_list(GString *dest, bool add_trailing_comma);
 
-GString* append_field_with_start_of_obj(GString *dest, const char *field);
+GString* append_field_start_of_obj(GString *dest, const char *field);
 GString* append_start_of_obj(GString *dest);
 GString* append_end_of_obj(GString *dest, bool add_trailing_comma);

@@ -1,0 +1,12 @@
+{
+	"granted-routes": [
+	{
+		"id": 0,
+		"train": "cargo_db"
+	}, 
+	{
+		"id": 99,
+		"train": "cargo_green"
+	}
+]
+}

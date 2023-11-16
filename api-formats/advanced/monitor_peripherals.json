@@ -1,0 +1,14 @@
+{
+	"peripherals": [
+		{
+			"id": "str",
+			"state-id": "str",
+			"state-value": 0
+		},
+		{
+			"id": "str2",
+			"state-id": "str2",
+			"state-value": 1
+		}
+	]
+}

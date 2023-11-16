@@ -42,6 +42,62 @@
 #include "websocket_uploader/engine_uploader.h"
 #include "json_response_builder.h"
 
+
+GArray* garray_points_to_garray_str_ids(GArray *points) {
+	if (points == NULL) {
+		return NULL;
+	}
+	GArray *g_point_ids = g_array_new(FALSE, FALSE, sizeof(char *));
+	
+	for (int i = 0; i < points->len; ++i) {
+		t_interlocking_point *point = &g_array_index(points, t_interlocking_point, i);
+		if (point != NULL) {
+			char *point_id_dcopy = strdup(point->id);
+			if (point_id_dcopy != NULL) {
+				g_array_append_val(g_point_ids, point_id_dcopy);
+			}
+		}
+	}
+	return g_point_ids;
+}
+
+void free_g_strarray(GArray *g_strarray) {
+	if (g_strarray == NULL) {
+		return;
+	}
+	for (int i = 0; i < g_strarray->len; ++i) {
+		if (g_array_index(g_strarray, char *, i) != NULL) {
+			free(g_array_index(g_strarray, char *, i));
+		}
+	}
+	g_array_free(g_strarray, true);
+	g_strarray = NULL;
+}
+
+void sprintf_garray_char(GString *output, GArray *garray) {
+	if (garray->len == 0) {
+		g_string_append_printf(output, "none");
+		return;
+	}
+	for (size_t i = 0; i < garray->len; i++) {
+		g_string_append_printf(output, "%s%s", 
+		                       g_array_index(garray, char *, i),
+		                       i != (garray->len - 1) ? ", " : "");
+	}
+}
+
+void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
+	if (garray->len == 0) {
+		g_string_append_printf(output, "none");
+		return;
+	}
+	for (size_t i = 0; i < garray->len; i++) {
+		g_string_append_printf(output, "%s%s", 
+		                       g_array_index(garray, t_interlocking_point, i).id,
+		                       i != (garray->len - 1) ? ", " : "");
+	}
+}
+
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -377,40 +433,114 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 	}
 }
 
+GString *get_segments_json() {
+	t_bidib_id_list_query seg_query = bidib_get_connected_segments();
+	
+	GString *g_segments = g_string_sized_new(48 * (seg_query.length + 1));
+	g_string_assign(g_segments, "");
+	append_start_of_obj(g_segments);
+	append_field_start_of_list(g_segments, "segments");
+	
+	bool need_comma = false;
+	for (size_t i = 0; i < seg_query.length; i++) {
+		t_bidib_segment_state_query seg_state_query = bidib_get_segment_state(seg_query.ids[i]);
+		if (!need_comma) {
+			need_comma = true;
+		} else {
+			g_string_append_c(g_segments, ',');
+		}
+		append_start_of_obj(g_segments);
+		append_field_str_value(g_segments, "id", seg_query.ids[i], true);
+		if (seg_state_query.data.dcc_address_cnt > 0) {
+			append_field_start_of_list(g_segments, "occupied-by");
+			
+			for (size_t j = 0; j < seg_state_query.data.dcc_address_cnt; j++) {
+				t_bidib_id_query id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
+				g_string_append_printf(g_segments, "%s\"%s\"", 
+				                       j != 0 ? ", " : "", 
+				                       id_query.known ? id_query.id : "unknown");
+				bidib_free_id_query(id_query);
+			}
+			
+			append_end_of_list(g_segments, false);
+		} else {
+			append_field_emptylist_value(g_segments, "occupied-by", false);
+		}
+		append_end_of_obj(g_segments, false);
+		
+		bidib_free_segment_state_query(seg_state_query);
+	}
+	bidib_free_id_list_query(seg_query);
+	
+	append_end_of_list(g_segments, false);
+	append_end_of_obj(g_segments, false);
+	return g_segments;
+}
+
 onion_connection_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get segments");
-		GString *segments = g_string_new("");
-		t_bidib_id_list_query seg_query = bidib_get_connected_segments();
-		for (size_t i = 0; i < seg_query.length; i++) {
-			t_bidib_segment_state_query seg_state_query = bidib_get_segment_state(seg_query.ids[i]);
-			g_string_append_printf(segments, "%s%s - occupied: %s",
-			                       i != 0 ? "\n" : "", seg_query.ids[i],
-			                       seg_state_query.data.occupied ? "yes" : "no");
-			if (seg_state_query.data.dcc_address_cnt > 0) {
-				g_string_append_printf(segments, " trains: ");
-				t_bidib_id_query id_query;
-				for (size_t j = 0; j < seg_state_query.data.dcc_address_cnt; j++) {
-					id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
-					g_string_append_printf(segments, "%s%s", 
-					                       j != 0 ? ", " : "", 
-					                       id_query.known ? id_query.id : "unknown");
-					bidib_free_id_query(id_query);
-				}
-			}
-			bidib_free_segment_state_query(seg_state_query);
-		}
-		bidib_free_id_list_query(seg_query);
+		GString *g_segments = get_segments_json();
 		
-		onion_response_printf(res, "%s", segments->str);
+		onion_response_printf(res, "%s", g_segments->str);
 		syslog_server(LOG_INFO, "Request: Get segments - finished");
-		g_string_free(segments, true);
+		g_string_free(g_segments, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR,  "Request: Get segments - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
+}
+
+GString *get_reversers_json() {
+	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
+	GString *g_reversers = g_string_sized_new(48 * (rev_query.length + 1));
+	//GString *g_reversers = g_string_new("");
+	g_string_assign(g_reversers, "");
+	
+	append_start_of_obj(g_reversers);
+	append_field_start_of_list(g_reversers, "reversers");
+	
+	bool need_comma = false;
+	for (size_t i = 0; i < rev_query.length; i++) {
+		const char *reverser_id = rev_query.ids[i];
+		t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
+		if (!rev_state_query.available) {
+			bidib_free_reverser_state_query(rev_state_query);
+			continue;
+		}
+		
+		if (!need_comma) {
+			need_comma = true;
+		} else {
+			if (g_reversers->str[g_reversers->len-1] == '}') {
+				syslog_server(LOG_WARNING, "Experiment: reverser json append comma - would be correct");
+			}
+			g_string_append_c(g_reversers, ',');
+		}
+		
+		char *state_value_str = "unknown";
+		switch (rev_state_query.data.state_value) {
+			case BIDIB_REV_EXEC_STATE_OFF: 
+				state_value_str = "off";
+				break;
+			case BIDIB_REV_EXEC_STATE_ON: 
+				state_value_str = "on";
+				break;
+			default:
+				state_value_str = "unknown";
+				break;
+		}
+		append_start_of_obj(g_reversers);
+		append_field_str_value(g_reversers, "id", reverser_id, true);
+		append_field_str_value(g_reversers, "state", state_value_str, false);
+		append_end_of_obj(g_reversers, false);
+		
+		bidib_free_reverser_state_query(rev_state_query);
+	}
+	bidib_free_id_list_query(rev_query);
+	return g_reversers;
 }
 
 onion_connection_status handler_get_reversers(void *_, onion_request *req, onion_response *res) {
@@ -421,39 +551,10 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req, onion
 			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
 			return OCS_NOT_IMPLEMENTED;
 		}
-		
-		GString *reversers = g_string_new("");
-		t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
-		for (size_t i = 0; i < rev_query.length; i++) {
-			const char *reverser_id = rev_query.ids[i];
-			t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
-			if (!rev_state_query.available) {
-				continue;
-			}
-			
-			char *state_value_str = "unknown";
-			switch (rev_state_query.data.state_value) {
-				case BIDIB_REV_EXEC_STATE_OFF: 
-					state_value_str = "off";
-					break;
-				case BIDIB_REV_EXEC_STATE_ON: 
-					state_value_str = "on";
-					break;
-				default:
-					state_value_str = "unknown";
-					break;
-			}
-			
-			g_string_append_printf(reversers, "%s%s - state: %s",
-			                       i != 0 ? "\n" : "",
-			                       reverser_id, state_value_str);
-			bidib_free_reverser_state_query(rev_state_query);
-		}
-		bidib_free_id_list_query(rev_query);
-		
-		onion_response_printf(res, "%s", reversers->str);
+		GString *g_reversers = get_reversers_json();
+		onion_response_printf(res, "%s", g_reversers->str);
 		syslog_server(LOG_INFO, "Request: Get reversers - finished");
-		g_string_free(reversers, true);
+		g_string_free(g_reversers, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get reversers - system not running or wrong request type");
@@ -461,26 +562,54 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req, onion
 	}
 }
 
+GString *get_peripherals_json() {
+	// Trying out ways of estimating size. The +1 is there to avoid size 0 if query length is 0.
+	t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
+	GString *g_peripherals = g_string_sized_new(48 * (per_query.length + 1));
+	g_string_assign(g_peripherals, "");
+	append_start_of_obj(g_peripherals);
+	append_field_start_of_list(g_peripherals, "peripherals");
+	
+	bool need_comma = false;
+	for (size_t i = 0; i < per_query.length; i++) {
+		t_bidib_peripheral_state_query per_state_query = bidib_get_peripheral_state(per_query.ids[i]);
+		if (!per_state_query.available) {
+			bidib_free_peripheral_state_query(per_state_query);
+			syslog_server(LOG_WARNING, 
+			              "Get pheripherals json - peripheral %s not available", 
+			              per_query.ids[i]);
+			continue;
+		}
+		if (!need_comma) {
+			need_comma = true;
+		} else {
+			g_string_append_c(g_peripherals, ',');
+		}
+		
+		append_start_of_obj(g_peripherals);
+		append_field_str_value(g_peripherals, "id", per_query.ids[i], true);
+		append_field_str_value(g_peripherals, "state-id", per_state_query.data.state_id, true);
+		///TODO: Check if this works correctly; data.state_value is uint8, not unsigned int.
+		append_field_uint_value(g_peripherals, "state-value", per_state_query.data.state_value, false);
+		append_end_of_obj(g_peripherals, false);
+		bidib_free_peripheral_state_query(per_state_query);
+	}
+	bidib_free_id_list_query(per_query);
+	
+	append_end_of_list(g_peripherals, false);
+	append_end_of_obj(g_peripherals, false);
+	
+	return g_peripherals;
+}
+
 onion_connection_status handler_get_peripherals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get peripherals");
-		GString *peripherals = g_string_new("");
-		t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
-		for (size_t i = 0; i < per_query.length; i++) {
-			t_bidib_peripheral_state_query per_state_query =
-					bidib_get_peripheral_state(per_query.ids[i]);
-			g_string_append_printf(peripherals, "%s%s - %s: %d",
-			                       i != 0 ? "\n" : "", per_query.ids[i],
-			                       per_state_query.data.state_id,
-			                       per_state_query.data.state_value);
-			bidib_free_peripheral_state_query(per_state_query);
-		}
-		bidib_free_id_list_query(per_query);
-		
-		onion_response_printf(res, "%s", peripherals->str);
+		GString *g_peripherals = get_peripherals_json();
+		onion_response_printf(res, "%s", g_peripherals->str);
 		syslog_server(LOG_INFO, "Request: Get peripherals - finished");
-		g_string_free(peripherals, true);
+		g_string_free(g_peripherals, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 
@@ -493,7 +622,7 @@ onion_connection_status handler_get_verification_option(void *_, onion_request *
                                                         onion_response *res) {
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
-		onion_response_printf(res, "verification-enabled: %s", 
+		onion_response_printf(res, "{\n\"verification-enabled\": %s\n}", 
 		                      verification_enabled ? "true" : "false");
 		syslog_server(LOG_INFO, "Request: Get verification option - done");
 		return OCS_PROCESSED;
@@ -508,7 +637,10 @@ onion_connection_status handler_get_verification_url(void *_, onion_request *req
     build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		const char *verif_url = get_verifier_url();
-		onion_response_printf(res, "verification-url: %s", verif_url == NULL ? "null" : verif_url);
+		onion_response_printf(res, 
+		                      "{\n\"verification-url\": \"%s\"\n}", 
+		                      verif_url == NULL ? "null" : verif_url);
+		
 		syslog_server(LOG_INFO, "Request: Get verification url - done");
 		return OCS_PROCESSED;
 	} else {
@@ -517,33 +649,57 @@ onion_connection_status handler_get_verification_url(void *_, onion_request *req
 	}
 }
 
+GString* get_granted_routes_json() {
+	///TODO: test - sized new could be nice to avoid reallocs, but now how do initialize the string?
+	//              maybe just with g_string_assign?
+	GString *g_granted_routes = g_string_sized_new(256);
+	g_string_assign(g_granted_routes, "");
+	
+	// Old "normal" way without sized new
+	//GString *g_granted_routes = g_string_new("");
+	
+	append_start_of_obj(g_granted_routes);
+	append_field_start_of_list(g_granted_routes, "granted-routes");
+	
+	pthread_mutex_lock(&interlocker_mutex);
+	GArray *route_ids = interlocking_table_get_all_route_ids();
+	
+	bool need_comma = false;
+	if (route_ids != NULL) {
+		for (size_t i = 0; i < route_ids->len; i++) {
+			const char *route_id = g_array_index(route_ids, char *, i);
+			if (route_id != NULL) {
+				t_interlocking_route *route = get_route(route_id);
+				if (route != NULL && route->train != NULL) {
+					if (!need_comma) {
+						need_comma = true;
+					} else {
+						// Add comma to end of prev. object
+						g_string_append_c(g_granted_routes, ',');
+					}
+					append_start_of_obj(g_granted_routes);
+					append_field_bare_value_from_str(g_granted_routes, "id", route->id, true);
+					append_field_str_value(g_granted_routes, "train", route->train, false);
+					append_end_of_obj(g_granted_routes, false);
+				}
+			}
+		}
+		g_array_free(route_ids, true);
+	}
+	pthread_mutex_unlock(&interlocker_mutex);
+	
+	append_end_of_list(g_granted_routes, false);
+	append_end_of_obj(g_granted_routes, false);
+	
+	return g_granted_routes;
+}
+
 onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
                                                    onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_INFO, "Request: Get granted routes");
-		bool needNewLine = false;
-		GString *granted_routes = g_string_new("");
-		GArray *route_ids = interlocking_table_get_all_route_ids();
-		if (route_ids != NULL) {
-			for (size_t i = 0; i < route_ids->len; i++) {
-				const char *route_id = g_array_index(route_ids, char *, i);
-				if (route_id != NULL) {
-					t_interlocking_route *route = get_route(route_id);
-					if (route != NULL && route->train != NULL) {
-						g_string_append_printf(granted_routes, "%sroute id: %s train: %s", 
-						                       needNewLine ? "\n" : "", route->id, route->train);
-						needNewLine = true;
-					}
-				}
-			}
-			g_array_free(route_ids, true);
-		}
-		
-		if (strcmp(granted_routes->str, "") == 0) {
-			g_string_append_printf(granted_routes, "No granted routes");
-		}
-		
+		GString *granted_routes = get_granted_routes_json();
 		onion_response_printf(res, "%s", granted_routes->str);
 		syslog_server(LOG_INFO, "Request: Get granted routes - finished");
 		g_string_free(granted_routes, true);
@@ -553,61 +709,6 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
 		              "Request: Get granted routes - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
-}
-
-void sprintf_garray_char(GString *output, GArray *garray) {
-	if (garray->len == 0) {
-		g_string_append_printf(output, "none");
-		return;
-	}
-	for (size_t i = 0; i < garray->len; i++) {
-		g_string_append_printf(output, "%s%s", 
-		                       g_array_index(garray, char *, i),
-		                       i != (garray->len - 1) ? ", " : "");
-	}
-}
-
-void sprintf_garray_interlocking_point(GString *output, GArray *garray) {
-	if (garray->len == 0) {
-		g_string_append_printf(output, "none");
-		return;
-	}
-	for (size_t i = 0; i < garray->len; i++) {
-		g_string_append_printf(output, "%s%s", 
-		                       g_array_index(garray, t_interlocking_point, i).id,
-		                       i != (garray->len - 1) ? ", " : "");
-	}
-}
-
-GArray* garray_points_to_garray_str_ids(GArray *points) {
-	if (points == NULL) {
-		return NULL;
-	}
-	GArray *g_point_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-	
-	for (int i = 0; i < points->len; ++i) {
-		t_interlocking_point *point = &g_array_index(points, t_interlocking_point, i);
-		if (point != NULL) {
-			char *point_id_dcopy = strdup(point->id);
-			if (point_id_dcopy != NULL) {
-				g_array_append_val(g_point_ids, point_id_dcopy);
-			}
-		}
-	}
-	return g_point_ids;
-}
-
-void free_g_strarray(GArray *g_strarray) {
-	if (g_strarray == NULL) {
-		return;
-	}
-	for (int i = 0; i < g_strarray->len; ++i) {
-		if (g_array_index(g_strarray, char *, i) != NULL) {
-			free(g_array_index(g_strarray, char *, i));
-		}
-	}
-	g_array_free(g_strarray, true);
-	g_strarray = NULL;
 }
 
 GString* get_route_json(const char *data_route_id) {
@@ -656,9 +757,6 @@ GString* get_route_json(const char *data_route_id) {
 	append_end_of_obj(g_route_str, false);
 	
 	pthread_mutex_unlock(&interlocker_mutex);
-	
-	//syslog_server(LOG_NOTICE, "Get route JSON experiment - route: %s, output: \n%s", route_id, g_route_str->str);
-	
 	return g_route_str;
 }
 

@@ -1,0 +1,20 @@
+{
+	"segments": [
+		{
+			"id": "seg1",
+			"occupied-by": ["cargo_db"]
+		},
+		{
+			"id": "seg2",
+			"occupied-by": ["cargo_green"]
+		},
+		{
+			"id": "seg3",
+			"occupied-by": []
+		},
+		{
+			"id": "seg4",
+			"occupied-by": ["unknown"]
+		}
+	]
+}

@@ -1,0 +1,12 @@
+{
+	"reversers": [
+		{
+			"id": "r1",
+			"state": "on"
+		},
+		{
+			"id": "r2",
+			"state": "unknown"
+		}
+	]
+}
