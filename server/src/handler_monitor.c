@@ -611,11 +611,6 @@ void free_g_strarray(GArray *g_strarray) {
 }
 
 GString* get_route_json(const char *data_route_id) {
-	if (data_route_id == NULL) {
-		// Invalid param
-		syslog_server(LOG_NOTICE, "Get route JSON experiment - input param NULL");
-		return NULL;
-	}
 	const char *route_id = params_check_route_id(data_route_id);
 	if (route_id == NULL || strcmp(route_id, "") == 0) {
 		// Invalid route id
@@ -628,7 +623,6 @@ GString* get_route_json(const char *data_route_id) {
 	const t_interlocking_route *route = get_route(route_id);
 	if (route == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		// Invalid route / route doesn't exist
 		syslog_server(LOG_ERR, "Get route JSON experiment - invalid route id (route not found)");
 		return NULL;
 	}
@@ -663,7 +657,7 @@ GString* get_route_json(const char *data_route_id) {
 	
 	pthread_mutex_unlock(&interlocker_mutex);
 	
-	syslog_server(LOG_NOTICE, "Get route JSON experiment - route: %s, output: \n%s", route_id, g_route_str->str);
+	//syslog_server(LOG_NOTICE, "Get route JSON experiment - route: %s, output: \n%s", route_id, g_route_str->str);
 	
 	return g_route_str;
 }
@@ -678,48 +672,11 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		///TODO: remove - Experiment
-		GString* route_json = get_route_json(data_route_id);
-		g_string_free(route_json, true);
-		// End of experiment
-		
 		syslog_server(LOG_INFO, "Request: Get route - route: %s", route_id);
-		GString *route_str = g_string_new("");
-		
-		pthread_mutex_lock(&interlocker_mutex);
-		t_interlocking_route *route = get_route(route_id);
-		g_string_append_printf(route_str, "route id: %s\n", route->id);
-		g_string_append_printf(route_str, "  source signal: %s\n", route->source);
-		g_string_append_printf(route_str, "  destination signal: %s\n", route->destination);
-		g_string_append_printf(route_str, "  orientation: %s\n", route->orientation);
-		g_string_append_printf(route_str, "  length: %f\n", route->length);
-		g_string_append_printf(route_str, "  path: ");
-		sprintf_garray_char(route_str, route->path);
-		g_string_append_printf(route_str, "\n  sections: ");
-		sprintf_garray_char(route_str, route->sections);
-		g_string_append_printf(route_str, "\n  points: ");
-		sprintf_garray_interlocking_point(route_str, route->points);
-		g_string_append_printf(route_str, "\n  signals: ");
-		sprintf_garray_char(route_str, route->signals);
-		g_string_append_printf(route_str, "\n  conflicting route ids: ");
-		sprintf_garray_char(route_str, route->conflicts);
-		
-		g_string_append_printf(route_str, "\nstatus:");
-		g_string_append_printf(route_str, "\n  granted conflicting route ids: ");
-		GArray *granted_route_conflicts = get_granted_route_conflicts(route_id);
-		sprintf_garray_char(route_str, granted_route_conflicts);
-		g_array_free(granted_route_conflicts, true);
-		
-		g_string_append_printf(route_str, "\n  route clear: %s", 
-		                       get_route_is_clear(route_id) ? "yes": "no");
-		
-		g_string_append_printf(route_str, "\n  granted train: %s", 
-		                       route->train == NULL ? "none" : route->train);
-		pthread_mutex_unlock(&interlocker_mutex);
-		
-		onion_response_printf(res, "%s", route_str->str);
+		GString* route_json = get_route_json(data_route_id);
+		onion_response_printf(res, "%s", route_json->str);
 		syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
-		g_string_free(route_str, true);
+		g_string_free(route_json, true);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get route - system not running or wrong request type");
