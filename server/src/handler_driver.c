@@ -749,8 +749,6 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		while (running && !train_position_is_at(train_id, pre_dest_segment)
 		               && drive_route_params_valid(train_id, route)) {
 			usleep(TRAIN_DRIVE_TIME_STEP);
-			///TODO: Discuss - why is this re-assignment necessary? Its the same pointer, right?
-			route = get_route(route->id);
 		}
 		
 		syslog_server(LOG_NOTICE, 
@@ -768,7 +766,6 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	while (running && result && !is_segment_occupied(dest_segment) 
 	                         && drive_route_params_valid(train_id, route)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
-		route = get_route(route->id);
 	}
 	
 	// Driving stops
