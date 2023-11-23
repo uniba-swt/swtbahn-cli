@@ -25,14 +25,17 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_DRIVER_H
-#define SWTSERVER_HANDLER_DRIVER_H
+#ifndef HANDLER_DRIVER_H
+#define HANDLER_DRIVER_H
 
 #include <onion/onion.h>
 #include <glib.h>
 
 #define TRAIN_ENGINE_COUNT_MAX			4
 #define TRAIN_ENGINE_INSTANCE_COUNT_MAX	5
+
+#define MICROSECOND 1
+#define TRAIN_DRIVE_TIME_STEP 	10000 * MICROSECOND		// 0.01 seconds
 
 extern pthread_mutex_t grabbed_trains_mutex;
 
@@ -53,6 +56,14 @@ bool train_grabbed(const char *train);
 bool release_train(int grab_id);
 
 void release_all_grabbed_trains(void);
+
+/**
+ * @brief Returns a heap-allocated string with the name of the train grabbed with this grab-id.
+ * Caller must free the returned string.
+ * @param grab_id Grab-id with which the desired train is grabbed
+ * @return char* the name of the train grabbed by grab-id; NULL if not grabbed or otherwise invalid.
+ */
+char *train_id_from_grab_id(int grab_id);
 
 onion_connection_status handler_grab_train(void *_, onion_request *req,
                                            onion_response *res);
@@ -86,5 +97,4 @@ onion_connection_status handler_set_train_emergency_stop(void *_, onion_request 
                                                          onion_response *res);
 
 
-#endif
-
+#endif  // HANDLER_DRIVER_H

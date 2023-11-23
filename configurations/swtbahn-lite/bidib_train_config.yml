@@ -1,7 +1,7 @@
-# Train configuration: SWTbahnLite
+# Train configuration: SWTbahn
 trains:
   - id: cargo_db
-    dcc-address: 0x0001
+    dcc-address: 0x007F
     dcc-speed-steps: 126
     calibration:
       - 5
@@ -21,10 +21,53 @@ trains:
         bit: 0
         initial: 1
     weight: 100.0g
-    length: 7.0cm
+    length: 13.0cm
+    type: cargo
+  - id: cargo_bayern
+    dcc-address: 0x0070
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4
+        initial: 1
+      - id: cabin_light
+        bit: 0
+        initial: 1
+    weight: 100.0g
+    length: 13.0cm
+    type: cargo
+  - id: cargo_green
+    dcc-address: 0x006F
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4
+        initial: 1
+    weight: 100.0g
+    length: 13.0cm
     type: cargo
   - id: regional_odeg
-    dcc-address: 0x0002
+    dcc-address: 0x0060
     dcc-speed-steps: 126
     calibration:
       - 5
@@ -47,7 +90,7 @@ trains:
     length: 25.0cm
     type: passenger
   - id: regional_brengdirect
-    dcc-address: 0x0004
+    dcc-address: 0x005F
     dcc-speed-steps: 126
     calibration:
       - 5
@@ -69,45 +112,3 @@ trains:
     weight: 100.0g
     length: 23.0cm
     type: passenger
-  - id: cargo_bayern
-    dcc-address: 0x0005
-    dcc-speed-steps: 126
-    calibration:
-      - 5
-      - 15
-      - 30
-      - 45
-      - 60
-      - 75
-      - 90
-      - 105
-      - 120
-    peripherals:
-      - id: head_light
-        bit: 4
-        initial: 1
-      - id: cabin_light
-        bit: 0
-        initial: 1
-    weight: 100.0g
-    type: cargo
-  - id: cargo_green
-    dcc-address: 0x0006
-    dcc-speed-steps: 126
-    calibration:
-      - 5
-      - 15
-      - 30
-      - 45
-      - 60
-      - 75
-      - 90
-      - 105
-      - 120
-    peripherals:
-      - id: head_light
-        bit: 4
-        initial: 1
-    weight: 100.0g
-    length: 13.0cm
-    type: cargo

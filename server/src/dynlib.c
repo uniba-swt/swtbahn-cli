@@ -46,7 +46,7 @@ static const char dynlib_symbol_drive_route_tick[] = "drive_route_tick";
 static const char sccharts_compiler_c_command[] = "java -jar \"$KIELER_PATH\"/kico.jar -s de.cau.cs.kieler.sccharts.priority";
 static const char c_compiler_command[] = "clang -shared -fpic -Wall -Wextra";
 
-static const char bahndsl_compiler_command[] = "bahnc -o %s/bahnc -m library %s/%s.bahn";
+static const char bahndsl_compiler_command[] = "\"$BAHNDSL_PATH\"/bahnc -o %s/bahnc -m library %s/%s.bahn";
 static const char bahndsl_move_command[] = "mv %s/bahnc/libinterlocker_%s.%s %s/libinterlocker_%s.%s";
 
 dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library);

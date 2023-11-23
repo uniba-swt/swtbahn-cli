@@ -93,6 +93,7 @@ platforms:
     signals:
       - signal11
       - signal12
+reversers:
 crossings:
 signaltypes:
   - id: entry

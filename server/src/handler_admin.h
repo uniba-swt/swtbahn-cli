@@ -25,10 +25,12 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_ADMIN_H
-#define SWTSERVER_HANDLER_ADMIN_H
+#ifndef HANDLER_ADMIN_H
+#define HANDLER_ADMIN_H
 
-void stop_bidib(void);
+#include <onion/onion.h>
+
+void shutdown_server(void);
 
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res);
@@ -39,6 +41,12 @@ onion_connection_status handler_shutdown(void *_, onion_request *req,
 onion_connection_status handler_set_track_output(void *_, onion_request *req,
                                                  onion_response *res);
 
+onion_connection_status handler_set_verification_option(void *_, onion_request *req,
+                                                        onion_response *res);
+
+onion_connection_status handler_set_verification_url(void *_, onion_request *req,
+                                                     onion_response *res);
+
 onion_connection_status handler_admin_release_train(void *_, onion_request *req,
                                                     onion_response *res);
 
@@ -46,5 +54,4 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
                                                           onion_response *res);
 
 
-#endif
-
+#endif  // HANDLER_ADMIN_H

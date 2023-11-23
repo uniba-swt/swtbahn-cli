@@ -26,8 +26,11 @@
  *
  */
 
-#ifndef SWTSERVER_HANDLER_CONTROLLER_H
-#define SWTSERVER_HANDLER_CONTROLLER_H
+#ifndef HANDLER_CONTROLLER_H
+#define HANDLER_CONTROLLER_H
+
+#include <onion/onion.h>
+#include <glib.h>
 
 #define INTERLOCKER_COUNT_MAX           4
 #define INTERLOCKER_INSTANCE_COUNT_MAX  4
@@ -138,5 +141,5 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req,
 onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
                                                   onion_response *res);
 
-#endif	// SWTSERVER_HANDLER_CONTROLLER_H
+#endif  // HANDLER_CONTROLLER_H
 

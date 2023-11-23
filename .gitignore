@@ -14,3 +14,4 @@ server/src/.vscode/
 **/.vscode
 **/.cache
 **.project
+**jsconfig.json

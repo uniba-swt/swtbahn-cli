@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef _CHECK_ROUTE_SECTIONAL_DIRECT_H
-#define _CHECK_ROUTE_SECTIONAL_DIRECT_H
+#ifndef CHECK_ROUTE_SECTIONAL_DIRECT_H
+#define CHECK_ROUTE_SECTIONAL_DIRECT_H
 
 #include <stdbool.h>
 
@@ -41,4 +41,4 @@
  */
 bool is_route_conflict_safe_sectional(const char *granted_route_id, const char *requested_route_id);
 
-#endif // _CHECK_ROUTE_SECTIONAL_DIRECT_H
+#endif  // CHECK_ROUTE_SECTIONAL_DIRECT_H
