@@ -214,13 +214,13 @@ is not the same as the one at the server
 * If the user issues `swtbahn admin shutdown` and the system was running
 * If the user issues `swtbahn config`
 
-### Logging Format Notes
-We try to use a consistent logging format in all request handlers. Description of the patter for the request handlers:
+## Logging Format Notes
+We try to use a consistent logging format in all request handlers. General workflow of how request handlers generate log messages:
 1. Parse form data.
-2. Validate form data. If validation fails: make a log on ERROR level and return.
+2. Validate form data. If validation fails, make a log on `ERROR` level and stop processing.
 3. Make a log on NOTICE or INFO level that represents the start of processing.
-4. Process request. If processing causes an error, (try to) make a log on the ERROR level and return.
-5. Processing concluded. Make a log to indicate this (or failed, respectively), by printing the "start of processing" log from step 3. again, but with " - finished" at the end.
+4. Process request. If processing causes an error, (try to) make a log on the `ERROR` level and stop processing.
+5. Processing concluded. Make a log to indicate this, by printing the log message of Step 3 again and appending ` - finished` to it.
 
 For request handlers that "just" return information (getters), the log level in steps 3 and 5 are INFO.
 For request handlers that barely do any "processing" at all; e.g. where only one boolean is updated, they do not have a separate log for start and end of processing. They just make one log which ends on "done".
