@@ -162,7 +162,7 @@ void send_verif_req_message(struct mg_connection *ws_connection, ws_verif_data* 
 void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data *ws_data_ptr) {
 	if (ws_msg == NULL || ws_data_ptr == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Websocket upload engine: received message or ws_verif_data is NULL");
+		              "Websocket upload engine: the received message or ws_verif_data is NULL");
 		return;
 	}
 	

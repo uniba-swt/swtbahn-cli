@@ -242,18 +242,17 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 	}
 }
 
-// What is being refreshed by this? Shouldn't it just be get_engines?
-onion_connection_status handler_refresh_engines(void *_, onion_request *req, onion_response *res) {
+onion_connection_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Refresh engines");
+		syslog_server(LOG_INFO, "Request: Get engines");
 		GString *train_engines = dyn_containers_get_train_engines();
 		onion_response_printf(res, "%s", train_engines->str);
 		g_string_free(train_engines, true);
-		syslog_server(LOG_INFO, "Request: Refresh engines - finished");
+		syslog_server(LOG_INFO, "Request: Get engines - finished");
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Refresh engines - system not running or wrong request type");
+		syslog_server(LOG_ERR, "Request: Get engines - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
@@ -444,20 +443,19 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 	}
 }
 
-// What is being refreshed by this? Shouldn't it just be get_interlockers?
-onion_connection_status handler_refresh_interlockers(void *_, onion_request *req,
+onion_connection_status handler_get_interlockers(void *_, onion_request *req,
                                                      onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Refresh interlockers");
+		syslog_server(LOG_INFO, "Request: Get interlockers");
 		GString *interlockers = dyn_containers_get_interlockers();
 		onion_response_printf(res, "%s", interlockers->str);
 		g_string_free(interlockers, true);
-		syslog_server(LOG_INFO, "Request: Refresh interlockers - finished");
+		syslog_server(LOG_INFO, "Request: Get interlockers - finished");
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 
-		              "Request: Refresh interlockers - system not running or wrong request type");
+		              "Request: Get interlockers - system not running or wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
