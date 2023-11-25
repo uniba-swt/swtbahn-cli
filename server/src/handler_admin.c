@@ -115,18 +115,18 @@ static bool startup_server(void) {
 void shutdown_server(void) {
 	session_id = 0;
 	syslog_server(LOG_NOTICE, "Shutdown server");
-	syslog_server(LOG_INFO, "Shutdown server - Will cease printing to log once stop is complete");
 	release_all_grabbed_trains();
 	syslog_server(LOG_INFO, "Shutdown server - Released all grabbed trains");
 	release_all_interlockers();
 	syslog_server(LOG_INFO, "Shutdown server - Released all interlockers");
 	running = false;
 	dyn_containers_stop();
-	syslog_server(LOG_INFO, "Shutdown server - Stopped dyn-containers");
+	syslog_server(LOG_INFO, "Shutdown server - Stopped dyn containers");
 	bahn_data_util_free_config();
+	syslog_server(LOG_INFO, "Shutdown server - Released interlocking config and table data");
 	pthread_join(poll_bidib_messages_thread, NULL);
 	syslog_server(LOG_NOTICE, 
-	              "Shutdown server - Bidib message poll thread joined, now stopping bidib and closing log");
+	              "Shutdown server - BiDiB message poll thread joined, now stopping BiDiB and closing log");
 	bidib_stop();
 }
 
@@ -149,7 +149,7 @@ onion_connection_status handler_startup(void *_, onion_request *req, onion_respo
 			              session_id);
 		}  else {
 			syslog_server(LOG_ERR, 
-			              "Request: Startup server - session id: %ld - unable to start bidib", 
+			              "Request: Startup server - session id: %ld - unable to start BiDiB", 
 			              session_id);
 		}
 	} else {
@@ -305,12 +305,12 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		
 		if (speed == 999) {
 			syslog_server(LOG_ERR, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - bad speed",
+			              "Request: Admin set dcc train speed - train: %s speed: %d - invalid speed",
 			              data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - bad track output", 
+			              "Request: Admin set dcc train speed - train: %s speed: %d - invalid track output", 
 			              data_train, speed);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
@@ -321,7 +321,7 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 			if (bidib_set_train_speed(data_train, speed, data_track_output)) {
 				syslog_server(LOG_ERR, 
 				              "Request: Admin set dcc train speed - train: %s speed: %d - "
-				              "bad parameter values", 
+				              "invalid parameters", 
 				              data_train, speed);
 			} else {
 				bidib_flush();

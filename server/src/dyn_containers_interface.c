@@ -147,7 +147,7 @@ static void *dyn_containers_actuate(void *_) {
 												  : -engine_instance->output_nominal_speed, 
 												  grabbed_trains[i].track_output)) {
 							syslog_server(LOG_ERR, 
-							              "Dyn containers actuate - train: %s - bad parameter values when setting train speed",
+							              "Dyn containers actuate - train: %s - invalid parameters",
 							              grabbed_trains[i].name->str);
 						} else {
 							bidib_flush();

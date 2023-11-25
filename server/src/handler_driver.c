@@ -215,7 +215,7 @@ static bool validate_interlocking_route_members_not_null(const t_interlocking_ro
 static void log_signal_info(int priority, const t_route_signal_info *sig_info) {
 	if (sig_info != NULL) {
 		syslog_server(priority, 
-		              "Drive route signal info: id - %s, %s source, %s destination, path index - %d", 
+		              "Drive route signal info - id: %s, source: %s, destination: %s, path index: %d", 
 		              sig_info->id != NULL ? sig_info->id : "NULL",
 		              sig_info->is_source_signal ? "is" : "not",
 		              sig_info->is_destination_signal ? "is" : "not",
@@ -346,7 +346,7 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 		if (info_arr.data_ptr[i] == NULL) {
 			syslog_server(LOG_WARNING, 
 			              "Get route signal info array - route: %s - "
-			              "skip NULL signal_info at pos %d of info_arr", 
+			              "skipped NULL signal_info at pos %d of info_arr", 
 			              i);
 			continue;
 		}
@@ -528,12 +528,12 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 				// 4. Try to set the signal to signal_stop_aspect.
 				if (bidib_set_signal(sig_info->id, signal_stop_aspect)) {
 					syslog_server(LOG_WARNING, 
-					              "Update route signals - route: %s - unable to set signal %s to %s",
+					              "Update route signals - route: %s signal: %s - unable to set signal to %s",
 					              route->id, sig_info->id, signal_stop_aspect);
 				} else {
 					bidib_flush();
 					syslog_server(LOG_NOTICE, 
-					              "Update route signals - route: %s - signal %s set to %s",
+					              "Update route signals - route: %s signal: %s - signal set to %s",
 					              sig_info->id, signal_stop_aspect, route->id);
 					sig_info->has_been_set_to_stop = true;
 					signals_set_to_stop++;
@@ -636,7 +636,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			if (train_pos_index_previous > train_pos_query.pos_index) {
 				syslog_server(LOG_DEBUG, 
 				              "Drive route decoupled - route: %s train: %s - "
-				              "new train index %d is lower than previous index %d",
+				              "new train path index %d is lower than previous path index %d",
 				              route->id, train_id, 
 				              train_pos_query.pos_index, train_pos_index_previous);
 			}
@@ -726,7 +726,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 
 	// Driving starts: Driving direction is computed from the route orientation
 	syslog_server(LOG_NOTICE, 
-	              "Drive route - route: %s train: %s - driving starts (%s)", 
+	              "Drive route - route: %s train: %s - %s driving starts", 
 	              route->id, train_id, is_automatic ? "automatic" : "manual");
 	
 	pthread_mutex_lock(&grabbed_trains_mutex);	
@@ -752,7 +752,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Drive route - route: %s train: %s - slowing for end of route", 
+		              "Drive route - route: %s train: %s - slowing down for end of route", 
 		              train_id, route_id);
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 
@@ -828,7 +828,7 @@ static int grab_train(const char *train, const char *engine) {
 	grabbed_trains[grab_id].is_valid = true;
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	syslog_server(LOG_NOTICE, 
-	              "Grab train - train: %s engine: %s - train grabbed (grab id %d)", 
+	              "Grab train - train: %s engine: %s - train grabbed with id: %d", 
 	              train, engine, grab_id);
 	return grab_id;
 }
@@ -865,7 +865,7 @@ char *train_id_from_grab_id(int grab_id) {
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (train_id == NULL) {
-		syslog_server(LOG_ERR, "Train ID from grab ID - unable to allocate memory for train_id");
+		syslog_server(LOG_ERR, "Train id from grab id - unable to allocate memory for train_id");
 		return NULL;
 	}
 	return train_id;
@@ -890,7 +890,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		if (!train_state_query.known) {
 			bidib_free_train_state_query(train_state_query);
 			syslog_server(LOG_ERR, 
-			              "Request: Grab train - train: %s engine: %s - unknown train/train state", 
+			              "Request: Grab train - train: %s engine: %s - unknown train or train state", 
 			              data_train, data_engine);
 			return OCS_NOT_IMPLEMENTED;
 		}

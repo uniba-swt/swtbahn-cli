@@ -308,7 +308,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	if (granted_conflicts == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
-		              "Grant route id - train: %s route: %s - granted_conflicts is NULL",
+		              "Grant route id - train: %s route: %s - search for conflicting routes failed",
 		              train_id, route_id);
 		return "not_grantable";
 	}
@@ -318,7 +318,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
 		              "Grant route id - train: %s route: %s - route already granted "
-		              "or conflicts with granted routes",
+		              "or conflicting routes are in use",
 		              train_id, route_id);
 		return "not_grantable";
 	}
@@ -383,7 +383,7 @@ void release_route(const char *route_id) {
 	t_interlocking_route *route = get_route(route_id);
 	if (route != NULL && route->train != NULL) {
 		syslog_server(LOG_INFO, 
-		              "Release route - route: %s - route currently granted to train %s, "
+		              "Release route - route: %s - currently granted to train %s, "
 		              "now setting all route signals to aspect_stop", 
 		              route_id, route->train);
 		
@@ -401,11 +401,11 @@ void release_route(const char *route_id) {
 
 		free(route->train);
 		route->train = NULL;
-		syslog_server(LOG_NOTICE, "Release route - route: %s - route released", route_id);
+		syslog_server(LOG_NOTICE, "Release route - route: %s - released", route_id);
 	} else if (route == NULL) {
-		syslog_server(LOG_ERR, "Release route - route: %s - route does not exist", route_id);
+		syslog_server(LOG_ERR, "Release route - route: %s - does not exist", route_id);
 	} else {
-		syslog_server(LOG_ERR, "Release route - route: %s - route is not granted to any train", route_id);
+		syslog_server(LOG_ERR, "Release route - route: %s - is not granted to any train", route_id);
 	}
 
 	pthread_mutex_unlock(&interlocker_mutex);
@@ -508,7 +508,9 @@ onion_connection_status handler_set_signal(void *_, onion_request *req, onion_re
 			              "Request: Set signal - signal: %s state: %s",
 			              data_signal, data_state);
 			if (bidib_set_signal(data_signal, data_state)) {
-				syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
+				syslog_server(LOG_ERR, 
+				              "Request: Set signal - signal: %s state: %s - invalid parameters", 
+				              data_signal, data_state);
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
@@ -558,10 +560,9 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req, onio
 onion_connection_status handler_get_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get interlocker");
-		if (selected_interlocker_instance != -1) {
+		if (selected_interlocker_instance != -1 && selected_interlocker_name != NULL) {
 			onion_response_printf(res, "%s", selected_interlocker_name->str);
-			syslog_server(LOG_INFO, "Request: Get interlocker - finished");
+			syslog_server(LOG_INFO, "Request: Get interlocker - done");
 			return OCS_PROCESSED;
 		} else {
 			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
