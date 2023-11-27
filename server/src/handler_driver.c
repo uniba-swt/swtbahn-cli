@@ -920,12 +920,12 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
-		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		
 		if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, 
-			              "Request: Release train - grab id: %d - invalid session id %s", 
+			              "Request: Release train - grab id: %d - invalid session id: %s", 
 			              grab_id, data_session_id);
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -1061,7 +1061,7 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 		const char *route_id = params_check_route_id(data_route_id);
 		
 		if (strcmp(route_id, "") == 0) {
-			syslog_server(LOG_ERR, "Request: Request train route id - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Request train route id - invalid route id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (client_session_id != session_id) {
 			syslog_server(LOG_ERR, 
@@ -1134,7 +1134,7 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, 
-			              "Request: Driving direction - train: %s - route id empty", 
+			              "Request: Driving direction - train: %s - invalid route id", 
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -1241,7 +1241,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set dcc train speed - train: %s speed: %d - bad track output",
+			              "Request: Set dcc train speed - train: %s speed: %d - invalid track output",
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1297,7 +1297,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set calibrated train speed - train: %s speed: %d - bad track output", 
+			              "Request: Set calibrated train speed - train: %s speed: %d - invalid track output", 
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1309,7 +1309,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id].name->str,
 		                                     speed, data_track_output)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set calibrated train speed - train: %s speed: %d - bad parameter values", 
+			              "Request: Set calibrated train speed - train: %s speed: %d - invalid parameters", 
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1352,7 +1352,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train emergency stop - train: %s - bad track output", 
+			              "Request: Set train emergency stop - train: %s - invalid track output", 
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1363,7 +1363,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		
 		if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str, data_track_output)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train emergency stop - train: %s - bad parameter values", 
+			              "Request: Set train emergency stop - train: %s - invalid parameters", 
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1409,19 +1409,19 @@ onion_connection_status handler_set_train_peripheral(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (state == -1) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train peripheral - train: %s - bad state", 
+			              "Request: Set train peripheral - train: %s - invalid state", 
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_peripheral == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train peripheral - train: %s - bad peripheral",
+			              "Request: Set train peripheral - train: %s - invalid peripheral",
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train peripheral - train: %s peripheral: %s - bad track output", 
+			              "Request: Set train peripheral - train: %s peripheral: %s - invalid track output", 
 			              grabbed_trains[grab_id].name->str, data_peripheral);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1435,7 +1435,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		                               data_track_output)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s "
-			              "peripheral: %s state: 0x%02x - bad parameter values",
+			              "peripheral: %s state: 0x%02x - invalid parameters",
 			              grabbed_trains[grab_id].name->str, data_peripheral, state);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;

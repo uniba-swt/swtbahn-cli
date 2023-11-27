@@ -58,7 +58,7 @@ bool release_train(int grab_id);
 void release_all_grabbed_trains(void);
 
 /**
- * @brief Returns a heap-allocated string with the name of the train grabbed with this grab-id.
+ * @brief For a given grab-id, return the associated train name (a heap-allocated string) if applicable.
  * Caller must free the returned string.
  * @param grab_id Grab-id with which the desired train is grabbed
  * @return char* the name of the train grabbed by grab-id; NULL if not grabbed or otherwise invalid.
