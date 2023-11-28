@@ -236,16 +236,16 @@ onion_connection_status handler_set_verification_url(void *_, onion_request *req
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_url = onion_request_get_post(req, "verification-url");
 		if (data_verification_url == NULL) {
-			syslog_server(LOG_ERR, "Request: Set verification url - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Set verification URL - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		}
 		set_verifier_url(data_verification_url);
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set verification url - new url: %s - done", 
+		              "Request: Set verification URL - new URL: %s - done", 
 		              data_verification_url);
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set verification url - wrong request type");
+		syslog_server(LOG_ERR, "Request: Set verification URL - wrong request type");
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
