@@ -140,7 +140,7 @@ onion_connection_status handler_startup(void *_, onion_request *req, onion_respo
 		openlog("swtbahn", 0, LOG_LOCAL0);
 
 		session_id = time(NULL);
-		syslog_server(LOG_NOTICE, "Request: Startup server - session id: %ld", session_id);
+		syslog_server(LOG_NOTICE, "Request: Startup server - session id: %ld - start", session_id);
 
 		if (startup_server()) { 
 			retval = OCS_PROCESSED;
@@ -167,7 +167,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req, onion_resp
 	
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_NOTICE, "Request: Shutdown server");
+		syslog_server(LOG_NOTICE, "Request: Shutdown server - start");
 		shutdown_server();
 		// Can't log "finished" here since bidib closes the syslog when stopping
 		retval = OCS_PROCESSED;
@@ -191,7 +191,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req, on
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x", state);
+			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - start", state);
 			bidib_set_track_output_state_all(state);
 			bidib_flush();
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - finished", state);
@@ -259,7 +259,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		}
-		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s", data_train);
+		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s - start", data_train);
 		
 		// Ensure that the train has stopped moving
 		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
@@ -315,7 +315,7 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d", 
+			              "Request: Admin set dcc train speed - train: %s speed: %d - start", 
 			              data_train, speed);
 			pthread_mutex_lock(&grabbed_trains_mutex);
 			if (bidib_set_train_speed(data_train, speed, data_track_output)) {

@@ -218,23 +218,23 @@ is not the same as the one at the server
 We try to use a consistent logging format in all request handlers. General workflow of how request handlers generate log messages:
 1. Parse form data.
 2. Validate form data. If validation fails, make a log on `ERROR` level and stop processing.
-3. Make a log on `NOTICE` or `INFO` level that represents the start of processing.
+3. Make a log on `NOTICE` or `INFO` level that represents the start of processing, ending on ` - start`.
 4. Process request. If processing causes an error, (try to) make a log on the `ERROR` level and stop processing.
-5. Processing concluded. Make a log to indicate this, by printing the log message of Step 3 again and appending ` - finished` to it.
+5. Processing concluded. Make a log to indicate this, by printing the log message of Step 3 again with ` - finished` instead of ` - start`.
 
 For request handlers that just return information (getters), the log level in steps 3 and 5 are INFO.
 For request handlers that barely do any "processing" at all; e.g. where only a status variable is updated, they only generate one log message that ends with ` - done`.
 
 As an example, when a request is made to set point10 to the normal state, the request handler (`handler_set_point`) generates the following log messages when the processing is successful:
-> LOG_NOTICE: `Request: Set point - point: point10 state: normal`
+> LOG_NOTICE: `Request: Set point - point: point10 state: normal - start`
 > _Intervening log messages from internal processing_
 > LOG_NOTICE: `Request: Set point - point: point10 state: normal - finished`
 1. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal"
 2. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal - finished"   
 
-If the  above request was instead made with an unsupported state, e.g., `foobar`, then the request handler would generate the following log messages to say that the processing was stopped because of invalid parameters: 
+If the above request was instead made with an unsupported state, e.g., `foobar`, then the request handler would generate the following log messages to say that the processing was stopped because of invalid parameters: 
 
-> LOG_NOTICE: `Request: Set point - point: point10 state: foobar`
+> LOG_NOTICE: `Request: Set point - point: point10 state: foobar - start`
 > _Intervening log messages from internal processing_
 > LOG_ERR: `Request: Set point - point: point10 state: foobar - invalid parameters`
 

@@ -883,7 +883,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 			return OCS_NOT_IMPLEMENTED;
 		}
 		syslog_server(LOG_NOTICE, 
-		              "Request: Grab train - train: %s engine: %s", 
+		              "Request: Grab train - train: %s engine: %s - start", 
 		              data_train, data_engine);
 		
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
@@ -938,7 +938,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Release train - grab id: %d train: %s", 
+		              "Request: Release train - grab id: %d train: %s - start", 
 		              grab_id, train_id);
 		
 		// Set train speed to 0
@@ -1006,7 +1006,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Request train route - train: %s from: %s to: %s", 
+		              "Request: Request train route - train: %s from: %s to: %s - start", 
 		              train_id, data_source_name, data_destination_name);
 		
 		// Use interlocker to find and grant a route
@@ -1080,7 +1080,7 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Request train route id - train: %s route: %s",
+		              "Request: Request train route id - train: %s route: %s - start",
 		              train_id, route_id);
 		
 		// Grant the route ID using an internal algorithm
@@ -1139,7 +1139,7 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Driving direction - train: %s", data_train);
+		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - start", data_train);
 		pthread_mutex_lock(&interlocker_mutex);
 		const t_interlocking_route *route = get_route(route_id);
 		onion_response_printf(res, "%s", 
@@ -1186,7 +1186,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req, onion_r
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Drive route - route: %s train: %s drive mode: %s", 
+		              "Request: Drive route - route: %s train: %s drive mode: %s - start", 
 		              route_id, train_id, mode);
 		
 		const bool is_automatic = (strcmp(mode, "automatic") == 0);
@@ -1248,7 +1248,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set dcc train speed - train: %s speed: %d",
+		              "Request: Set dcc train speed - train: %s speed: %d - start",
 		              grabbed_trains[grab_id].name->str, speed);
 		strcpy(grabbed_trains[grab_id].track_output, data_track_output);
 		const int eng_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
@@ -1304,7 +1304,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set calibrated train speed - train: %s speed: %d",
+		              "Request: Set calibrated train speed - train: %s speed: %d - start",
 		              grabbed_trains[grab_id].name->str, speed);
 		if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id].name->str,
 		                                     speed, data_track_output)) {
@@ -1358,7 +1358,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set train emergency stop - train: %s",
+		              "Request: Set train emergency stop - train: %s - start",
 		              grabbed_trains[grab_id].name->str);
 		
 		if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str, data_track_output)) {
@@ -1428,7 +1428,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x", 
+		              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x - start", 
 		              grabbed_trains[grab_id].name->str, data_peripheral, state);
 		if (bidib_set_train_peripheral(grabbed_trains[grab_id].name->str,
 		                               data_peripheral, state,

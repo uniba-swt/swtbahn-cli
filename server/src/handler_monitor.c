@@ -44,7 +44,7 @@
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get available trains");
+		syslog_server(LOG_INFO, "Request: Get available trains - start");
 		GString *trains = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_trains();
 		for (size_t i = 0; i < query.length; i++) {
@@ -73,7 +73,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 			return OCS_NOT_IMPLEMENTED;
 		} 
 		
-		syslog_server(LOG_INFO, "Request: Get train state - train: %s", data_train);
+		syslog_server(LOG_INFO, "Request: Get train state - train: %s - start", data_train);
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		t_bidib_train_position_query train_position_query = bidib_get_train_position(data_train);
 		
@@ -140,7 +140,7 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get train peripherals - train: %s", data_train);
+		syslog_server(LOG_INFO, "Request: Get train peripherals - train: %s - start", data_train);
 		t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
 		if (query.length > 0) {
 			GString *train_peripherals = g_string_new("");
@@ -177,7 +177,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
                                                   onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get track outputs");
+		syslog_server(LOG_INFO, "Request: Get track outputs - start");
 		GString *track_outputs = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_track_outputs();
 		for (size_t i = 0; i < query.length; i++) {
@@ -238,7 +238,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get points");
+		syslog_server(LOG_INFO, "Request: Get points - start");
 		GString *points = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_connected_points();
 		for (size_t i = 0; i < query.length; i++) {
@@ -274,7 +274,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req, onion_re
 onion_connection_status handler_get_signals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get signals");
+		syslog_server(LOG_INFO, "Request: Get signals - start");
 		GString *signals = g_string_new("");
 		t_bidib_id_list_query query = bidib_get_connected_signals();
 		for (size_t i = 0; i < query.length; i++) {
@@ -310,7 +310,7 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get point aspects - point: %s", data_point);
+		syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - start", data_point);
 		t_bidib_id_list_query query = bidib_get_point_aspects(data_point);
 		if (query.length > 0) {
 			GString *aspects = g_string_new("");
@@ -347,7 +347,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s", data_signal);
+		syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s - start", data_signal);
 		t_bidib_id_list_query query = bidib_get_signal_aspects(data_signal);
 		if (query.length > 0) {
 			GString *aspects = g_string_new("");
@@ -379,7 +379,7 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 onion_connection_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get segments");
+		syslog_server(LOG_INFO, "Request: Get segments - start");
 		GString *segments = g_string_new("");
 		t_bidib_id_list_query seg_query = bidib_get_connected_segments();
 		for (size_t i = 0; i < seg_query.length; i++) {
@@ -415,7 +415,7 @@ onion_connection_status handler_get_segments(void *_, onion_request *req, onion_
 onion_connection_status handler_get_reversers(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get reversers");
+		syslog_server(LOG_INFO, "Request: Get reversers - start");
 		if (!reversers_state_update()) {
 			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
 			return OCS_NOT_IMPLEMENTED;
@@ -463,7 +463,7 @@ onion_connection_status handler_get_reversers(void *_, onion_request *req, onion
 onion_connection_status handler_get_peripherals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get peripherals");
+		syslog_server(LOG_INFO, "Request: Get peripherals - start");
 		GString *peripherals = g_string_new("");
 		t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
 		for (size_t i = 0; i < per_query.length; i++) {
@@ -520,7 +520,7 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
                                                    onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get granted routes");
+		syslog_server(LOG_INFO, "Request: Get granted routes - start");
 		bool needNewLine = false;
 		GString *granted_routes = g_string_new("");
 		GArray *route_ids = interlocking_table_get_all_route_ids();
@@ -588,7 +588,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get route - route: %s", route_id);
+		syslog_server(LOG_INFO, "Request: Get route - route: %s - start", route_id);
 		GString *route_str = g_string_new("");
 		
 		pthread_mutex_lock(&interlocker_mutex);

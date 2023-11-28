@@ -151,7 +151,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 			return OCS_PROCESSED;
 		}
 		
-		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s", filename);
+		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - start", filename);
   
  		if (engine_file_exists(filename)) {
 			syslog_server(LOG_ERR, 
@@ -245,7 +245,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 onion_connection_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get engines");
+		syslog_server(LOG_INFO, "Request: Get engines - start");
 		GString *train_engines = dyn_containers_get_train_engines();
 		onion_response_printf(res, "%s", train_engines->str);
 		g_string_free(train_engines, true);
@@ -271,7 +271,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req, onion
 			return OCS_PROCESSED;
 		}
 		
-		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s", name);
+		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - start", name);
 		
 		pthread_mutex_lock(&dyn_containers_mutex);
 		const int engine_slot = dyn_containers_get_engine_slot(name);
@@ -367,7 +367,9 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 			onion_response_printf(res, "Interlocker file is invalid");
 			return OCS_PROCESSED;
 		}
-		syslog_server(LOG_NOTICE, "Request: Upload interlocker - interlocker file: %s" , filename);
+		syslog_server(LOG_NOTICE, 
+		              "Request: Upload interlocker - interlocker file: %s - start", 
+		              filename);
 
 		if (interlocker_file_exists(filename)) {
 			syslog_server(LOG_ERR, 
@@ -447,7 +449,7 @@ onion_connection_status handler_get_interlockers(void *_, onion_request *req,
                                                      onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get interlockers");
+		syslog_server(LOG_INFO, "Request: Get interlockers - start");
 		GString *interlockers = dyn_containers_get_interlockers();
 		onion_response_printf(res, "%s", interlockers->str);
 		g_string_free(interlockers, true);
@@ -474,7 +476,7 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
 		}
-		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s", name);
+		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - start", name);
 
 		pthread_mutex_lock(&dyn_containers_mutex);
 		const int interlocker_slot = dyn_containers_get_interlocker_slot(name);
