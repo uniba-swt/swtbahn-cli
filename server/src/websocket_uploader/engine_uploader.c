@@ -134,7 +134,8 @@ void send_verif_req_message(struct mg_connection *ws_connection, ws_verif_data* 
 	// Try to send verification request
 	if (g_verif_msg_str != NULL && g_verif_msg_str->len > 0) {
 		syslog_server(LOG_INFO, 
-		              "Websocket engine uploader: Send verification request message - sending request to verifier server");
+		              "Websocket engine uploader: Send verification request message - "
+		              "sending request to verifier server");
 		ssize_t sent_bytes = mg_ws_send(ws_connection, g_verif_msg_str->str, 
 		                                g_verif_msg_str->len, WEBSOCKET_OP_TEXT);
 		if (sent_bytes <= 0) {
@@ -145,7 +146,8 @@ void send_verif_req_message(struct mg_connection *ws_connection, ws_verif_data* 
 		}
 	} else {
 		syslog_server(LOG_ERR, 
-		              "Websocket engine uploader: Send verification request message - failed to construct message to send");
+		              "Websocket engine uploader: Send verification request message - "
+		              "failed to construct message to send");
 		ws_data_ptr->finished = true;
 		ws_data_ptr->success = false;
 	}
@@ -163,7 +165,9 @@ void send_verif_req_message(struct mg_connection *ws_connection, ws_verif_data* 
  */
 void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data *ws_data_ptr) {
 	if (ws_msg == NULL || ws_data_ptr == NULL) {
-		syslog_server(LOG_ERR, "Websocket engine uploader: Process verification result message - invalid parameters");
+		syslog_server(LOG_ERR, 
+		              "Websocket engine uploader: Process verification result message - "
+		              "invalid parameters");
 		return;
 	}
 	
@@ -172,7 +176,8 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 	
 	if (verif_success) {
 		syslog_server(LOG_INFO, 
-		              "Websocket engine uploader: Process verification result message - engine satisfies all its properties");
+		              "Websocket engine uploader: Process verification result message - "
+		              "engine satisfies all its properties");
 		ws_data_ptr->success = true;
 		ws_data_ptr->finished = true;
 	} else {
@@ -210,7 +215,9 @@ void process_verif_server_reply(struct mg_ws_message *ws_msg, ws_verif_data *ws_
 	// Parses mg_ws_message, which is expected to contain a message from the verification server.
 	// Then adjusts ws_data_ptr struct according to server's message.
 	if (ws_msg == NULL || ws_data_ptr == NULL) {
-		syslog_server(LOG_ERR, "Websocket engine uploader: Process verification server reply - invalid parameters");
+		syslog_server(LOG_ERR, 
+		              "Websocket engine uploader: Process verification server reply - "
+		              "invalid parameters");
 		return;
 	}
 	
@@ -218,7 +225,8 @@ void process_verif_server_reply(struct mg_ws_message *ws_msg, ws_verif_data *ws_
 	char *msg_type_is_defined = strstr(ws_msg->data.ptr, msg_type_field_key);
 	if (!msg_type_is_defined) {
 		syslog_server(LOG_ERR, 
-		              "Websocket engine uploader: Process verification server reply - reply lacks __MESSAGE_TYPE__ field");
+		              "Websocket engine uploader: Process verification server reply - "
+		              "reply lacks __MESSAGE_TYPE__ field");
 		return;
 	}
 	
@@ -229,17 +237,20 @@ void process_verif_server_reply(struct mg_ws_message *ws_msg, ws_verif_data *ws_
 	if (type_verif_req_received) {
 		// verification has started
 		syslog_server(LOG_INFO, 
-		              "Websocket engine uploader: Process verification server reply - verification server begun verification");
+		              "Websocket engine uploader: Process verification server reply - "
+		              "verification server begun verification");
 		ws_data_ptr->started = true;
 	} else if (type_verif_req_result) {
 		syslog_server(LOG_INFO, 
-		              "Websocket engine uploader: Process verification server reply - verification server completed verification");
+		              "Websocket engine uploader: Process verification server reply - "
+		              "verification server completed verification");
 		// verification has finished, parse result (updates ws_data_ptr)
 		process_verification_result_msg(ws_msg, ws_data_ptr);
 	} else {
 		// Unknown message type specified by the server.
 		syslog_server(LOG_WARNING, 
-		              "Websocket engine uploader: Process verification server reply - invalid reply format");
+		              "Websocket engine uploader: Process verification server reply - "
+		              "invalid reply format");
 		// We are pessimistic and assume that the verification server will not reply again
 		// after this "mistake"
 		ws_data_ptr->success = false;
@@ -263,7 +274,8 @@ void websocket_verification_callback(struct mg_connection *ws_connection,
                                      int ev, void *ev_data, void *fn_data) {
 	ws_verif_data *ws_data_ptr = fn_data;
 	if (ws_connection == NULL) {
-		syslog_server(LOG_ERR, "Websocket engine uploader: verification callback - connection is NULL");
+		syslog_server(LOG_ERR, 
+		              "Websocket engine uploader: verification callback - connection is NULL");
 		// Error is encountered, the verification can't be completed 
 		ws_data_ptr->success = false;
 		ws_data_ptr->finished = true;
