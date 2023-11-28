@@ -218,12 +218,12 @@ is not the same as the one at the server
 We try to use a consistent logging format in all request handlers. General workflow of how request handlers generate log messages:
 1. Parse form data.
 2. Validate form data. If validation fails, make a log on `ERROR` level and stop processing.
-3. Make a log on `NOTICE` or `INFO` level that represents the start of processing, ending on ` - start`.
+3. Make a log on `NOTICE` or `INFO` level that represents the start of processing, with ` - start` at the end of the log.
 4. Process request. If processing causes an error, (try to) make a log on the `ERROR` level and stop processing.
-5. Processing concluded. Make a log to indicate this, by printing the log message of Step 3 again with ` - finished` instead of ` - start`.
+5. Processing concluded. Indicate this by printing the log message of Step 3 again with ` - finished` instead of ` - start` at the end.
 
-For request handlers that just return information (getters), the log level in steps 3 and 5 are INFO.
 For request handlers that barely do any "processing" at all; e.g. where only a status variable is updated, they only generate one log message that ends with ` - done`.
+Request handlers that only return information (getters) also use the ` - done` pattern instead of `start` and `finished`, and use the log level `INFO`.
 
 As an example, when a request is made to set point10 to the normal state, the request handler (`handler_set_point`) generates the following log messages when the processing is successful:
 > LOG_NOTICE: `Request: Set point - point: point10 state: normal - start`
