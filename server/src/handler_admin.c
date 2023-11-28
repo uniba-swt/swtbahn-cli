@@ -209,11 +209,17 @@ onion_connection_status handler_set_verification_option(void *_, onion_request *
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_option = onion_request_get_post(req, "verification-option");
-		if (data_verification_option == NULL || !params_check_is_bool_string(data_verification_option)) {
+		if (!params_check_is_bool_string(data_verification_option)) {
 			syslog_server(LOG_ERR, "Request: Set verification option - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		}
-		verification_enabled = params_check_verification_option(data_verification_option);
+		if (strcmp("true", data_verification_option) == 0 
+			|| strcmp("True", data_verification_option) == 0 
+			|| strcmp("TRUE", data_verification_option) == 0) {
+			verification_enabled = true;
+		} else {
+			verification_enabled = false;
+		}
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set verification option - new state: %s - done", 
 		              verification_enabled ? "enabled" : "disabled");
