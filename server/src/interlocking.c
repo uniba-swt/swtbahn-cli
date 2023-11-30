@@ -163,3 +163,11 @@ t_interlocking_route *get_route(const char *route_id) {
 
     return NULL;
 }
+
+unsigned int interlocking_table_get_size() {
+    if (route_hash_table != NULL) {
+        return g_hash_table_size(route_hash_table);
+    }
+    
+    return 0;
+}

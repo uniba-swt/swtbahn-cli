@@ -130,10 +130,12 @@ GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 		return NULL;
 	}
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-	///TODO: Discuss this hardcoded 1024
-	char *conflict_routes[1024];
+	
+	const unsigned int route_count = MAX(interlocking_table_get_size(), 1024);
+	char *conflict_routes[route_count];
 	const size_t conflict_routes_len = 
 			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
+	
 	for (size_t i = 0; i < conflict_routes_len; i++) {
 		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
 		if (conflict_route->train != NULL) {
@@ -169,8 +171,9 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 		// Use native implementation of sectional checker
 		return get_granted_route_conflicts_sectional(route_id);
 	}
-
-	char *conflict_routes[1024];
+	
+	const unsigned int route_count = MAX(interlocking_table_get_size(), 1024);
+	char *conflict_routes[route_count];
 	const size_t conflict_routes_len = 
 			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
 	for (size_t i = 0; i < conflict_routes_len; i++) {
