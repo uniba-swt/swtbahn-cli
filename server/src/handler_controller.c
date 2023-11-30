@@ -332,7 +332,12 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		return "not_clear";
 	}
 
-	// Grant the route to the train and mark it unavailable
+	// Grant the route to the train
+		
+	syslog_server(LOG_INFO, 
+	              "Grant route id - train: %s route: %s - checks passed, now grant route", 
+	              train_id, route_id);
+	
 	route->train = strdup(train_id);
 	
 	if (route->train == NULL) {
@@ -342,10 +347,6 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		              train_id, route_id);
 		return "not_grantable";
 	}
-	
-	syslog_server(LOG_INFO, 
-	              "Grant route id - train: %s route: %s - granting in progress, setting points and signals", 
-	              train_id, route_id);
 
 	// Set the points to their required positions
 	for (size_t i = 0; i < route->points->len; i++) {
