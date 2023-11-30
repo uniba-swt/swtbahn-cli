@@ -890,7 +890,8 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		if (!train_state_query.known) {
 			bidib_free_train_state_query(train_state_query);
 			syslog_server(LOG_ERR, 
-			              "Request: Grab train - train: %s engine: %s - unknown train or train state", 
+			              "Request: Grab train - train: %s engine: %s - "
+			              "unknown train or train state - abort", 
 			              data_train, data_engine);
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -899,12 +900,12 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		int grab_id = grab_train(data_train, data_engine);
 		if (grab_id == -1) {
 			syslog_server(LOG_ERR, 
-			              "Request: Grab train - train: %s engine: %s - train could not be grabbed", 
+			              "Request: Grab train - train: %s engine: %s - train could not be grabbed - abort", 
 			              data_train, data_engine);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
-			              "Request: Grab train - train: %s engine: %s - finished", 
+			              "Request: Grab train - train: %s engine: %s - finish", 
 			              data_train, data_engine);
 			onion_response_printf(res, "%ld,%d", session_id, grab_id);
 			return OCS_PROCESSED;
@@ -959,13 +960,13 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 		
 		if (!release_train(grab_id)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Release train - grab id: %d train: %s - invalid grab id", 
+			              "Request: Release train - grab id: %d train: %s - invalid grab id - abort", 
 			              grab_id, train_id);
 			free(train_id);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
-			              "Request: Release train - grab id: %d train: %s - finished", 
+			              "Request: Release train - grab id: %d train: %s - finish", 
 			              grab_id, train_id);
 			free(train_id);
 			return OCS_PROCESSED;
@@ -1012,11 +1013,10 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		// Use interlocker to find and grant a route
 		GString *route_id = grant_route(train_id, data_source_name, data_destination_name);
 		if (route_id->str != NULL && params_check_is_number(route_id->str)) {
-			// Logging of the granted route ID happens in the grant_route function
-			onion_response_printf(res, "%s", route_id->str);
 			syslog_server(LOG_NOTICE, 
-			              "Request: Request train route - train: %s from: %s to: %s - finished",
-			              train_id, data_source_name, data_destination_name);
+			              "Request: Request train route - train: %s from: %s to: %s - route %s granted",
+			              train_id, data_source_name, data_destination_name, route_id->str);
+			onion_response_printf(res, "%s", route_id->str);
 		} else {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_WARNING, 
@@ -1037,6 +1037,9 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 			} else {
 				onion_response_printf(res, "Route could not be granted (%s)", route_id->str);
 			}
+		syslog_server(LOG_NOTICE, 
+		              "Request: Request train route - train: %s from: %s to: %s - finish",
+		              train_id, data_source_name, data_destination_name);
 		}
 		g_string_free(route_id, true);
 		free(train_id);
@@ -1089,16 +1092,13 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 		if (strcmp(result, "granted") == 0) {
 			onion_response_printf(res, "%s", result);
 			syslog_server(LOG_NOTICE, 
-			              "Request: Request train route id - train: %s route: %s - finished",
-			              train_id, route_id);
-			free(train_id);
-			return OCS_PROCESSED;
+			              "Request: Request train route id - train: %s route: %s - route granted",
+			              train_id, route_id, result);
 		} else {
-			syslog_server(LOG_ERR, 
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			syslog_server(LOG_WARNING, 
 			              "Request: Request train route id - train: %s route: %s - route not granted (%s)",
 			              train_id, route_id, result);
-			free(train_id);
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			if (strcmp(result, "not_grantable") == 0) {
 				onion_response_printf(res, 
 				                      "Route %s is not available or has conflicts with others", 
@@ -1112,9 +1112,12 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 				                      "Route %s could not be granted",
 				                      route_id);
 			}
-			return OCS_PROCESSED;
 		}
-		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Request train route id - train: %s route: %s - finish",
+		              train_id, route_id);
+		free(train_id);
+		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 
 		              "Request: Request train route id - system not running or wrong request type");
@@ -1145,7 +1148,7 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 		onion_response_printf(res, "%s", 
 		                      is_forward_driving(route, data_train) ? "forwards" : "backwards");
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - finished", data_train);
+		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - finish", data_train);
 		return OCS_PROCESSED;
 		
 	} else {
@@ -1193,13 +1196,14 @@ onion_connection_status handler_drive_route(void *_, onion_request *req, onion_r
 		if (drive_route(grab_id, route_id, is_automatic)) {
 			onion_response_printf(res, "Route %s driving completed", route_id);
 			syslog_server(LOG_NOTICE, 
-			              "Request: Drive route - route: %s train: %s drive mode: %s - finished", 
+			              "Request: Drive route - route: %s train: %s drive mode: %s - finish", 
 			              route_id, train_id, mode);
 			free(train_id);
 			return OCS_PROCESSED;
 		} else {
 			syslog_server(LOG_ERR, 
-			              "Request: Drive route - route: %s train: %s drive mode: %s - driving failed", 
+			              "Request: Drive route - route: %s train: %s drive mode: %s - "
+			              "driving failed - abort", 
 			              route_id, train_id, mode);
 			///TODO: Automatic countermeasures? e.g. set train speed to 0
 			free(train_id);
@@ -1255,7 +1259,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		dyn_containers_set_train_engine_instance_inputs(eng_instance, abs(speed), speed >= 0);
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set dcc train speed - train: %s speed: %d - finished",
+		              "Request: Set dcc train speed - train: %s speed: %d - finish",
 		              grabbed_trains[grab_id].name->str, speed);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		return OCS_PROCESSED;
@@ -1297,7 +1301,8 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set calibrated train speed - train: %s speed: %d - invalid track output", 
+			              "Request: Set calibrated train speed - train: %s speed: %d - "
+			              "invalid track output", 
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1309,14 +1314,15 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id].name->str,
 		                                     speed, data_track_output)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set calibrated train speed - train: %s speed: %d - invalid parameters", 
+			              "Request: Set calibrated train speed - train: %s speed: %d - "
+			              "invalid parameters - abort", 
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			bidib_flush();
 			syslog_server(LOG_NOTICE, 
-			              "Request: Set calibrated train speed - train: %s speed: %d - finished",
+			              "Request: Set calibrated train speed - train: %s speed: %d - finish",
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
@@ -1363,14 +1369,14 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		
 		if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str, data_track_output)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train emergency stop - train: %s - invalid parameters", 
+			              "Request: Set train emergency stop - train: %s - invalid parameters - abort", 
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			bidib_flush();
 			syslog_server(LOG_NOTICE, 
-			              "Request: Set train emergency stop - train: %s - finished",
+			              "Request: Set train emergency stop - train: %s - finish",
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
@@ -1421,7 +1427,8 @@ onion_connection_status handler_set_train_peripheral(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
 			syslog_server(LOG_ERR, 
-			              "Request: Set train peripheral - train: %s peripheral: %s - invalid track output", 
+			              "Request: Set train peripheral - train: %s peripheral: %s - "
+			              "invalid track output", 
 			              grabbed_trains[grab_id].name->str, data_peripheral);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
@@ -1435,14 +1442,15 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		                               data_track_output)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s "
-			              "peripheral: %s state: 0x%02x - invalid parameters",
+			              "peripheral: %s state: 0x%02x - invalid parameters - abort",
 			              grabbed_trains[grab_id].name->str, data_peripheral, state);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			bidib_flush();
 			syslog_server(LOG_NOTICE, 
-			              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x - finished",
+			              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x"
+			              " - finish",
 			              grabbed_trains[grab_id].name->str, data_peripheral, state);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;

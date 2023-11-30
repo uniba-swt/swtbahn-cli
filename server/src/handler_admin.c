@@ -145,11 +145,11 @@ onion_connection_status handler_startup(void *_, onion_request *req, onion_respo
 		if (startup_server()) { 
 			retval = OCS_PROCESSED;
 			syslog_server(LOG_NOTICE, 
-			              "Request: Startup server - session id: %ld - finished", 
+			              "Request: Startup server - session id: %ld - finish", 
 			              session_id);
 		}  else {
 			syslog_server(LOG_ERR, 
-			              "Request: Startup server - session id: %ld - unable to start BiDiB", 
+			              "Request: Startup server - session id: %ld - unable to start BiDiB - abort", 
 			              session_id);
 		}
 	} else {
@@ -194,7 +194,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req, on
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - start", state);
 			bidib_set_track_output_state_all(state);
 			bidib_flush();
-			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - finished", state);
+			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - finish", state);
 			return OCS_PROCESSED;
 		}
 	} else {
@@ -284,12 +284,12 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		
 		if (!release_train(grab_id)) {
 			syslog_server(LOG_ERR, 
-			              "Request: Admin release train - train: %s - invalid grab id", 
+			              "Request: Admin release train - train: %s - invalid grab id - abort", 
 			              data_train);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
-			              "Request: Admin release train - train: %s - finished",
+			              "Request: Admin release train - train: %s - finish",
 			              data_train);
 			return OCS_PROCESSED;
 		}
@@ -327,12 +327,12 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 			if (bidib_set_train_speed(data_train, speed, data_track_output)) {
 				syslog_server(LOG_ERR, 
 				              "Request: Admin set dcc train speed - train: %s speed: %d - "
-				              "invalid parameters", 
+				              "invalid parameters - abort", 
 				              data_train, speed);
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
-				              "Request: Admin set dcc train speed - train: %s speed: %d - finished", 
+				              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 
 				              data_train, speed);
 			}
 			pthread_mutex_unlock(&grabbed_trains_mutex);

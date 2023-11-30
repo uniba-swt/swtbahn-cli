@@ -611,7 +611,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 		pthread_mutex_unlock(&interlocker_mutex);
 		
 		onion_response_printf(res, "%s", route_str->str);
-		syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
+		syslog_server(LOG_INFO, "Request: Get route - route: %s - finish", route_id);
 		g_string_free(route_str, true);
 		return OCS_PROCESSED;
 	} else {
