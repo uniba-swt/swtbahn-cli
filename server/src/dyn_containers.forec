@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+* Copyright (C) 2023 University of Bamberg, Software Technologies Research Group
 * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
 * 
 * This file is part of the SWTbahn command line interface (swtbahn-cli), which is
@@ -37,22 +37,25 @@
 
 #include "dyn_containers_interface.h"
 
-typedef void t_dyn_containers_interface;
-#define t_dyn_containers_interface__global_0_0 t_dyn_containers_interface
+extern typedef void bool;
+extern typedef int size_t;
+extern typedef void useconds_t;
 
-typedef void t_dyn_shm_config;
-#define t_dyn_shm_config__global_0_0 t_dyn_shm_config
+extern typedef void t_dyn_containers_interface;
+extern typedef void t_dyn_shm_config;
+extern typedef void pthread_mutex_t;
+extern typedef void key_t;
 
-#define dyn_containers_mutex__global_0_0 dyn_containers_mutex
+extern typedef void dynlib_type;
 
-typedef void pthread_mutex_t;
-#define pthread_mutex_t__global_0_0 pthread_mutex_t
+extern typedef void TickData_train_engine;
+extern typedef void TickData_interlocker;
+extern typedef void TickData_drive_route;
 
-typedef void key_t;
-#define key_t__global_0_0 key_t
-
-typedef int bool;
-#define bool__global_0_0 bool
+extern struct t_train_engine_io;
+extern struct t_train_engine_instance_io;
+extern struct t_interlocker_io;
+extern struct t_interlocker_instance_io;
 
 shared int LOG_NOTICE = 5;
 
@@ -61,26 +64,20 @@ int LOG_ERR;
 
 int PATH_MAX;
 #define PATH_MAX__global_0_0 PATH_MAX
-
 shared int path_max = PATH_MAX;
 
 int NAME_MAX;
 #define NAME_MAX__global_0_0 NAME_MAX
-
 shared int name_max = NAME_MAX;
 
-typedef void dynlib_status;
-#define dynlib_status__global_0_0 dynlib_status
-
-typedef void dynlib_data;
-#define dynlib_data__global_0_0 dynlib_data
+extern typedef void dynlib_status;
+extern typedef void dynlib_data;
 
 int DYNLIB_COMPILE_SUCCESS;
 #define DYNLIB_COMPILE_SUCCESS__global_0_0 DYNLIB_COMPILE_SUCCESS
 
 int DYNLIB_LOAD_SUCCESS;
 #define DYNLIB_LOAD_SUCCESS__global_0_0 DYNLIB_LOAD_SUCCESS
-
 shared int dynlib_load_success = DYNLIB_LOAD_SUCCESS;
 
 int DYNLIB_COMPILE_SCCHARTS_C_ERR;
@@ -110,14 +107,23 @@ int INTERLOCKER;
 int DRIVE_ROUTE;
 #define DRIVE_ROUTE__global_0_0 DRIVE_ROUTE
 
-typedef void TickData_train_engine;
-#define TickData_train_engine__global_0_0 TickData_train_engine
+extern int usleep(useconds_t usec);
+extern char *strncpy(char *dest, const char *src, size_t n);
+extern char *basename(char *path);
+extern int pthread_mutex_lock(pthread_mutex_t *mutex);
+extern int pthread_mutex_unlock(pthread_mutex_t *mutex);
 
-typedef void TickData_interlocker;
-#define TickData_interlocker__global_0_0 TickData_interlocker
+extern void syslog_server(int priority, const char *format, ...);
 
-typedef void TickData_drive_route;
-#define TickData_drive_route__global_0_0 TickData_drive_route
+extern void dyn_containers_shm_create(t_dyn_shm_config * const shm_config, const int shm_permissions, const key_t shm_key, t_dyn_containers_interface ** const shm_payload);
+extern void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload);
+
+extern dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_type type);
+extern void dynlib_close(dynlib_data *library);
+extern void dynlib_train_engine_reset(dynlib_data *library, TickData_train_engine *tick_data);
+extern void dynlib_train_engine_tick(dynlib_data *library, TickData_train_engine *tick_data);
+extern void dynlib_interlocker_reset(dynlib_data *library, TickData_interlocker *tick_data);
+extern void dynlib_interlocker_tick(dynlib_data *library, TickData_interlocker *tick_data);
 
 
 // Data needed by the dynamic libraries
@@ -1494,3 +1500,4 @@ TickData_train_engine *keepOneCombineEngine(TickData_train_engine *left[], TickD
 TickData_interlocker *keepOneCombineInterlocker(TickData_interlocker *left[], TickData_interlocker *right[]) {
 	return *left;
 }
+
