@@ -849,13 +849,13 @@ function initialise() {
 	});
 
 	// Set the possible destinations for the SWTbahn platform.
-	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
+//	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
+	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
 //	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
 	disableAllDestinationButtons();
 
 	// Set the signal to flag mapping.
-	signalFlagMap = signalFlagMapSwtbahnFull;
+	signalFlagMap = signalFlagMapSwtbahnStandard;
 
 	// Initialise the click handler of each destination button.
 	for (let i = 0; i < numberOfDestinationsMax; i++) {

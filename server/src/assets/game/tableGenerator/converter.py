@@ -2,10 +2,10 @@ from csv import reader
 import json
 import yaml
 
-interlockingTableFile = "../../../../../configurations/swtbahn-full/interlocking_table.yml"
-configuratonBahnFile = "../../../../../configurations/swtbahn-full/extras_config.yml"
+interlockingTableFile = "../../../../../configurations/swtbahn-standard/interlocking_table.yml"
+configuratonBahnFile = "../../../../../configurations/swtbahn-standard/extras_config.yml"
 blacklistFile = "./blacklist.txt"
-groupingFile = "./flags-swtbahn-full.csv"
+groupingFile = "./flags-swtbahn-standard.csv"
 interlockingTable = json.loads(json.dumps(yaml.safe_load(open(interlockingTableFile))))
 configuratonBahn = json.loads(json.dumps(yaml.safe_load(open(configuratonBahnFile))))
 
@@ -121,7 +121,7 @@ for block in originalResultData:
         resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
         resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
 
-with open("../destinations-swtbahn-full.json", "w") as file:
-    file.write("const allPossibleDestinationsSwtbahnFull = ")
+with open("../destinations-swtbahn-standard.json", "w") as file:
+    file.write("const allPossibleDestinationsSwtbahnStandard = ")
     file.write(json.dumps(resultData, indent=2))
     file.write(";")

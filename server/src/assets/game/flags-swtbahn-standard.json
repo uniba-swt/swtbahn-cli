@@ -1,0 +1,18 @@
+const signalFlagMapSwtbahnFull = {
+  "signal6": "flagThemeGreen flagFilled flagThree",
+  "signal5": "flagThemeGreen flagFilled flagTwo",
+  "signal17": "flagThemeGreen flagFilled flagOne",
+  "signal19": "flagThemeGreen flagFilled flagZero",
+  "signal3": "flagThemeRed flagFilled flagTwo",
+  "signal12": "flagThemeBlue flagFilled flagOne",
+  "signal13": "flagThemeRed flagFilled flagThree",
+  "signal11": "flagThemeRed flagFilled flagZero",
+  "signal1": "flagThemeBlue flagFilled flagZero",
+  "signal10": "flagThemeBlue flagFilled flagTwo",
+  "signal9": "flagThemeBlue flagFilled flagThree",
+  "signal14": "flagThemeBlue flagFilled flagFour",
+  "signal8": "flagThemeBlue flagFilled flagFive",
+  "signal18": "flagThemeBlack flagFilled flagOne",
+  "signal16": "flagThemeBlack flagFilled flagTwo",
+  "signal4": "flagThemeBlack flagFilled flagThree"
+};
