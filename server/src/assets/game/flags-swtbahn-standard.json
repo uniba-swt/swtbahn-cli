@@ -1,4 +1,4 @@
-const signalFlagMapSwtbahnStandard = {
+const signalFlagMapSwtbahnFull = {
   "signal6": "flagThemeGreen flagFilled flagThree",
   "signal5": "flagThemeGreen flagFilled flagTwo",
   "signal17": "flagThemeGreen flagFilled flagOne",
@@ -12,6 +12,7 @@ const signalFlagMapSwtbahnStandard = {
   "signal9": "flagThemeBlue flagFilled flagThree",
   "signal14": "flagThemeBlue flagFilled flagFour",
   "signal8": "flagThemeBlue flagFilled flagFive",
+  "signal15": "flagThemeBlack flagFilled flagZero",
   "signal18": "flagThemeBlack flagFilled flagOne",
   "signal16": "flagThemeBlack flagFilled flagTwo",
   "signal4": "flagThemeBlack flagFilled flagThree"
