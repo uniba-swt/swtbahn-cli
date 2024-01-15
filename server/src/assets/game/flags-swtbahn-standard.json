@@ -8,7 +8,6 @@ const signalFlagMapSwtbahnStandard = {
   "signal13": "flagThemeRed flagFilled flagThree",
   "signal11": "flagThemeRed flagFilled flagZero",
   "signal2": "flagThemeBlue flagFilled flagOne",
-  "signal1": "flagThemeBlue flagFilled flagZero",
   "signal10": "flagThemeBlue flagFilled flagTwo",
   "signal9": "flagThemeBlue flagFilled flagThree",
   "signal14": "flagThemeBlue flagFilled flagFour",
