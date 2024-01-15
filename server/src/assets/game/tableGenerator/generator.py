@@ -32,7 +32,7 @@ with open("flags-swtbahn-standard.csv", "r") as f:
         jsonString[signalName] = endString
 
     with open("../flags-swtbahn-standard.json", "w") as file:
-        file.write("const signalFlagMapSwtbahnFull = ")
+        file.write("const signalFlagMapSwtbahnStandard = ")
         file.write(json.dumps(jsonString, indent=2))
         file.write(";")
 

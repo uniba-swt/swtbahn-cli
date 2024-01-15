@@ -11,8 +11,8 @@ var isEasyMode = false;      // User interface verbosity.
 const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
-var allPossibleDestinations = null;           // Platform specific lookup table for destinations
-var signalFlagMap = null;                     // Platform specific lookup table for signal flags
+var allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;           // Platform specific lookup table for destinations
+var signalFlagMap = signalFlagMapSwtbahnStandard;                     // Platform specific lookup table for signal flags
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
