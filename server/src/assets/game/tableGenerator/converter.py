@@ -38,6 +38,7 @@ for blockType in blocktypes:
                     if route["source"] == signal and route["destination"] == destination:
                         if routeID == -1:
                             routeID = route["id"]
+                            print("{} --> {} | {} {}".format(signal, destination, routeID, block["id"]))                
                         else:
                             if interlockingTable["interlocking-table"][routeID]["id"] in blacklist:
                                 print("Route was overriden because old was blacklisted")
@@ -45,8 +46,9 @@ for blockType in blocktypes:
                                  print("Route Beibehalten")
                             elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]):
                                 routeID = route["id"]
+                                print("{} -> {} | {} {}".format(signal, destination, routeID, block["id"]))
+                
 
-                print("{} -> {} | {}".format(signal, destination, routeID))
                 if routeID not in blacklist:
                     routes.append(routeID)
                 else:
@@ -87,6 +89,7 @@ for blockType in blocktypes:
                 print("Error with BlockID {}".format(block["id"]))
                 isError = True
             if isError:
+                print("error with {}".format(route))
                 break
             resultData[block["id"]][destination] = {}
             resultData[block["id"]][destination]["route-id"] = routeID
@@ -102,11 +105,11 @@ for block in originalResultData:
     for destination in originalResultData[block]:
         destinations.append(destination)
     destinationsSorted = []
-
     with open(groupingFile, "r") as csvFile:
         csv_reader = reader(csvFile)
         for row in csv_reader:
             signal = "signal" + row[0]
+            print(signal)
             if signal in destinations:
                 destinationsSorted.append(signal)
             signal = signal + "a"
@@ -120,7 +123,6 @@ for block in originalResultData:
         resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
         resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
         resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
-
 with open("../destinations-swtbahn-standard.json", "w") as file:
     file.write("const allPossibleDestinationsSwtbahnStandard = ")
     file.write(json.dumps(resultData, indent=2))
