@@ -189,7 +189,7 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 			syslog_server(LOG_INFO, 
 			              "Websocket engine uploader: Process verification result message - "
 			              "engine verification result inconclusive");
-			ws_data_ptr->message  = g_string_new("Verification done but no result status known.");
+			ws_data_ptr->message  = g_string_new("Engine verification done but result is unknown.");
 		} else {
 			// Ordinary failure. Save server's reply (to forward to client later on)
 			syslog_server(LOG_INFO, 
@@ -363,7 +363,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 
 void set_verifier_url(const char *upd_verifier_url) {
 	if (upd_verifier_url == NULL) {
-		syslog_server(LOG_WARNING, "Set verification url - proposed URL is NULL, URL not updated");
+		syslog_server(LOG_WARNING, "Set verifier URL - proposed URL is NULL, URL not updated");
 		return;
 	}
 	if (verifier_url != NULL) {
@@ -371,7 +371,7 @@ void set_verifier_url(const char *upd_verifier_url) {
 		verifier_url = NULL;
 	}
 	verifier_url = strdup(upd_verifier_url);
-	syslog_server(LOG_NOTICE,  "Set verification url - verifier URL set to: %s", verifier_url);
+	syslog_server(LOG_NOTICE,  "Set verifier URL - verifier URL set to: %s", verifier_url);
 }
 
 
@@ -437,7 +437,7 @@ void cache_verifier_url() {
 
 	// Write the content to the file
 	fputs(verifier_url, file);
-	syslog_server(LOG_INFO, "Cache verifier URL - cached url %s", verifier_url);
+	syslog_server(LOG_INFO, "Cache verifier URL - cached URL %s", verifier_url);
 	
 	// Close the file
 	fclose(file);
