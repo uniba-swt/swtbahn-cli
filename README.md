@@ -226,18 +226,16 @@ For request handlers that barely do any "processing" at all; e.g. where only a s
 Request handlers that only return information (getters) also use the ` - done` pattern instead of `start` and `finish`, and use the log level `INFO` for the ` - done` log.
 
 As an example, when a request is made to set point10 to the normal state, the request handler (`handler_set_point`) generates the following log messages when the processing is successful:
-> LOG_NOTICE: `Request: Set point - point: point10 state: normal - start`
-> _Intervening log messages from internal processing_
-> LOG_NOTICE: `Request: Set point - point: point10 state: normal - finish`
-1. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal"
-2. Level LOG_NOTICE; Log: "Request: Set point - point: point10 state: normal - finish"   
+> LOG_NOTICE: `Request: Set point - point: point10 state: normal - start`   
+> _Intervening log messages from internal processing_   
+> LOG_NOTICE: `Request: Set point - point: point10 state: normal - finish`   
 
 If the above request was instead made with an unsupported state, e.g., `foobar`, then the request handler would generate the following log messages to say that the processing was stopped because of invalid parameters: 
 
-> LOG_NOTICE: `Request: Set point - point: point10 state: foobar - start`
-> _Intervening log messages from internal processing_
-> LOG_ERR: `Request: Set point - point: point10 state: foobar - invalid parameters - abort`
+> LOG_NOTICE: `Request: Set point - point: point10 state: foobar - start`   
+> _Intervening log messages from internal processing_   
+> LOG_ERR: `Request: Set point - point: point10 state: foobar - invalid parameters - abort`   
 
-If the above request forgot to specify the state, e.g., a null parameter, then the request handler would only generate the following log message to say that the verification failed:
+If the above request forgot to specify the state, i.e., the state parameter is `null`, then the request handler would only generate the following log message to say that the parameter validation failed:
 
 >  LOG_ERR: `Request: Set point - invalid parameters`
