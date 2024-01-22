@@ -27,7 +27,6 @@
  */
 
 #include <bidib/bidib.h>
-#include <glib.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -81,7 +80,7 @@ void create_interlocking_hashtable(void) {
         }
     }
 
-    syslog_server(LOG_NOTICE, "Interlocking create hash table: successful");
+    syslog_server(LOG_NOTICE, "Interlocking create hash table - done");
 }
 
 bool interlocking_table_initialise(const char *config_dir) {
@@ -163,4 +162,12 @@ t_interlocking_route *get_route(const char *route_id) {
     }
 
     return NULL;
+}
+
+unsigned int interlocking_table_get_size() {
+    if (route_hash_table != NULL) {
+        return g_hash_table_size(route_hash_table);
+    }
+    
+    return 0;
 }

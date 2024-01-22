@@ -29,7 +29,6 @@
 #define SERVER_H
 
 #include <syslog.h>
-
 #include <onion/onion.h>
 
 extern volatile time_t session_id;
