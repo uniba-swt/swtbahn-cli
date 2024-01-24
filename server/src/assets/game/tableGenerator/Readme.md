@@ -14,7 +14,7 @@ There is also the option to block single route ids within the blacklist.txt
 
 ## How to get started
 ### Map the Signals with the Symbols
-* Create a CSV Document with the following Scheme: [signalId],[coloCode]
+* Create a CSV Document with the following Scheme to the flagMappingsFolder (it should have the same name, like the configuration folder): [signalId],[coloCode]
 * insert your mapping attributes
 * link the csv to generator.py and converter.py
 * run generator.py
