@@ -13,7 +13,7 @@ groupingFileDirectory = "./flagMappings"
 
 configFolderItemList = os.scandir(pathToConfig)
 folderList = []
-
+    
 for entry in configFolderItemList:
     if entry.is_dir():
         folderList.append(entry.name)
@@ -27,7 +27,7 @@ for configuration in folderList:
             flagMappings.append(entry.name[:-4])
 
     if configuration not in flagMappings:
-        break
+        continue
 
     interlockingTableFile = "{}/{}/{}".format(pathToConfig, configuration, interlockingTableFileName)
     configurationBahnFile = "{}/{}/{}".format(pathToConfig, configuration, configurationBahnFileName)

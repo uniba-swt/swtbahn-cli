@@ -1,4 +1,4 @@
-const allPossibleDestinationsSwtbahnStandard = {
+const allPossibleDestinations = {
   "block1": {
     "signal6": {
       "route-id": 57,
