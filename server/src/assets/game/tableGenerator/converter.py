@@ -8,7 +8,7 @@ pathToConfig = "../../../../../configurations"
 interlockingTableFileName = "interlocking_table.yml"
 configurationBahnFileName = "extras_config.yml"
 
-blacklistFile = "./blacklist.txt"
+blacklistFileDirectory = "./blacklists"
 groupingFileDirectory = "./flagMappings"
 
 configFolderItemList = os.scandir(pathToConfig)
@@ -28,6 +28,14 @@ for configuration in folderList:
 
     if configuration not in flagMappings:
         continue
+    
+    
+    blacklist = []
+
+    if os.path.exists("{}/{}.txt".format(blacklistFileDirectory, configuration)):
+        for line in open("{}/{}.txt".format(blacklistFileDirectory, configuration)):
+            blacklist.append(int(line.strip()))        
+
 
     interlockingTableFile = "{}/{}/{}".format(pathToConfig, configuration, interlockingTableFileName)
     configurationBahnFile = "{}/{}/{}".format(pathToConfig, configuration, configurationBahnFileName)
@@ -38,10 +46,6 @@ for configuration in folderList:
     
     groupingFile = "{}/{}.csv".format(groupingFileDirectory, configuration)
 
-    blacklist = []
-
-    for line in open(blacklistFile):
-        blacklist.append(int(line.strip()))
 
     resultData = {}
 

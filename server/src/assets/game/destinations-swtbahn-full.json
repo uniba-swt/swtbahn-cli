@@ -592,12 +592,6 @@ const allPossibleDestinations = {
     }
   },
   "platform1": {
-    "signal44": {
-      "route-id": 160,
-      "orientation": "clockwise",
-      "block": "platform5",
-      "segment": "seg78"
-    },
     "signal35a": {
       "route-id": 21,
       "orientation": "clockwise",
@@ -749,12 +743,6 @@ const allPossibleDestinations = {
       "orientation": "clockwise",
       "block": "block6",
       "segment": "seg27"
-    },
-    "signal31": {
-      "route-id": 161,
-      "orientation": "clockwise",
-      "block": "platform1",
-      "segment": "seg58"
     }
   },
   "platform6": {
