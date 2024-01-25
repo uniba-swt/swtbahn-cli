@@ -157,6 +157,6 @@ for configuration in folderList:
             resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
             resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
     with open("../destinations-{}.json".format(configuration), "w") as file:
-        file.write("const allPossibleDestinations = ")
+        file.write("const allPossibleDestinations-{} = ".format(entry))
         file.write(json.dumps(resultData, indent=2))
         file.write(";")

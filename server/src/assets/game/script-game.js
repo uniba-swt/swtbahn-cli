@@ -11,8 +11,14 @@ var isEasyMode = false;      // User interface verbosity.
 const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
-var allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;           // Platform specific lookup table for destinations
-var signalFlagMap = signalFlagMapSwtbahnStandard;                     // Platform specific lookup table for signal flags
+var allPossibleDestinations = null;
+var signalFlagMap = null;
+
+function getPlatformName(){
+	return "swtbahn-full";
+}
+
+
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -740,6 +746,7 @@ class Driver {
 }
 
 
+
 /*************************************************************
  * UI update for client initialisation and game start and end
  * (train grab and release)
@@ -795,6 +802,11 @@ function initialise() {
 		'libtrain_engine_default (unremovable)',  // trainEngine
 		null                                      // trainId
 	);
+
+	var plattform = getPlatformName();
+
+	allPossibleDestinations = eval ("allPossibleDestinations-" + plattform);
+	signalFlagMap = eval("signalFlagMap-" + plattform)
 
 	// Hide the chosen train.
 	$('#chosenTrain').hide();

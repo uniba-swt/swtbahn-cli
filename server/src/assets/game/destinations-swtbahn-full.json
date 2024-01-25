@@ -1,4 +1,4 @@
-const allPossibleDestinations = {
+const allPossibleDestinations-<DirEntry 'swtbahn-standard.csv'> = {
   "block1": {
     "signal20": {
       "route-id": 71,
