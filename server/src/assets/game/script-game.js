@@ -803,10 +803,10 @@ function initialise() {
 		null                                      // trainId
 	);
 
-	var plattform = getPlatformName();
+	var platform = getPlatformName();
 
-	allPossibleDestinations = eval ("allPossibleDestinations-" + plattform);
-	signalFlagMap = eval("signalFlagMap-" + plattform)
+	allPossibleDestinations = eval ("allPossibleDestinations-" + platform);
+	signalFlagMap = eval("signalFlagMap-" + platform)
 
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
