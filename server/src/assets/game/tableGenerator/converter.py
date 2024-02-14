@@ -14,11 +14,11 @@ groupingFileDirectory = "./flagMappings"
 configFolderItemList = os.scandir(pathToConfig)
 folderList = []
     
-for entry in configFolderItemList:
+for entry in configFolderItemList: # Get a list of configuration possibilities which are given by the model railway
     if entry.is_dir():
         folderList.append(entry.name)
 
-for configuration in folderList:
+for configuration in folderList: # Roll over the list of configuration possibilities and check if a mapping CSV is existing
     
     mappingFolderContent = os.scandir(groupingFileDirectory)
     flagMappings = []
@@ -26,13 +26,13 @@ for configuration in folderList:
         if entry.is_file() and entry.name[-4:] == ".csv":
             flagMappings.append(entry.name[:-4])
 
-    if configuration not in flagMappings:
+    if configuration not in flagMappings: # Ignore all entries which doesnt have an equivalent Mapping-CSV
         continue
     
     
     blacklist = []
 
-    if os.path.exists("{}/{}.txt".format(blacklistFileDirectory, configuration)):
+    if os.path.exists("{}/{}.txt".format(blacklistFileDirectory, configuration)): # import the blacklists if exists
         for line in open("{}/{}.txt".format(blacklistFileDirectory, configuration)):
             blacklist.append(int(line.strip()))        
 
@@ -51,21 +51,21 @@ for configuration in folderList:
 
     blocktypes = ["blocks", "platforms"]
 
-    for blockType in blocktypes:
-        for block in configuratonBahn[blockType]:
+    for blockType in blocktypes: # Roll over all Blocktypes
+        for block in configuratonBahn[blockType]: # Roll over all Blocks
             try:
                 signals = block["signals"]
             except KeyError:
     #            print("Block {} has no signals".format(block["id"]))
                 signals = []
             routes = []
-            for signal in signals:
+            for signal in signals: # Roll over all Signals of the Block
                 destinations = []
                 for route in interlockingTable["interlocking-table"]:
                     if route["source"] == signal:
                         if route["destination"] not in destinations:
                             destinations.append(route["destination"])
-                for destination in destinations:
+                for destination in destinations: # Roll over all Destination of the specific signal and check if a route id is there
                     routeID = -1
                     for route in interlockingTable["interlocking-table"]:
                         if route["source"] == signal and route["destination"] == destination:
@@ -77,7 +77,7 @@ for configuration in folderList:
                                     print("Route was overriden because old was blacklisted")
                                 elif interlockingTable["interlocking-table"][route["id"]]["id"] in blacklist:
                                     print("Route Beibehalten")
-                                elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]):
+                                elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]): # if new Route ID is shorter than old route id (less node points) than overwrite the routeid
                                     routeID = route["id"]
                                     print("{} -> {} | {} {}".format(signal, destination, routeID, block["id"]))
                     
@@ -108,13 +108,10 @@ for configuration in folderList:
                             segments.append(segment)
                         break
                 if len(segments) == 1:
-    #                print("Segment: {} at Block {}".format(segments[0], lastBlock))
                     stopSegment = segments[0]
                 elif len(segments) == 2:
                     if segments[0][0:-1] == segments[1][0:-1]:
-    #                   print(segments)
                         stopSegment = segments[0][0:-1]
-    #                    print(stopSegment)
                     else:
                         print("Error Segment {} and Segment {} are not the same. Block {}".format(segments[0], segments[1], block["id"]))
                         isError = True
@@ -156,7 +153,7 @@ for configuration in folderList:
             resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
             resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
             resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
-    with open("../destinations-{}.json".format(configuration), "w") as file:
+    with open("../destinations-{}.json".format(configuration), "w") as file: # Write to json file
         file.write("const allPossibleDestinations-{} = ".format(entry))
         file.write(json.dumps(resultData, indent=2))
         file.write(";")
