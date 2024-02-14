@@ -11,6 +11,7 @@ var isEasyMode = false;      // User interface verbosity.
 const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
+// Initialisation of Lookup tables
 var allPossibleDestinations = null;
 var signalFlagMap = null;
 
