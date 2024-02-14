@@ -1,7 +1,7 @@
 # Table Generator for SWTbahn Game
 
 This python script generates the configuration json files for the swtbahn game client, which are required for the signal-symbol mapping and the route suggestion mechanics.
-Once entered the signals to symbol, the programm will automatically find a suitable route (which the least nodes) and store it for the game client.
+The script will automatically find a suitable route (which the least nodes) and store it for the game client, it will do this action only for signals which are listed in the mapping-csv to reduce storage usage.
 There is also the option to block single route ids within the blacklist.txt
 
 
