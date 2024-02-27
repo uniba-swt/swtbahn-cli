@@ -16,6 +16,7 @@ var allPossibleDestinations = null;  // Global Access variable for destination l
 var signalFlagMap = null; // Global access variable for signal flag mapping
 
 function getPlatformName(){
+	//TODO: Add corresponding server endpoint and error handling and make it once executable (when it succeed)
 	return "swtbahn-full";
 }
 
