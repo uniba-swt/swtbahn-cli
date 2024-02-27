@@ -4,7 +4,7 @@ def numberToWord(number):
     return ["Zero", "One", "Two", "Three", "Four", "Five", "Six"][int(number)]
 
 def characterToColor(character):
-	return {"b": "Blue", "g": "Green", "r": "Red", "s": "Black"}[character]
+	return {"b": "Blue", "g": "Green", "r": "Red", "s": "Black"}[character.lower()]
 
 groupingFileDirectory = "./flagMappings"
     
