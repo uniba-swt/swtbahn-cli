@@ -18,7 +18,7 @@ The first part describes the coloring schema of the symbol. There are four color
 * **G**: Green
 * **R**: Red
 * **S**: Black
-In case we want to invert the colors (so instead of a symbol with red background and a red outline, we want a red outline and a white background), we append a *w* behind the color.
+In case we want to invert the colors (so instead of a symbol with red background and a red outline, we want a red outline and a white background), we append a **w** behind the color.
 
 The second part of the code descripes the dots of the dice. (Currently they can be numbers from 0 to 5, a six will currently count as 0).
 
