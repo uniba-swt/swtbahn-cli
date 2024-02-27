@@ -18,6 +18,18 @@ folderList = []
 
 ##### FUNCTIONS #####
 def generateJsonStructure(resultData):
+"""
+Params: 
+    ResultData 
+    Json with the format
+    Includes the default structure for the endformat and handle all data
+
+Returns:
+    Updated version of the ResultData Json
+
+Doing:
+    Roll over all Blocks and search for a RouteID for the destination and insert the details based on start block, destination signal. Data were read from the interlocking table
+"""
     originalResultData = resultData
     resultData = {}
     for block in originalResultData:
@@ -48,6 +60,9 @@ def generateJsonStructure(resultData):
         return resultData
 
 def interlockerDataExtraction(routes):
+"""
+Filters the resultData Json for blacklisted routes and check if there are shorter routes
+"""
     global resultData
     for route in routes:
         destination = interlockingTable["interlocking-table"][route]["destination"]
