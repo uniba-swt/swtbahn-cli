@@ -1,6 +1,8 @@
 from csv import reader
 import json, yaml, os
 
+##### META #####
+
 pathToConfig = "../../../../../configurations"
 
 
@@ -13,6 +15,81 @@ groupingFileDirectory = "./flagMappings"
 
 configFolderItemList = os.scandir(pathToConfig)
 folderList = []
+
+##### FUNCTIONS #####
+def generateJsonStructure(resultData):
+    originalResultData = resultData
+    resultData = {}
+    for block in originalResultData:
+        destinations = []
+        for destination in originalResultData[block]:
+            destinations.append(destination)
+        destinationsSorted = []
+        with open(groupingFile, "r") as csvFile:
+            csv_reader = reader(csvFile)
+            for row in csv_reader:
+                signal = "signal" + row[0]
+                print(signal)
+                if signal in destinations:
+                    destinationsSorted.append(signal)
+                signal = signal + "a"
+                if signal in destinations:
+                    destinationsSorted.append(signal)
+                    
+
+        resultData[block] = {}
+        for destination in destinationsSorted:
+            resultData[block][destination] = {}
+            resultData[block][destination]["route-id"] = originalResultData[block][destination]["route-id"]
+            resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
+            resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
+            resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
+
+        return resultData
+
+def interlockerDataExtraction(routes):
+    global resultData
+    for route in routes:
+        destination = interlockingTable["interlocking-table"][route]["destination"]
+        routeID = route
+        orientation = interlockingTable["interlocking-table"][route]["orientation"]
+        lastBlock = interlockingTable["interlocking-table"][route]["sections"][-1]["id"]
+        stopSegment = None
+        segments = []
+        isError = False
+
+        for qblock in configuratonBahn["platforms"]:
+            if qblock["id"] == lastBlock:
+                for segment in qblock["main"]:
+                    segments.append(segment)
+                break
+        for qblock in configuratonBahn["blocks"]:
+            if qblock["id"] == lastBlock:
+                for segment in qblock["main"]:
+                    segments.append(segment)
+                break
+        if len(segments) == 1:
+            stopSegment = segments[0]
+        elif len(segments) == 2:
+            if segments[0][0:-1] == segments[1][0:-1]:
+                stopSegment = segments[0][0:-1]
+            else:
+                print("Error Segment {} and Segment {} are not the same. Block {}".format(segments[0], segments[1],
+                                                                                          block["id"]))
+                isError = True
+        else:
+            print("Error with BlockID {}".format(block["id"]))
+            isError = True
+        if isError:
+            print("error with {}".format(route))
+            break
+        resultData[block["id"]][destination] = {}
+        resultData[block["id"]][destination]["route-id"] = routeID
+        resultData[block["id"]][destination]["orientation"] = orientation
+        resultData[block["id"]][destination]["block"] = lastBlock
+        resultData[block["id"]][destination]["segment"] = stopSegment
+
+
     
 for entry in configFolderItemList: # Get a list of configuration possibilities which are given by the model railway
     if entry.is_dir():
@@ -88,72 +165,13 @@ for configuration in folderList: # Roll over the list of configuration possibili
                         print("Route {} wurde ignoriert, weil diese in der Blacklist steht".format(routeID))
 
             resultData[block["id"]] = {}
-            for route in routes:
-                destination = interlockingTable["interlocking-table"][route]["destination"]
-                routeID = route
-                orientation = interlockingTable["interlocking-table"][route]["orientation"]
-                lastBlock = interlockingTable["interlocking-table"][route]["sections"][-1]["id"]
-                stopSegment = None
-                segments = []
-                isError = False
+            interlockerDataExtraction(routes)
 
-                for qblock in configuratonBahn["platforms"]:
-                    if qblock["id"] == lastBlock:
-                        for segment in qblock["main"]:
-                            segments.append(segment)
-                        break
-                for qblock in configuratonBahn["blocks"]:
-                    if qblock["id"] == lastBlock:
-                        for segment in qblock["main"]:
-                            segments.append(segment)
-                        break
-                if len(segments) == 1:
-                    stopSegment = segments[0]
-                elif len(segments) == 2:
-                    if segments[0][0:-1] == segments[1][0:-1]:
-                        stopSegment = segments[0][0:-1]
-                    else:
-                        print("Error Segment {} and Segment {} are not the same. Block {}".format(segments[0], segments[1], block["id"]))
-                        isError = True
-                else:
-                    print("Error with BlockID {}".format(block["id"]))
-                    isError = True
-                if isError:
-                    print("error with {}".format(route))
-                    break
-                resultData[block["id"]][destination] = {}
-                resultData[block["id"]][destination]["route-id"] = routeID
-                resultData[block["id"]][destination]["orientation"] = orientation
-                resultData[block["id"]][destination]["block"] = lastBlock
-                resultData[block["id"]][destination]["segment"] = stopSegment
 
-    # Sort
-    originalResultData = resultData
-    resultData = {}
-    for block in originalResultData:
-        destinations = []
-        for destination in originalResultData[block]:
-            destinations.append(destination)
-        destinationsSorted = []
-        with open(groupingFile, "r") as csvFile:
-            csv_reader = reader(csvFile)
-            for row in csv_reader:
-                signal = "signal" + row[0]
-                print(signal)
-                if signal in destinations:
-                    destinationsSorted.append(signal)
-                signal = signal + "a"
-                if signal in destinations:
-                    destinationsSorted.append(signal)
-
-        resultData[block] = {}
-        for destination in destinationsSorted:
-            resultData[block][destination] = {}
-            resultData[block][destination]["route-id"] = originalResultData[block][destination]["route-id"]
-            resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
-            resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
-            resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
-    with open("../destinations-{}.json".format(configuration), "w") as file: # Write to json file
+    # Group and sort based on interlocking table blocks (block -> destination)
+    jsonStructure = generateJsonStructure(resultData)
+    # Write to json file
+    with open("../destinations-{}.json".format(configuration), "w") as file: 
         file.write("const allPossibleDestinations-{} = ".format(entry))
-        file.write(json.dumps(resultData, indent=2))
+        file.write(json.dumps(jsonStructure, indent=2))
         file.write(";")
