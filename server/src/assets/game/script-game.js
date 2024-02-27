@@ -12,8 +12,8 @@ const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
 // Initialisation of Lookup tables
-var allPossibleDestinations = null;
-var signalFlagMap = null;
+var allPossibleDestinations = null;  // Global Access variable for destination lookup table
+var signalFlagMap = null; // Global access variable for signal flag mapping
 
 function getPlatformName(){
 	return "swtbahn-full";
