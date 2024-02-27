@@ -30,7 +30,7 @@ The second part of the code descripes the dots of the dice. (Currently they can 
 
 ## How to get started
 ### Map the Signals with the Symbols
-* Create a CSV Document with the following Scheme to the flagMappings directory (the filename should match with the name of the configuration folder of the model railway): [signalId],[colorCode]  
+* Create a CSV Document with the following content formatting in the flagMappings directory (the filename should match with the name of the configuration folder of the model railway): [signalId],[colorCode]  
 #### Example:  
 for the swtbahn-standard the filename would be `swtbahn-standard.csv`  
 The content of the file would look like:
