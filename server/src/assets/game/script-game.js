@@ -11,8 +11,16 @@ var isEasyMode = false;      // User interface verbosity.
 const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
-var allPossibleDestinations = null;           // Platform specific lookup table for destinations
-var signalFlagMap = null;                     // Platform specific lookup table for signal flags
+// Initialisation of Lookup tables
+var allPossibleDestinations = null;  // Global Access variable for destination lookup table
+var signalFlagMap = null; // Global access variable for signal flag mapping
+
+function getPlatformName(){
+	//TODO: Add corresponding server endpoint and error handling and make it once executable (when it succeed)
+	return "swtbahn_full";
+}
+
+
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -740,6 +748,7 @@ class Driver {
 }
 
 
+
 /*************************************************************
  * UI update for client initialisation and game start and end
  * (train grab and release)
@@ -796,6 +805,16 @@ function initialise() {
 		null                                      // trainId
 	);
 
+	var platform = getPlatformName();
+
+	namedMap = "allPossibleDestinations_" + platform;
+	str = "allPossibleDestinations =" + namedMap;
+	eval (str);
+	namedMap = "signalFlagMap_" + platform;
+        str = "signalFlagMap =" + namedMap;                  
+        eval (str);
+
+
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
 
@@ -849,13 +868,15 @@ function initialise() {
 	});
 
 	// Set the possible destinations for the SWTbahn platform.
-	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
-	disableAllDestinationButtons();
+	namedMap = "allPossibleDestinations_" + platform;
+        str = "allPossibleDestinations =" + namedMap;
+        eval (str);
+        namedMap = "signalFlagMap_" + platform;
+        str = "signalFlagMap =" + namedMap;                  
+        eval (str);
 
-	// Set the signal to flag mapping.
-	signalFlagMap = signalFlagMapSwtbahnFull;
+	disableAllDestinationButtons();
+	
 
 	// Initialise the click handler of each destination button.
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
