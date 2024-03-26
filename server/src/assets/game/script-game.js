@@ -807,8 +807,13 @@ function initialise() {
 
 	var platform = getPlatformName();
 
-	allPossibleDestinations = eval ("allPossibleDestinations_" + platform);
-	signalFlagMap = eval("signalFlagMap_" + platform)
+	namedMap = "allPossibleDestinations_" + platform;
+	str = "allPossibleDestinations =" + " = " + namedMap;
+	eval (str);
+	namedMap = "signalFlagMap_" + platform;
+        str = "signalFlagMap =" + " = " + namedMap;                  
+        eval (str);
+
 
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
