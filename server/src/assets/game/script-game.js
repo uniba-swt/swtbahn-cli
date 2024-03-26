@@ -808,10 +808,10 @@ function initialise() {
 	var platform = getPlatformName();
 
 	namedMap = "allPossibleDestinations_" + platform;
-	str = "allPossibleDestinations =" + " = " + namedMap;
+	str = "allPossibleDestinations =" + namedMap;
 	eval (str);
 	namedMap = "signalFlagMap_" + platform;
-        str = "signalFlagMap =" + " = " + namedMap;                  
+        str = "signalFlagMap =" + namedMap;                  
         eval (str);
 
 
