@@ -188,6 +188,6 @@ for configuration in folderList: # Roll over the list of configuration possibili
     jsonStructure = generateJsonStructure(resultData)
     # Write to json file
     with open("../destinations-{}.json".format(configuration), "w") as file: 
-        file.write("const allPossibleDestinations-{} = ".format(configuration))
+        file.write("const allPossibleDestinations_{} = ".format(configuration.replace("-", "_")))
         file.write(json.dumps(jsonStructure, indent=2))
         file.write(";")

@@ -17,7 +17,7 @@ var signalFlagMap = null; // Global access variable for signal flag mapping
 
 function getPlatformName(){
 	//TODO: Add corresponding server endpoint and error handling and make it once executable (when it succeed)
-	return "swtbahn-full";
+	return "swtbahn_full";
 }
 
 
@@ -807,8 +807,8 @@ function initialise() {
 
 	var platform = getPlatformName();
 
-	allPossibleDestinations = eval ("allPossibleDestinations-" + platform);
-	signalFlagMap = eval("signalFlagMap-" + platform)
+	allPossibleDestinations = eval ("allPossibleDestinations_" + platform);
+	signalFlagMap = eval("signalFlagMap_" + platform)
 
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
