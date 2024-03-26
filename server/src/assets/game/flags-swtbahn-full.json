@@ -1,4 +1,4 @@
-const signalFlagMap-<DirEntry 'swtbahn-full.csv'> = {
+const signalFlagMap-swtbahn-full = {
   "signal4": "flagThemeBlack flagOutline flagOne",
   "signal18": "flagThemeBlack flagOutline flagTwo",
   "signal51": "flagThemeBlack flagOutline flagThree",

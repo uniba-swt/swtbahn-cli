@@ -1,5 +1,5 @@
 from csv import reader
-import json, yaml, os
+import json, yaml, os, copy
 
 ##### META #####
 
@@ -18,52 +18,53 @@ folderList = []
 
 ##### FUNCTIONS #####
 def generateJsonStructure(resultData):
-"""
-Params: 
-    ResultData 
-    Json with the format
-    Includes the default structure for the endformat and handle all data
+    """
+    Params: 
+        ResultData 
+        Json with the format
+        Includes the default structure for the endformat and handle all data
+    Returns:
+        Updated version of the ResultData Json
 
-Returns:
-    Updated version of the ResultData Json
-
-Doing:
-    Roll over all Blocks and search for a RouteID for the destination and insert the details based on start block, destination signal. Data were read from the interlocking table
-"""
-    originalResultData = resultData
-    resultData = {}
+    Doing:
+        Roll over all Blocks and search for a RouteID for the destination and insert the details based on start block, destination signal. Data were read from the interlocking table
+    """
+    originalResultData = copy.copy(copy.copy(resultData))
     for block in originalResultData:
         destinations = []
         for destination in originalResultData[block]:
             destinations.append(destination)
         destinationsSorted = []
+        print(destinations)
         with open(groupingFile, "r") as csvFile:
             csv_reader = reader(csvFile)
             for row in csv_reader:
                 signal = "signal" + row[0]
-                print(signal)
+                # print(signal)
                 if signal in destinations:
                     destinationsSorted.append(signal)
                 signal = signal + "a"
                 if signal in destinations:
                     destinationsSorted.append(signal)
-                    
-
+                                
         resultData[block] = {}
+        print(originalResultData["block1"])
         for destination in destinationsSorted:
             resultData[block][destination] = {}
+            print(originalResultData["block1"])
             resultData[block][destination]["route-id"] = originalResultData[block][destination]["route-id"]
             resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
             resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
             resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
 
-        return resultData
+    return resultData
 
 def interlockerDataExtraction(routes):
-"""
-Filters the resultData Json for blacklisted routes and check if there are shorter routes
-"""
     global resultData
+    """
+    Filters the resultData Json for blacklisted routes and check if there are shorter routes
+    """
+
     for route in routes:
         destination = interlockingTable["interlocking-table"][route]["destination"]
         routeID = route
@@ -163,7 +164,7 @@ for configuration in folderList: # Roll over the list of configuration possibili
                         if route["source"] == signal and route["destination"] == destination:
                             if routeID == -1:
                                 routeID = route["id"]
-                                print("{} --> {} | {} {}".format(signal, destination, routeID, block["id"]))                
+                                # print("{} --> {} | {} {}".format(signal, destination, routeID, block["id"]))                
                             else:
                                 if interlockingTable["interlocking-table"][routeID]["id"] in blacklist:
                                     print("Route was overriden because old was blacklisted")
@@ -171,7 +172,7 @@ for configuration in folderList: # Roll over the list of configuration possibili
                                     print("Route Beibehalten")
                                 elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]): # if new Route ID is shorter than old route id (less node points) than overwrite the routeid
                                     routeID = route["id"]
-                                    print("{} -> {} | {} {}".format(signal, destination, routeID, block["id"]))
+                                    # print("{} -> {} | {} {}".format(signal, destination, routeID, block["id"]))
                     
 
                     if routeID not in blacklist:
@@ -187,6 +188,6 @@ for configuration in folderList: # Roll over the list of configuration possibili
     jsonStructure = generateJsonStructure(resultData)
     # Write to json file
     with open("../destinations-{}.json".format(configuration), "w") as file: 
-        file.write("const allPossibleDestinations-{} = ".format(entry))
+        file.write("const allPossibleDestinations-{} = ".format(configuration))
         file.write(json.dumps(jsonStructure, indent=2))
         file.write(";")

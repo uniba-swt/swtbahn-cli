@@ -35,7 +35,6 @@ for entry in mappingFolderContent:
                 jsonString[signalName] = endString
 
             with open("../flags-{}.json".format(entry.name[:-4]), "w") as file:
-                file.write("const signalFlagMap-{} = ".format(entry))
+                file.write("const signalFlagMap-{} = ".format(entry.name[:-4]))
                 file.write(json.dumps(jsonString, indent=2))
                 file.write(";")
-
