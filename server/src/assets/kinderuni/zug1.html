@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="icon" type="image/png" id="favIcon" href="favicon.jpg" />
+
+	<link rel="stylesheet" href="../dependencies/bootstrap.min.css" />
+	<link rel="stylesheet" href="../style.css" />
+	<link rel="stylesheet" href="./ku_style.css" />
+
+	<script src="../dependencies/jquery.min.js"></script>
+	<script src="./zug1_proto.js"></script>
+	
+	<title>SWTbahn Zug 1 Fahren</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+	<!--
+	<div class="row justify-content-between">
+		<div class="col">
+			<img class="img-fluid" src="../swtbahn-logo.png">
+		</div>
+		<div class="col">
+			<img class="img-fluid" src="../game/train-cargo-db.jpg">
+		</div>
+	</div>
+	-->
+	<div class="row justify-content-between">
+		<div class="col text-center" style="margin-left: 25%; margin-right: 25%;">
+			<img class="img-fluid" src="../swtbahn-logo.png">
+		</div>
+	</div>
+	<!--<hr/>
+	<div class="row">
+		<img id="train-img" class="col img-fluid" src="./train-cargo-db.jpg"></img>
+	</div>-->
+	<div>
+		<form id="drivingForm">
+			<div class="row">
+				<label class="col align-self-center col-form-label-lg text-center">
+					<b><span lang="de" style="font-size: 4vw;">Geschwindigkeit:</span></b>
+				</label>
+			</div>
+			<div class="input-group row">
+				<div class="col text-center">
+					<div class="btn-group w-100 h-100" role="group">
+						<button id="stopBtn" type="button" class="btn btn-danger btn-lg disabled" onclick="stopBtnClicked()" value="0">
+							<span lang="de" class="fontspan-speedbuttons">Stop</span>
+						</button>
+						<button id="slowBtn" type="button" class="btn btn-warning btn-lg" onclick="slowBtnClicked()" value="20">
+							<span lang="de" class="fontspan-speedbuttons">Langsam</span>
+						</button>
+						<button id="normalBtn" type="button" class="btn btn-secondary btn-lg" onclick="normalBtnClicked()" value="40">
+							<span lang="de" class="fontspan-speedbuttons">Mittel</span>
+						</button>
+						<button id="fastBtn" type="button" class="btn btn-success btn-lg" onclick="fastBtnClicked()" value="60">
+							<span lang="de" class="fontspan-speedbuttons">Schnell</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<!--<hr style="max-width: 80%; margin-left: 10%;"/>-->
+			<div class="row">
+				<label class="col align-self-center col-form-label-lg text-center">
+					<b><span lang="de" style="font-size: 4vw;">Richtung:</span></b>
+				</label>
+			</div>
+			<div class="input-group row">
+				<div class="col text-center">
+					<div class="btn-group w-50 h-100" role="group">
+						<button id="forwardBtn" type="button" class="btn btn-primary btn-lg disabled" onclick="forwardBtnClicked()" value="1" >
+							<span lang="de" class="fontspan-speedbuttons">Forwärts</span>
+						</button>
+						<button id="backwardBtn" type="button" class="btn btn-primary btn-lg" onclick="backwardBtnClicked()" value="-1">
+							<span lang="de" class="fontspan-speedbuttons">Rückwärts</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
