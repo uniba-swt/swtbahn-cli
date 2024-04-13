@@ -14,7 +14,7 @@ blacklistFileDirectory = "./blacklists"
 groupingFileDirectory = "./flagMappings"
 
 configFolderItemList = os.scandir(pathToConfig)
-folderList = []
+
 
 ##### FUNCTIONS #####
 def generateJsonStructure(resultData):
@@ -29,7 +29,9 @@ def generateJsonStructure(resultData):
     Doing:
         Roll over all Blocks and search for a RouteID for the destination and insert the details based on start block, destination signal. Data were read from the interlocking table
     """
-    originalResultData = copy.copy(copy.copy(resultData))
+    newResult = {}
+    
+    originalResultData = copy.copy(resultData)
     for block in originalResultData:
         destinations = []
         for destination in originalResultData[block]:
@@ -43,21 +45,21 @@ def generateJsonStructure(resultData):
                 # print(signal)
                 if signal in destinations:
                     destinationsSorted.append(signal)
-                signal = signal + "a"
-                if signal in destinations:
+                signalComposite = signal + "a"
+                if signalComposite in destinations:
                     destinationsSorted.append(signal)
                                 
-        resultData[block] = {}
         print(originalResultData["block1"])
         for destination in destinationsSorted:
-            resultData[block][destination] = {}
-            print(originalResultData["block1"])
-            resultData[block][destination]["route-id"] = originalResultData[block][destination]["route-id"]
-            resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
-            resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
-            resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
+            newResult[block] = {}
+            newResult[block][destination] = {
+                "route-id"    : originalResultData[block][destination]["route-id"],
+                "orientation" : originalResultData[block][destination]["orientation"],
+                "block"       : originalResultData[block][destination]["block"],
+                "segment"     : originalResultData[block][destination]["segment"]
+            }
 
-    return resultData
+    return newResult
 
 def interlockerDataExtraction(routes):
     global resultData
@@ -74,16 +76,12 @@ def interlockerDataExtraction(routes):
         segments = []
         isError = False
 
-        for qblock in configuratonBahn["platforms"]:
+        for qblock in configuratonBahn["platforms"] or qblock in configuration["blocks"]:
             if qblock["id"] == lastBlock:
                 for segment in qblock["main"]:
                     segments.append(segment)
                 break
-        for qblock in configuratonBahn["blocks"]:
-            if qblock["id"] == lastBlock:
-                for segment in qblock["main"]:
-                    segments.append(segment)
-                break
+
         if len(segments) == 1:
             stopSegment = segments[0]
         elif len(segments) == 2:
@@ -94,22 +92,20 @@ def interlockerDataExtraction(routes):
                                                                                           block["id"]))
                 isError = True
         else:
-            print("Error with BlockID {}".format(block["id"]))
+            print("Error with BlockID {} - Too many segments".format(block["id"]))
             isError = True
         if isError:
             print("error with {}".format(route))
             break
-        resultData[block["id"]][destination] = {}
-        resultData[block["id"]][destination]["route-id"] = routeID
-        resultData[block["id"]][destination]["orientation"] = orientation
-        resultData[block["id"]][destination]["block"] = lastBlock
-        resultData[block["id"]][destination]["segment"] = stopSegment
+        resultData[block["id"]][destination] = {
+        "route-id" : routeID,
+        "orientation": orientation,
+        "block": lastBlock,
+        "segment": stopSegment
+        }
 
 
-    
-for entry in configFolderItemList: # Get a list of configuration possibilities which are given by the model railway
-    if entry.is_dir():
-        folderList.append(entry.name)
+folderList = [entry.name for entry in configFolderItemList if entry.is_dir()]
 
 for configuration in folderList: # Roll over the list of configuration possibilities and check if a mapping CSV is existing
     

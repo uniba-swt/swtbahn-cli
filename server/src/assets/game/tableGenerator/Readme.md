@@ -7,7 +7,7 @@ There is also the option to block single route ids within the blacklist.txt
 
 ## Requirements
 * Python3
-* Configuration w for the model railway
+* Configuration files for the model railway:
     * Interlocking table
     * extra configuration (extra_config.yaml)
 
