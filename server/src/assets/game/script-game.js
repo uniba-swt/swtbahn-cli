@@ -805,14 +805,7 @@ function initialise() {
 		null                                      // trainId
 	);
 
-	var platform = getPlatformName();
-
-	namedMap = "allPossibleDestinations_" + platform;
-	str = "allPossibleDestinations =" + namedMap;
-	eval (str);
-	namedMap = "signalFlagMap_" + platform;
-        str = "signalFlagMap =" + namedMap;                  
-        eval (str);
+	const platform = getPlatformName();
 
 
 	// Hide the chosen train.
@@ -868,12 +861,12 @@ function initialise() {
 	});
 
 	// Set the possible destinations for the SWTbahn platform.
-	namedMap = "allPossibleDestinations_" + platform;
-        str = "allPossibleDestinations =" + namedMap;
-        eval (str);
-        namedMap = "signalFlagMap_" + platform;
-        str = "signalFlagMap =" + namedMap;                  
-        eval (str);
+	namedMapDes = "allPossibleDestinations_" + platform;
+        strDes = "allPossibleDestinations =" + namedMapDes;
+        eval (strDes);
+        namedMapSignal = "signalFlagMap_" + platform;
+        strSignal = "signalFlagMap =" + namedMapSignal;                  
+        eval (strSignal);
 
 	disableAllDestinationButtons();
 	
