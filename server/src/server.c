@@ -90,9 +90,9 @@ static onion_connection_status handler_assets(void *_, onion_request *req, onion
 	struct stat st;
 	if (stat(global_path, &st) != 0) {
 		syslog_server(LOG_ERR, 
-		              "Onion - Cannot access to the exported directory/file (%s)", 
+		              "Onion - Cannot access the exported directory/file (%s)", 
 		              global_path);
-		ONION_ERROR("Cannot access to the exported directory/file (%s)", global_path);
+		ONION_ERROR("Cannot access the exported directory/file (%s)", global_path);
 		onion_low_free(global_path);
 		return OCS_NOT_IMPLEMENTED;
 	}
@@ -185,10 +185,10 @@ int main(int argc, char **argv) {
 
 	// --- upload functions ---
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
-	onion_url_add(urls, "upload/refresh-engines", handler_refresh_engines);
+	onion_url_add(urls, "upload/refresh-engines", handler_get_engines);
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
 	onion_url_add(urls, "upload/interlocker", handler_upload_interlocker);
-	onion_url_add(urls, "upload/refresh-interlockers", handler_refresh_interlockers);
+	onion_url_add(urls, "upload/refresh-interlockers", handler_get_interlockers);
 	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
 
 	// --- monitor functions ---
