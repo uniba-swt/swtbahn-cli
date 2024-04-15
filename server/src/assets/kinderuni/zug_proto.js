@@ -214,6 +214,10 @@ function enableDirectionButtonsBasedOnCurrSpeedModifier() {
 }
 
 function initialise() {
+	// Get train id by getting value of certain label attribute.
+	trainId = document.getElementById("trainNameLabel").getAttribute("value");
+	console.log("Train ID for this page: " + trainId);
+	
 	resetMutGlobalVarsToDefault();
 	// Grab train if possible, then if grabbed, make sure default direction of page
 	// is consistent with direction of train on platform.
