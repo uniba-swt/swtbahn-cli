@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="icon" type="image/png" id="favIcon" href="../favicon.jpg" />
+
+	<link rel="stylesheet" href="ku_style.css" />
+	
+	<script src="../dependencies/jquery.min.js"></script>
+	
+	<title>SWTbahn Point Controller</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="ku_scriptmapcontroller.js"></script>
+	
+</head>
+<body>
+	<img class="svg" src="trackplan-full-points-signals-minified-kinderuni-1.svg"/>
+	
+	<script>
+		jQuery(document).ready(function() {
+			/*
+			* Replace all SVG images with inline SVG
+			* Adapted from https://stackoverflow.com/a/25515718
+			*/
+			jQuery('img.svg').each(function(){
+				var $img = jQuery(this);
+				var imgID = $img.attr('id');
+				var imgClass = $img.attr('class');
+				var imgURL = $img.attr('src');
+
+				jQuery.get(imgURL, function(data) {
+					// Get the SVG tag, ignore the rest
+					var $svg = jQuery(data).find('svg');
+
+					// Add replaced image's ID to the new SVG
+					if(typeof imgID !== 'undefined') {
+						$svg = $svg.attr('id', imgID);
+					}
+					// Add replaced image's classes to the new SVG
+					if(typeof imgClass !== 'undefined') {
+						$svg = $svg.attr('class', imgClass+' replaced-svg');
+					}
+
+					// Remove any invalid XML tags as per http://validator.w3.org
+					$svg = $svg.removeAttr('xmlns:a');
+
+					// Replace image with new SVG
+					$img.replaceWith($svg);
+				});
+			});
+		});
+	</script>
+</body>
