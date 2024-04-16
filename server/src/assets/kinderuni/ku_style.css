@@ -2,3 +2,31 @@
 	font-size: 3vw;
 	color: white;
 }
+
+
+.train-id-item {
+	min-width: 10vw;
+	width: 10vw;
+	max-width: 10vw;
+	margin-right: 5%;
+}
+
+.train-property-item {
+	min-width: 10vw;
+	max-width: 15vw;
+}
+
+.button_small {
+	padding-top: 0.05rem;
+	padding-bottom: 0.05rem;
+}
+
+.button_lift {
+	margin-bottom: 0.15rem;
+}
+
+.short-val-container {
+	display: inline-block;
+	min-width: 2vw;
+	width: 2vw;
+}

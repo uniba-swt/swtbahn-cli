@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="icon" type="image/png" id="favIcon" href="../favicon.jpg" />
+
+	<link rel="stylesheet" href="../dependencies/bootstrap.min.css" />
+	<link rel="stylesheet" href="../style.css" />
+	<link rel="stylesheet" href="./ku_style.css" />
+
+	<script src="../dependencies/jquery.min.js"></script>
+	<script src="./ku_scriptadmin.js"></script>
+	
+	<title>SWTbahn Kinderuni Admin Interface</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+	<div class="row justify-content-between">
+		<div class="col text-center" style="margin-left: 25%; margin-right: 25%;">
+			<img class="img-fluid" src="../swtbahn-logo.png">
+		</div>
+	</div>
+	<hr/>
+	<div id="trainAdminContainer">
+		<div class="d-flex bd-highlight">
+			<div class="p-2 flex-fill train-id-item">
+				<b>Cargo_db</b>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Grabbed: </span>
+				<span id="cargo_db_grabbed_value" class="short-val-container">Yes</span>
+				<button id="cargo_db_release_btn" type="button" class="btn btn-primary btn-sm button_small button_lift"
+				onclick="adminReleaseTrainPromise('cargo_db')">
+					Release
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>On Block: </span>
+				<span id="cargo_db_on_block_value">None</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Speed Step: </span>
+				<span id="cargo_db_speed_step_value" class="short-val-container">0</span>
+				<button id="cargo_db_stop_btn" type="button" class="btn btn-warning btn-sm button_small button_lift"
+				onclick="adminSetTrainSpeedPromise('cargo_db',0)">
+					Stop
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Detected Speed: </span>
+				<span id="cargo_db_detected_speed_value" class="short-val-container">0</span>
+				<span>km/h</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Orientation: </span>
+				<span id="cargo_db_orientation_value">Right</span>
+			</div>
+		</div>
+		<div class="d-flex bd-highlight">
+			<div class="p-2 flex-fill train-id-item">
+				<b>Cargo_bayern</b>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Grabbed: </span>
+				<span id="cargo_bayern_grabbed_value" class="short-val-container">No</span>
+				<button id="cargo_bayern_release_btn" type="button" class="btn btn-primary btn-sm button_small button_lift"
+				onclick="adminReleaseTrainPromise('cargo_bayern')">
+					Release
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>On Block: </span>
+				<span id="cargo_bayern_on_block_value" class="short-val-container">1</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Speed Step: </span>
+				<span id="cargo_bayern_speed_step_value" class="short-val-container">120</span>
+				<button id="cargo_bayern_stop_btn" type="button" class="btn btn-warning btn-sm button_small button_lift"
+				onclick="adminSetTrainSpeedPromise('cargo_bayern',0)">
+					Stop
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Detected Speed: </span>
+				<span id="cargo_bayern_detected_speed_value" class="short-val-container">10</span>
+				<span>km/h</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Orientation: </span>
+				<span id="cargo_bayern_orientation_value">Left</span>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
