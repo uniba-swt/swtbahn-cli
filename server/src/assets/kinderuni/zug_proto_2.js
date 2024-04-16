@@ -120,14 +120,58 @@ function forceReleaseTrainPromise() {
 	});
 }
 
+function getReportedTrainSpeed() {
+	reportedSpeed = -1;
+	$.ajax({
+		type: 'POST',
+		url: serverAddress + '/monitor/train-state',
+		crossDomain: true,
+		data: {
+			'train': this.trainId
+		},
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			const regexMatch = /speed step: (.*?) /g.exec(responseData);
+			reportedSpeed =  regexMatch[1];
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			;
+		}
+	}).then(() => {
+		return reportedSpeed;
+	}).catch(() => {
+		return -1;
+	});
+}
+
 function stopBtnClicked() {
 	console.log(dtISOStr() + ": Stop Button clicked");
 	document.getElementById("stopBtn").classList.add("disabled");
 	document.getElementById("slowBtn").classList.remove("disabled");
 	document.getElementById("normalBtn").classList.remove("disabled");
 	document.getElementById("fastBtn").classList.remove("disabled");
+	oldspeed = currentSpeed;
 	currentSpeed = parseInt(document.getElementById("stopBtn").getAttribute("value"), 10);
-	setTrainSpeedPromise(currentSpeed);
+	// When stopping, it is especially important that the train is actually stopping.
+	// Therefore, here we integrate an experimental check to see how fast the train is
+	// a bit later, and to stop it again if need be.
+	setTrainSpeedPromise(currentSpeed)
+		.then(() => wait(200))
+		.then(() => {
+			repSpeed = getReportedTrainSpeed();
+			if (repSpeed !== 0 && currentSpeed === 0) {
+				console.log(dtISOStr() + ": StopBtnClicked - train not at speed 0 after wait period -> stop again");
+				setTrainSpeedPromise(currentSpeed);
+			} else {
+				console.log(dtISOStr() + ": StopBtnClicked - train is at desired speed 0.");
+			}
+		})
+		.catch(() => {
+			console.log(dtISOStr() + ": StopBtnClicked - Setting train speed was not successful!");
+			// Now try and reverse effect of clicked stop button
+			currentSpeed = oldspeed;
+			enableSpeedButtonsBasedOnCurrSpeed();
+		});
 }
 
 function slowBtnClicked() {
