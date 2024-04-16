@@ -228,7 +228,7 @@ function getNextAspectOfSignal(signalID) {
 function updatePointVisualsSelector(selector) {
 	$(selector).each(function () {
 		var idstr = new String($(this).prop("id"));
-		console.log("updatePointVisualsSelector Element ID: " + idstr)
+		//console.log("updatePointVisualsSelector Element ID: " + idstr)
 		var colr = 'red';
 		if (ptAspectMap[idstr] === "reverse") {
 			colr = 'blue';
@@ -260,6 +260,11 @@ function updateSignalVisualsSelector(selector) {
 
 function updatePointsVisuals() {
 	updatePointVisualsSelector('[id^="point"]');
+	// Ensuring correct new-style state display is somewhat more involved:
+	//ptAspectMap
+	for (const [key, value] of ptAspectMap) {
+		updatePointVisuals(key);
+	}
 }
 
 function updatePointVisuals(pointID) {
@@ -397,10 +402,12 @@ function unfadePointPortion(selector) {
 
 
 function indicate_point_state(pointShortId, position) {
+	console.log("Indicate " + pointShortId + " to be in " + position);
 	const p_state_goal = position == "normal" ? "straight" : "branch";
 	const p_state_other = position == "normal" ? "branch" : "straight";
 	const selector_goal = '[id^="' + pointShortId + '_' + p_state_goal + '"]';
 	const selector_other = '[id^="' + pointShortId + '_' + p_state_other + '"]';
+	console.log("Selector Goal: " + selector_goal + "; other: " + selector_other);
 	unfadePointPortion(selector_goal);
 	fadePointPortion(selector_other);
 }
