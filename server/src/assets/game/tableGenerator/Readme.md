@@ -45,5 +45,5 @@ The content of the file would look like:
 * run generator.py
 * run converter.py
 * link the generated files to the game
-    * replace the return string of `getPlatformName()` of `script.js` to your platform name
+    * replace the return string of `getPlatformName()` of `script-game.js` to your platform name
 
