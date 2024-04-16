@@ -264,6 +264,8 @@ function updatePointsVisuals() {
 
 function updatePointVisuals(pointID) {
 	updatePointVisualsSelector('[id="' + pointID + '"]');
+	var shortPointId = "p" + pointID.substring(5);
+	indicate_point_state(shortPointId, ptAspectMap[pointID]);
 }
 
 function updateSignalsVisuals() {
@@ -311,36 +313,6 @@ function signalclick(id) {
 	switchSignal(id);
 }
 
-function fadePointPortion(selector) {
-	$(selector).each(function () {
-		var idstr = new String($(this).prop("id"));
-		if (idstr.includes("rail")) {
-			$(this).css({
-				stroke: "#777"
-			});
-		} else {
-			$(this).css({
-				fillOpacity: 0.1
-			});
-		}
-	});
-}
-
-function unfadePointPortion(selector) {
-	$(selector).each(function () {
-		var idstr = new String($(this).prop("id"));
-		if (idstr.includes("rail")) {
-			$(this).css({
-				stroke: "#000"
-			});
-		} else {
-			$(this).css({
-				fillOpacity: 1.0
-			});
-		}
-	});
-}
-
 function experiment_hidePoint9Straight() {
 	console.log("experiment_hidePoint9Straight");
 	$('[id^="p9_straight"]').each(function () {
@@ -385,12 +357,25 @@ function adjustRailStroke(strokeFloat) {
 	});
 }
 
-function experiment_indicate_point_pos(pointShortId, position) {
-	const p_state_goal = position == "normal" ? "straight" : "branch";
-	const p_state_other = position == "normal" ? "branch" : "straight";
-	const selector_goal = '[id^="' + pointShortId + '_' + p_state_goal + '"]';
-	const selector_other = '[id^="' + pointShortId + '_' + p_state_other + '"]';
-	$(selector_goal).each(function () {
+
+function fadePointPortion(selector) {
+	$(selector).each(function () {
+		var idstr = new String($(this).prop("id"));
+		if (idstr.includes("rail") || idstr.includes("arrow")) {
+			$(this).css({
+				stroke: "#777",
+				strokeWidth: 0.1
+			});
+		} else {
+			$(this).css({
+				fillOpacity: 0.1
+			});
+		}
+	});
+}
+
+function unfadePointPortion(selector) {
+	$(selector).each(function () {
 		var idstr = new String($(this).prop("id"));
 		if (idstr.includes("rail")) {
 			$(this).css({
@@ -408,25 +393,16 @@ function experiment_indicate_point_pos(pointShortId, position) {
 			});
 		}
 	});
-	
-	$(selector_other).each(function () {
-		var idstr = new String($(this).prop("id"));
-		if (idstr.includes("rail")) {
-			$(this).css({
-				stroke: "#777",
-				strokeWidth: 0.1
-			});
-		} else if (idstr.includes("arrow")) {
-			$(this).css({
-				stroke: "#777",
-				strokeWidth: 0.1
-			});
-		} else {
-			$(this).css({
-				fillOpacity: 0.1
-			});
-		}
-	});
+}
+
+
+function indicate_point_state(pointShortId, position) {
+	const p_state_goal = position == "normal" ? "straight" : "branch";
+	const p_state_other = position == "normal" ? "branch" : "straight";
+	const selector_goal = '[id^="' + pointShortId + '_' + p_state_goal + '"]';
+	const selector_other = '[id^="' + pointShortId + '_' + p_state_other + '"]';
+	unfadePointPortion(selector_goal);
+	fadePointPortion(selector_other);
 }
 
 
@@ -437,21 +413,23 @@ $(document).ready(
 		.then(() => updatePointsVisuals());
 		updateParamAspectsPromise(false)
 		.then(() => updateSignalsVisuals());
+		
+		// Adjust the appearance of all rails.
 		adjustRailStroke();
-		experiment_indicate_point_pos("p1", "reverse");
-		experiment_indicate_point_pos("p2", "normal");
-		experiment_indicate_point_pos("p8", "reverse");
-		experiment_indicate_point_pos("p9", "normal");
-		experiment_indicate_point_pos("p10", "normal");
+		//indicate_point_state("p1", "reverse");
+		//indicate_point_state("p2", "normal");
+		//indicate_point_state("p8", "reverse");
+		//indicate_point_state("p9", "normal");
+		//indicate_point_state("p10", "normal");
 		//console.log("Experiment, Manipulate Point9 straight elements");
 		//experiment_hidePoint9Branch();
 		// Run the get-update-visualize every ... milliseconds	
-		/*
+		/* */
 		let updateInterval = setInterval(function() {
 			updateParamAspectsPromise(true)
 					.then(() => updatePointsVisuals());
 			updateParamAspectsPromise(false)
 					.then(() => updateSignalsVisuals());
-		}, 5000);*/
+		}, 5000);/**/
 	}
 );
