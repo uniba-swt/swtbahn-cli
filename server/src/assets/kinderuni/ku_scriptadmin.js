@@ -47,3 +47,95 @@ function adminReleaseTrainPromise(train) {
 		}
 	});
 }
+
+function startupPromise() {
+	return $.ajax({
+		type: 'POST',
+		url: '/admin/startup',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			;
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			alert("Startup Failed");
+		}
+	});
+}
+
+function shutdownPromise() {
+	return $.ajax({
+		type: 'POST',
+		url: '/admin/startup',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			;
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			alert("Shutdown Failed");
+		}
+	});
+}
+
+function adjustValueField(valueFieldSelector, value) {
+	$(valueFieldSelector).text(value);
+}
+
+function updateTrainStatePromise(train) {
+	return $.ajax({
+		type: 'POST',
+		url: serverAddress + '/monitor/train-state',
+		crossDomain: true,
+		data: {
+			'train': this.trainId
+		},
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			// = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed (.*?) km/h - direction: (.*?)/
+			const regexMatches = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed (.*?) km\/h - direction: (.*?) /g.exec(responseData);
+			const grabbed = regexMatches[1];
+			const segment = regexMatches[2];
+			const block = regexMatches[3];
+			const orientation = regexMatches[4];
+			const speedStep = regexMatches[5];
+			const detSpeed = regexMatches[6];
+			const direction = regexMatches[7];
+			console.log(`Extracted: grabbed ${grabbed}, block ${block}, speed step ${speedStep}, detected Speed ${detSpeed}, orientation ${orientation}`);
+			$('#' + train + "_grabbed_value").text(grabbed);
+			$('#' + train + "_on_block_value").text(block);
+			$('#' + train + "_speed_step_value").text(speedStep);
+			$('#' + train + "_detected_speed_value").text(detSpeed);
+			$('#' + train + "_orientation_value").text(orientation);
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			;
+		}
+	});
+}
+
+function updateTrainsStates() {
+	trains = ["cargo_db", "cargo_bayern"];
+	for(train in trains) {
+		
+	}
+}
+
+$(document).ready(
+	async function () {
+		await new Promise(r => setTimeout(r, 350));
+		updateParamAspectsPromise(true)
+		.then(() => updatePointsVisuals());
+		updateParamAspectsPromise(false)
+		.then(() => updateSignalsVisuals());
+		
+		let updateInterval = setInterval(function() {
+			updateParamAspectsPromise(true)
+					.then(() => updatePointsVisuals());
+			updateParamAspectsPromise(false)
+					.then(() => updateSignalsVisuals());
+		}, 5000);/**/
+	}
+);
