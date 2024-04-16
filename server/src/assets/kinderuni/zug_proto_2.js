@@ -120,9 +120,8 @@ function forceReleaseTrainPromise() {
 	});
 }
 
-function getReportedTrainSpeed() {
-	reportedSpeed = -1;
-	$.ajax({
+function getReportedTrainSpeedPromise() {
+	return $.ajax({
 		type: 'POST',
 		url: serverAddress + '/monitor/train-state',
 		crossDomain: true,
@@ -132,15 +131,12 @@ function getReportedTrainSpeed() {
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
 			const regexMatch = /speed step: (.*?) /g.exec(responseData);
-			reportedSpeed =  regexMatch[1];
+			const reportedSpeed = regexMatch[1];
+			return reportedSpeed;
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			;
+			return -1;
 		}
-	}).then(() => {
-		return reportedSpeed;
-	}).catch(() => {
-		return -1;
 	});
 }
 
@@ -157,16 +153,16 @@ function stopBtnClicked() {
 	// a bit later, and to stop it again if need be.
 	setTrainSpeedPromise(currentSpeed)
 		.then(() => wait(200))
-		.then(() => {
-			repSpeed = getReportedTrainSpeed();
-			if (repSpeed !== 0 && currentSpeed === 0) {
+		.then(() => getReportedTrainSpeedPromise())
+		.then(repTrSpeed => {
+			console.log(dtISOStr() + ": Reported Train Speed: " + repTrSpeed);
+			if (repTrSpeed !== 0 && currentSpeed === 0) {
 				console.log(dtISOStr() + ": StopBtnClicked - train not at speed 0 after wait period -> stop again");
 				setTrainSpeedPromise(currentSpeed);
 			} else {
 				console.log(dtISOStr() + ": StopBtnClicked - train is at desired speed 0.");
 			}
-		})
-		.catch(() => {
+		}).catch(() => {
 			console.log(dtISOStr() + ": StopBtnClicked - Setting train speed was not successful!");
 			// Now try and reverse effect of clicked stop button
 			currentSpeed = oldspeed;
@@ -295,33 +291,33 @@ function initialise() {
 			if (trainGrabbed) {
 				forwardBtnClicked();
 			}
-			return true;
 		})
 		.catch(() => {
 			console.log(dtISOStr() + ": Initialise -> grabTrainPromise -> catch");
 			// -> disable all speedbuttons.
 			disableAllSpeedButtons();
 			disableAllDirectionButtons();
-			return false;
 		});
 }
 
 $(document).ready(() => {
-	ret = initialise();
-	if (!ret) {
-		console.log("Initialisation failed, force release and then try again.");
-		// Maybe train could not be grabbed -> Force release and try once more.
-		forceReleaseTrainPromise()
-		.then(() => {
-			ret2 = initialise();
-			console.log(dtISOStr() + ": Init worked on 2nd attempt");
-		})
-		.catch(() => {
-			// Admin release did not work, stop trying to initialise.
-			// Todo: maybe display error.
-			console.log(dtISOStr() + ": Init failed on 2nd attempt");
-		});
-	}
+	initialise();
+	wait(500).then(() => {
+		if (!trainGrabbed) {
+			console.log(dtISOStr() + ": Initialisation failed, train not grabbed. Force release and then try again.");
+			// Maybe train could not be grabbed -> Force release and try once more.
+			forceReleaseTrainPromise()
+				.then(() => {
+					ret2 = initialise();
+					console.log(dtISOStr() + ": Init worked on 2nd attempt");
+				})
+				.catch(() => {
+					// Admin release did not work, stop trying to initialise.
+					// Todo: maybe display error.
+					console.log(dtISOStr() + ": Init failed on 2nd attempt");
+				});
+		}
+	});
 });
 
 $(window).on("unload", (event) => {
