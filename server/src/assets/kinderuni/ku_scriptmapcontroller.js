@@ -380,7 +380,7 @@ function adjustRailStroke(strokeFloat) {
 	$(selector_goal).each(function () {
 		$(this).css({
 			stroke: "#000",
-			strokeWidth: 1.0
+			strokeWidth: 0.5
 		});
 	});
 }
@@ -395,7 +395,12 @@ function experiment_indicate_point_pos(pointShortId, position) {
 		if (idstr.includes("rail")) {
 			$(this).css({
 				stroke: "#000",
-				strokeWidth: 1.8
+				strokeWidth: 0.5
+			});
+		} else if (idstr.includes("arrow")) {
+			$(this).css({
+				stroke: "#000",
+				strokeWidth: 1.2
 			});
 		} else {
 			$(this).css({
@@ -407,6 +412,11 @@ function experiment_indicate_point_pos(pointShortId, position) {
 	$(selector_other).each(function () {
 		var idstr = new String($(this).prop("id"));
 		if (idstr.includes("rail")) {
+			$(this).css({
+				stroke: "#777",
+				strokeWidth: 0.1
+			});
+		} else if (idstr.includes("arrow")) {
 			$(this).css({
 				stroke: "#777",
 				strokeWidth: 0.1
