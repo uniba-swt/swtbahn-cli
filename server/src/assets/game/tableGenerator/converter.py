@@ -31,10 +31,9 @@ def generateJsonStructure(resultData):
     """
     newResult = {}
     
-    originalResultData = copy.copy(resultData)
-    for block in originalResultData:
+    for block in resultData:
         destinations = []
-        for destination in originalResultData[block]:
+        for destination in resultData[block]:
             destinations.append(destination)
         destinationsSorted = []
         print(destinations)
@@ -49,20 +48,19 @@ def generateJsonStructure(resultData):
                 if signalComposite in destinations:
                     destinationsSorted.append(signal)
                                 
-        print(originalResultData["block1"])
+        print(resultData["block1"])
         for destination in destinationsSorted:
             newResult[block] = {}
             newResult[block][destination] = {
-                "route-id"    : originalResultData[block][destination]["route-id"],
-                "orientation" : originalResultData[block][destination]["orientation"],
-                "block"       : originalResultData[block][destination]["block"],
-                "segment"     : originalResultData[block][destination]["segment"]
+                "route-id"    : resultData[block][destination]["route-id"],
+                "orientation" : resultData[block][destination]["orientation"],
+                "block"       : resultData[block][destination]["block"],
+                "segment"     : resultData[block][destination]["segment"]
             }
 
     return newResult
 
-def interlockerDataExtraction(routes):
-    global resultData
+def interlockerDataExtraction(routes, resultData):
     """
     Filters the resultData Json for blacklisted routes and check if there are shorter routes
     """
@@ -104,6 +102,8 @@ def interlockerDataExtraction(routes):
         "segment": stopSegment
         }
 
+
+### Start Script ###
 
 folderList = [entry.name for entry in configFolderItemList if entry.is_dir()]
 
@@ -177,7 +177,7 @@ for configuration in folderList: # Roll over the list of configuration possibili
                         print("Route {} wurde ignoriert, weil diese in der Blacklist steht".format(routeID))
 
             resultData[block["id"]] = {}
-            interlockerDataExtraction(routes)
+            interlockerDataExtraction(routes, resultData)
 
 
     # Group and sort based on interlocking table blocks (block -> destination)
