@@ -16,23 +16,26 @@
 </head>
 <body>
 	<div class="row justify-content-between">
-		<div class="col text-center" style="margin-left: 25%; margin-right: 25%;">
+		<div class="col text-center" style="margin-left: 35%; margin-right: 35%;">
 			<img class="img-fluid" src="../swtbahn-logo.png">
 		</div>
 	</div>
 	<hr/>
-	<div id="startupAdminContainer">
-		<buttonbutton id="startup_button" type="button" class="btn btn-primary btn-lg"
+	<div id="startupAdminContainer" class="text-center">
+		<button id="startup_button" type="button" class="btn btn-primary btn-lg adminBtn"
 		onclick="startupPromise()">Startup
 		</button>
-		<buttonbutton id="shutdown_button" type="button" class="btn btn-primary btn-secondary"
+		<button id="shutdown_button" type="button" class="btn btn-secondary btn-lg adminBtn"
 		onclick="shutdownPromise()">Shutdown
+		</button>
+		<button id="forceupdate_button" type="button" class="btn btn-success btn-lg adminBtn"
+		onclick="updateTrainStates()">Force Update
 		</button>
 	</div>
 	
 	<hr/>
 	<div id="trainAdminContainer">
-		<div class="d-flex bd-highlight">
+		<div class="d-flex ">
 			<div class="p-2 flex-fill train-id-item">
 				<b>Cargo_db</b>
 			</div>
@@ -65,8 +68,12 @@
 				<span>Orientation: </span>
 				<span id="cargo_db_orientation_value">Right</span>
 			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Direction: </span>
+				<span id="cargo_db_direction_value">None</span>
+			</div>
 		</div>
-		<div class="d-flex bd-highlight">
+		<div class="d-flex ">
 			<div class="p-2 flex-fill train-id-item">
 				<b>Cargo_bayern</b>
 			</div>
@@ -98,6 +105,135 @@
 			<div class="p-2 flex-fill train-property-item">
 				<span>Orientation: </span>
 				<span id="cargo_bayern_orientation_value">Left</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Direction: </span>
+				<span id="cargo_bayern_direction_value">None</span>
+			</div>
+		</div>
+		<div class="d-flex ">
+			<div class="p-2 flex-fill train-id-item">
+				<b>Cargo_green</b>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Grabbed: </span>
+				<span id="cargo_green_grabbed_value" class="short-val-container">No</span>
+				<button id="cargo_green_release_btn" type="button" class="btn btn-primary btn-sm button_small button_lift"
+				onclick="adminReleaseTrainPromise('cargo_green')">
+					Release
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>On Block: </span>
+				<span id="cargo_green_on_block_value" class="short-val-container">1</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Speed Step: </span>
+				<span id="cargo_green_speed_step_value" class="short-val-container">120</span>
+				<button id="cargo_green_stop_btn" type="button" class="btn btn-warning btn-sm button_small button_lift"
+				onclick="adminSetTrainSpeedPromise('cargo_green',0)">
+					Stop
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Detected Speed: </span>
+				<span id="cargo_green_detected_speed_value" class="short-val-container">10</span>
+				<span>km/h</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Orientation: </span>
+				<span id="cargo_green_orientation_value">Left</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Direction: </span>
+				<span id="cargo_green_direction_value">None</span>
+			</div>
+		</div>
+		<div class="d-flex ">
+			<div class="p-2 flex-fill train-id-item">
+				<b>regional_odeg</b>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Grabbed: </span>
+				<span id="regional_odeg_grabbed_value" class="short-val-container">No</span>
+				<button id="regional_odeg_release_btn" type="button" class="btn btn-primary btn-sm button_small button_lift"
+				onclick="adminReleaseTrainPromise('regional_odeg')">
+					Release
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>On Block: </span>
+				<span id="regional_odeg_on_block_value" class="short-val-container">wdWD</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Speed Step: </span>
+				<span id="regional_odeg_speed_step_value" class="short-val-container">120</span>
+				<button id="regional_odeg_stop_btn" type="button" class="btn btn-warning btn-sm button_small button_lift"
+				onclick="adminSetTrainSpeedPromise('regional_odeg',0)">
+					Stop
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Detected Speed: </span>
+				<span id="regional_odeg_detected_speed_value" class="short-val-container">10</span>
+				<span>km/h</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Orientation: </span>
+				<span id="regional_odeg_orientation_value">Left</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Direction: </span>
+				<span id="regional_odeg_direction_value">None</span>
+			</div>
+		</div>
+		<div class="d-flex ">
+			<div class="p-2 flex-fill train-id-item">
+				<b>regional_brengdirect</b>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Grabbed: </span>
+				<span id="regional_brengdirect_grabbed_value" class="short-val-container">Yes</span>
+				<button id="regional_brengdirect_release_btn" type="button" class="btn btn-primary btn-sm button_small button_lift"
+				onclick="adminReleaseTrainPromise('regional_brengdirect')">
+					Release
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>On Block: </span>
+				<span id="regional_brengdirect_on_block_value" class="short-val-container">1</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Speed Step: </span>
+				<span id="regional_brengdirect_speed_step_value" class="short-val-container">120</span>
+				<button id="regional_brengdirect_stop_btn" type="button" class="btn btn-warning btn-sm button_small button_lift"
+				onclick="adminSetTrainSpeedPromise('regional_brengdirect',0)">
+					Stop
+				</button>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Detected Speed: </span>
+				<span id="regional_brengdirect_detected_speed_value" class="short-val-container">10</span>
+				<span>km/h</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Orientation: </span>
+				<span id="regional_brengdirect_orientation_value">Left</span>
+			</div>
+			<div class="p-2 flex-fill train-property-item">
+				<span>Direction: </span>
+				<span id="regional_brengdirect_direction_value">None</span>
+			</div>
+		</div>
+	</div>
+	<hr/>
+	<div id="monitoringStatusContainer">
+		<div class="d-flex flex-row">
+			<div class="p-2" style="width: 12vw;">
+				<b>Monitoring status:</b>
+			</div>
+			<div class="p-2 ">
+				<span id="monitoring_status_field" class="short-val-container">Success</span>
 			</div>
 		</div>
 	</div>

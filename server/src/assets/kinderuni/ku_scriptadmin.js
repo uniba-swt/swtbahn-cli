@@ -23,6 +23,9 @@ function adminSetTrainSpeedPromise(train, speed) {
 			'track-output': trackOutput
 		},
 		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			updateTrainStatePromise(train);
+		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log(dtISOStr() + ": adminSetTrainSpeedPromise ERR: " + responseData.text + "; " + errorThrown);
 		}
@@ -40,7 +43,7 @@ function adminReleaseTrainPromise(train) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
-			// TODO: Trigger Status Display Update 
+			updateTrainStatePromise(train);
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log(dtISOStr() + ": adminReleaseTrainPromise ERR: " + responseData.text + "; " + errorThrown);
@@ -94,8 +97,11 @@ function updateTrainStatePromise(train) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
-			// = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed (.*?) km/h - direction: (.*?)/
 			const regexMatches = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed (.*?) km\/h - direction: (.*?) /g.exec(responseData);
+			if (regexMatches === null) {
+				console.log(dtISOStr() + ": updateTrainStatePromise RegexMatches is NULL")
+				return;
+			}
 			const grabbed = regexMatches[1];
 			const segment = regexMatches[2];
 			const block = regexMatches[3];
@@ -103,39 +109,45 @@ function updateTrainStatePromise(train) {
 			const speedStep = regexMatches[5];
 			const detSpeed = regexMatches[6];
 			const direction = regexMatches[7];
-			console.log(`Extracted: grabbed ${grabbed}, block ${block}, speed step ${speedStep}, detected Speed ${detSpeed}, orientation ${orientation}`);
+			console.log(dtISOStr() + ": " + `Extracted: grabbed ${grabbed}, block ${block}, speed step ${speedStep}, detected Speed ${detSpeed}, orientation ${orientation}`);
 			$('#' + train + "_grabbed_value").text(grabbed);
 			$('#' + train + "_on_block_value").text(block);
 			$('#' + train + "_speed_step_value").text(speedStep);
 			$('#' + train + "_detected_speed_value").text(detSpeed);
 			$('#' + train + "_orientation_value").text(orientation);
+			$('#' + train + "_direction_value").text(direction);
+			if (grabbed.toLowerCase().includes("yes")) {
+				$('#' + train + "_release_btn").classList.remove("disabled");
+			} else {
+				$('#' + train + "_release_btn").classList.add("disabled");
+			}
+			if (parseInt(speedStep, 10) > 0) {
+				$('#' + train + "_release_btn").classList.remove("disabled");
+			} else {
+				$('#' + train + "_release_btn").classList.add("disabled");
+			}
+			$('#monitoring_status_field').text("Active");
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			;
+			$('#monitoring_status_field').text("Error");
 		}
 	});
 }
 
-function updateTrainsStates() {
-	trains = ["cargo_db", "cargo_bayern"];
+function updateTrainStates() {
+	trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
 	for(train in trains) {
-		
+		updateTrainStatePromise(train);
 	}
 }
 
 $(document).ready(
 	async function () {
-		await new Promise(r => setTimeout(r, 350));
-		updateParamAspectsPromise(true)
-		.then(() => updatePointsVisuals());
-		updateParamAspectsPromise(false)
-		.then(() => updateSignalsVisuals());
+		await new Promise(r => setTimeout(r, 100));
+		updateTrainStates();
 		
 		let updateInterval = setInterval(function() {
-			updateParamAspectsPromise(true)
-					.then(() => updatePointsVisuals());
-			updateParamAspectsPromise(false)
-					.then(() => updateSignalsVisuals());
-		}, 5000);/**/
+			updateTrainStates();
+		}, 2000);
 	}
 );

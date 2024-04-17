@@ -8,11 +8,12 @@
 	min-width: 10vw;
 	width: 10vw;
 	max-width: 10vw;
-	margin-right: 5%;
+	margin-right: 2%;
 }
 
 .train-property-item {
 	min-width: 10vw;
+	width: 12vw;
 	max-width: 15vw;
 }
 
@@ -29,4 +30,10 @@
 	display: inline-block;
 	min-width: 2vw;
 	width: 2vw;
+}
+
+.adminBtn {
+	min-width: 8vw;
+	width: 10vw;
+	margin-right: 5%;
 }
