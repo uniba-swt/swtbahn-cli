@@ -308,6 +308,12 @@ function switchPoint(pointID) {
 
 function switchSignal(signalID) {
 	var next_aspect = "aspect_stop";
+	// 1. update current aspect of signal (updateParamAspectsPromise)
+	// 2. ensure that we know what aspects the signal supports (updatePossibleSignalAspectsPromise)
+	// 3. determine the next aspect that we will now switch to (getNextAspectOfSignal)
+	// 4. set the signal aspect via a call to the server (setSignalPromise)
+	// 5. update the internal current aspect map (sigAspectMap[signalID] = next_aspect)
+	// 6. update the visual display of the signal
 	updateParamAspectsPromise(false)
 			.then(() => updatePossibleSignalAspectsPromise(signalID))
 			.then(() => {
