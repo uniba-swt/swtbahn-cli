@@ -258,6 +258,7 @@ function updateSignalVisualsSelector(selector) {
 		} else if (sigAspectMap[idstr] === "aspect_stop") {
 			colr = 'red';
 		} else if (sigAspectMap[idstr] === "aspect_shunt") {
+			///TODO: Decide if for Kinderuni, we want this to also show green instead.
 			colr = 'grey';
 		}
 		$(this).css({
