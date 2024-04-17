@@ -12,7 +12,7 @@ var ptAspectMap = new Map([
 	["point7", ""],
 	["point8", ""],
 	["point9", ""],
-	["point10", ""],
+	["point10", ""]/*,
 	["point11", ""],
 	["point12", ""],
 	["point13", ""],
@@ -32,7 +32,7 @@ var ptAspectMap = new Map([
 	["point26", ""],
 	["point27", ""],
 	["point28", ""],
-	["point29", ""]
+	["point29", ""]*/
 ]);
 
 var sigPossibleAspects = new Map();
@@ -193,12 +193,21 @@ function updatePossibleSignalAspectsPromise(signalID) {
 			signalID,
 			// Success
 			(response) => {
-				if (response === undefined) {
+				if (response === undefined || response === null) {
 					return;
 				}
+				/** @type String */
 				var responseStr = new String(response);
 				// Remove all spaces, Split into array on ","
-				var aspectsArr = responseStr.replaceAll(" ", "").split(",");
+				responseStr = responseStr.replaceAll(" ", "");
+				
+				// KinderUni special: remove aspect_caution if it exists.
+				if (responseStr.includes("aspect_caution,")) {
+					responseStr.replace("aspect_caution,", "");
+				}
+				
+				/** @type String[] */
+				var aspectsArr = responseStr.split(",");
 				sigPossibleAspects.set(signalID, aspectsArr);
 			},
 			// Err
