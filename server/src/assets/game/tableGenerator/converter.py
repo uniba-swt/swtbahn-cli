@@ -41,7 +41,6 @@ def generateJsonStructure(resultData):
             csv_reader = reader(csvFile)
             for row in csv_reader:
                 signal = "signal" + row[0]
-                # print(signal)
                 if signal in destinations:
                     destinationsSorted.append(signal)
                 signalComposite = signal + "a"
@@ -145,7 +144,6 @@ for configuration in folderList: # Roll over the list of configuration possibili
             try:
                 signals = block["signals"]
             except KeyError:
-    #            print("Block {} has no signals".format(block["id"]))
                 signals = []
             routes = []
             for signal in signals: # Roll over all Signals of the Block
@@ -160,7 +158,6 @@ for configuration in folderList: # Roll over the list of configuration possibili
                         if route["source"] == signal and route["destination"] == destination:
                             if routeID == -1:
                                 routeID = route["id"]
-                                # print("{} --> {} | {} {}".format(signal, destination, routeID, block["id"]))                
                             else:
                                 if interlockingTable["interlocking-table"][routeID]["id"] in blacklist:
                                     print("Route was overriden because old was blacklisted")
@@ -168,7 +165,6 @@ for configuration in folderList: # Roll over the list of configuration possibili
                                     print("Route Beibehalten")
                                 elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]): # if new Route ID is shorter than old route id (less node points) than overwrite the routeid
                                     routeID = route["id"]
-                                    # print("{} -> {} | {} {}".format(signal, destination, routeID, block["id"]))
                     
 
                     if routeID not in blacklist:
