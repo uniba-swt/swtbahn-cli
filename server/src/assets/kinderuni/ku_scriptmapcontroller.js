@@ -237,6 +237,8 @@ function getNextAspectOfSignal(signalID) {
 	if (posOfAspect != -1) {
 		var posOfNewAspect = (posOfAspect+1) % sigPossibleAspects.get(signalID).length;
 		return sigPossibleAspects.get(signalID)[posOfNewAspect];
+	} else {
+		return sigPossibleAspects.get(signalID)[0];
 	}
 }
 
