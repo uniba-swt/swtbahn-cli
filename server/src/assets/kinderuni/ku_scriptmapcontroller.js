@@ -205,8 +205,11 @@ function updatePossibleSignalAspectsPromise(signalID) {
 				
 				// KinderUni special: remove aspect_caution if it exists.
 				if (responseStr.includes("aspect_caution,")) {
-					console.log("Possible aspects for " + signalID + " include aspect_caution.");
-					responseStr.replace("aspect_caution,", "");
+					responseStr = responseStr.replace("aspect_caution,", "");
+				}
+				// KinderUni special: remove aspect_shunt if aspect_go also exists.
+				if (responseStr.includes("aspect_shunt,") && responseStr.includes("aspect_go")) {
+					responseStr = responseStr.replace("aspect_shunt,", "");
 				}
 				console.log("Possible aspects for " + signalID + ": " + responseStr);
 				/** @type String[] */
