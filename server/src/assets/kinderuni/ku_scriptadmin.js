@@ -52,6 +52,7 @@ function adminReleaseTrainPromise(train) {
 }
 
 function startupPromise() {
+	$('#monitoring_status_field').text("Starting...");
 	return $.ajax({
 		type: 'POST',
 		url: '/admin/startup',
@@ -59,26 +60,29 @@ function startupPromise() {
 		data: null,
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			;
+			$('#monitoring_status_field').text("Started");
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			alert("Startup Failed");
+			$('#monitoring_status_field').text("Error");
 		}
 	});
 }
 
 function shutdownPromise() {
+	$('#monitoring_status_field').text("Shutting down...");
 	return $.ajax({
 		type: 'POST',
-		url: '/admin/startup',
+		url: '/admin/shutdown',
 		crossDomain: true,
 		data: null,
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			;
+			$('#monitoring_status_field').text("Stopped");
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			alert("Shutdown Failed");
+			$('#monitoring_status_field').text("Error");
 		}
 	});
 }
@@ -129,7 +133,9 @@ function updateTrainStatePromise(train) {
 			$('#monitoring_status_field').text("Active");
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			$('#monitoring_status_field').text("Error");
+			if ($('#monitoring_status_field').text() !== "Starting...") {
+				$('#monitoring_status_field').text("Error");
+			}
 		}
 	});
 }
@@ -148,6 +154,6 @@ $(document).ready(
 		
 		let updateInterval = setInterval(function() {
 			updateTrainStates();
-		}, 2000);
+		}, 5000);
 	}
 );

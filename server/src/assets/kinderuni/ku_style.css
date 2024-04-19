@@ -5,9 +5,9 @@
 
 
 .train-id-item {
-	min-width: 10vw;
-	width: 10vw;
-	max-width: 10vw;
+	min-width: 12vw;
+	width: 12vw;
+	max-width: 14vw;
 	margin-right: 2%;
 }
 
@@ -34,6 +34,6 @@
 
 .adminBtn {
 	min-width: 8vw;
-	width: 10vw;
+	width: 14vw;
 	margin-right: 5%;
 }
