@@ -129,9 +129,9 @@ function updateTrainStatePromise(train) {
 				$('#' + train + "_release_btn").addClass("disabled");
 			}
 			if (parseInt(speedStep, 10) > 0) {
-				$('#' + train + "_release_btn").removeClass("disabled");
+				$('#' + train + "stop_btn").removeClass("disabled");
 			} else {
-				$('#' + train + "_release_btn").addClass("disabled");
+				$('#' + train + "stop_btn").addClass("disabled");
 			}
 			$('#monitoring_status_field').text("Active");
 		},
