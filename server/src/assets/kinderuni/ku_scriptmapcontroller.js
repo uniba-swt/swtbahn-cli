@@ -12,7 +12,9 @@ var ptAspectMap = new Map([
 	["point7", ""],
 	["point8", ""],
 	["point9", ""],
-	["point10", ""]/*,
+	["point10", ""],
+	["point26", ""]
+	/*,
 	["point11", ""],
 	["point12", ""],
 	["point13", ""],
@@ -205,7 +207,7 @@ function updatePossibleSignalAspectsPromise(signalID) {
 				if (responseStr.includes("aspect_caution,")) {
 					responseStr.replace("aspect_caution,", "");
 				}
-				
+				console.log("Possible aspects for " + signalID + ": " + responseStr);
 				/** @type String[] */
 				var aspectsArr = responseStr.split(",");
 				sigPossibleAspects.set(signalID, aspectsArr);
