@@ -103,7 +103,8 @@ function updateTrainStatePromise(train) {
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
 			console.log(dtISOStr() + ": updateTrainStatePromise ResponseData: " + responseData);
-			const regexMatches = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed (.*?) km\/h - direction: (.*?) /g.exec(responseData);
+			//                    grabbed: no - on segment: no - on block: no - orientation: left - speed step: 0 - detected speed: 0 km/h - direction: forwards
+			const regexMatches = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed: (.*?) km\/h - direction: (.*)/g.exec(responseData);
 			if (regexMatches === null) {
 				console.log(dtISOStr() + ": updateTrainStatePromise RegexMatches is NULL")
 				return;
