@@ -92,6 +92,7 @@ function adjustValueField(valueFieldSelector, value) {
 }
 
 function updateTrainStatePromise(train) {
+	console.log(dtISOStr() + ": updateTrainStatePromise(" + train + ")");
 	return $.ajax({
 		type: 'POST',
 		url: serverAddress + '/monitor/train-state',
@@ -142,9 +143,9 @@ function updateTrainStatePromise(train) {
 }
 
 function updateTrainStates() {
-	trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
-	for(train in trains) {
-		updateTrainStatePromise(train);
+	const trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
+	for(tr in trains) {
+		updateTrainStatePromise(tr);
 	}
 }
 
