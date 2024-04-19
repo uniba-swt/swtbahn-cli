@@ -97,7 +97,7 @@ function updateTrainStatePromise(train) {
 		url: serverAddress + '/monitor/train-state',
 		crossDomain: true,
 		data: {
-			'train': this.trainId
+			'train': train
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
@@ -133,7 +133,8 @@ function updateTrainStatePromise(train) {
 			$('#monitoring_status_field').text("Active");
 		},
 		error: (responseData, textStatus, errorThrown) => {
-			if ($('#monitoring_status_field').text() !== "Starting...") {
+			const current_text = $('#monitoring_status_field').text();
+			if (current_text !== "Starting..." && current_text !== "Stopped" && current_text !== "Shutting down...") {
 				$('#monitoring_status_field').text("Error");
 			}
 		}
