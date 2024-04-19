@@ -144,7 +144,7 @@ function updateTrainStatePromise(train) {
 
 function updateTrainStates() {
 	const trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
-	for(tr in trains) {
+	for(var tr of trains) {
 		updateTrainStatePromise(tr);
 	}
 }
