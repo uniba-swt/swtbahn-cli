@@ -124,14 +124,14 @@ function updateTrainStatePromise(train) {
 			$('#' + train + "_orientation_value").text(orientation);
 			$('#' + train + "_direction_value").text(direction);
 			if (grabbed.toLowerCase().includes("yes")) {
-				$('#' + train + "_release_btn").classList.remove("disabled");
+				$('#' + train + "_release_btn").removeClass("disabled");
 			} else {
-				$('#' + train + "_release_btn").classList.add("disabled");
+				$('#' + train + "_release_btn").addClass("disabled");
 			}
 			if (parseInt(speedStep, 10) > 0) {
-				$('#' + train + "_release_btn").classList.remove("disabled");
+				$('#' + train + "_release_btn").removeClass("disabled");
 			} else {
-				$('#' + train + "_release_btn").classList.add("disabled");
+				$('#' + train + "_release_btn").addClass("disabled");
 			}
 			$('#monitoring_status_field').text("Active");
 		},
