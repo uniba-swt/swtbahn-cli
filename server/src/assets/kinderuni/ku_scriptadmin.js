@@ -102,6 +102,7 @@ function updateTrainStatePromise(train) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
+			console.log(dtISOStr() + ": updateTrainStatePromise ResponseData: " + responseData);
 			const regexMatches = /grabbed: (.*?) - on segment: (.*?) - on block: (.*?) - orientation: (.*?) - speed step: (.*?) - detected speed (.*?) km\/h - direction: (.*?) /g.exec(responseData);
 			if (regexMatches === null) {
 				console.log(dtISOStr() + ": updateTrainStatePromise RegexMatches is NULL")
@@ -143,7 +144,8 @@ function updateTrainStatePromise(train) {
 }
 
 function updateTrainStates() {
-	const trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
+	//const trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
+	const trains = ["cargo_db"];
 	for(var tr of trains) {
 		updateTrainStatePromise(tr);
 	}
