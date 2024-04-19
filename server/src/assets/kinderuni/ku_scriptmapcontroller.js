@@ -270,8 +270,7 @@ function updateSignalVisualsSelector(selector) {
 
 function updatePointsVisuals() {
 	updatePointVisualsSelector('[id^="point"]');
-	// Ensuring correct new-style state display is somewhat more involved:
-	//ptAspectMap
+	// Need to also set the default arrows
 	for (const [key, value] of ptAspectMap) {
 		updatePointVisuals(key);
 	}
@@ -334,40 +333,6 @@ function signalclick(id) {
 	switchSignal(id);
 }
 
-function experiment_hidePoint9Straight() {
-	console.log("experiment_hidePoint9Straight");
-	$('[id^="p9_straight"]').each(function () {
-		var idstr = new String($(this).prop("id"));
-		console.log("Element ID: " + idstr);
-		if (idstr.includes("rail")) {
-			$(this).css({
-				stroke: "#777"
-			});
-		} else {
-			$(this).css({
-				fillOpacity: 0.1
-			});
-		}
-	});
-}
-
-function experiment_hidePoint9Branch() {
-	console.log("experiment_hidePoint9Branch");
-	$('[id^="p9_branch"]').each(function () {
-		var idstr = new String($(this).prop("id"));
-		console.log("Element ID: " + idstr);
-		if (idstr.includes("rail")) {
-			$(this).css({
-				stroke: "#777"
-			});
-		} else {
-			$(this).css({
-				fillOpacity: 0.1
-			});
-		}
-	});
-}
-
 function adjustRailStroke(strokeFloat) {
 	const selector_goal = '[id*="rail"]';
 	$(selector_goal).each(function () {
@@ -423,7 +388,7 @@ function indicate_point_state(pointShortId, position) {
 	const p_state_other = position == "normal" ? "branch" : "straight";
 	const selector_goal = '[id^="' + pointShortId + '_' + p_state_goal + '"]';
 	const selector_other = '[id^="' + pointShortId + '_' + p_state_other + '"]';
-	console.log("Selector Goal: " + selector_goal + "; other: " + selector_other);
+	//console.log("Selector Goal: " + selector_goal + "; other: " + selector_other);
 	unfadePointPortion(selector_goal);
 	fadePointPortion(selector_other);
 }
@@ -439,20 +404,12 @@ $(document).ready(
 		
 		// Adjust the appearance of all rails.
 		adjustRailStroke();
-		//indicate_point_state("p1", "reverse");
-		//indicate_point_state("p2", "normal");
-		//indicate_point_state("p8", "reverse");
-		//indicate_point_state("p9", "normal");
-		//indicate_point_state("p10", "normal");
-		//console.log("Experiment, Manipulate Point9 straight elements");
-		//experiment_hidePoint9Branch();
-		// Run the get-update-visualize every ... milliseconds	
-		/* */
+		// Periodically query the point & signal aspects
 		let updateInterval = setInterval(function() {
 			updateParamAspectsPromise(true)
 					.then(() => updatePointsVisuals());
 			updateParamAspectsPromise(false)
 					.then(() => updateSignalsVisuals());
-		}, 5000);/**/
+		}, 5000);
 	}
 );
