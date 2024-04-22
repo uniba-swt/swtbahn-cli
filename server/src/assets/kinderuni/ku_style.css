@@ -37,3 +37,12 @@
 	width: 14vw;
 	margin-right: 5%;
 }
+
+.nooffsetrow {
+	--bs-gutter-x: 0px !important;
+}
+
+.trainhead {
+	border-color: #034a7f !important;
+	border-width: 4px !important;
+}

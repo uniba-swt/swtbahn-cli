@@ -15,20 +15,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-	<div class="row justify-content-between">
-		<div class="col text-center" style="margin-left: 25%; margin-right: 25%;">
-			<img class="img-fluid" src="../swtbahn-logo.png">
-		</div>
+	<div class="justify-content-evenly d-flex" >
+		<img src="../swtbahn-logo.png" class="img-fluid rounded float-left" style="height: 20vh;" >
+		<img src="cargo_bayern_head_3-small.jpg" class="img-fluid rounded float-right border trainhead" style="height: 17vh; margin-top: 3vh;" >
 	</div>
 	<label id="trainNameLabel" value="cargo_bayern" hidden></label>
-	<div>
+	<div style="margin-top: 3%;">
 		<form id="drivingForm">
 			<div class="row">
 				<label class="col align-self-center col-form-label-lg text-center">
 					<b><span lang="de" style="font-size: 4vw;">Geschwindigkeit:</span></b>
 				</label>
 			</div>
-			<div class="input-group row">
+			<div class="input-group row nooffsetrow">
 				<div class="col text-center">
 					<div class="btn-group w-100 h-100" role="group">
 						<button id="stopBtn" type="button" class="btn btn-danger btn-lg disabled" onclick="stopBtnClicked()" value="0">
@@ -52,7 +51,7 @@
 					<b><span lang="de" style="font-size: 4vw;">Richtung:</span></b>
 				</label>
 			</div>
-			<div class="input-group row">
+			<div class="input-group row nooffsetrow">
 				<div class="col text-center">
 					<div class="btn-group w-50 h-100" role="group">
 						<button id="forwardBtn" type="button" class="btn btn-primary btn-lg disabled" onclick="forwardBtnClicked()" value="1" >

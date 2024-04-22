@@ -263,9 +263,26 @@ function backwardBtnClicked() {
 	}
 }
 
+function swapDirBtnClicked() {
+	console.log((new Date()).toISOString() + ": Swap Direction Button clicked");
+	speedModifier = speedModifier * -1;
+	if (currentSpeed > 0) {
+		setTrainSpeedPromise(currentSpeed);
+	} else {
+		// Trick to ensure headlights update even when stopped.
+		setTrainSpeedPromise(1) // arg 1 as speedModifier global takes care of ensuring -1.
+			.then(() => wait(500))
+			.then(() => setTrainSpeedPromise(0));
+	}
+}
+
 function disableAllDirectionButtons() {
-	document.getElementById("forwardBtn").classList.add("disabled");
-	document.getElementById("backwardBtn").classList.add("disabled");
+	if (trainId == "cargo_db") {
+		document.getElementById("swapDirBtn").classList.add("disabled");
+	} else {
+		document.getElementById("forwardBtn").classList.add("disabled");
+		document.getElementById("backwardBtn").classList.add("disabled");
+	}
 }
 
 
@@ -274,6 +291,9 @@ function enableDirectionButtonsBasedOnCurrSpeedModifier() {
 		document.getElementById("backwardBtn").classList.remove("disabled");
 	} else {
 		document.getElementById("forwardBtn").classList.remove("disabled");
+	}
+	if (trainId == "cargo_db") {
+		document.getElementById("swapDirBtn").classList.remove("disabled");
 	}
 }
 
