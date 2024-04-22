@@ -309,7 +309,7 @@ function initialise() {
 	grabTrainPromise()
 		.then(() => {
 			console.log(dtISOStr() + ": Initialise -> grabTrainPromise -> then");
-			if (trainGrabbed) {
+			if (trainGrabbed && trainId != "cargo_db") {
 				forwardBtnClicked();
 			}
 		})
