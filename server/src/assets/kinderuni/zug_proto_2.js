@@ -3,7 +3,7 @@ var speedModifier = 1; // forward = 1, backward = -1
 var sessionId = 0;
 var grabId = -1;
 var currentSpeed = 0;
-var trainId = "cargo_db"; // todo adjust somehow for zug2 page.
+var trainId = "cargo_db";
 
 const serverAddress = "";
 const trainEngine = "libtrain_engine_default (unremovable)";
@@ -277,7 +277,7 @@ function swapDirBtnClicked() {
 }
 
 function disableAllDirectionButtons() {
-	if (trainId == "cargo_db") {
+	if (trainId == "cargo_db") { //TODO Prototype Adjust
 		document.getElementById("swapDirBtn").classList.add("disabled");
 	} else {
 		document.getElementById("forwardBtn").classList.add("disabled");
@@ -287,7 +287,7 @@ function disableAllDirectionButtons() {
 
 
 function enableDirectionButtonsBasedOnCurrSpeedModifier() {
-	if (trainId == "cargo_db") {
+	if (trainId == "cargo_db") { //TODO Prototype Adjust
 		document.getElementById("swapDirBtn").classList.remove("disabled");
 	} else {
 		if (speedModifier == 1) {
@@ -309,7 +309,7 @@ function initialise() {
 	grabTrainPromise()
 		.then(() => {
 			console.log(dtISOStr() + ": Initialise -> grabTrainPromise -> then");
-			if (trainGrabbed && trainId != "cargo_db") {
+			if (trainGrabbed && trainId != "cargo_db") { //TODO Prototype Adjust
 				forwardBtnClicked();
 			}
 		})
