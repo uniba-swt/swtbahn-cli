@@ -287,13 +287,14 @@ function disableAllDirectionButtons() {
 
 
 function enableDirectionButtonsBasedOnCurrSpeedModifier() {
-	if (speedModifier == 1) {
-		document.getElementById("backwardBtn").classList.remove("disabled");
-	} else {
-		document.getElementById("forwardBtn").classList.remove("disabled");
-	}
 	if (trainId == "cargo_db") {
 		document.getElementById("swapDirBtn").classList.remove("disabled");
+	} else {
+		if (speedModifier == 1) {
+			document.getElementById("backwardBtn").classList.remove("disabled");
+		} else {
+			document.getElementById("forwardBtn").classList.remove("disabled");
+		}
 	}
 }
 
