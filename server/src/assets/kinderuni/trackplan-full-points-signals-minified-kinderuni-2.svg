@@ -23,9 +23,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      showgrid="false"
-     inkscape:zoom="3.6669412"
-     inkscape:cx="809.39394"
-     inkscape:cy="174.39603"
+     inkscape:zoom="1.8334706"
+     inkscape:cx="480.50948"
+     inkscape:cy="188.44044"
      inkscape:window-width="2560"
      inkscape:window-height="1367"
      inkscape:window-x="1920"
@@ -2416,8 +2416,18 @@
      id="path35155" />
   <path
      class="b"
+     d="m 694.95846,103.19454 64.1393,-36.880093"
+     id="p26_straight_arrow_1"
+     style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-miterlimit:4;stroke-dasharray:none;marker-start:url(#marker11622);marker-end:url(#marker11632)" />
+  <path
+     class="b"
      d="m 754.27799,75.682668 c -25.3667,6.79469 -49.8275,16.760195 -72.9294,29.896562"
      id="path35159" />
+  <path
+     class="b"
+     d="m 764.03374,77.961373 c -23.9987,5.68987 -47.14034,14.034979 -68.99637,25.035367"
+     id="p26_branch_arrow_1"
+     style="fill:none;stroke:#000000;stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none;marker-start:url(#marker11622);marker-end:url(#marker11632)" />
   <path
      class="b"
      d="m 756.54289,84.289278 c -24.9138,6.341665 -48.4686,16.307172 -70.6645,28.990582"
@@ -16375,9 +16385,9 @@
      inkscape:label="text-block-1"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7755"><tspan
+       id="tspan7933"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7753">B1</tspan></tspan></text>
+         id="tspan7931">B1</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-block-5"
@@ -16386,9 +16396,9 @@
      inkscape:label="text-block-5"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7759"><tspan
+       id="tspan7937"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7757">B5</tspan></tspan></text>
+         id="tspan7935">B5</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-1"
@@ -16398,9 +16408,9 @@
      onclick="pointclick('point1')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7763"><tspan
+       id="tspan7941"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7761">P1</tspan></tspan></text>
+         id="tspan7939">P1</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-2"
@@ -16410,9 +16420,9 @@
      onclick="pointclick('point2')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7767"><tspan
+       id="tspan7945"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7765">P2</tspan></tspan></text>
+         id="tspan7943">P2</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-8"
@@ -16422,9 +16432,9 @@
      onclick="pointclick('point8')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7771"><tspan
+       id="tspan7949"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7769">P8</tspan></tspan></text>
+         id="tspan7947">P8</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-9"
@@ -16434,9 +16444,9 @@
      onclick="pointclick('point9')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7775"><tspan
+       id="tspan7953"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7773">P9</tspan></tspan></text>
+         id="tspan7951">P9</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-26"
@@ -16446,9 +16456,9 @@
      onclick="pointclick('point26')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7779"><tspan
+       id="tspan7957"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7777">P26</tspan></tspan></text>
+         id="tspan7955">P26</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-28"
@@ -16458,9 +16468,9 @@
      onclick="pointclick('point28')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7783"><tspan
+       id="tspan7961"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7781">P28</tspan></tspan></text>
+         id="tspan7959">P28</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-10"
@@ -16470,9 +16480,9 @@
      onclick="pointclick('point10')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan7787"><tspan
+       id="tspan7965"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan7785">P10</tspan></tspan></text>
+         id="tspan7963">P10</tspan></tspan></text>
   <path
      class="m"
      d="m 1297.274,102.776 v 16.04272"

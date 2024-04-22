@@ -277,7 +277,7 @@ function updateSignalVisualsSelector(selector) {
 }
 
 function updatePointsVisuals() {
-	updatePointVisualsSelector('[id^="point"]');
+	//updatePointVisualsSelector('[id^="point"]');
 	// Need to also set the default arrows
 	for (const [key, value] of ptAspectMap) {
 		updatePointVisuals(key);
@@ -285,7 +285,7 @@ function updatePointsVisuals() {
 }
 
 function updatePointVisuals(pointID) {
-	updatePointVisualsSelector('[id="' + pointID + '"]');
+	//updatePointVisualsSelector('[id="' + pointID + '"]');
 	var shortPointId = "p" + pointID.substring(5);
 	indicate_point_state(shortPointId, ptAspectMap[pointID]);
 }
