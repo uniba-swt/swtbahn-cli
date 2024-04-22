@@ -10,7 +10,7 @@
 	<script src="../dependencies/jquery.min.js"></script>
 	<script src="./zug_proto_2.js"></script>
 	
-	<title>SWTbahn Zug 1 Fahren</title>
+	<title>SWTbahn Zug 2 Fahren</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -20,7 +20,7 @@
 			<img class="img-fluid" src="../swtbahn-logo.png">
 		</div>
 	</div>
-	<label id="trainNameLabel" value="cargo_db" hidden></label>
+	<label id="trainNameLabel" value="cargo_bayern" hidden></label>
 	<div>
 		<form id="drivingForm">
 			<div class="row">
@@ -34,13 +34,13 @@
 						<button id="stopBtn" type="button" class="btn btn-danger btn-lg disabled" onclick="stopBtnClicked()" value="0">
 							<span lang="de" class="fontspan-speedbuttons">Stop</span>
 						</button>
-						<button id="slowBtn" type="button" class="btn btn-warning btn-lg" onclick="slowBtnClicked()" value="30">
+						<button id="slowBtn" type="button" class="btn btn-warning btn-lg" onclick="slowBtnClicked()" value="20">
 							<span lang="de" class="fontspan-speedbuttons">Langsam</span>
 						</button>
-						<button id="normalBtn" type="button" class="btn btn-secondary btn-lg" onclick="normalBtnClicked()" value="50">
+						<button id="normalBtn" type="button" class="btn btn-secondary btn-lg" onclick="normalBtnClicked()" value="30">
 							<span lang="de" class="fontspan-speedbuttons">Mittel</span>
 						</button>
-						<button id="fastBtn" type="button" class="btn btn-success btn-lg" onclick="fastBtnClicked()" value="65">
+						<button id="fastBtn" type="button" class="btn btn-success btn-lg" onclick="fastBtnClicked()" value="40">
 							<span lang="de" class="fontspan-speedbuttons">Schnell</span>
 						</button>
 					</div>
