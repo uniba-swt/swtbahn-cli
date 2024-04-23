@@ -63,7 +63,7 @@ function grabTrainPromise() {
 			trainGrabbed = true;
 			currentSpeed = 0;
 			enableSpeedButtonsBasedOnCurrSpeed();
-			enableDirectionButtonsBasedOnCurrSpeedModifier();
+			enableDirectionButton();
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log(dtISOStr() + ": grabTrainPromise ERR: " + responseData.text + "; " + errorThrown);
@@ -112,7 +112,7 @@ function forceReleaseTrainPromise() {
 			// when releasing, the server will set the train's speed to 0.
 			currentSpeed = 0;
 			disableAllSpeedButtons();
-			disableAllDirectionButtons();
+			disableDirectionButton();
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log(dtISOStr() + ": forceReleaseTrainPromise ERR: " + responseData.text + "; " + errorThrown);
@@ -232,27 +232,9 @@ function enableSpeedButtonsBasedOnCurrSpeed() {
 	}
 }
 
-function forwardBtnClicked() {
-	console.log((new Date()).toISOString() + ": Forward Button clicked");
-	document.getElementById("forwardBtn").classList.add("disabled");
-	document.getElementById("backwardBtn").classList.remove("disabled");
-	speedModifier = 1;
-	// if stop is not disabled, train is driving -> need to reissue set speed command.
-	if (currentSpeed > 0) {
-		setTrainSpeedPromise(currentSpeed);
-	} else {
-		// Trick to ensure headlights update even when stopped.
-		setTrainSpeedPromise(1)
-			.then(() => wait(500))
-			.then(() => setTrainSpeedPromise(0));
-	}
-}
-
-function backwardBtnClicked() {
-	console.log((new Date()).toISOString() + ": Backward Button clicked");
-	document.getElementById("backwardBtn").classList.add("disabled");
-	document.getElementById("forwardBtn").classList.remove("disabled");
-	speedModifier = -1;
+function swapDirBtnClicked() {
+	console.log((new Date()).toISOString() + ": Swap Direction Button clicked");
+	speedModifier = speedModifier * -1;
 	if (currentSpeed > 0) {
 		setTrainSpeedPromise(currentSpeed);
 	} else {
@@ -263,19 +245,13 @@ function backwardBtnClicked() {
 	}
 }
 
-
-function disableAllDirectionButtons() {
-	document.getElementById("forwardBtn").classList.add("disabled");
-	document.getElementById("backwardBtn").classList.add("disabled");
+function disableDirectionButton() {
+	document.getElementById("swapDirBtn").classList.add("disabled");
 }
 
 
-function enableDirectionButtonsBasedOnCurrSpeedModifier() {
-	if (speedModifier == 1) {
-		document.getElementById("backwardBtn").classList.remove("disabled");
-	} else {
-		document.getElementById("forwardBtn").classList.remove("disabled");
-	}
+function enableDirectionButton() {
+	document.getElementById("swapDirBtn").classList.remove("disabled");
 }
 
 function initialise() {
@@ -289,15 +265,15 @@ function initialise() {
 	grabTrainPromise()
 		.then(() => {
 			console.log(dtISOStr() + ": Initialise -> grabTrainPromise -> then");
-			if (trainGrabbed) {
-				forwardBtnClicked();
+			if (trainGrabbed ) {
+				enableDirectionButton();
 			}
 		})
 		.catch(() => {
 			console.log(dtISOStr() + ": Initialise -> grabTrainPromise -> catch");
 			// -> disable all speedbuttons.
 			disableAllSpeedButtons();
-			disableAllDirectionButtons();
+			disableDirectionButton();
 		});
 }
 
@@ -320,7 +296,7 @@ $(document).ready(() => {
 });
 
 $(window).on("unload", (event) => {
-	console.log("Unloading");
+	//console.log("Unloading");
 	// Server Stops train on release automatically.
 	if (trainGrabbed) {
 		const formData = new FormData();
