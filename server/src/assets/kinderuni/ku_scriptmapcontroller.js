@@ -106,13 +106,13 @@ function setPointPromise(pointID, pointAspect) {
 			console.log("set point " + pointID + " to " + pointAspect);
 		},
 		error: function (responseData, textStatus, errorThrown) {
-			console.log("Error when setting point " + pointID + " to " + pointAspect);
+			console.log("Error when setting point " + pointID + " to " + pointAspect + ": " + responseData + errorThrown);
 		}
 	});
 }
 
 function setSignalPromise(signalID, signalAspect) {
-	$.ajax({
+	return $.ajax({
 		type: 'POST',
 		url: '/controller/set-signal',
 		crossDomain: true,
@@ -122,7 +122,7 @@ function setSignalPromise(signalID, signalAspect) {
 			console.log('Signal ' + signalID + ' set to ' + signalAspect);
 		},
 		error: function (responseData, textStatus, errorThrown) {
-			console.log('Set signal failed: ' + responseData);
+			console.log("Error when setting signal " + signalID + " to " + signalAspect + ": " + responseData + errorThrown);
 		}
 	});
 }

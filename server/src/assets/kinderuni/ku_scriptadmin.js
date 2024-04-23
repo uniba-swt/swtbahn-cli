@@ -11,6 +11,38 @@ function wait(duration) {
 	return new Promise(resolve => setTimeout(resolve, duration));
 }
 
+function setPointPromise(pointID, pointAspect) {
+	return $.ajax({
+		type: 'POST',
+		url: '/controller/set-point',
+		crossDomain: true,
+		data: { 'point': pointID, 'state': pointAspect },
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			console.log("set point " + pointID + " to " + pointAspect);
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			console.log("Error when setting point " + pointID + " to " + pointAspect + ": " + responseData + errorThrown);
+		}
+	});
+}
+
+function setSignalPromise(signalID, signalAspect) {
+	return $.ajax({
+		type: 'POST',
+		url: '/controller/set-signal',
+		crossDomain: true,
+		data: { 'signal': signalID, 'state': signalAspect },
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			console.log('Signal ' + signalID + ' set to ' + signalAspect);
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			console.log("Error when setting signal " + signalID + " to " + signalAspect + ": " + responseData + errorThrown);
+		}
+	});
+}
+
 function adminSetTrainSpeedPromise(train, speed) {
 	console.log(dtISOStr() + ": adminSetTrainSpeedPromise(" + train + ", " + speed + ")");
 	return $.ajax({
@@ -150,6 +182,50 @@ function updateTrainStates() {
 	for(var tr of trains) {
 		updateTrainStatePromise(tr);
 	}
+}
+
+function allsigstop() {
+	console.log(dtISOStr() + ": allsigstop()");
+	const signals = ["signal4a", "signal5", "signal18a", "signal19", "signal21", "signal43"];
+	for(var s of signals) {
+		setSignalPromise(s, "aspect_stop");
+	}
+}
+
+function sit1prepare() {
+	console.log(dtISOStr() + ": sit1prepare()");
+	// Point 10 reverse/branch,
+	// Signal 21 aspect_shunt (/go)
+	setPointPromise("point10", "reverse");
+	setSignalPromise("signal21", "aspect_shunt");
+}
+
+function sit2prepare() {
+	console.log(dtISOStr() + ": sit2prepare()");
+	setPointPromise("point8", "normal");
+	setPointPromise("point9", "normal");
+	setPointPromise("point10", "reverse");
+	setSignalPromise("signal19", "aspect_go");
+	setSignalPromise("signal43", "aspect_shunt");
+}
+
+function sit3prepare() {
+	console.log(dtISOStr() + ": sit3prepare()");
+	setPointPromise("point8", "normal");
+	setPointPromise("point9", "normal");
+	setPointPromise("point10", "normal");
+	setSignalPromise("signal18a", "aspect_go");
+	setSignalPromise("signal19", "aspect_go");
+	setSignalPromise("signal21", "aspect_shunt");
+}
+
+function sit4prepare() {
+	console.log(dtISOStr() + ": sit4prepare()");
+	setSignalPromise("signal4a", "aspect_go");
+	setSignalPromise("signal18a", "aspect_go");
+	setPointPromise("point8", "normal");
+	setPointPromise("point9", "normal");
+	setPointPromise("point10", "reverse");
 }
 
 $(document).ready(
