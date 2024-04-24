@@ -977,6 +977,45 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 	}
 }
 
+onion_connection_status handler_is_grab_session_valid(void *_, onion_request *req, onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_session_id = onion_request_get_post(req, "session-id");
+		const char *data_grab_id = onion_request_get_post(req, "grab-id");
+		
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		
+		if (client_session_id != session_id) {
+			syslog_server(LOG_WARNING, 
+			              "Request: Is grab session valid - grab id: %d - invalid session id: %s", 
+			              grab_id, data_session_id);
+			onion_response_printf(res, "%s", "INVALID");
+			return OCS_NOT_IMPLEMENTED;
+		} else if (grab_id == -1) {
+			syslog_server(LOG_WARNING, "Request: Is grab session valid - invalid grab id");
+			onion_response_printf(res, "%s", "INVALID");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		char *train_id = train_id_from_grab_id(grab_id);
+		if (train_id == NULL) {
+			syslog_server(LOG_WARNING, 
+			              "Request: Is grab session valid - grab id: %d - invalid grab id", 
+			              grab_id);
+			onion_response_printf(res, "%s", "INVALID");
+			return OCS_NOT_IMPLEMENTED;
+		} else {
+			free(train_id);
+			onion_response_printf(res, "%s", "VALID");
+			return OCS_PROCESSED;
+		}
+	} else {
+		syslog_server(LOG_WARNING, "Request: Is grab session valid - system not running or wrong request type");
+		onion_response_printf(res, "%s", "UNDEFINED");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
 onion_connection_status handler_request_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {

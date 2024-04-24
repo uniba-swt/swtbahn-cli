@@ -71,6 +71,9 @@ onion_connection_status handler_grab_train(void *_, onion_request *req,
 onion_connection_status handler_release_train(void *_, onion_request *req,
                                               onion_response *res);
 
+onion_connection_status handler_is_grab_session_valid(void *_, onion_request *req,
+                                                      onion_response *res);
+
 onion_connection_status handler_request_route(void *_, onion_request *req,
                                               onion_response *res);
 

@@ -140,6 +140,38 @@ function getReportedTrainSpeedPromise() {
 	});
 }
 
+function checkIfGrabSessionIsValidPromise() {
+	return $.ajax({
+		type: 'POST',
+		url: serverAddress + '/driver/is-grab-session-valid',
+		crossDomain: true,
+		data: {
+			'session-id': sessionId,
+			'grab-id': grabId
+		},
+		dataType: 'text',
+		success: (responseData, textStatus, jqXHR) => {
+			// -> all good, train is still grabbed and ID's are valid.
+		},
+		error: (responseData, textStatus, errorThrown) => {
+			console.log(dtISOStr() + ": checkIfGrabSessionIsValidPromise ERR: " + responseData.text + "; " + errorThrown);
+			if (responseData.includes("INVALID")) {
+				// GrabID and SessionID are not valid anymore, and the server is running.
+				sessionId = 0;
+				grabId = -1;
+				trainGrabbed = false;
+				grabTrainPromise()
+					.then(() => {
+						console.log(dtISOStr() + ": After grab/session was invalid, regained control.");
+					})
+					.catch(() => {
+						console.log(dtISOStr() + ": After grab/session was invalid, FAILED to regain control.");
+					});
+			}
+		}
+	});
+}
+
 function stopBtnClicked() {
 	console.log(dtISOStr() + ": Stop Button clicked");
 	document.getElementById("stopBtn").classList.add("disabled");
@@ -152,17 +184,8 @@ function stopBtnClicked() {
 	// Therefore, here we integrate an experimental check to see how fast the train is
 	// a bit later, and to stop it again if need be.
 	setTrainSpeedPromise(currentSpeed)
-		.then(() => wait(200))
-		.then(() => getReportedTrainSpeedPromise())
-		.then(repTrSpeed => {
-			console.log(dtISOStr() + ": Reported Train Speed: " + repTrSpeed);
-			if (repTrSpeed !== 0 && currentSpeed === 0) {
-				console.log(dtISOStr() + ": StopBtnClicked - train not at speed 0 after wait period -> stop again");
-				setTrainSpeedPromise(currentSpeed);
-			} else {
-				console.log(dtISOStr() + ": StopBtnClicked - train is at desired speed 0.");
-			}
-		}).catch(() => {
+		.then(() => console.log(dtISOStr() + ": StopBtnClicked - Setting train speed succeeded."))
+		.catch(() => {
 			console.log(dtISOStr() + ": StopBtnClicked - Setting train speed was not successful!");
 			// Now try and reverse effect of clicked stop button
 			currentSpeed = oldspeed;
@@ -265,7 +288,7 @@ function initialise() {
 	grabTrainPromise()
 		.then(() => {
 			console.log(dtISOStr() + ": Initialise -> grabTrainPromise -> then");
-			if (trainGrabbed ) {
+			if (trainGrabbed) {
 				enableDirectionButton();
 			}
 		})
@@ -277,15 +300,29 @@ function initialise() {
 		});
 }
 
+async function checkValid() {
+	await new Promise(r => setTimeout(r, 600));
+	let updateInterval = setInterval(function() {
+		checkIfGrabSessionIsValidPromise();
+	}, 5000);
+}
+
 $(document).ready(() => {
 	initialise();
-	wait(500).then(() => {
+	wait(600).then(() => {
 		if (!trainGrabbed) {
 			console.log(dtISOStr() + ": Initialisation failed, train not grabbed. Force release and then try again.");
 			// Maybe train could not be grabbed -> Force release and try once more.
 			forceReleaseTrainPromise()
 				.then(() => initialise())
-				.then(() => console.log(dtISOStr() + ": Init worked on 2nd attempt"))
+				.then(() => wait(600))
+				.then(() => {
+					if (trainGrabbed) {
+						console.log(dtISOStr() + ": Init worked on 2nd attempt");
+					} else {
+						console.log(dtISOStr() + ": Init failed on 2nd attempt");
+					}
+				})
 				.catch(() => {
 					// Admin release did not work, stop trying to initialise.
 					// Todo: maybe display error.
@@ -293,6 +330,8 @@ $(document).ready(() => {
 				});
 		}
 	});
+	
+	checkValid();
 });
 
 $(window).on("unload", (event) => {
