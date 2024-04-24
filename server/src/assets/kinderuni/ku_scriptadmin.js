@@ -11,6 +11,22 @@ function wait(duration) {
 	return new Promise(resolve => setTimeout(resolve, duration));
 }
 
+function logDebugPromise() {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/log_trackstate',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			console.log("Success logDebugPromise");
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			console.log("Error logDebugPromise");
+		}
+	});
+}
+
 function setPointPromise(pointID, pointAspect) {
 	return $.ajax({
 		type: 'POST',
@@ -226,6 +242,11 @@ function sit4prepare() {
 	setPointPromise("point8", "normal");
 	setPointPromise("point9", "normal");
 	setPointPromise("point10", "reverse");
+}
+
+function logdebug() {
+	console.log(dtISOStr() + ": logdebug()");
+	logDebugPromise();
 }
 
 $(document).ready(

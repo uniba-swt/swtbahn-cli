@@ -820,3 +820,17 @@ onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
+
+onion_connection_status handler_log_bidib_trackstate(void *_, onion_request *req,
+                                                     onion_response *res) {
+    build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		bidib_log_trackstate();
+		onion_response_printf(res, "%s", "Trackstate Log request was sent to bidib.");
+		syslog_server(LOG_NOTICE, "Request: Log Bidib Trackstate");
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, "Request: Log Bidib Trackstate - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}

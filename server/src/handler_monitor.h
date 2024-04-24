@@ -88,5 +88,8 @@ onion_connection_status handler_get_debug_info(void *_, onion_request *req,
 onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req,
                                                      onion_response *res);
 
+onion_connection_status handler_log_bidib_trackstate(void *_, onion_request *req,
+                                                     onion_response *res);
+
 #endif  // HANDLER_MONITOR_H
 

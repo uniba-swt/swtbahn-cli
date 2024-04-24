@@ -209,6 +209,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/route", handler_get_route);
 	onion_url_add(urls, "monitor/debug", handler_get_debug_info);
 	onion_url_add(urls, "monitor/debug_extra", handler_get_debug_info_extra);
+	onion_url_add(urls, "monitor/log_trackstate", handler_log_bidib_trackstate);
 	
 	load_cached_verifier_url();
 
