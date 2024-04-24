@@ -8,18 +8,18 @@
 	<link rel="stylesheet" href="./ku_style.css" />
 
 	<script src="../dependencies/jquery.min.js"></script>
-	<script src="./zug_proto_2.js"></script>
+	<script src="./zug_proto_3.js"></script>
 	
-	<title>SWTbahn Zug 2 Fahren</title>
+	<title>SWTbahn Zug 1 Fahren</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
 	<div class="justify-content-evenly d-flex" >
 		<img src="../swtbahn-logo.png" class="img-fluid rounded float-left" style="height: 20vh;" >
-		<img src="cargo_bayern_head_3-small.jpg" class="img-fluid rounded float-right border trainhead" style="height: 17vh; margin-top: 3vh;" >
+		<img src="cargo_db_head_3-small.jpg" class="img-fluid rounded float-right border trainhead" style="height: 17vh; margin-top: 3vh;" >
 	</div>
-	<label id="trainNameLabel" value="cargo_bayern" hidden></label>
+	<label id="trainNameLabel" value="cargo_db" hidden></label>
 	<div style="margin-top: 3%;">
 		<form id="drivingForm">
 			<div class="row">
@@ -33,13 +33,13 @@
 						<button id="stopBtn" type="button" class="btn btn-danger btn-lg disabled" onclick="stopBtnClicked()" value="0">
 							<span lang="de" class="fontspan-speedbuttons">Stop</span>
 						</button>
-						<button id="slowBtn" type="button" class="btn btn-warning btn-lg" onclick="slowBtnClicked()" value="20">
+						<button id="slowBtn" type="button" class="btn btn-warning btn-lg" onclick="slowBtnClicked()" value="30">
 							<span lang="de" class="fontspan-speedbuttons">Langsam</span>
 						</button>
-						<button id="normalBtn" type="button" class="btn btn-secondary btn-lg" onclick="normalBtnClicked()" value="35">
+						<button id="normalBtn" type="button" class="btn btn-secondary btn-lg" onclick="normalBtnClicked()" value="50">
 							<span lang="de" class="fontspan-speedbuttons">Mittel</span>
 						</button>
-						<button id="fastBtn" type="button" class="btn btn-success btn-lg" onclick="fastBtnClicked()" value="50">
+						<button id="fastBtn" type="button" class="btn btn-success btn-lg" onclick="fastBtnClicked()" value="65">
 							<span lang="de" class="fontspan-speedbuttons">Schnell</span>
 						</button>
 					</div>
@@ -51,16 +51,20 @@
 					<b><span lang="de" style="font-size: 4vw;">Richtung:</span></b>
 				</label>
 			</div>
+			<!--<div class="input-group row nooffsetrow" style="margin-top: 5%;">-->
 			<div class="input-group row nooffsetrow">
 				<div class="col text-center">
-					<div class="btn-group w-50 h-100" role="group">
+					<!--<div class="btn-group w-50 h-100" role="group">
 						<button id="forwardBtn" type="button" class="btn btn-primary btn-lg disabled" onclick="forwardBtnClicked()" value="1" >
 							<span lang="de" class="fontspan-speedbuttons">Vorwärts</span>
 						</button>
 						<button id="backwardBtn" type="button" class="btn btn-primary btn-lg" onclick="backwardBtnClicked()" value="-1">
 							<span lang="de" class="fontspan-speedbuttons">Rückwärts</span>
 						</button>
-					</div>
+					</div>-->
+					<button id="swapDirBtn" type="button" class="btn btn-primary btn-lg" onclick="swapDirBtnClicked()" value="1" >
+						<span lang="de" class="fontspan-speedbuttons">Richtung wechseln</span>
+					</button>
 				</div>
 			</div>
 		</form>
