@@ -23,15 +23,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      showgrid="false"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="579.12045"
-     inkscape:cy="51.265241"
+     inkscape:zoom="11.313709"
+     inkscape:cx="867.79678"
+     inkscape:cy="191.1398"
      inkscape:window-width="2560"
      inkscape:window-height="1367"
      inkscape:window-x="4480"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg50503"
+     inkscape:current-layer="Black4Fill"
      inkscape:snap-global="false"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -13210,11 +13210,6 @@
      d="m 2091.0291,85.648168 -74.7412,-19.931"
      id="path46931" />
   <path
-     class="b"
-     d="m 2019.4717,53.821278 -3.8536,15.4156"
-     id="path46935"
-     style="stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none" />
-  <path
      class="d"
      d="m 786.43949,79.759488 -2.2649,0.45296 -4.0768,-14.94825 2.2649,-0.90594"
      id="path46983"
@@ -15842,21 +15837,6 @@
      d="m 1973.819,-18.828362 -4.9825,-2.26489"
      id="path49509" />
   <path
-     class="a"
-     d="m 2034.8598,79.759488 -3.1709,-0.90596 m 0.9062,9.965505 -3.1711,-0.90597 m 4.0768,-8.606555 -2.7179,9.059535"
-     id="path49523"
-     style="stroke-width:4.52979" />
-  <path
-     class="b"
-     d="m 2036.4102,78.652608 -3.2112,-0.92608 m 0.5836,9.905005 -3.1711,-0.90597 m 4.0768,-8.606555 -2.7179,9.059535"
-     id="path49525"
-     sodipodi:nodetypes="cccccc"
-     style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
-  <path
-     class="k"
-     d="m 2038.3633,83.987588 -5.4357,-1.35893"
-     id="path49527" />
-  <path
      class="i"
      d=""
      id="path50029"
@@ -16036,17 +16016,6 @@
      class="b"
      d="m 212.82743,205.6873 h 14.18455"
      id="p1_straightrail_3" />
-  <circle
-     style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="signal46a"
-     cx="2042.4357"
-     cy="85.154907"
-     onclick="signalclick('signal46a')"
-     inkscape:label="s46a"
-     r="4.1465774">
-    <title
-       id="title613214-62-9">Signal 46</title>
-  </circle>
   <circle
      style="fill:#f9f9f9;fill-opacity:0;stroke:#000000;stroke-width:0.907943;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="signal47"
@@ -16239,19 +16208,6 @@
   <text
      xml:space="preserve"
      style="font-size:16.5151px;line-height:1.25;font-family:sans-serif;stroke-width:3.09659"
-     x="1952.767"
-     y="-440.95404"
-     id="text-sgn46"
-     onclick="signalclick('signal46a')"
-     transform="rotate(15)"><tspan
-       sodipodi:role="line"
-       x="1952.767"
-       y="-440.95404"
-       id="tspan867887-3-4-2-6-0-0"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#007800;fill-opacity:1;stroke-width:3.09659">S46</tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-size:16.5151px;line-height:1.25;font-family:sans-serif;stroke-width:3.09659"
      x="1827.5425"
      y="-474.89047"
      id="text-sgn48"
@@ -16387,9 +16343,9 @@
      inkscape:label="text-block-1"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43508"><tspan
+       id="tspan21571"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43506">B1</tspan></tspan></text>
+         id="tspan21569">B1</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-block-5"
@@ -16398,9 +16354,9 @@
      inkscape:label="text-block-5"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43512"><tspan
+       id="tspan21575"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43510">B5</tspan></tspan></text>
+         id="tspan21573">B5</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-1"
@@ -16410,9 +16366,9 @@
      onclick="pointclick('point1')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43516"><tspan
+       id="tspan21579"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43514">P1</tspan></tspan></text>
+         id="tspan21577">P1</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-2"
@@ -16422,9 +16378,9 @@
      onclick="pointclick('point2')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43520"><tspan
+       id="tspan21583"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43518">P2</tspan></tspan></text>
+         id="tspan21581">P2</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-8"
@@ -16434,9 +16390,9 @@
      onclick="pointclick('point8')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43524"><tspan
+       id="tspan21587"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43522">P8</tspan></tspan></text>
+         id="tspan21585">P8</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-9"
@@ -16446,9 +16402,9 @@
      onclick="pointclick('point9')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43528"><tspan
+       id="tspan21591"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43526">P9</tspan></tspan></text>
+         id="tspan21589">P9</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-26"
@@ -16458,9 +16414,9 @@
      onclick="pointclick('point26')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43532"><tspan
+       id="tspan21595"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43530">P26</tspan></tspan></text>
+         id="tspan21593">P26</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-28"
@@ -16470,9 +16426,9 @@
      onclick="pointclick('point28')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43536"><tspan
+       id="tspan21599"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43534">P28</tspan></tspan></text>
+         id="tspan21597">P28</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text-point-10"
@@ -16482,9 +16438,9 @@
      onclick="pointclick('point10')"><tspan
        x="1.5"
        y="428.48308"
-       id="tspan43540"><tspan
+       id="tspan21603"><tspan
          style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-         id="tspan43538">P10</tspan></tspan></text>
+         id="tspan21601">P10</tspan></tspan></text>
   <path
      class="m"
      d="m 1297.274,102.776 v 16.04272"
@@ -17022,6 +16978,38 @@
        y="211.97487" />
   </g>
   <g
+     id="signal46"
+     onclick="signalclick('signal46a')"
+     transform="translate(1312.9285,-159.97823)">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="s-base-a-36-0-91-9"
+       width="0.74994385"
+       height="7.7721453"
+       x="161.16028"
+       y="220.87259" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="s-stem-a-10-7-7-1"
+       width="4.6761971"
+       height="0.73517531"
+       x="162.4343"
+       y="224.39108" />
+    <circle
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.940182;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="signal44-2"
+       cx="173.51195"
+       cy="224.75867"
+       r="5.9825511" />
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.496245;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       id="s-selection-rect-6-11-7"
+       width="33.738613"
+       height="20.457514"
+       x="151.59087"
+       y="211.97487" />
+  </g>
+  <g
      id="Black2Outline"
      transform="matrix(0.4820273,0,0,0.4820273,118.81135,129.84277)"
      onclick="signalclick('signal18a')">
@@ -17223,6 +17211,95 @@
        cy="74.5"
        r="1.6362411" />
   </g>
+  <text
+     xml:space="preserve"
+     style="font-size:16.5151px;line-height:1.25;font-family:sans-serif;stroke-width:3.09659"
+     x="1441.6196"
+     y="70.337334"
+     id="text-sgn46"
+     onclick="signalclick('signal46a')"><tspan
+       sodipodi:role="line"
+       x="1441.6196"
+       y="70.337334"
+       id="tspan867887-3-4-2-6-6-5-6"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#007800;fill-opacity:1;stroke-width:3.09659">S46</tspan></text>
+  <g
+     id="Blue4Fill"
+     transform="matrix(0.4820273,0,0,0.4820273,1263.8708,28.714035)"
+     onclick="signalclick('signal46a')">
+    <rect
+       style="fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.999853"
+       id="rect4357-3-1-7-9-5"
+       width="24.469427"
+       height="24.469427"
+       x="481.01529"
+       y="62.265285" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4903-5-8-5-7-3"
+       cx="487.14459"
+       cy="68.40139"
+       r="1.6362411" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4903-3-6-7-9-3-5"
+       cx="499.33835"
+       cy="80.584824"
+       r="1.6362411" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle10737"
+       cx="68.396225"
+       cy="-499.33319"
+       r="1.6362411"
+       transform="rotate(90)" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle10739"
+       cx="80.589981"
+       cy="-487.14975"
+       r="1.6362411"
+       transform="rotate(90)" />
+  </g>
+  <g
+     id="Black4Fill"
+     transform="matrix(0.4820273,0,0,0.4820273,620.99001,146.96396)"
+     onclick="signalclick('signal20')"
+     style="fill-opacity:0.52840906;fill:#000000;stroke:#000000;stroke-opacity:0.99431819">
+    <rect
+       style="fill:#000000;fill-opacity:0.99431819;stroke:#000000;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99431819"
+       id="rect4357-3-1-7-9-5-2"
+       width="24.469427"
+       height="24.469427"
+       x="481.01529"
+       y="62.265285" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99431819"
+       id="path4903-5-8-5-7-3-3"
+       cx="487.14459"
+       cy="68.40139"
+       r="1.6362411" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99431819"
+       id="path4903-3-6-7-9-3-5-7"
+       cx="499.33835"
+       cy="80.584824"
+       r="1.6362411" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99431819"
+       id="circle10737-5"
+       cx="68.396225"
+       cy="-499.33319"
+       r="1.6362411"
+       transform="rotate(90)" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99431819"
+       id="circle10739-9"
+       cx="80.589981"
+       cy="-487.14975"
+       r="1.6362411"
+       transform="rotate(90)" />
+  </g>
   <g
      id="Black3Outline"
      transform="matrix(0.43041538,-0.21700902,0.21700902,0.43041538,410.57377,104.81821)"
@@ -17290,5 +17367,49 @@
        cy="114.58482"
        r="1.6362411"
        transform="scale(-1,1)" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-size:16.5151px;line-height:1.25;font-family:sans-serif;stroke-width:3.09659"
+     x="799.22107"
+     y="188.55835"
+     id="text-sgn20"
+     onclick="signalclick('signal20')"><tspan
+       sodipodi:role="line"
+       x="799.22107"
+       y="188.55835"
+       id="tspan867887-3-4-2-6-83-6-9"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#007800;fill-opacity:1;stroke-width:3.09659">S20</tspan></text>
+  <g
+     id="signal20-box"
+     onclick="signalclick('signal20')"
+     transform="translate(669.41223,-41.828631)">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="s-base-a-36-0-9-95-6"
+       width="0.74994385"
+       height="7.7721453"
+       x="161.16028"
+       y="220.87259" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="s-stem-a-10-7-2-0-0"
+       width="4.6761971"
+       height="0.73517531"
+       x="162.4343"
+       y="224.39108" />
+    <circle
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.940182;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="signal19-6"
+       cx="173.51195"
+       cy="224.75867"
+       r="5.9825511" />
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.496245;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       id="s-selection-rect-6-6-8-2"
+       width="33.738613"
+       height="20.457514"
+       x="151.59087"
+       y="211.97487" />
   </g>
 </svg>
