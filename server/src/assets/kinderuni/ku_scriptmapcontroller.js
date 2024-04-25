@@ -418,6 +418,6 @@ $(document).ready(
 					.then(() => updatePointsVisuals());
 			updateParamAspectsPromise(false)
 					.then(() => updateSignalsVisuals());
-		}, 5000);
+		}, 2000);
 	}
 );

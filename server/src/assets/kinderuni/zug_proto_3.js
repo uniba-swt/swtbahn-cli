@@ -257,14 +257,17 @@ function enableSpeedButtonsBasedOnCurrSpeed() {
 
 function swapDirBtnClicked() {
 	console.log((new Date()).toISOString() + ": Swap Direction Button clicked");
+	document.getElementById("swapDirBtn").classList.add("active");
 	speedModifier = speedModifier * -1;
 	if (currentSpeed > 0) {
-		setTrainSpeedPromise(currentSpeed);
+		setTrainSpeedPromise(currentSpeed)
+			.then(() => document.getElementById("swapDirBtn").classList.remove("active"));
 	} else {
 		// Trick to ensure headlights update even when stopped.
 		setTrainSpeedPromise(1) // arg 1 as speedModifier global takes care of ensuring -1.
-			.then(() => wait(500))
-			.then(() => setTrainSpeedPromise(0));
+			.then(() => wait(150))
+			.then(() => setTrainSpeedPromise(0))
+			.then(() => document.getElementById("swapDirBtn").classList.remove("active"));
 	}
 }
 

@@ -1,6 +1,43 @@
 const serverAddress = "";
 const trainEngine = "libtrain_engine_default (unremovable)";
 const trackOutput = "master";
+const signals_normal = [
+	"signal4a", 
+	"signal18a", 
+	"signal19", 
+	"signal5", 
+	"signal15", 
+	"signal26", 
+	"signal28", 
+	"signal30", 
+	"signal14", 
+	"signal32", 
+	"signal1", 
+	"signal45", 
+	"signal47", 
+	"signal49", 
+	"signal9", 
+	"signal24", 
+	"signal37", 
+	"signal8", 
+	"signal23", 
+	"signal36", 
+	"signal7a", 
+	"signal35a", 
+	"signal53a", 
+	"signal22a", 
+	"signal46a", 
+	"signal48a", 
+	"signal50a", 
+	"signal11"
+];
+const signals_shunt = [
+	"signal21", 
+	"signal43", 
+	"signal20", 
+	"signal39", 
+	"signal41"
+];
 
 function dtISOStr() {
 	return (new Date()).toISOString();
@@ -176,7 +213,7 @@ function updateTrainStatePromise(train) {
 			} else {
 				$('#' + train + "_release_btn").addClass("disabled");
 			}
-			if (parseInt(speedStep, 10) > 0) {
+			if (parseInt(speedStep, 10) > 0 && parseInt(speedStep, 10) < 0) {
 				$('#' + train + "_stop_btn").removeClass("disabled");
 			} else {
 				$('#' + train + "_stop_btn").addClass("disabled");
@@ -202,46 +239,63 @@ function updateTrainStates() {
 
 function allsigstop() {
 	console.log(dtISOStr() + ": allsigstop()");
-	const signals = ["signal4a", "signal5", "signal18a", "signal19", "signal21", "signal43"];
-	for(var s of signals) {
+	
+	for(var s of signals_normal) {
 		setSignalPromise(s, "aspect_stop");
+	}
+	for(var s of signals_shunt) {
+		setSignalPromise(s, "aspect_stop");
+	}
+}
+
+function allsiggo() {
+	console.log(dtISOStr() + ": allsiggo()");
+	
+	for(var s of signals_normal) {
+		setSignalPromise(s, "aspect_go");
+	}
+	for(var s of signals_shunt) {
+		setSignalPromise(s, "aspect_shunt");
 	}
 }
 
 function sit1prepare() {
 	console.log(dtISOStr() + ": sit1prepare()");
-	// Point 10 reverse/branch,
-	// Signal 21 aspect_shunt (/go)
-	setPointPromise("point10", "reverse");
-	setSignalPromise("signal21", "aspect_shunt");
+	setPointPromise("point8", "normal");
+	setPointPromise("point9", "normal");
+	setPointPromise("point10", "normal");
+	setPointPromise("point11", "normal");
+	setPointPromise("point12", "normal");
+	setPointPromise("point13", "normal");
+	setPointPromise("point14", "normal");
+	setPointPromise("point15", "normal");
+	setPointPromise("point16", "normal");
+	setPointPromise("point17", "normal");
+	setPointPromise("point18a", "normal");
+	allsiggo();
 }
 
 function sit2prepare() {
 	console.log(dtISOStr() + ": sit2prepare()");
+	// Point 10 reverse/branch,
+	// Signal 21 aspect_shunt (/go)
+	allsigstop();
 	setPointPromise("point8", "normal");
 	setPointPromise("point9", "normal");
 	setPointPromise("point10", "reverse");
 	setSignalPromise("signal19", "aspect_go");
-	setSignalPromise("signal43", "aspect_shunt");
 }
 
 function sit3prepare() {
 	console.log(dtISOStr() + ": sit3prepare()");
-	setPointPromise("point8", "normal");
-	setPointPromise("point9", "normal");
-	setPointPromise("point10", "normal");
-	setSignalPromise("signal18a", "aspect_go");
-	setSignalPromise("signal19", "aspect_go");
-	setSignalPromise("signal21", "aspect_shunt");
-}
-
-function sit4prepare() {
-	console.log(dtISOStr() + ": sit4prepare()");
-	setSignalPromise("signal4a", "aspect_go");
-	setSignalPromise("signal18a", "aspect_go");
+	allsigstop();
+	setSignalPromise("signal4a", "aspect_stop");
+	setSignalPromise("signal18a", "aspect_stop");
+	setPointPromise("point2", "reverse");
 	setPointPromise("point8", "normal");
 	setPointPromise("point9", "normal");
 	setPointPromise("point10", "reverse");
+	setPointPromise("point26", "reverse");
 }
 
 function logdebug() {
