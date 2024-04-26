@@ -193,6 +193,7 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
 
 	// --- monitor functions ---
+	onion_url_add(urls, "monitor/is-running", handler_get_is_running);
 	onion_url_add(urls, "monitor/trains", handler_get_trains);
 	onion_url_add(urls, "monitor/train-state", handler_get_train_state);
 	onion_url_add(urls, "monitor/train-peripherals", handler_get_train_peripherals);

@@ -38,6 +38,7 @@ const signals_shunt = [
 	"signal39", 
 	"signal41"
 ];
+var server_running = false;
 
 function dtISOStr() {
 	return (new Date()).toISOString();
@@ -146,6 +147,7 @@ function startupPromise() {
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
 			$('#monitoring_status_field').text("Started");
+			server_running = true;
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			alert("Startup Failed");
@@ -164,6 +166,7 @@ function shutdownPromise() {
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
 			$('#monitoring_status_field').text("Stopped");
+			server_running = false;
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			alert("Shutdown Failed");
@@ -224,14 +227,35 @@ function updateTrainStatePromise(train) {
 			const current_text = $('#monitoring_status_field').text();
 			if (current_text !== "Starting..." && current_text !== "Stopped" && current_text !== "Shutting down...") {
 				$('#monitoring_status_field').text("Error");
+				$('#' + train + "_grabbed_value").text("-");
+				$('#' + train + "_on_block_value").text("-");
+				$('#' + train + "_speed_step_value").text("-");
+				$('#' + train + "_detected_speed_value").text("-");
+				$('#' + train + "_orientation_value").text("-");
+				$('#' + train + "_direction_value").text("-");
 			}
+		}
+	});
+}
+
+function isServerRunningPromise() {
+	return $.ajax({
+		type: 'POST',
+		url: '/monitor/is-running',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (responseData, textStatus, jqXHR) {
+			server_running = true;
+		},
+		error: function (responseData, textStatus, errorThrown) {
+			server_running = false;
 		}
 	});
 }
 
 function updateTrainStates() {
 	const trains = ["cargo_db", "cargo_bayern", "cargo_green", "regional_odeg", "regional_brengdirect"];
-	//const trains = ["cargo_db"];
 	for(var tr of trains) {
 		updateTrainStatePromise(tr);
 	}
@@ -309,7 +333,8 @@ $(document).ready(
 		updateTrainStates();
 		
 		let updateInterval = setInterval(function() {
-			updateTrainStates();
+			isServerRunningPromise()
+				.then(() => updateTrainStates());
 		}, 1000);
 	}
 );

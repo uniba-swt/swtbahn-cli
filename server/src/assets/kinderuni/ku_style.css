@@ -3,18 +3,19 @@
 	color: white;
 }
 
-
 .train-id-item {
-	min-width: 12vw;
-	width: 12vw;
-	max-width: 14vw;
+	min-width: 8vw;
+	width: 14vw;
+	max-width: 18vw;
 	margin-right: 2%;
+	text-wrap: wrap;
+	word-break: break-all;
 }
 
 .train-property-item {
-	min-width: 10vw;
-	width: 12vw;
-	max-width: 15vw;
+	min-width: 8vw;
+	width: 11vw;
+	max-width: 14vw;
 }
 
 .button_small {
@@ -45,4 +46,8 @@
 .trainhead {
 	border-color: #034a7f !important;
 	border-width: 4px !important;
+}
+
+.val-descriptor {
+	font-size: smaller;
 }
