@@ -213,7 +213,7 @@ function updateTrainStatePromise(train) {
 			} else {
 				$('#' + train + "_release_btn").addClass("disabled");
 			}
-			if (parseInt(speedStep, 10) > 0 && parseInt(speedStep, 10) < 0) {
+			if (parseInt(speedStep, 10) !== 0) {
 				$('#' + train + "_stop_btn").removeClass("disabled");
 			} else {
 				$('#' + train + "_stop_btn").addClass("disabled");
@@ -310,6 +310,6 @@ $(document).ready(
 		
 		let updateInterval = setInterval(function() {
 			updateTrainStates();
-		}, 5000);
+		}, 1000);
 	}
 );
