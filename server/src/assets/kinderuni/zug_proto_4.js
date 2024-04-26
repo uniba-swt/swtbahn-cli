@@ -33,7 +33,7 @@ function adminSetTrainSpeedPromise(train, speed) {
 		},
 		dataType: 'text',
 		success: (responseData, textStatus, jqXHR) => {
-			updateTrainStatePromise(train);
+			//updateTrainStatePromise(train);
 		},
 		error: (responseData, textStatus, errorThrown) => {
 			console.log(dtISOStr() + ": adminSetTrainSpeedPromise ERR: " + responseData.text + "; " + errorThrown);
@@ -159,17 +159,17 @@ function enableSpeedButtonsBasedOnCurrSpeed() {
 
 function swapDirBtnClicked() {
 	console.log((new Date()).toISOString() + ": Swap Direction Button clicked");
-	document.getElementById("swapDirBtn").classList.add("active");
+	//document.getElementById("swapDirBtn").classList.add("active");
 	speedModifier = speedModifier * -1;
 	if (currentSpeed > 0) {
-		adminSetTrainSpeedPromise(trainId, currentSpeed)
-			.finally(() => document.getElementById("swapDirBtn").classList.remove("active"));
+		adminSetTrainSpeedPromise(trainId, currentSpeed);
+		//	.finally(() => document.getElementById("swapDirBtn").classList.remove("active"));
 	} else {
 		// Trick to ensure headlights update even when stopped.
 		adminSetTrainSpeedPromise(trainId, 1) // arg 1 as speedModifier global takes care of ensuring -1.
 			.then(() => wait(150))
-			.then(() => adminSetTrainSpeedPromise(trainId, 0))
-			.finally(() => document.getElementById("swapDirBtn").classList.remove("active"));
+			.then(() => adminSetTrainSpeedPromise(trainId, 0));
+			//.finally(() => document.getElementById("swapDirBtn").classList.remove("active"));
 	}
 }
 

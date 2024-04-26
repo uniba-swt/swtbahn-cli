@@ -29,6 +29,7 @@ const signals_normal = [
 	"signal46a", 
 	"signal48a", 
 	"signal50a", 
+	"signal51", 
 	"signal11"
 ];
 const signals_shunt = [
@@ -307,7 +308,7 @@ function sit2prepare() {
 	setPointPromise("point8", "normal");
 	setPointPromise("point9", "normal");
 	setPointPromise("point10", "reverse");
-	setSignalPromise("signal19", "aspect_go");
+	setSignalPromise("signal21", "aspect_shunt");
 }
 
 function sit3prepare() {
