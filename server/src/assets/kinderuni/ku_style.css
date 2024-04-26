@@ -4,7 +4,7 @@
 }
 
 .train-id-item {
-	min-width: 8vw;
+	min-width: 4vw;
 	width: 14vw;
 	max-width: 18vw;
 	margin-right: 2%;
@@ -21,6 +21,8 @@
 .button_small {
 	padding-top: 0.05rem;
 	padding-bottom: 0.05rem;
+	--bs-btn-padding-x: 0.25rem !important;
+	--bs-btn-font-size: 0.65rem !important;
 }
 
 .button_lift {
@@ -29,14 +31,21 @@
 
 .short-val-container {
 	display: inline-block;
-	min-width: 2vw;
+	min-width: 1vw;
 	width: 2vw;
 }
 
 .adminBtn {
 	min-width: 8vw;
-	width: 14vw;
+	width: 15vw;
 	margin-right: 5%;
+}
+
+.sitButton {
+	min-width: 4vw;
+	width: 12vw;
+	margin-right: 2%;
+	max-width: 200px;
 }
 
 .nooffsetrow {
@@ -51,3 +60,62 @@
 .val-descriptor {
 	font-size: smaller;
 }
+
+.smFntContainer {
+	font-size: smaller;
+}
+
+.trainAdminGridContainer {
+	display: grid;
+	/* grid-template-columns: repeat(7, 1fr); */
+	grid-template-columns: repeat(2, 1fr) repeat(1, 0.75fr) repeat(1, 1.25fr) repeat(3, 0.75fr); 
+	grid-template-rows: repeat(6, 1fr);
+	grid-column-gap: 0px;
+	grid-row-gap: 2vh; 
+	justify-items: start;
+	width: 100%;
+	height: 100%;
+}
+
+.div1 { grid-area: 1 / 1 / 2 / 2; }
+.div2 { grid-area: 1 / 2 / 2 / 3; }
+.div3 { grid-area: 1 / 3 / 2 / 4; }
+.div4 { grid-area: 1 / 4 / 2 / 5; }
+.div5 { grid-area: 1 / 5 / 2 / 6; }
+.div6 { grid-area: 1 / 6 / 2 / 7; }
+.div7 { grid-area: 1 / 7 / 2 / 8; }
+.div8 { grid-area: 2 / 1 / 3 / 2; }
+.div9 { grid-area: 2 / 2 / 3 / 3; }
+.div10 { grid-area: 2 / 3 / 3 / 4; }
+.div11 { grid-area: 2 / 4 / 3 / 5; }
+.div12 { grid-area: 2 / 5 / 3 / 6; }
+.div13 { grid-area: 2 / 6 / 3 / 7; }
+.div14 { grid-area: 2 / 7 / 3 / 8; }
+.div15 { grid-area: 3 / 1 / 4 / 2; }
+.div16 { grid-area: 3 / 2 / 4 / 3; }
+.div17 { grid-area: 3 / 3 / 4 / 4; }
+.div18 { grid-area: 3 / 4 / 4 / 5; }
+.div19 { grid-area: 3 / 5 / 4 / 6; }
+.div20 { grid-area: 3 / 6 / 4 / 7; }
+.div21 { grid-area: 3 / 7 / 4 / 8; }
+.div22 { grid-area: 4 / 1 / 5 / 2; }
+.div23 { grid-area: 4 / 2 / 5 / 3; }
+.div24 { grid-area: 4 / 3 / 5 / 4; }
+.div25 { grid-area: 4 / 4 / 5 / 5; }
+.div26 { grid-area: 4 / 5 / 5 / 6; }
+.div27 { grid-area: 4 / 6 / 5 / 7; }
+.div28 { grid-area: 4 / 7 / 5 / 8; }
+.div29 { grid-area: 5 / 1 / 6 / 2; }
+.div30 { grid-area: 5 / 2 / 6 / 3; }
+.div31 { grid-area: 5 / 3 / 6 / 4; }
+.div32 { grid-area: 5 / 4 / 6 / 5; }
+.div33 { grid-area: 5 / 5 / 6 / 6; }
+.div34 { grid-area: 5 / 6 / 6 / 7; }
+.div35 { grid-area: 5 / 7 / 6 / 8; }
+.div36 { grid-area: 6 / 1 / 7 / 2; }
+.div37 { grid-area: 6 / 2 / 7 / 3; }
+.div38 { grid-area: 6 / 3 / 7 / 4; }
+.div39 { grid-area: 6 / 4 / 7 / 5; }
+.div40 { grid-area: 6 / 5 / 7 / 6; }
+.div41 { grid-area: 6 / 6 / 7 / 7; }
+.div42 { grid-area: 6 / 7 / 7 / 8; } 

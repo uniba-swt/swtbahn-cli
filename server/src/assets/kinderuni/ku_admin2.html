@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="icon" type="image/png" id="favIcon" href="../favicon.jpg" />
+
+	<link rel="stylesheet" href="../dependencies/bootstrap.min.css" />
+	<link rel="stylesheet" href="../style.css" />
+	<link rel="stylesheet" href="./ku_style.css" />
+
+	<script src="../dependencies/jquery.min.js"></script>
+	<script src="./ku_scriptadmin.js"></script>
+	
+	<title>SWTbahn Kinderuni Admin Interface</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+	<div class="row justify-content-between">
+		<div class="col text-center" style="margin-left: 40%; margin-right: 40%;">
+			<img class="img-fluid" src="../swtbahn-logo.png">
+		</div>
+	</div>
+	<hr/>
+	<div id="startupAdminContainer" class="text-center">
+		<button id="startup_button" type="button" class="btn btn-primary adminBtn"
+		onclick="startupPromise()">Startup
+		</button>
+		<button id="shutdown_button" type="button" class="btn btn-secondary adminBtn"
+		onclick="shutdownPromise()">Shutdown
+		</button>
+		<button id="forceupdate_button" type="button" class="btn btn-success adminBtn"
+		onclick="updateTrainStates()">Force Update
+		</button>
+	</div>
+	<hr/>
+	<div id="trainAdminContainerNew" class="trainAdminGridContainer smFntContainer">
+		<div class="div1"></div>
+		<div class="div2"><b>Grabbed</b></div>
+		<div class="div3"><b>On block</b></div>
+		<div class="div4"><b>Speed Step</b></div>
+		<div class="div5"><b>Detect. Speed</b></div>
+		<div class="div6"><b>Orientation</b></div>
+		<div class="div7"><b>Direction</b></div>
+		<div class="div8 train-id-item">cargo_db</div>
+		<div class="div9"> <span id="cargo_db_grabbed_value" class="short-val-container">no</span><button id="cargo_db_release_btn" type="button" class="btn btn-primary btn-sm button_small disabled" onclick="adminReleaseTrainPromise('cargo_db')">Release</button></div>
+		<div class="div10"><span id="cargo_db_on_block_value" class="short-val-container">no</span></div>
+		<div class="div11">
+			<span id="cargo_db_speed_step_value" class="short-val-container">0</span>
+			<button id="cargo_db_stop_btn" type="button" class="btn btn-warning btn-sm button_small disabled" onclick="adminSetTrainSpeedPromise('cargo_db',0)">Stop</button>
+			<button id="cargo_db_p30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('cargo_db',30)"> 30</button>
+			<button id="cargo_db_m30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('cargo_db',-30)">-30</button>
+		</div>
+		<div class="div12"><span id="cargo_db_detected_speed_value" class="short-val-container">0</span><span>km/h</span></div>
+		<div class="div13"><span id="cargo_db_orientation_value">None</span></div>
+		<div class="div14"><span id="cargo_db_direction_value">None</span></div>
+		
+		
+		
+		<div class="div15 train-id-item">cargo_bayern</div>
+		<div class="div16"><span id="cargo_bayern_grabbed_value" class="short-val-container">no</span><button id="cargo_bayern_release_btn" type="button" class="btn btn-primary btn-sm button_small disabled" onclick="adminReleaseTrainPromise('cargo_bayern')">Release</button></div>
+		<div class="div17"><span id="cargo_bayern_on_block_value" class="short-val-container">no</span></div>
+		<div class="div18">
+			<span id="cargo_bayern_speed_step_value" class="short-val-container">0</span>
+			<button id="cargo_bayern_stop_btn" type="button" class="btn btn-warning btn-sm button_small disabled" onclick="adminSetTrainSpeedPromise('cargo_bayern',0)">Stop</button>
+			<button id="cargo_bayern_p30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('cargo_bayern',30)"> 30</button>
+			<button id="cargo_bayern_m30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('cargo_bayern',-30)">-30</button>
+		</div>
+		<div class="div19"><span id="cargo_bayern_detected_speed_value" class="short-val-container">0</span><span>km/h</span></div>
+		<div class="div20"><span id="cargo_bayern_orientation_value">None</span></div>
+		<div class="div21"><span id="cargo_bayern_direction_value">None</span></div>
+		
+		
+		
+		<div class="div22 train-id-item">cargo_green</div>
+		<div class="div23"><span id="cargo_green_grabbed_value" class="short-val-container">no</span><button id="cargo_green_release_btn" type="button" class="btn btn-primary btn-sm button_small disabled" onclick="adminReleaseTrainPromise('cargo_green')">Release</button></div>
+		<div class="div24"><span id="cargo_green_on_block_value" class="short-val-container">no</span></div>
+		<div class="div25">
+			<span id="cargo_green_speed_step_value" class="short-val-container">0</span>
+			<button id="cargo_green_stop_btn" type="button" class="btn btn-warning btn-sm button_small disabled" onclick="adminSetTrainSpeedPromise('cargo_green',0)">Stop</button>
+			<button id="cargo_green_p30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('cargo_green',30)"> 30</button>
+			<button id="cargo_green_m30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('cargo_green',-30)">-30</button>
+		</div>
+		<div class="div26"><span id="cargo_green_detected_speed_value" class="short-val-container">0</span><span>km/h</span></div>
+		<div class="div27"><span id="cargo_green_orientation_value">None</span></div>
+		<div class="div28"><span id="cargo_green_direction_value">None</span></div>
+		
+		
+		
+		
+		<div class="div29 train-id-item">regional_odeg</div>
+		<div class="div30"><span id="regional_odeg_grabbed_value" class="short-val-container">no</span><button id="regional_odeg_release_btn" type="button" class="btn btn-primary btn-sm button_small disabled" onclick="adminReleaseTrainPromise('regional_odeg')">Release</button></div>
+		<div class="div31"><span id="regional_odeg_on_block_value" class="short-val-container">no</span></div>
+		<div class="div32">
+			<span id="regional_odeg_speed_step_value" class="short-val-container">0</span>
+			<button id="regional_odeg_stop_btn" type="button" class="btn btn-warning btn-sm button_small disabled" onclick="adminSetTrainSpeedPromise('regional_odeg',0)">Stop</button>
+			<button id="regional_odeg_p30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('regional_odeg',30)"> 30</button>
+			<button id="regional_odeg_m30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('regional_odeg',-30)">-30</button>
+		</div>
+		<div class="div33"><span id="regional_odeg_detected_speed_value" class="short-val-container">0</span><span>km/h</span></div>
+		<div class="div34"><span id="regional_odeg_orientation_value">None</span></div>
+		<div class="div35"><span id="regional_odeg_direction_value">None</span></div>
+		
+		
+		
+		
+		<div class="div36 train-id-item">regional_brengdirect</div>
+		<div class="div37"><span id="regional_brengdirect_grabbed_value" class="short-val-container">no</span><button id="regional_brengdirect_release_btn" type="button" class="btn btn-primary btn-sm button_small disabled" onclick="adminReleaseTrainPromise('regional_brengdirect')">Release</button></div>
+		<div class="div38"><span id="regional_brengdirect_on_block_value" class="short-val-container">no</span></div>
+		<div class="div39">
+			<span id="regional_brengdirect_speed_step_value" class="short-val-container">0</span>
+			<button id="regional_brengdirect_stop_btn" type="button" class="btn btn-warning btn-sm button_small disabled" onclick="adminSetTrainSpeedPromise('regional_brengdirect',0)">Stop</button>
+			<button id="regional_brengdirect_p30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('regional_brengdirect',30)"> 30</button>
+			<button id="regional_brengdirect_m30_btn" type="button" class="btn btn-warning btn-sm button_small" onclick="adminSetTrainSpeedPromise('regional_brengdirect',-30)">-30</button>
+		</div>
+		<div class="div40"><span id="regional_brengdirect_detected_speed_value" class="short-val-container">0</span><span>km/h</span></div>
+		<div class="div41"><span id="regional_brengdirect_orientation_value">None</span></div>
+		<div class="div42"><span id="regional_brengdirect_direction_value">None</span></div>
+	</div>
+	<hr/>
+	<div id="monitoringStatusContainer">
+		<div class="d-flex flex-row">
+			<div class="p-2" style="width: 20vw;">
+				<b>Monitoring status:</b>
+			</div>
+			<div class="p-2 ">
+				<span id="monitoring_status_field" class="short-val-container">Success</span>
+			</div>
+		</div>
+	</div>
+	<hr/>
+	<div id="situationAdminContainer" class="text-center">
+		<button id="allsigstop_button" type="button" class="btn btn-secondary sitButton"
+		onclick="allsigstop()">Signale Stop
+		</button>
+		<button id="sit1_button" type="button" class="btn btn-primary sitButton"
+		onclick="sit1prepare()">Sitation 1 Init
+		</button>
+		<button id="sit2_button" type="button" class="btn btn-primary sitButton"
+		onclick="sit2prepare()">Sitation 2 Init
+		</button>
+		<button id="sit3_button" type="button" class="btn btn-primary sitButton"
+		onclick="sit3prepare()">Sitation 3 Init
+		</button>
+	</div>
+	<hr/>
+	<div id="logdebugAdminContainer" class="text-center">
+		<button id="logdebug_button" type="button" class="btn btn-warning adminBtn"
+		onclick="logdebug()">Log Bidib Trackstate
+		</button>
+	</div>
+</body>
+</html>
