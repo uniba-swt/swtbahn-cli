@@ -21,13 +21,13 @@ function wait(duration) {
 }
 
 function adminSetTrainSpeedPromise(train, speed) {
-	console.log(dtISOStr() + ": adminSetTrainSpeedPromise(" + train + ", " + speed + ")");
+	console.log(dtISOStr() + ": adminSetTrainSpeedPromise(" + train + ", " + speed + "*" + speedModifier + ")");
 	return $.ajax({
 		type: 'POST',
 		url: serverAddress + '/admin/set-dcc-train-speed',
 		crossDomain: true,
 		data: {
-			'speed': speed,
+			'speed': speed * speedModifier,
 			'train': train,
 			'track-output': trackOutput
 		},
