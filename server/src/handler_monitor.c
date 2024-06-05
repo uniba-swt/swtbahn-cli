@@ -129,10 +129,9 @@ GString *get_trains_json() {
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get available trains");
 		GString *g_trains = get_trains_json();
 		onion_response_printf(res, "%s", g_trains->str);
-		syslog_server(LOG_INFO, "Request: Get available trains - finished");
+		syslog_server(LOG_INFO, "Request: Get available trains - done");
 		g_string_free(g_trains, true);
 		return OCS_PROCESSED;
 	} else {
@@ -202,7 +201,7 @@ GString *get_train_state_json(const char *data_train) {
 	
 	bidib_free_train_position_query(train_position_query);
 	append_end_of_obj(g_train_state, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_state_json", 256, g_train_state->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_state_json", 256, g_train_state->len);
 	return g_train_state;
 }
 
@@ -215,7 +214,6 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 			return OCS_NOT_IMPLEMENTED;
 		} 
 		
-		syslog_server(LOG_INFO, "Request: Get train state - train: %s", data_train);
 		GString *ret_string = get_train_state_json(data_train);
 		if (ret_string == NULL || ret_string->len == 0) {
 			syslog_server(LOG_ERR, 
@@ -224,7 +222,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			onion_response_printf(res, "%s", ret_string->str);
-			syslog_server(LOG_INFO, "Request: Get train state - train: %s - finished", data_train);
+			syslog_server(LOG_INFO, "Request: Get train state - train: %s - done", data_train);
 			g_string_free(ret_string, true);
 			return OCS_PROCESSED;
 		}
@@ -234,10 +232,8 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 	}
 }
 
-///TODO: Discuss, change in behaviour: train with no peripherals now does not lead to an error.
 GString *get_train_peripherals_json(const char *data_train) {
 	if (data_train == NULL) {
-		///TODO: Discuss what to return (NULL or empty string? Or "empty" JSON?)
 		return g_string_new("");
 	}
 	
@@ -266,7 +262,9 @@ GString *get_train_peripherals_json(const char *data_train) {
 	
 	append_end_of_list(g_train_peripherals, false, query.length > 0);
 	append_end_of_obj(g_train_peripherals, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_train_peripherals_json", 40 * (query.length + 1), g_train_peripherals->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_train_peripherals_json", 40 * (query.length + 1), 
+	//                g_train_peripherals->len);
 	
 	bidib_free_id_list_query(query);
 	return g_train_peripherals;
@@ -282,14 +280,21 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get train peripherals - train: %s", data_train);
 		GString *g_train_peripherals = get_train_peripherals_json(data_train);
-		onion_response_printf(res, "%s", g_train_peripherals->str);
-		syslog_server(LOG_INFO, 
-		              "Request: Get train peripherals - train: %s - finished",
-		              data_train);
-		g_string_free(g_train_peripherals, true);
-		return OCS_PROCESSED;
+		if (g_train_peripherals->len > 0) {
+			onion_response_printf(res, "%s", g_train_peripherals->str);
+			syslog_server(LOG_INFO, 
+			              "Request: Get train peripherals - train: %s - done",
+			              data_train);
+			g_string_free(g_train_peripherals, true);
+			return OCS_PROCESSED;
+		} else {
+			syslog_server(LOG_ERR, 
+			              "Request: Get train peripherals - train: %s - invalid train",
+			              data_train);
+			g_string_free(g_train_peripherals, true);
+			return OCS_NOT_IMPLEMENTED;
+		}
 		
 	} else {
 		syslog_server(LOG_ERR, 
@@ -344,10 +349,9 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
                                                   onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get track outputs");
 		GString *g_track_outputs = get_track_outputs_json();
 		onion_response_printf(res, "%s", g_track_outputs->str);
-		syslog_server(LOG_INFO, "Request: Get track outputs - finished");
+		syslog_server(LOG_INFO, "Request: Get track outputs - done");
 		g_string_free(g_track_outputs, true);
 		return OCS_PROCESSED;
 	} else {
@@ -402,10 +406,9 @@ GString *get_accessory_json(bool point_accessories) {
 onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get points");
 		GString *g_points = get_accessory_json(true);
 		onion_response_printf(res, "%s", g_points->str);
-		syslog_server(LOG_INFO, "Request: Get points - finished");
+		syslog_server(LOG_INFO, "Request: Get points - done");
 		g_string_free(g_points, true);
 		return OCS_PROCESSED;
 	} else {
@@ -417,10 +420,9 @@ onion_connection_status handler_get_points(void *_, onion_request *req, onion_re
 onion_connection_status handler_get_signals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get signals");
 		GString *g_signals = get_accessory_json(false);
 		onion_response_printf(res, "%s", g_signals->str);
-		syslog_server(LOG_INFO, "Request: Get signals - finished");
+		syslog_server(LOG_INFO, "Request: Get signals - done");
 		g_string_free(g_signals, true);
 		return OCS_PROCESSED;
 	} else {
@@ -431,7 +433,6 @@ onion_connection_status handler_get_signals(void *_, onion_request *req, onion_r
 
 GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	if (data_id == NULL) {
-		///TODO: Discuss ret val
 		return g_string_new("");
 	}
 	t_bidib_id_list_query query;
@@ -442,7 +443,6 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	}
 	
 	if (query.length <= 0 || query.ids == NULL) {
-		///TODO: Discuss ret val
 		return g_string_new("");
 	}
 	
@@ -456,7 +456,8 @@ GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	}
 	append_end_of_list(g_aspects, false, false);
 	append_end_of_obj(g_aspects, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_accessory_aspects_json", 32 * (query.length + 1), g_aspects->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_accessory_aspects_json", 32 * (query.length + 1), g_aspects->len);
 	bidib_free_id_list_query(query);
 	return g_aspects;
 }
@@ -471,18 +472,18 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get point aspects - point: %s", data_point);
 		GString *g_aspects = get_accessory_aspects_json(data_point, true);
-		if (g_aspects == NULL || g_aspects->len <= 0) {
+		if (g_aspects->len > 0) {
+			onion_response_printf(res, "%s", g_aspects->str);
+			syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - done", data_point);
+			g_string_free(g_aspects, true);
+			return OCS_PROCESSED;
+		} else {
 			syslog_server(LOG_ERR, 
 			              "Request: Get point aspects - point: %s - invalid point", 
 			              data_point);
-			return OCS_NOT_IMPLEMENTED;
-		} else {
-			onion_response_printf(res, "%s", g_aspects->str);
-			syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - finished", data_point);
 			g_string_free(g_aspects, true);
-			return OCS_PROCESSED;
+			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
 		syslog_server(LOG_ERR, 
@@ -503,18 +504,19 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 		
 		syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s", data_signal);
 		GString *g_aspects = get_accessory_aspects_json(data_signal, false);
-		if (g_aspects == NULL || g_aspects->len <= 0) {
-			syslog_server(LOG_ERR, 
-			              "Request: Get signal aspects - signal: %s - invalid signal", 
-			              data_signal);
-			return OCS_NOT_IMPLEMENTED;
-		} else {
+		if (g_aspects->len > 0) {
 			onion_response_printf(res, "%s", g_aspects->str);
 			syslog_server(LOG_INFO, 
-			              "Request: Get signal aspects - signal: %s - finished", 
+			              "Request: Get signal aspects - signal: %s - done", 
 			              data_signal);
 			g_string_free(g_aspects, true);
 			return OCS_PROCESSED;
+		} else {
+			syslog_server(LOG_ERR, 
+			              "Request: Get signal aspects - signal: %s - invalid signal", 
+			              data_signal);
+			g_string_free(g_aspects, true);
+			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
 		syslog_server(LOG_ERR, 
@@ -525,6 +527,9 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 
 GString *get_segments_json() {
 	t_bidib_id_list_query seg_query = bidib_get_connected_segments();
+	// no check for empty query, as then the code here constructs a json with an
+	// empty list, which is good -> better tells the client that no
+	// segments are known than a totally empty (i.e. empty string) answer.
 	
 	GString *g_segments = g_string_sized_new(42 * (seg_query.length + 1));
 	g_string_assign(g_segments, "");
@@ -558,7 +563,8 @@ GString *get_segments_json() {
 	}
 	append_end_of_list(g_segments, false, added_segments > 0);
 	append_end_of_obj(g_segments, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_segments_json", 42 * (seg_query.length + 1), g_segments->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_segments_json", 42 * (seg_query.length + 1), g_segments->len);
 	bidib_free_id_list_query(seg_query);
 	return g_segments;
 }
@@ -566,10 +572,9 @@ GString *get_segments_json() {
 onion_connection_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get segments");
 		GString *g_segments = get_segments_json();
 		onion_response_printf(res, "%s", g_segments->str);
-		syslog_server(LOG_INFO, "Request: Get segments - finished");
+		syslog_server(LOG_INFO, "Request: Get segments - done");
 		g_string_free(g_segments, true);
 		return OCS_PROCESSED;
 	} else {
@@ -620,7 +625,8 @@ GString *get_reversers_json() {
 	}
 	append_end_of_list(g_reversers, false, added_reversers > 0);
 	append_end_of_obj(g_reversers, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_reversers_json", 48 * (rev_query.length + 1), g_reversers->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_reversers_json", 48 * (rev_query.length + 1), g_reversers->len);
 	bidib_free_id_list_query(rev_query);
 	return g_reversers;
 }
@@ -628,14 +634,13 @@ GString *get_reversers_json() {
 onion_connection_status handler_get_reversers(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get reversers");
 		if (!reversers_state_update()) {
 			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
 			return OCS_NOT_IMPLEMENTED;
 		}
 		GString *g_reversers = get_reversers_json();
 		onion_response_printf(res, "%s", g_reversers->str);
-		syslog_server(LOG_INFO, "Request: Get reversers - finished");
+		syslog_server(LOG_INFO, "Request: Get reversers - done");
 		g_string_free(g_reversers, true);
 		return OCS_PROCESSED;
 	} else {
@@ -677,7 +682,8 @@ GString *get_peripherals_json() {
 	
 	append_end_of_list(g_peripherals, false, added_peripherals > 0);
 	append_end_of_obj(g_peripherals, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_peripherals_json", 64 * (per_query.length + 1), g_peripherals->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_peripherals_json", 64 * (per_query.length + 1), g_peripherals->len);
 	bidib_free_id_list_query(per_query);
 	return g_peripherals;
 }
@@ -685,10 +691,9 @@ GString *get_peripherals_json() {
 onion_connection_status handler_get_peripherals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get peripherals");
 		GString *g_peripherals = get_peripherals_json();
 		onion_response_printf(res, "%s", g_peripherals->str);
-		syslog_server(LOG_INFO, "Request: Get peripherals - finished");
+		syslog_server(LOG_INFO, "Request: Get peripherals - done");
 		g_string_free(g_peripherals, true);
 		return OCS_PROCESSED;
 	} else {
@@ -761,13 +766,15 @@ GString* get_granted_routes_json() {
 				}
 			}
 		}
+		// free the GArray but not the contained strings, as it was created by shallow copy.
 		g_array_free(route_ids, true);
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
 	
 	append_end_of_list(g_granted_routes, false, routes_added > 0);
 	append_end_of_obj(g_granted_routes, false);
-	syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", "get_granted_routes_json", 64, g_granted_routes->len);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_granted_routes_json", 64, g_granted_routes->len);
 	
 	return g_granted_routes;
 }
@@ -776,10 +783,9 @@ onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
                                                    onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		syslog_server(LOG_INFO, "Request: Get granted routes");
 		GString *g_granted_routes = get_granted_routes_json();
 		onion_response_printf(res, "%s", g_granted_routes->str);
-		syslog_server(LOG_INFO, "Request: Get granted routes - finished");
+		syslog_server(LOG_INFO, "Request: Get granted routes - done");
 		g_string_free(g_granted_routes, true);
 		return OCS_PROCESSED;
 	} else {
