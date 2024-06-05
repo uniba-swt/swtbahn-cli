@@ -839,7 +839,7 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get route - route: %s", route_id);
+		syslog_server(LOG_INFO, "Request: Get route - route: %s - start", route_id);
 		GString* g_route = get_route_json(route_id);
 		onion_response_printf(res, "%s", g_route->str);
 		syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
