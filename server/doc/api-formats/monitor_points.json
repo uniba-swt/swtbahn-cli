@@ -2,7 +2,7 @@
 	"points": [
 		{
 			"id": "point1",
-			"state": "normal",
+			"state": "unknown",
 			"target_state_reached": false
 		},
 		{

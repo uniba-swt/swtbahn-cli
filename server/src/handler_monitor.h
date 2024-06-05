@@ -43,6 +43,10 @@ onion_connection_status handler_get_trains(void *_, onion_request *req,
 onion_connection_status handler_get_train_state(void *_, onion_request *req,
                                                 onion_response *res);
 
+///TODO: Implement
+onion_connection_status handler_get_train_states(void *_, onion_request *req,
+                                                 onion_response *res);
+
 onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
                                                       onion_response *res);
 

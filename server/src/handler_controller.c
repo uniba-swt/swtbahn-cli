@@ -123,43 +123,7 @@ void release_all_interlockers(void) {
 	selected_interlocker_instance = -1;
 }
 
-
-// get_granted_route_conflicts, but using direct implementation of sectional-style checker
-GArray *get_granted_route_conflicts_sectional(const char *route_id) {
-	if (route_id == NULL) {
-		return NULL;
-	}
-	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-	
-	const unsigned int route_count = MAX(interlocking_table_get_size(), 1024);
-	char *conflict_routes[route_count];
-	const size_t conflict_routes_len = 
-			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
-	
-	for (size_t i = 0; i < conflict_routes_len; i++) {
-		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
-		if (conflict_route->train != NULL) {
-			if (!is_route_conflict_safe_sectional(conflict_routes[i],route_id)) {
-				const size_t conflict_route_id_string_len = strlen(conflict_route->id) 
-				                                            + strlen(conflict_route->train) + 3 + 1;
-				char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
-				if (conflict_route_id_string == NULL) {
-					syslog_server(LOG_ERR, 
-					              "get_granted_route_conflicts_sectional - failed to allocate memory"
-					              " for conflict_route_id_string");
-					g_array_free(conflict_route_ids, true);
-					return NULL;
-				}
-				snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
-				         conflict_route->id, conflict_route->train);
-				g_array_append_val(conflict_route_ids, conflict_route_id_string);
-			}
-		}
-	}
-	return conflict_route_ids;
-}
-
-GArray *get_granted_route_conflicts(const char *route_id) {
+GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_train_info) {
 	if (route_id == NULL) {
 		return NULL;
 	}
@@ -167,10 +131,7 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 
 	// When a sectional interlocker is in use, use the sectional checker to
 	// check for route availability.
-	if (g_strrstr(selected_interlocker_name->str, "sectional") != NULL) {
-		// Use native implementation of sectional checker
-		return get_granted_route_conflicts_sectional(route_id);
-	}
+	bool sectional_in_use = (g_strrstr(selected_interlocker_name->str, "sectional") != NULL);
 	
 	const unsigned int route_count = MAX(interlocking_table_get_size(), 1024);
 	char *conflict_routes[route_count];
@@ -179,9 +140,18 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 	for (size_t i = 0; i < conflict_routes_len; i++) {
 		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
 		if (conflict_route->train != NULL) {
-			const size_t conflict_route_id_string_len = strlen(conflict_route->id) 
-			                                            + strlen(conflict_route->train) + 3 + 1;
-			char *conflict_route_id_string = malloc(sizeof(char) * conflict_route_id_string_len);
+			if (sectional_in_use && is_route_conflict_safe_sectional(conflict_routes[i], route_id)) {
+				// If a sectional checker is in use and it says that this conflict is 
+				// actually "safe" to grant, skip this conflict/dont add it to the list.
+				continue;
+			}
+			size_t conflict_entry_len;
+			if (include_conflict_train_info) {
+				conflict_entry_len = strlen(conflict_route->id) + 1;
+			} else {
+				conflict_entry_len = strlen(conflict_route->id) + 1 + strlen(conflict_route->train) + 3;
+			}
+			char *conflict_route_id_string = malloc(sizeof(char) * conflict_entry_len);
 			if (conflict_route_id_string == NULL) {
 				syslog_server(LOG_ERR, 
 				              "get_granted_route_conflicts - failed to allocate memory"
@@ -189,7 +159,7 @@ GArray *get_granted_route_conflicts(const char *route_id) {
 				g_array_free(conflict_route_ids, true);
 				return NULL;
 			}
-			snprintf(conflict_route_id_string, conflict_route_id_string_len, "%s (%s)",
+			snprintf(conflict_route_id_string, conflict_entry_len, "%s (%s)",
 			         conflict_route->id, conflict_route->train);
 			g_array_append_val(conflict_route_ids, conflict_route_id_string);
 		}
@@ -307,7 +277,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	// Check whether the route can be granted
 	t_interlocking_route * const route = get_route(route_id);
-	GArray * const granted_conflicts = get_granted_route_conflicts(route_id);
+	GArray * const granted_conflicts = get_granted_route_conflicts(route_id, false);
 	if (granted_conflicts == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 

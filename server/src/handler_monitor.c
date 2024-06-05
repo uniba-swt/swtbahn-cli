@@ -144,14 +144,12 @@ onion_connection_status handler_get_trains(void *_, onion_request *req, onion_re
 
 GString *get_train_state_json(const char *data_train) {
 	if (data_train == NULL) {
-		///TODO: Discuss what to return (NULL or empty string? Or "empty" JSON?)
 		return g_string_new("");
 	}
 	
 	t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 	if (!train_state_query.known) {
 		bidib_free_train_state_query(train_state_query);
-		///TODO: Discuss what to return (NULL or empty str? Or "empty" JSON, or containing err msg?)
 		return g_string_new("");
 	}
 	
@@ -217,16 +215,17 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 		} 
 		
 		GString *ret_string = get_train_state_json(data_train);
-		if (ret_string == NULL || ret_string->len == 0) {
-			syslog_server(LOG_ERR, 
-			              "Request: Get train state - train: %s - invalid train", 
-			              data_train);
-			return OCS_NOT_IMPLEMENTED;
-		} else {
+		if (ret_string->len > 0) {
 			onion_response_printf(res, "%s", ret_string->str);
 			syslog_server(LOG_INFO, "Request: Get train state - train: %s - done", data_train);
 			g_string_free(ret_string, true);
 			return OCS_PROCESSED;
+		} else {
+			syslog_server(LOG_ERR, 
+			              "Request: Get train state - train: %s - invalid train", 
+			              data_train);
+			g_string_free(ret_string, true);
+			return OCS_NOT_IMPLEMENTED;
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Get train state - system not running or wrong request type");
@@ -331,9 +330,10 @@ GString *get_track_outputs_json() {
 				case 0xFF: state_string = "query"; break;
 				default:   state_string = "off"; break;
 			}
-			if (track_outputs_added++ > 0) {
+			if (track_outputs_added > 0) {
 				g_string_append_c(g_track_outputs, ',');
 			}
+			track_outputs_added++;
 			append_start_of_obj(g_track_outputs, true);
 			append_field_str_value(g_track_outputs, "id", query.ids[i], true);
 			append_field_str_value(g_track_outputs, "state", state_string, false);
@@ -364,7 +364,7 @@ onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
 	}
 }
 
-GString *get_accessory_json(bool point_accessories) {
+GString *get_accessories_json(bool point_accessories) {
 	t_bidib_id_list_query query;
 	if (point_accessories) {
 		query = bidib_get_connected_points();
@@ -410,7 +410,7 @@ GString *get_accessory_json(bool point_accessories) {
 onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		GString *g_points = get_accessory_json(true);
+		GString *g_points = get_accessories_json(true);
 		onion_response_printf(res, "%s", g_points->str);
 		syslog_server(LOG_INFO, "Request: Get points - done");
 		g_string_free(g_points, true);
@@ -424,7 +424,7 @@ onion_connection_status handler_get_points(void *_, onion_request *req, onion_re
 onion_connection_status handler_get_signals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		GString *g_signals = get_accessory_json(false);
+		GString *g_signals = get_accessories_json(false);
 		onion_response_printf(res, "%s", g_signals->str);
 		syslog_server(LOG_INFO, "Request: Get signals - done");
 		g_string_free(g_signals, true);
@@ -434,6 +434,84 @@ onion_connection_status handler_get_signals(void *_, onion_request *req, onion_r
 		return OCS_NOT_IMPLEMENTED;
 	}
 }
+
+GString *get_point_details_json(const char *data_id) {
+	if (data_id == NULL) {
+		return g_string_new("");
+	}
+	
+	t_bidib_id_list_query aspects_query = bidib_get_point_aspects(data_id);
+	if (aspects_query.length <= 0 || aspects_query.ids == NULL) {
+		return g_string_new("");
+	}
+	t_bidib_unified_accessory_state_query acc_state = bidib_get_point_state(data_id);
+	if (!acc_state.known) {
+		return g_string_new("");
+	}
+	
+	GString *g_details = g_string_sized_new(156);
+	g_string_assign(g_details, "");
+	append_start_of_obj(g_details, false);
+	append_field_str_value(g_details, "id", data_id, true);
+	append_field_start_of_list(g_details, "aspects");
+	
+	for (size_t i = 0; i < aspects_query.length; i++) {
+		g_string_append_printf(g_details, "%s\"%s\"", i != 0 ? ", " : "", aspects_query.ids[i]);
+	}
+	append_end_of_list(g_details, true, false);
+	append_field_str_value(g_details, "state", 
+	                       acc_state.type == BIDIB_ACCESSORY_BOARD ?
+	                       acc_state.board_accessory_state.state_id :
+	                       acc_state.dcc_accessory_state.state_id, 
+	                       true);
+	const char *point_segment = config_get_scalar_string_value("point", data_id, "segment");
+	append_field_str_value(g_details, "segment", point_segment, true);
+	
+	append_field_bool_value(g_details, "occupied", 
+	                        is_segment_occupied(point_segment), 
+	                        acc_state.type == BIDIB_ACCESSORY_BOARD);
+	
+	if (acc_state.type == BIDIB_ACCESSORY_BOARD) {
+		append_field_bool_value(g_details, "target_state_reached", 
+		                        acc_state.board_accessory_state.execution_state, false);
+	}
+	
+	append_end_of_obj(g_details, false);
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_point_details_json", 156, g_details->len);
+	bidib_free_id_list_query(aspects_query);
+	return g_details;
+}
+
+onion_connection_status handler_get_point_details(void *_, onion_request *req, onion_response *res) {
+	build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		const char *data_point = onion_request_get_post(req, "point");
+		if (data_point == NULL) {
+			syslog_server(LOG_ERR, "Request: Get point details - invalid parameters");
+			return OCS_NOT_IMPLEMENTED;
+		}
+		
+		GString *g_details = get_point_details_json(data_point);
+		if (g_details->len > 0) {
+			onion_response_printf(res, "%s", g_details->str);
+			syslog_server(LOG_INFO, "Request: Get point details - point: %s - done", data_point);
+			g_string_free(g_details, true);
+			return OCS_PROCESSED;
+		} else {
+			syslog_server(LOG_ERR, 
+			              "Request: Get point details - point: %s - invalid point", 
+			              data_point);
+			g_string_free(g_details, true);
+			return OCS_NOT_IMPLEMENTED;
+		}
+	} else {
+		syslog_server(LOG_ERR, 
+		              "Request: Get point details - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
 
 GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	if (data_id == NULL) {
@@ -496,6 +574,10 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 	}
 }
 
+// Probably want to have a signal-details endpoint too, once we 
+// have more information about signals we can return; at the moment it
+// is quite limited. One interesting property may be, for example,
+// to know what segment->segment travel means the signal has been driven past.
 onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
                                                    onion_response *res) {
 	build_response_header(res);
@@ -506,7 +588,6 @@ onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Get signal aspects - signal: %s", data_signal);
 		GString *g_aspects = get_accessory_aspects_json(data_signal, false);
 		if (g_aspects->len > 0) {
 			onion_response_printf(res, "%s", g_aspects->str);
@@ -559,7 +640,9 @@ GString *get_segments_json() {
 			bidib_free_id_query(id_query);
 		}
 		
-		append_end_of_list(g_segments, false, seg_state_query.data.dcc_address_cnt > 0);
+		///TODO: Test difference
+		//append_end_of_list(g_segments, false, seg_state_query.data.dcc_address_cnt > 0);
+		append_end_of_list(g_segments, false, false);
 		append_end_of_obj(g_segments, false);
 		
 		bidib_free_segment_state_query(seg_state_query);
@@ -739,9 +822,7 @@ onion_connection_status handler_get_verification_url(void *_, onion_request *req
 }
 
 GString* get_granted_routes_json() {
-	///TODO: test - sized new could be nice to avoid reallocs, but now how do initialize the string?
-	//              maybe just with g_string_assign?
-	GString *g_granted_routes = g_string_sized_new(64);
+	GString *g_granted_routes = g_string_sized_new(128);
 	g_string_assign(g_granted_routes, "");
 	
 	// Old "normal" way without sized new
@@ -778,7 +859,7 @@ GString* get_granted_routes_json() {
 	append_end_of_list(g_granted_routes, false, routes_added > 0);
 	append_end_of_obj(g_granted_routes, false);
 	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
-	//                "get_granted_routes_json", 64, g_granted_routes->len);
+	//                "get_granted_routes_json", 128, g_granted_routes->len);
 	return g_granted_routes;
 }
 
@@ -826,8 +907,8 @@ GString* get_route_json(const char *route_id) {
 	append_field_barelist_value_from_garray_strs(g_route, "conflicting_route_ids", 
 	                                             route->conflicts, true);
 	
-	append_field_strlist_value_garray_strs(g_route, "granted_conflicting_route_ids", 
-	                                       get_granted_route_conflicts(route_id), true);
+	append_field_barelist_value_from_garray_strs(g_route, "granted_conflicting_route_ids", 
+	                                             get_granted_route_conflicts(route_id, false), true);
 	
 	append_field_bool_value(g_route, "clear", get_route_is_clear(route_id), true);
 	append_field_str_value(g_route, "granted_to_train", 

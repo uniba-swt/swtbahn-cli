@@ -158,7 +158,6 @@ GString* append_field_start_of_obj(GString *dest, const char *field) {
 	return dest;
 }
 
-///TODO: Make newline configurable
 GString* append_start_of_obj(GString *dest, bool with_prepend_newline) {
 	if (dest == NULL) {
 		return NULL;

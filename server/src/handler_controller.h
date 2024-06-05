@@ -55,10 +55,12 @@ const int load_default_interlocker_instance();
 /**
  * Finds conflicting routes that have been granted.
  * 
- * @param ID of route for which conflicts should be checked
- * @return GArray of granted route conflicts
+ * @param route_id id of route for which conflicts should be checked
+ * @param include_conflict_train_info whether the train to which a conflicting route is granted
+ * shall be added for each element
+ * @return GArray of granted route conflicts, described by strings
  */
-GArray *get_granted_route_conflicts(const char *route_id);
+GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_train_info);
 
 /**
  * Determines whether a route is physically ready for use:

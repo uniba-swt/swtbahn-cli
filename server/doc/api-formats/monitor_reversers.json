@@ -7,6 +7,10 @@
 		{
 			"id": "r2",
 			"state": "unknown"
+		},
+		{
+			"id": "r3",
+			"state": "off"
 		}
 	]
 }

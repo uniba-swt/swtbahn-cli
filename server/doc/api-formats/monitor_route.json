@@ -9,7 +9,7 @@
 	"signals": ["signal36", "signal49"],
 	"points": ["point13", "point12", "point11", "point27", "point29"],
 	"conflicting_route_ids": [0,1,2],
-	"granted_conflicting_route_ids": ["41 (cargo_db)", "_comment: current function that computes the granted conflicting route-ids automatically adds the train that the conflict is granted to -> prevents simple numeral list ATM"],
+	"granted_conflicting_route_ids": [1,2],
 	"clear": false,
 	"granted_to_train": ""
 }
