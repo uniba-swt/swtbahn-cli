@@ -233,6 +233,47 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 	}
 }
 
+GString *get_train_states_json() {
+	t_bidib_id_list_query query = bidib_get_trains();
+	GString *g_train_states = g_string_sized_new(256 * (query.length + 1));
+	g_string_assign(g_train_states, "");
+	
+	append_start_of_obj(g_train_states, false);
+	append_field_start_of_list(g_train_states, "train-states");
+	
+	for (size_t i = 0; i < query.length; i++) {
+		GString *g_train_state = get_train_state_json(query.ids[i]);
+		g_string_append_printf(g_train_states, "%s", g_train_state->str);
+		g_string_free(g_train_state, false);
+		if (i + 1 < query.length) {
+			g_string_append_printf(g_train_states, "%s", ",");
+		}
+	}
+	append_end_of_list(g_train_states, false, query.length > 0);
+	append_end_of_obj(g_train_states, false);
+	
+	//syslog_server(LOG_NOTICE, "%s - size estimate: %zu, size actual: %zu", 
+	//                "get_trains_json", 320 * (query.length + 1), g_trains->len);
+	bidib_free_id_list_query(query);
+	return g_train_states;
+}
+
+onion_connection_status handler_get_train_states(void *_, onion_request *req,
+                                                 onion_response *res) {
+    build_response_header(res);
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *g_train_states = get_train_states_json();
+		onion_response_printf(res, "%s", g_train_states->str);
+		syslog_server(LOG_INFO, "Request: Get train states - done");
+		g_string_free(g_train_states, true);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, 
+		              "Request: Get train states - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
 GString *get_train_peripherals_json(const char *data_train) {
 	if (data_train == NULL) {
 		return g_string_new("");

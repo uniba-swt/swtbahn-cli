@@ -1,5 +1,5 @@
 {
-	"trains": [
+	"train-states": [
 		{
 			"id": "cargo_db",
 			"grabbed": true,
