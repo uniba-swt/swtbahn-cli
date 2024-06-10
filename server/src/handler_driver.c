@@ -41,6 +41,7 @@
 #include "param_verification.h"
 #include "interlocking.h"
 #include "bahn_data_util.h"
+#include "json_response_builder.h"
 
 pthread_mutex_t grabbed_trains_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -134,7 +135,10 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 }
 
 static const bool is_forward_driving(const t_interlocking_route *route, const char *train_id) {
-
+	if (route == NULL || train_id == NULL) {
+		syslog_server(LOG_ERR, "Is forward driving - invalid parameters");
+		return true;
+	}
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const bool train_is_left = train_position_query.orientation_is_left;
 	const bool route_is_clockwise = (strcmp(route->orientation, "clockwise") == 0);
@@ -788,7 +792,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 static int grab_train(const char *train, const char *engine) {
 	if (train == NULL || engine == NULL) {
 		syslog_server(LOG_ERR, "Grab train - invalid (NULL) parameter(s)");
-		return -1;
+		return -4;
 	}
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
@@ -797,7 +801,7 @@ static int grab_train(const char *train, const char *engine) {
 			syslog_server(LOG_ERR, 
 			              "Grab train - train: %s engine: %s - train already grabbed", 
 			              train, engine);
-			return -1;
+			return -3;
 		}
 	}
 	int start = next_grab_id;
@@ -809,7 +813,7 @@ static int grab_train(const char *train, const char *engine) {
 				syslog_server(LOG_ERR, 
 				              "Grab train - train: %s engine: %s - all grab ids in use", 
 				              train, engine);
-				return -1;
+				return -2;
 			}
 			increment_next_grab_id();
 		}
@@ -871,6 +875,54 @@ char *train_id_from_grab_id(int grab_id) {
 	return train_id;
 }
 
+GString *get_driver_common_feedback_json(bool success, const char* message) {
+	gsize add_len = message != 0 ? MAX(256, strlen(message)) : 0;
+	GString *g_feedback = g_string_sized_new(32 + add_len);
+	g_string_assign(g_feedback, "");
+	append_start_of_obj(g_feedback, false);
+	append_field_bool_value(g_feedback, "success", success, true);
+	append_field_str_value(g_feedback, "message", message, false);
+	append_end_of_obj(g_feedback, false);
+	return g_feedback;
+}
+
+GString *get_grab_feedback_json(bool success, const char* message, int l_session_id, int grab_id) {
+	gsize add_len = message != 0 ? MAX(256, strlen(message)) : 0;
+	GString *g_feedback = g_string_sized_new(96 + add_len);
+	g_string_assign(g_feedback, "");
+	append_start_of_obj(g_feedback, false);
+	append_field_bool_value(g_feedback, "success", success, true);
+	append_field_str_value(g_feedback, "message", message, true);
+	append_field_int_value(g_feedback, "session-id", l_session_id, true);
+	append_field_int_value(g_feedback, "grab-id", grab_id, false);
+	append_end_of_obj(g_feedback, false);
+	return g_feedback;
+}
+
+GString *get_req_route_feedback_json(bool success, const char* message, const char* granted_route_id) {
+	gsize add_len = message != 0 ? MAX(256, strlen(message)) : 0;
+	GString *g_feedback = g_string_sized_new(64 + add_len);
+	g_string_assign(g_feedback, "");
+	append_start_of_obj(g_feedback, false);
+	append_field_bool_value(g_feedback, "success", success, true);
+	append_field_str_value(g_feedback, "message", message, true);
+	append_field_str_value(g_feedback, "granted-route-id", granted_route_id, false);
+	append_end_of_obj(g_feedback, false);
+	return g_feedback;
+}
+
+void send_driver_common_feedback(onion_response *res, bool success, const char* message) {
+	GString *ret_str = get_driver_common_feedback_json(success, message);
+	onion_response_printf(res, "%s", ret_str->str);
+	g_string_free(ret_str, true);
+}
+
+void send_req_route_feedback(onion_response *res, bool success, const char* message, 
+                             const char* granted_route_id) {
+	GString *ret_str = get_req_route_feedback_json(success, message, granted_route_id);
+	onion_response_printf(res, "%s", ret_str->str);
+	g_string_free(ret_str, true);
+}
 
 onion_connection_status handler_grab_train(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
@@ -879,7 +931,10 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		const char *data_engine = onion_request_get_post(req, "engine");
 		
 		if (data_train == NULL || data_engine == NULL) {
+			GString *feedback = get_grab_feedback_json(false, "invalid parameters", 0, -1);
+			onion_response_printf(res, "%s", feedback->str);
 			syslog_server(LOG_ERR, "Request: Grab train - invalid parameters");
+			g_string_free(feedback, true);
 			return OCS_NOT_IMPLEMENTED;
 		}
 		syslog_server(LOG_NOTICE, 
@@ -889,26 +944,66 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		if (!train_state_query.known) {
 			bidib_free_train_state_query(train_state_query);
+			GString *feedback = get_grab_feedback_json(false, "unknown train or invalid train state", 
+			                                           0, -1);
+			onion_response_printf(res, "%s", feedback->str);
 			syslog_server(LOG_ERR, 
 			              "Request: Grab train - train: %s engine: %s - "
 			              "unknown train or train state - abort", 
 			              data_train, data_engine);
+			g_string_free(feedback, true);
 			return OCS_NOT_IMPLEMENTED;
 		}
 		bidib_free_train_state_query(train_state_query);
 		
+		
+		// -4: invalid params
+		// -3: train already grabbed
+		// -2: all grab IDs are in use
+		// -1: train engine could not be started
+		
 		int grab_id = grab_train(data_train, data_engine);
-		if (grab_id == -1) {
+		GString *ret_str = NULL;
+		if (grab_id == -4) {
+			ret_str = get_grab_feedback_json(false, "invalid parameters", 0, -1);
+		} else if (grab_id == -3) {
+			ret_str = get_grab_feedback_json(false, "train has already been grabbed", 0, -1);
+		} else if (grab_id == -2) {
+			ret_str = get_grab_feedback_json(false, "all grab-IDs are in use "
+			                                 "(max no. of grabbed trains reached)", 0, -1);
+		} else if (grab_id == -1) {
+			ret_str = get_grab_feedback_json(false, "internal err: failed to "
+			                                 "start train engine container", 0, -1);
+		} else if (grab_id >= 0) {
+			ret_str = get_grab_feedback_json(true, "", session_id, grab_id);
+		} else {
 			syslog_server(LOG_ERR, 
-			              "Request: Grab train - train: %s engine: %s - train could not be grabbed - abort", 
+			              "Request: Grab train - train: %s engine: %s - "
+			              "unexpected return from grab_train", 
+			              data_train, data_engine);
+			ret_str = get_grab_feedback_json(false, "internal err: unexpected "
+			                                 "return from grab_train", 0, -1);
+		}
+		if (ret_str != NULL) {
+			onion_response_printf(res, "%s", ret_str->str);
+			if (grab_id >= 0) {
+				syslog_server(LOG_ERR, 
+				              "Request: Grab train - train: %s engine: %s - "
+				              "train could not be grabbed - abort", 
+				              data_train, data_engine);
+			} else {
+				syslog_server(LOG_NOTICE, 
+				              "Request: Grab train - train: %s engine: %s - finish", 
+				              data_train, data_engine);
+			}
+			g_string_free(ret_str, true);
+			return grab_id > -1 ? OCS_PROCESSED : OCS_NOT_IMPLEMENTED;
+		} else {
+			syslog_server(LOG_ERR, 
+			              "Request: Grab train - train: %s engine: %s - "
+			              "failed to build reply message - abort", 
 			              data_train, data_engine);
 			return OCS_NOT_IMPLEMENTED;
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Grab train - train: %s engine: %s - finish", 
-			              data_train, data_engine);
-			onion_response_printf(res, "%ld,%d", session_id, grab_id);
-			return OCS_PROCESSED;
 		}
 	} else {
 		syslog_server(LOG_ERR, "Request: Grab train - system not running or wrong request type");
@@ -925,6 +1020,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		
 		if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, 
 			              "Request: Release train - grab id: %d - invalid session id: %s", 
 			              grab_id, data_session_id);
@@ -934,6 +1030,7 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 		// If grab_id is valid, train_id will be, too.
 		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, "Request: Release train - grab id: %d - invalid grab id", grab_id);
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -959,12 +1056,14 @@ onion_connection_status handler_release_train(void *_, onion_request *req, onion
 		bidib_free_train_state_query(train_state_query);
 		
 		if (!release_train(grab_id)) {
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, 
 			              "Request: Release train - grab id: %d train: %s - invalid grab id - abort", 
 			              grab_id, train_id);
 			free(train_id);
 			return OCS_NOT_IMPLEMENTED;
 		} else {
+			send_driver_common_feedback(res, true, "released train");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Release train - grab id: %d train: %s - finish", 
 			              grab_id, train_id);
@@ -988,9 +1087,11 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		
 		if (data_source_name == NULL || data_destination_name == NULL) {
+			send_req_route_feedback(res, false, "invalid parameters", "");
 			syslog_server(LOG_ERR, "Request: Request train route - invalid parameters");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (client_session_id != session_id) {
+			send_req_route_feedback(res, false, "invalid session-id", "");
 			syslog_server(LOG_ERR, 
 			              "Request: Request train route - from: %s to: %s - invalid session id", 
 			              data_source_name, data_destination_name);
@@ -1000,6 +1101,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		// If grab_id is valid, train_id will be, too.
 		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
+			send_req_route_feedback(res, false, "invalid grab-id", "");
 			syslog_server(LOG_ERR, 
 			              "Request: Request train route - from: %s to: %s - invalid grab id",
 			              data_source_name, data_destination_name);
@@ -1014,33 +1116,37 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		GString *route_id = grant_route(train_id, data_source_name, data_destination_name);
 		if (route_id->str != NULL && params_check_is_number(route_id->str)) {
 			syslog_server(LOG_NOTICE, 
-			              "Request: Request train route - train: %s from: %s to: %s - route %s granted",
+			              "Request: Request train route - train: %s from: %s to: %s"
+			              " - route %s granted",
 			              train_id, data_source_name, data_destination_name, route_id->str);
-			onion_response_printf(res, "%s", route_id->str);
+			send_req_route_feedback(res, true, "", route_id->str);
 		} else {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_WARNING, 
-			              "Request: Request train route - train: %s from: %s to: %s - route %s not granted",
+			              "Request: Request train route - train: %s from: %s to: %s"
+			              " - route %s not granted",
 			              train_id, data_source_name, data_destination_name, route_id->str);
-			
 			if (strcmp(route_id->str, "no_interlocker") == 0) {
-				onion_response_printf(res, "No interlocker has been selected for use");
+				send_req_route_feedback(res, false, "No interlocker has been selected for use", "");
 			} else if (strcmp(route_id->str, "no_routes") == 0) {
-				onion_response_printf(res, 
-				                      "No routes possible from %s to %s", 
-				                      data_source_name, data_destination_name);
+				send_req_route_feedback(res, false, "No routes possible", "");
 			} else if (strcmp(route_id->str, "not_grantable") == 0) {
-				onion_response_printf(res, "Route found conflicts with others");
+				send_req_route_feedback(res, false, "Route conflicts with granted route(s)", "");
 			} else if (strcmp(route_id->str, "not_clear") == 0) {
-				onion_response_printf(res, 
-				                      "Route found has occupied tracks or source signal is not stop");
+				send_req_route_feedback(res, false, "Route found has occupied tracks or "
+				                        "source signal is not stop", "");
 			} else {
-				onion_response_printf(res, "Route could not be granted (%s)", route_id->str);
+				GString *aux = g_string_new("Route could not be granted");
+				if (route_id != NULL) {
+					g_string_append_printf(aux, " (%s)", route_id->str);
+				}
+				send_req_route_feedback(res, false, aux->str, "");
+				g_string_free(aux, true);
 			}
+		}
 		syslog_server(LOG_NOTICE, 
 		              "Request: Request train route - train: %s from: %s to: %s - finish",
 		              train_id, data_source_name, data_destination_name);
-		}
 		g_string_free(route_id, true);
 		free(train_id);
 		return OCS_PROCESSED;
@@ -1064,9 +1170,11 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 		const char *route_id = params_check_route_id(data_route_id);
 		
 		if (strcmp(route_id, "") == 0) {
+			send_driver_common_feedback(res, false, "invalid route-id");
 			syslog_server(LOG_ERR, "Request: Request train route id - invalid route id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, 
 			              "Request: Request train route id - route: %s - invalid session id", 
 			              route_id);
@@ -1076,6 +1184,7 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 		// If grab_id is valid, train_id will be, too.
 		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, 
 			              "Request: Request train route id - route: %s - invalid grab id", 
 			              route_id);
@@ -1090,27 +1199,24 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 		const char *result = grant_route_id(train_id, route_id);
 		
 		if (strcmp(result, "granted") == 0) {
-			onion_response_printf(res, "%s", result);
+			send_driver_common_feedback(res, true, result);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Request train route id - train: %s route: %s - route granted",
-			              train_id, route_id, result);
+			              train_id, route_id);
 		} else {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_WARNING, 
 			              "Request: Request train route id - train: %s route: %s - route not granted (%s)",
 			              train_id, route_id, result);
+			
 			if (strcmp(result, "not_grantable") == 0) {
-				onion_response_printf(res, 
-				                      "Route %s is not available or has conflicts with others", 
-				                      route_id);
+				send_driver_common_feedback(res, false, "Route not available or has "
+				                                        "conflicts with granted route(s)");
 			} else if (strcmp(result, "not_clear") == 0) {
-				onion_response_printf(res, 
-				                      "Route %s has occupied tracks or source signal is not stop", 
-				                      route_id);
+				send_driver_common_feedback(res, false, "Route has occupied tracks or "
+				                                          "source signal is not stop");
 			} else {
-				onion_response_printf(res, 
-				                      "Route %s could not be granted",
-				                      route_id);
+				send_driver_common_feedback(res, false, "Route could not be granted");
 			}
 		}
 		syslog_server(LOG_NOTICE, 
@@ -1134,19 +1240,24 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 		const char *route_id = params_check_route_id(data_route_id);
 		if (data_train == NULL) {
 			syslog_server(LOG_ERR, "Request: Driving direction - train id is NULL");
+			onion_response_printf(res, "{\n\"err_msg\": \"Invalid train-id parameter\"\n}");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, 
 			              "Request: Driving direction - train: %s - invalid route id", 
 			              data_train);
+			onion_response_printf(res, "{\n\"err_msg\": \"Invalid route-id parameter\"\n}");
 			return OCS_NOT_IMPLEMENTED;
 		}
 		
 		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - start", data_train);
 		pthread_mutex_lock(&interlocker_mutex);
 		const t_interlocking_route *route = get_route(route_id);
-		onion_response_printf(res, "%s", 
-		                      is_forward_driving(route, data_train) ? "forwards" : "backwards");
+		if (is_forward_driving(route, data_train)) {
+			onion_response_printf(res, "{\n\"direction\": \"forwards\"\n}");
+		} else {
+			onion_response_printf(res, "{\n\"direction\": \"backwards\"\n}");
+		}
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - finish", data_train);
 		return OCS_PROCESSED;
@@ -1171,12 +1282,15 @@ onion_connection_status handler_drive_route(void *_, onion_request *req, onion_r
 		const char *mode = params_check_mode(data_mode);
 		
 		if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, "Request: Drive route - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (strcmp(mode, "") == 0) {
+			send_driver_common_feedback(res, false, "invalid driving mode");
 			syslog_server(LOG_ERR, "Request: Drive route - invalid driving mode");
 			return OCS_NOT_IMPLEMENTED;			
 		} else if (strcmp(route_id, "") == 0) {
+			send_driver_common_feedback(res, false, "invalid route-id");
 			syslog_server(LOG_ERR, "Request: Drive route - invalid route id");
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -1194,13 +1308,14 @@ onion_connection_status handler_drive_route(void *_, onion_request *req, onion_r
 		
 		const bool is_automatic = (strcmp(mode, "automatic") == 0);
 		if (drive_route(grab_id, route_id, is_automatic)) {
-			onion_response_printf(res, "Route %s driving completed", route_id);
+			send_driver_common_feedback(res, true, "Route driving completed");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Drive route - route: %s train: %s drive mode: %s - finish", 
 			              route_id, train_id, mode);
 			free(train_id);
 			return OCS_PROCESSED;
 		} else {
+			send_driver_common_feedback(res, false, "Route driving aborted");
 			syslog_server(LOG_ERR, 
 			              "Request: Drive route - route: %s train: %s drive mode: %s - "
 			              "driving failed - abort", 
@@ -1228,6 +1343,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		int speed = params_check_speed(data_speed);
 		
 		if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, "Request: Set dcc train speed - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -1235,15 +1351,18 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, "Request: Set dcc train speed - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (speed == 999) {
+			send_driver_common_feedback(res, false, "bad speed");
 			syslog_server(LOG_ERR, 
 			              "Request: Set dcc train speed - train: %s speed: %d - bad speed", 
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
+			send_driver_common_feedback(res, false, "invalid track output");
 			syslog_server(LOG_ERR, 
 			              "Request: Set dcc train speed - train: %s speed: %d - invalid track output",
 			              grabbed_trains[grab_id].name->str, speed);
@@ -1261,6 +1380,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set dcc train speed - train: %s speed: %d - finish",
 		              grabbed_trains[grab_id].name->str, speed);
+		send_driver_common_feedback(res, true, "");
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		return OCS_PROCESSED;
 	} else {
@@ -1284,6 +1404,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		int speed  = params_check_calibrated_speed(data_speed);
 		
 		if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, "Request: Set calibrated train speed - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		} 
@@ -1291,15 +1412,18 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, "Request: Set calibrated train speed - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (speed == 999) {
+			send_driver_common_feedback(res, false, "bad speed");
 			syslog_server(LOG_ERR, 
 			              "Request: Set calibrated train speed - train: %s speed: %d - bad speed", 
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
+			send_driver_common_feedback(res, false, "invalid track output");
 			syslog_server(LOG_ERR, 
 			              "Request: Set calibrated train speed - train: %s speed: %d - "
 			              "invalid track output", 
@@ -1313,6 +1437,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		              grabbed_trains[grab_id].name->str, speed);
 		if (bidib_set_calibrated_train_speed(grabbed_trains[grab_id].name->str,
 		                                     speed, data_track_output)) {
+			send_driver_common_feedback(res, false, "invalid parameters");
 			syslog_server(LOG_ERR, 
 			              "Request: Set calibrated train speed - train: %s speed: %d - "
 			              "invalid parameters - abort", 
@@ -1321,6 +1446,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			bidib_flush();
+			send_driver_common_feedback(res, true, "");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set calibrated train speed - train: %s speed: %d - finish",
 			              grabbed_trains[grab_id].name->str, speed);
@@ -1347,6 +1473,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		
 		if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, "Request: Set train emergency stop - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -1354,9 +1481,11 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, "Request: Set train emergency stop - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
+			send_driver_common_feedback(res, false, "invalid track output");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train emergency stop - train: %s - invalid track output", 
 			              grabbed_trains[grab_id].name->str);
@@ -1368,6 +1497,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		              grabbed_trains[grab_id].name->str);
 		
 		if (bidib_emergency_stop_train(grabbed_trains[grab_id].name->str, data_track_output)) {
+			send_driver_common_feedback(res, false, "invalid parameters");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train emergency stop - train: %s - invalid parameters - abort", 
 			              grabbed_trains[grab_id].name->str);
@@ -1375,6 +1505,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			bidib_flush();
+			send_driver_common_feedback(res, true, "");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set train emergency stop - train: %s - finish",
 			              grabbed_trains[grab_id].name->str);
@@ -1404,6 +1535,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		int state = params_check_state(data_state);
 		
 		if (client_session_id != session_id) {
+			send_driver_common_feedback(res, false, "invalid session-id");
 			syslog_server(LOG_ERR, "Request: Set train peripheral - invalid session id");
 			return OCS_NOT_IMPLEMENTED;
 		} 
@@ -1411,21 +1543,25 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			send_driver_common_feedback(res, false, "invalid grab-id");
 			syslog_server(LOG_ERR, "Request: Set train peripheral - invalid grab id");
 			return OCS_NOT_IMPLEMENTED;
 		} else if (state == -1) {
+			send_driver_common_feedback(res, false, "invalid peripheral state");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s - invalid state", 
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_peripheral == NULL) {
+			send_driver_common_feedback(res, false, "invalid peripheral");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s - invalid peripheral",
 			              grabbed_trains[grab_id].name->str);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
 		} else if (data_track_output == NULL) {
+			send_driver_common_feedback(res, false, "invalid track output");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s peripheral: %s - "
 			              "invalid track output", 
@@ -1440,6 +1576,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		if (bidib_set_train_peripheral(grabbed_trains[grab_id].name->str,
 		                               data_peripheral, state,
 		                               data_track_output)) {
+			send_driver_common_feedback(res, false, "invalid parameters");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s "
 			              "peripheral: %s state: 0x%02x - invalid parameters - abort",
@@ -1448,6 +1585,7 @@ onion_connection_status handler_set_train_peripheral(void *_,
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			bidib_flush();
+			send_driver_common_feedback(res, true, "");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x"
 			              " - finish",
