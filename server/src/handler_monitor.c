@@ -244,7 +244,7 @@ GString *get_train_states_json() {
 	for (size_t i = 0; i < query.length; i++) {
 		GString *g_train_state = get_train_state_json(query.ids[i]);
 		g_string_append_printf(g_train_states, "%s", g_train_state->str);
-		g_string_free(g_train_state, false);
+		g_string_free(g_train_state, true);
 		if (i + 1 < query.length) {
 			g_string_append_printf(g_train_states, "%s", ",");
 		}

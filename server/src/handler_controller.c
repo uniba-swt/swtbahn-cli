@@ -40,6 +40,8 @@
 #include "interlocking.h"
 #include "bahn_data_util.h"
 #include "check_route_sectional/check_route_sectional_direct.h"
+#include "json_response_builder.h"
+#include "json_communication_utils.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -425,10 +427,12 @@ onion_connection_status handler_release_route(void *_, onion_request *req, onion
 		const char *route_id = params_check_route_id(data_route_id);
 		if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
+			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - start", route_id);
 			release_route(route_id);
+			send_common_feedback(res, true, "");
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - finish", route_id);
 			return OCS_PROCESSED;
 		}
@@ -445,6 +449,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req, onion_res
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_point == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
+			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
@@ -454,12 +459,14 @@ onion_connection_status handler_set_point(void *_, onion_request *req, onion_res
 				syslog_server(LOG_ERR, 
 				              "Request: Set point - point: %s state: %s - invalid parameters - abort",
 				              data_point, data_state);
+				send_common_feedback(res, false, "invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set point - point: %s state: %s - finish",
 				              data_point, data_state);
+				send_common_feedback(res, true, "");
 				return OCS_PROCESSED;
 			}
 		}
@@ -476,6 +483,7 @@ onion_connection_status handler_set_signal(void *_, onion_request *req, onion_re
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_signal == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
+			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
@@ -486,12 +494,14 @@ onion_connection_status handler_set_signal(void *_, onion_request *req, onion_re
 				              "Request: Set signal - signal: %s state: %s - "
 				              "invalid parameters - abort", 
 				              data_signal, data_state);
+				send_common_feedback(res, false, "invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set signal - signal: %s state: %s - finish",
 				              data_signal, data_state);
+				send_common_feedback(res, true, "");
 				return OCS_PROCESSED;
 			}
 		}
@@ -508,6 +518,7 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req, onio
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_peripheral == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
+			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
@@ -518,12 +529,14 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req, onio
 				              "Request: Set peripheral - peripheral: %s state: %s - "
 				              "invalid parameters - abort", 
 				              data_peripheral, data_state);
+				send_common_feedback(res, false, "invalid parameters");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set peripheral - peripheral: %s state: %s - finish", 
 				              data_peripheral, data_state);
+				send_common_feedback(res, true, "");
 				return OCS_PROCESSED;
 			}
 		}
@@ -537,10 +550,12 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req, oni
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		if (selected_interlocker_instance != -1 && selected_interlocker_name != NULL) {
-			onion_response_printf(res, "%s", selected_interlocker_name->str);
+			onion_response_printf(res, "{\n\"interlocker\":\"%s\"\n}", 
+			                      selected_interlocker_name->str);
 			syslog_server(LOG_INFO, "Request: Get interlocker - done");
 			return OCS_PROCESSED;
 		} else {
+			send_common_error_message(res, "No interlocker is currently selected");
 			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
 			return OCS_NOT_IMPLEMENTED;
 		}
@@ -556,6 +571,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
 			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
+			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, 
@@ -566,6 +582,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 				              "Request: Set interlocker - interlocker: %s - another "
 				              "interlocker instance is already set - abort", 
 				              data_interlocker);
+				send_common_feedback(res, false, "another interlocker instance is already set");
 				return OCS_NOT_IMPLEMENTED;
 			}
 
@@ -575,9 +592,11 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 				              "Request: Set interlocker - interlocker: %s - invalid "
 				              "parameters or no more interlocker instances can be loaded - abort", 
 				              data_interlocker);
+				send_common_feedback(res, false, "invalid parameters or no more interlocker "
+				                     "instances can be loaded");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
-				onion_response_printf(res, "%s", selected_interlocker_name->str);
+				send_common_feedback(res, true, selected_interlocker_name->str);
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set interlocker - interlocker: %s - finish",
 				              data_interlocker);
@@ -596,6 +615,7 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
 			syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
+			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
 			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s - start",
@@ -605,6 +625,7 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 				              "Request: Unset interlocker - interlocker: %s - "
 				              "no interlocker instance to unset - abort", 
 				              data_interlocker);
+				send_common_feedback(res, false, "no interlocker instance is set that can be unset");
 				return OCS_NOT_IMPLEMENTED;
 			}
 
@@ -614,8 +635,14 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 				              "Request: Unset interlocker - interlocker: %s - "
 				              "invalid parameters - abort", 
 				              data_interlocker);
+				send_common_feedback(res, false, "invalid parameters (set interlocker doesn't "
+				                     "match passed interlocker name)");
 				return OCS_NOT_IMPLEMENTED;
 			} else {
+				///TODO: This is not really needed -> a good status should imply
+				//       the common feedback with success = true and message empty.
+				send_common_feedback(res, true, "");
+				
 				syslog_server(LOG_NOTICE, 
 				              "Request: Unset interlocker - interlocker: %s - finish",
 				              data_interlocker);
