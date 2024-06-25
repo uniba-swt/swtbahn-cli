@@ -1,8 +1,11 @@
+/** @type {Driver} */
 var driver = null;           // Train driver logic.
+
 var drivingTimer = null;     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
 var isEasyMode = false;      // User interface verbosity.
+var speechEnabled = false;   // Whether speech messages are enabled or not.
 
 /**************************************************
  * Destination related information and UI elements
@@ -190,6 +193,9 @@ function setResponse(responseId, messageEn, messageDe, callback) {
 }
 
 function speak(text) {
+	if (!speechEnabled) {
+		return;
+	}
 	var msg = new SpeechSynthesisUtterance(text);
 	for (const voice of window.speechSynthesis.getVoices()) {
 		if (voice.lang == "de-DE") {
@@ -722,6 +728,7 @@ class Driver {
 		}
 
 		const [destinationSignal, routeDetails] = unpackRoute(route);
+		console.log("driveToPromise, routeDetails:");
         console.log(routeDetails);
         
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
@@ -732,13 +739,13 @@ class Driver {
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
 			.then(() => wait(1))
 			.then(() => this.setTrainSpeedPromise(0))
-			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver
+			.then(() => setChosenDestination(destinationSignal))       // 5. Show the chosen destination and possible train speeds to the driver and start the timer
 			.then(() => enableSpeedButtons(destinationSignal))
 			.then(() => this.enableDestinationReachedPromise())        // 6. Start monitoring whether the train has reached the destination
 
 			.then(() => this.driveRoutePromise())                      // 7. Start the manual driving mode for the granted route
 
-			.then(() => disableSpeedButtons())                         // 8. Prevent the driver from driving past the destination
+			.then(() => disableSpeedButtons())                         // 8. Prevent the driver from driving past the destination and stop the timer
 			.then(() => clearChosenDestination())
 
 			.then(() => {
@@ -893,6 +900,8 @@ function initialise() {
 	speedButtons.forEach(speed => {
 		const speedButton = $(`#${speed}`);
 		speedButton.click(function () {
+			console.log("SpeedButton fctn with speed " + speedButton.val() + " pressed, " 
+			            + "Does driver have a route? -> " + driver.hasRouteGranted.toString());
 			driver.setTrainSpeedPromise(speedButton.val());
 			if (!driver.isDestinationReached) {
 				$('#endGameButton').hide();
@@ -905,6 +914,9 @@ function initialise() {
 				// The train might not stop sensibly on the main segment of the destination
 				$(window).bind("beforeunload", pageRefreshWarning);
 			} else if (speedButton.val() == '0') {
+				// Driver has reached the destination and is stopping -> release the route.
+				// This will set driver.routeDetails to null and thus
+				// driver.hasRouteGranted will then return false in subsequent calls.
 				driver.releaseRoutePromise();
 			}
 		});
