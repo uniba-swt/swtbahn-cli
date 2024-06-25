@@ -72,7 +72,7 @@ function updatePossibleDestinations(blockId) {
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
-	const updatePossibleDestinationsTimeout = 1000;
+	const updatePossibleDestinationsTimeout = 2000;
 	driver.updatePossibleDestinationsInterval = setInterval(() => {
 		console.log("Checking available destinations ...");
 
@@ -417,7 +417,7 @@ class Driver {
 	updateTrainAvailability() {
 		$('.selectTrainButton').prop("disabled", true);
 		
-		const trainAvailabilityTimeout = 1000;
+		const trainAvailabilityTimeout = 2000;
 		this.trainAvailabilityInterval = setInterval(() => {
 			console.log("Checking available trains ... ");
 
