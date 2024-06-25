@@ -92,6 +92,10 @@ static void increment_next_grab_id(void) {
 }
 
 const int train_get_grab_id(const char *train) {
+	if (train == NULL) {
+		syslog_server(LOG_ERR, "train_get_grab_id - train parameter is NULL - returning -1");
+		return -1;
+	}
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	int grab_id = -1;
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
@@ -105,6 +109,10 @@ const int train_get_grab_id(const char *train) {
 }
 
 bool train_grabbed(const char *train) {
+	if (train == NULL) {
+		syslog_server(LOG_ERR, "train_grabbed - train parameter is NULL - returning false");
+		return false;
+	}
 	bool grabbed = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
@@ -120,6 +128,10 @@ bool train_grabbed(const char *train) {
 }
 
 static bool train_position_is_at(const char *train_id, const char *segment) {
+	if (train_id == NULL || segment == NULL) {
+		syslog_server(LOG_ERR, "train_position_is_at - invalid parameters - returning false");
+		return false;
+	}
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	
 	for (size_t i = 0; i < train_position_query.length; i++) {
@@ -134,7 +146,10 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 }
 
 static const bool is_forward_driving(const t_interlocking_route *route, const char *train_id) {
-
+	if (train_id == NULL || route == NULL) {
+		syslog_server(LOG_ERR, "is_forward_driving - invalid (NULL) parameter(s) - returning false");
+		return false;
+	}
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	const bool train_is_left = train_position_query.orientation_is_left;
 	const bool route_is_clockwise = (strcmp(route->orientation, "clockwise") == 0);
@@ -174,6 +189,7 @@ static const bool is_forward_driving(const t_interlocking_route *route, const ch
 			if (succ && rev_state_query.available) {
 				electrically_reversed = (rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
 			}
+			bidib_free_reverser_state_query(rev_state_query);
 			break;
 		}
 	}
@@ -210,28 +226,6 @@ static bool validate_interlocking_route_members_not_null(const t_interlocking_ro
 	        && route->orientation != NULL && route->path != NULL && route->points != NULL 
 	        && route->sections != NULL && route->signals != NULL && route->source != NULL
 	        && route->train != NULL);
-}
-
-static void log_signal_info(int priority, const t_route_signal_info *sig_info) {
-	if (sig_info != NULL) {
-		syslog_server(priority, 
-		              "Drive route signal info - id: %s, source: %s, destination: %s, path index: %d", 
-		              sig_info->id != NULL ? sig_info->id : "NULL",
-		              sig_info->is_source_signal ? "is" : "not",
-		              sig_info->is_destination_signal ? "is" : "not",
-		              sig_info->index_in_route_path);
-	}
-}
-
-__attribute__ ((unused))
-static void log_signal_info_array(int priority, const t_route_signal_info_array *sig_info_array) {
-	syslog_server(priority, "log route signal info array - start");
-	if (sig_info_array != NULL) {
-		for (size_t i = 0; i < sig_info_array->len; ++i) {
-			log_signal_info(priority, sig_info_array->data_ptr[i]);
-		}
-	}
-	syslog_server(priority, "log route signal info array - end");
 }
 
 static void free_route_signal_info_array(t_route_signal_info_array *route_signal_info_array) {
@@ -316,9 +310,6 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 		             "Get route signal info array - route is NULL or some route details are NULL");
 		return info_arr;
 	}
-	syslog_server(LOG_DEBUG, 
-	              "Get route signal info array - route: %s - start building",
-	              route->id);
 	
 	// 1. Allocate memory for array of pointers to t_route_signal_info type entities
 	const size_t number_of_signal_infos = route->signals->len;
@@ -333,7 +324,7 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 	// 2. For every signal in route->signals...
 	for (size_t i = 0; i < number_of_signal_infos; ++i) {
 		const char *signal_id_item = g_array_index(route->signals, char *, i);
-		// 3. Call function to add a signal-info to info_arr for signal_id_item
+		// ... Call function to add a signal-info to info_arr for signal_id_item
 		if (!add_signal_info_for_signal(&info_arr, signal_id_item, i, number_of_signal_infos)) {
 			free_route_signal_info_array(&info_arr);
 			return info_arr;
@@ -366,9 +357,6 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 			}
 		}
 	}
-	syslog_server(LOG_DEBUG, 
-	              "Get route signal info array - route: %s - finished building",
-	              route->id);
 	return info_arr;
 }
 
@@ -463,43 +451,6 @@ static t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated
 		}
 	}
 	bidib_free_train_position_query(train_pos_query);
-	return ret_query;
-}
-
-// Queries the position of the train. Checks which segments that the train occupies exist in the route path. 
-// If train occupies at least one segment in route path, returned t_train_index_on_route_query
-// member .pos_index holds the index of the occupied segment that is the furthest along the route, 
-// and .err_code holds OKAY_TRAIN_ON_ROUTE
-// If parameters are invalid, t_train_index_on_route_query .err_code holds ERR_INVALID_PARAM.
-// If train is not on tracks, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_TRACKS.
-// If train is not on route, t_train_index_on_route_query .err_code holds ERR_TRAIN_NOT_ON_ROUTE.
-__attribute__ ((unused))
-static t_train_index_on_route_query get_train_pos_index_in_route_path(const char *train_id, 
-                                                               const t_interlocking_route *route) {
-	t_train_index_on_route_query ret_query = {.pos_index = 0, .err_code = ERR_INVALID_PARAM};
-	if (train_id == NULL || route == NULL || route->path == NULL) {
-		return ret_query;
-	}
-	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
-	if (train_position_query.segments == NULL || train_position_query.length == 0) {
-		bidib_free_train_position_query(train_position_query);
-		ret_query.err_code = ERR_TRAIN_NOT_ON_TRACKS;
-		return ret_query;
-	}
-	ret_query.err_code = ERR_TRAIN_NOT_ON_ROUTE;
-	const size_t path_count = route->path->len;
-	for (size_t i = 0; i < train_position_query.length; ++i) {
-		// Search starting at most recent pos_index to skip unnecessary comparisons
-		for (size_t n = ret_query.pos_index; n < path_count; ++n) {
-			const char *path_item = g_array_index(route->path, char *, n);
-			if (n > ret_query.pos_index && strcmp(path_item, train_position_query.segments[i]) == 0) {
-				ret_query.pos_index = n;
-				ret_query.err_code = OKAY_TRAIN_ON_ROUTE;
-				break;
-			}
-		}
-	}
-	bidib_free_train_position_query(train_position_query);
 	return ret_query;
 }
 
@@ -598,10 +549,6 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		return false;
 	}
 	
-	syslog_server(LOG_DEBUG, 
-	              "Drive route decoupled - route: %s train: %s - signal_info_array has %d elements",
-	              route->id, train_id, signal_info_array.len);
-	
 	// Signals in a route shall be set to stop once the train has driven passed them.
 	// Destination signal is already in STOP aspect, thus signal_info_array.len - 1 signals.
 	const size_t signals_to_set_to_stop_count = signal_info_array.len - 1;
@@ -616,9 +563,6 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 				get_train_pos_index_in_route_ignore_repeated_segments(train_id, route, &repeated_segment_flags);
 		
 		if (train_pos_query.err_code != OKAY_TRAIN_ON_ROUTE) {
-			syslog_server(LOG_DEBUG,
-			              "Drive route decoupled - route: %s train: %s - train position unknown",
-			              route->id, train_id);
 			// Train position unknown, perhaps temporarily lost -> skip this iteration. 
 			usleep(TRAIN_DRIVE_TIME_STEP);
 			continue;
@@ -632,23 +576,15 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 			              "Drive route decoupled - route: %s train: %s - train is at index %d (%s)",
 			              route->id, train_id, train_pos_query.pos_index, 
 			              path_item != NULL ? path_item : "NULL");
-			
-			if (train_pos_index_previous > train_pos_query.pos_index) {
-				syslog_server(LOG_DEBUG, 
-				              "Drive route decoupled - route: %s train: %s - "
-				              "new train path index %d is lower than previous path index %d",
-				              route->id, train_id, 
-				              train_pos_query.pos_index, train_pos_index_previous);
-			}
-			
-			signals_set_to_stop += update_route_signals_for_train_pos(&signal_info_array, route, train_pos_query.pos_index);
+			signals_set_to_stop += 
+					update_route_signals_for_train_pos(&signal_info_array, route, train_pos_query.pos_index);
 			first_okay_position = false;
 		}
 		train_pos_index_previous = train_pos_query.pos_index;
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	
-	syslog_server(LOG_NOTICE,
+	syslog_server(LOG_INFO,
 	              "Drive route decoupled - Finished setting %d signals to stop for route id %s", 
 	              signals_set_to_stop, route->id);
 	free_route_signal_info_array(&signal_info_array);
@@ -656,71 +592,15 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	return true;
 }
 
-__attribute__ ((unused))
-static bool drive_route_progressive_stop_signals(const char *train_id, t_interlocking_route *route) {
-	if (train_id == NULL || route == NULL || route->id == NULL) {
-		return false;
-	}
-	const char *signal_stop_aspect = "aspect_stop";
-	const char *next_signal = route->source;
-	bool set_signal_stop = true;
-	const int path_count = route->path->len;
-	for (size_t path_item_index = 0; path_item_index < path_count; path_item_index++) {
-		// Get path item (segment or signal)
-		const char *path_item = g_array_index(route->path, char *, path_item_index);
-		
-		if (is_type_signal(path_item)) {
-			// Train will encounter a signal when it exits the current segment
-			next_signal = path_item;
-			set_signal_stop = true;
-		}
-		
-		if (set_signal_stop && is_type_segment(path_item)) {
-			// Signal that the train has just passed will be set to the Stop aspect 
-			// when it enters the next segment
-
-			// Wait until the next segment is entered
-			while (running && !train_position_is_at(train_id, path_item)) {
-				usleep(TRAIN_DRIVE_TIME_STEP);
-				route = get_route(route->id);
-				if (!drive_route_params_valid(train_id, route)) {
-					return false;
-				}
-			}
-			
-			// Set signal to the Stop aspect
-			set_signal_stop = false;
-			if (bidib_set_signal(next_signal, signal_stop_aspect)) {
-				syslog_server(LOG_ERR, 
-				              "Drive route progressive stop signals - "
-				              "unable to set route signal %s to aspect %s", 
-				              next_signal, signal_stop_aspect);
-			} else {
-				bidib_flush();
-				syslog_server(LOG_NOTICE, 
-				              "Drive route progressive stop signals - set signal: %s to aspect: %s",
-				              next_signal, signal_stop_aspect);
-			}
-		}
-	}
-	
-	return true;
-}
-
-static bool drive_route(const int grab_id, const char *route_id, const bool is_automatic) {
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	char *train_id = strdup(grabbed_trains[grab_id].name->str);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
-	
-	if (train_id == NULL) {
-		syslog_server(LOG_ERR, "Drive route - unable to allocate memory for train_id");
+static bool drive_route(const int grab_id, const char* train_id, const char *route_id, const bool is_automatic) {
+	if (train_id == NULL || route_id == NULL) {
+		syslog_server(LOG_ERR, "Drive route - train_id and/or route_id is NULL");
 		return false;
 	}
 	
 	t_interlocking_route *route = get_route(route_id);
 	if (route == NULL || !drive_route_params_valid(train_id, route)) {
 		syslog_server(LOG_ERR, "Drive route - unable to start driving because route is invalid");
-		free(train_id);
 		return false;
 	}
 
@@ -769,19 +649,18 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	}
 	
 	// Driving stops
-	syslog_server(LOG_NOTICE, 
-	              "Drive route - route: %s train: %s - driving stops", 
-	              route->id, train_id);
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
+	syslog_server(LOG_NOTICE, 
+	              "Drive route - route: %s train: %s - driving stops", 
+	              route->id, train_id);
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
 		release_route(route_id);
 	}
 	
-	free(train_id);
 	return true;
 }
 
@@ -791,6 +670,7 @@ static int grab_train(const char *train, const char *engine) {
 		return -1;
 	}
 	pthread_mutex_lock(&grabbed_trains_mutex);
+	// Check if train is already grabbed
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -800,6 +680,7 @@ static int grab_train(const char *train, const char *engine) {
 			return -1;
 		}
 	}
+	// Check if there is an unused grab-id
 	int start = next_grab_id;
 	if (grabbed_trains[next_grab_id].is_valid) {
 		increment_next_grab_id();
@@ -814,8 +695,9 @@ static int grab_train(const char *train, const char *engine) {
 			increment_next_grab_id();
 		}
 	}
+	// Assign grab id, set track output to master, set engine instance
 	int grab_id = next_grab_id;
-	increment_next_grab_id();
+	increment_next_grab_id(); // increment for next "grab" action
 	grabbed_trains[grab_id].name = g_string_new(train);
 	strcpy(grabbed_trains[grab_id].track_output, "master");
 	if (dyn_containers_set_train_engine_instance(&grabbed_trains[grab_id], train, engine)) {
@@ -859,6 +741,13 @@ void release_all_grabbed_trains(void) {
 char *train_id_from_grab_id(int grab_id) {
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		return NULL;
+	}
+	if (grabbed_trains[grab_id].name == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Train id from grab id - train with id %d marked valid but name is NULL", 
+		              grab_id);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		return NULL;
 	}
@@ -1037,10 +926,10 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 			} else {
 				onion_response_printf(res, "Route could not be granted (%s)", route_id->str);
 			}
+		}
 		syslog_server(LOG_NOTICE, 
 		              "Request: Request train route - train: %s from: %s to: %s - finish",
 		              train_id, data_source_name, data_destination_name);
-		}
 		g_string_free(route_id, true);
 		free(train_id);
 		return OCS_PROCESSED;
@@ -1193,7 +1082,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req, onion_r
 		              route_id, train_id, mode);
 		
 		const bool is_automatic = (strcmp(mode, "automatic") == 0);
-		if (drive_route(grab_id, route_id, is_automatic)) {
+		if (drive_route(grab_id, train_id, route_id, is_automatic)) {
 			onion_response_printf(res, "Route %s driving completed", route_id);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Drive route - route: %s train: %s drive mode: %s - finish", 
@@ -1243,7 +1132,9 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 			              grabbed_trains[grab_id].name->str, speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_NOT_IMPLEMENTED;
-		} else if (data_track_output == NULL) {
+		} else if (data_track_output == NULL || strlen(data_track_output) > 32) {
+			// strlen check here as the value is copied to grabbed_trains[grab_id].track_output,
+			// which has a length of 32.
 			syslog_server(LOG_ERR, 
 			              "Request: Set dcc train speed - train: %s speed: %d - invalid track output",
 			              grabbed_trains[grab_id].name->str, speed);
