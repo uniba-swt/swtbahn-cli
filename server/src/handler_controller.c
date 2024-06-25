@@ -125,7 +125,7 @@ void release_all_interlockers(void) {
 
 
 // get_granted_route_conflicts, but using direct implementation of sectional-style checker
-GArray *get_granted_route_conflicts_sectional(const char *route_id) {
+static GArray *get_granted_route_conflicts_sectional(const char *route_id) {
 	if (route_id == NULL) {
 		return NULL;
 	}
@@ -399,8 +399,9 @@ void release_route(const char *route_id) {
 				syslog_server(LOG_ERR, 
 				              "Release route - route: %s - unable to set signal to aspect %s", 
 				              route_id, signal_aspect);
+			} else {
+				bidib_flush();
 			}
-			bidib_flush();
 		}
 
 		free(route->train);
