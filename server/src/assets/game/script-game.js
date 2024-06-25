@@ -560,12 +560,27 @@ class Driver {
 					// Take into account that a main segment could be split into a/b segments
 					for (let index in segments) {
 						segments[index] = segments[index].replace(/(a|b)$/, '');
-						if (segments[index] != this.routeDetails['segment']) {
-							return;
-						}
+						// this causes a return if a segment that is not the main destination segment
+						// is still in the list of occupied segments. due to the behaviour of the
+						// hardware, every segment stays occupied for ~1.5s after being left
+						// -> on short destination segments, this could cause the destination
+						// to be seen as "not yet reached" even though the train has been on it
+						// for e.g. 1.2 seconds. Thus disable this.
+						//if (segments[index] != this.routeDetails['segment']) {
+						//	return;
+						//}
 					}
 					
-					if(segments[0] == this.routeDetails['segment']) {
+					// old occupied segments remain in the list of occ. segments for relatively long
+					// thus check the first two positions, not just the 0th.
+					let hasreached = false;
+					if (segments.length > 1) {
+						hasreached = segments[1] == this.routeDetails['segment'] || segments[0] == this.routeDetails['segment'];
+					} else if (segments.length == 1) {
+						hasreached = segments[0] == this.routeDetails['segment'];
+					}
+					
+					if (hasreached) {
 						this.clearDestinationReachedInterval();
 						this.isDestinationReached = true;
 						$('#endGameButton').show();
