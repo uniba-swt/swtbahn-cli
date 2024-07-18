@@ -70,7 +70,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
  * @param ID of route for which clearance should be checked
  * @return true if clear, otherwise false
  */
-const bool get_route_is_clear(const char *route_id);
+bool get_route_is_clear(const char *route_id);
 
 /**
  * Determines whether conflicting routes that have
@@ -122,7 +122,7 @@ bool release_route(const char *route_id);
  * 
  * @return true if the update was successful, otherwise false
  */
-const bool reversers_state_update(void);
+bool reversers_state_update(void);
 
 onion_connection_status handler_release_route(void *_, onion_request *req,
                                               onion_response *res);

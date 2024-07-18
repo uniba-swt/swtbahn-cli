@@ -181,7 +181,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req, on
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
-		long int state = strtol(data_state, &end, 10);
+		const long int state = strtol(data_state, &end, 10);
 		if (data_state == NULL || (state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter(s)");
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");

@@ -93,13 +93,13 @@ static void increment_next_grab_id(void) {
 	}
 }
 
-const int train_get_grab_id(const char *train) {
+int train_get_grab_id(const char *train) {
 	if (train == NULL) {
 		syslog_server(LOG_ERR, "train_get_grab_id - train parameter is NULL - returning -1");
 		return -1;
 	}
-	pthread_mutex_lock(&grabbed_trains_mutex);
 	int grab_id = -1;
+	pthread_mutex_lock(&grabbed_trains_mutex);
 	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			grab_id = i;
@@ -147,7 +147,7 @@ static bool train_position_is_at(const char *train_id, const char *segment) {
 	return false;
 }
 
-static const bool is_forward_driving(const t_interlocking_route *route, const char *train_id) {
+static bool is_forward_driving(const t_interlocking_route *route, const char *train_id) {
 	if (route == NULL || train_id == NULL) {
 		syslog_server(LOG_ERR, "Is forward driving - invalid parameters");
 		return true;
@@ -594,7 +594,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	return true;
 }
 
-static bool drive_route(const int grab_id, const char* train_id, const char *route_id, const bool is_automatic) {
+static bool drive_route(const int grab_id, const char* train_id, const char *route_id, bool is_automatic) {
 	if (train_id == NULL || route_id == NULL) {
 		syslog_server(LOG_ERR, "Drive route - train_id and/or route_id is NULL");
 		return false;
@@ -683,7 +683,7 @@ static int grab_train(const char *train, const char *engine) {
 		}
 	}
 	// Check if there is an unused grab-id
-	int start = next_grab_id;
+	const int start = next_grab_id;
 	if (grabbed_trains[next_grab_id].is_valid) {
 		increment_next_grab_id();
 		while (grabbed_trains[next_grab_id].is_valid) {
@@ -698,7 +698,7 @@ static int grab_train(const char *train, const char *engine) {
 		}
 	}
 	// Assign grab id, set track output to master, set engine instance
-	int grab_id = next_grab_id;
+	const int grab_id = next_grab_id;
 	increment_next_grab_id(); // increment for next "grab" action
 	grabbed_trains[grab_id].name = g_string_new(train);
 	strcpy(grabbed_trains[grab_id].track_output, "master");
@@ -747,10 +747,10 @@ char *train_id_from_grab_id(int grab_id) {
 		return NULL;
 	}
 	if (grabbed_trains[grab_id].name == NULL) {
+		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_ERR, 
 		              "Train id from grab id - train with id %d marked valid but name is NULL", 
 		              grab_id);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
 		return NULL;
 	}
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
@@ -763,7 +763,7 @@ char *train_id_from_grab_id(int grab_id) {
 }
 
 GString *get_grab_fdbk_json(const char* message, int l_session_id, int grab_id) {
-	gsize add_len = message != NULL ? MAX(256, strlen(message)) : 0;
+	const gsize add_len = message != NULL ? MAX(256, strlen(message)) : 0;
 	GString *g_feedback = g_string_sized_new(96 + add_len);
 	g_string_assign(g_feedback, "");
 	append_start_of_obj(g_feedback, false);
@@ -775,7 +775,7 @@ GString *get_grab_fdbk_json(const char* message, int l_session_id, int grab_id) 
 }
 
 GString *get_reqroute_fdbk_json(const char* message, const char* granted_route_id) {
-	gsize add_len = message != NULL ? MAX(256, strlen(message)) : 0;
+	const gsize add_len = message != NULL ? MAX(256, strlen(message)) : 0;
 	GString *g_feedback = g_string_sized_new(64 + add_len);
 	g_string_assign(g_feedback, "");
 	append_start_of_obj(g_feedback, false);
@@ -1238,9 +1238,9 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
-		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
-		int speed  = params_check_calibrated_speed(data_speed);
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const int speed  = params_check_calibrated_speed(data_speed);
 		
 		if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
@@ -1303,8 +1303,8 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
-		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const int client_session_id = params_check_session_id(data_session_id);
 		
 		if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
@@ -1359,9 +1359,9 @@ onion_connection_status handler_set_train_peripheral(void *_,
 		const char *data_peripheral = onion_request_get_post(req, "peripheral");
 		const char *data_state = onion_request_get_post(req, "state");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
-		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
-		int state = params_check_state(data_state);
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const int state = params_check_state(data_state);
 		
 		if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");

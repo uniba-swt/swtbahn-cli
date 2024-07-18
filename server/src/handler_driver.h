@@ -49,7 +49,7 @@ typedef struct {
 extern t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX];
 
 
-const int train_get_grab_id(const char *train);
+int train_get_grab_id(const char *train);
 
 bool train_grabbed(const char *train);
 

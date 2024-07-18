@@ -39,7 +39,7 @@ typedef struct {
 	GString* message;
 } ws_verif_data;
 
-
+///TODO: Protect against concur access with a mutex
 char *verifier_url = NULL;
 
 static const char cache_file_verifier_url[] = "verifier_url_cache.txt";

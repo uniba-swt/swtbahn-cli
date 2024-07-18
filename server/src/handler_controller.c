@@ -56,10 +56,9 @@ static GString *selected_interlocker_name;
 static int selected_interlocker_instance = -1;
 
 // Returns a value >= 0 if the interlocker with the specified name was set. Otherwise returns -1.
+// Only call with interlocker_mutex locked.
 static int set_interlocker(const char *interlocker_name) {
-	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_instance != -1) {
-		pthread_mutex_unlock(&interlocker_mutex);
 		// Another interlocker is already set, return -1
 		return -1;
 	}
@@ -78,16 +77,13 @@ static int set_interlocker(const char *interlocker_name) {
 			break;
 		}
 	}
-	int ret = selected_interlocker_instance;
-	pthread_mutex_unlock(&interlocker_mutex);
-	return ret;
+	return selected_interlocker_instance;
 }
 
 // Returns the value -1 if the interlocker with the specified name was unset. Otherwise returns -1.
+// Only call with interlocker_mutex locked.
 static int unset_interlocker(const char *interlocker_name) {
-	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_instance == -1) {
-		pthread_mutex_unlock(&interlocker_mutex);
 		// Selected interlocker instance is -1 -> no interlocker to unset.
 		return -1;
 	}
@@ -101,7 +97,6 @@ static int unset_interlocker(const char *interlocker_name) {
 		selected_interlocker_instance = -1;
 	}
 	int ret = selected_interlocker_instance;
-	pthread_mutex_unlock(&interlocker_mutex);
 	// return -1 if unsetting succeeded, otherwise a value >= 0
 	return ret;
 }
@@ -110,7 +105,9 @@ bool load_default_interlocker_instance() {
 	while (!dyn_containers_is_running()) {
 		// Empty
 	}
+	pthread_mutex_lock(&interlocker_mutex);
 	const int result = set_interlocker("libinterlocker_default (unremovable)");
+	pthread_mutex_unlock(&interlocker_mutex);
 	// return true if loading failed, otherwise false
 	return (result == -1);
 }
@@ -121,17 +118,12 @@ void release_all_interlockers(void) {
 		g_string_free(selected_interlocker_name, true);
 		selected_interlocker_name = NULL;
 	}
-	pthread_mutex_unlock(&interlocker_mutex);
-
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
-		pthread_mutex_lock(&interlocker_mutex);
 		if (interlocker_instances[i].is_valid) {
 			dyn_containers_free_interlocker_instance(&interlocker_instances[i]);
 			interlocker_instances[i].is_valid = false;
 		}
-		pthread_mutex_unlock(&interlocker_mutex);
 	}
-	pthread_mutex_lock(&interlocker_mutex);
 	selected_interlocker_instance = -1;
 	pthread_mutex_unlock(&interlocker_mutex);
 }
@@ -158,17 +150,20 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 				// actually "safe" to grant, skip this conflict/dont add it to the list.
 				continue;
 			}
-			size_t conflict_entry_len;
-			if (include_conflict_train_info) {
-				conflict_entry_len = strlen(conflict_route->id) + 1;
-			} else {
-				conflict_entry_len = strlen(conflict_route->id) + 1 + strlen(conflict_route->train) + 3;
+			size_t conflict_entry_len = strlen(conflict_route->id) + 1;
+			if (!include_conflict_train_info) {
+				conflict_entry_len += strlen(conflict_route->train) + 3;
 			}
 			char *conflict_route_id_string = malloc(sizeof(char) * conflict_entry_len);
 			if (conflict_route_id_string == NULL) {
 				syslog_server(LOG_ERR, 
 				              "get_granted_route_conflicts - failed to allocate memory"
 				              " for conflict_route_id_string");
+				///TODO: Test if this freeing works.
+				for (size_t n = 0; n < conflict_route_ids->len; ++n) {
+					char *elem = g_array_index(conflict_route_ids, char *, n);
+					free(elem);
+				}
 				g_array_free(conflict_route_ids, true);
 				return NULL;
 			}
@@ -185,7 +180,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 	return conflict_route_ids;
 }
 
-const bool get_route_is_clear(const char *route_id) {
+bool get_route_is_clear(const char *route_id) {
 	if (route_id == NULL) {
 		return false;
 	}
@@ -196,7 +191,7 @@ const bool get_route_is_clear(const char *route_id) {
 	const size_t signal_ids_len = config_get_array_string_value("route", route_id, 
 	                                                            "route_signals", signal_ids);
 	for (size_t i = 0; i < signal_ids_len; i++) {
-		char *signal_state = track_state_get_value(signal_ids[i]);
+		const char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
 			bahn_data_util_free_cached_track_state();
 			return false;
@@ -293,8 +288,8 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	}
 	pthread_mutex_lock(&interlocker_mutex);
 	// Check whether the route can be granted
-	t_interlocking_route * const route = get_route(route_id);
-	GArray * const granted_conflicts = get_granted_route_conflicts(route_id, false);
+	t_interlocking_route *route = get_route(route_id);
+	GArray *granted_conflicts = get_granted_route_conflicts(route_id, false);
 	if (granted_conflicts == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
@@ -303,6 +298,11 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		return "not_grantable";
 	}
 	const bool hasGrantedConflicts = (granted_conflicts->len > 0);
+	for (int i = 0; i < granted_conflicts->len; ++i) {
+		if (g_array_index(granted_conflicts, char *, i) != NULL) {
+			free(g_array_index(granted_conflicts, char *, i));
+		}
+	}
 	g_array_free(granted_conflicts, true);
 	if (route->train != NULL || hasGrantedConflicts) {
 		pthread_mutex_unlock(&interlocker_mutex);
@@ -405,7 +405,7 @@ bool release_route(const char *route_id) {
 	return ret;
 }
 
-const bool reversers_state_update(void) {
+bool reversers_state_update(void) {
 	const int max_retries = 5;
 	bool error = false;
 
@@ -572,8 +572,8 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req, oni
 			syslog_server(LOG_INFO, "Request: Get interlocker - done");
 		} else {
 			pthread_mutex_unlock(&interlocker_mutex);
-			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
 			send_common_feedback(res, HTTP_BAD_REQUEST, "No interlocker is currently selected");
+			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -603,25 +603,21 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 				                     "another interlocker instance is already set");
 				return OCS_PROCESSED;
 			}
-			pthread_mutex_unlock(&interlocker_mutex);
-			// Race condition here: someone else could set an interlocker inbetween 
-			// the unlock and the lock in set_interlocker that is called from here.
-			// Won't fix for now as we have little contention between controllers that 
-			// want to set different interlockers
 			int set_i = set_interlocker(data_interlocker);
 			if (set_i == -1) {
+				pthread_mutex_unlock(&interlocker_mutex);
+				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters or no more "
+				                     "interlocker instances can be loaded");
 				syslog_server(LOG_ERR, 
 				              "Request: Set interlocker - interlocker: %s - invalid "
 				              "parameters or no more interlocker instances can be loaded - abort", 
 				              data_interlocker);
-				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters or no more "
-				                     "interlocker instances can be loaded");
 			} else {
-				
+				send_common_feedback(res, HTTP_OK, selected_interlocker_name->str);
+				pthread_mutex_unlock(&interlocker_mutex);
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set interlocker - interlocker: %s - finish",
 				              data_interlocker);
-				send_common_feedback(res, HTTP_OK, selected_interlocker_name->str);
 			}
 		}
 		return OCS_PROCESSED;
@@ -640,8 +636,9 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s - start",
 			              data_interlocker);
-			///TODO: Should this acquire the interlocker_mutex when checking that global var?
+			pthread_mutex_lock(&interlocker_mutex);
 			if (selected_interlocker_instance == -1) {
+				pthread_mutex_unlock(&interlocker_mutex);
 				syslog_server(LOG_ERR, 
 				              "Request: Unset interlocker - interlocker: %s - "
 				              "no interlocker instance to unset - abort", 
@@ -650,9 +647,10 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 				                     "no interlocker instance is set that can be unset");
 				return OCS_PROCESSED;
 			}
-
+			
 			unset_interlocker(data_interlocker);
 			if (selected_interlocker_instance != -1) {
+				pthread_mutex_unlock(&interlocker_mutex);
 				syslog_server(LOG_ERR, 
 				              "Request: Unset interlocker - interlocker: %s - "
 				              "invalid parameters - abort", 
@@ -660,6 +658,7 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (set "
 				                     "interlocker doesn't match passed interlocker name)");
 			} else {
+				pthread_mutex_unlock(&interlocker_mutex);
 				syslog_server(LOG_NOTICE, 
 				              "Request: Unset interlocker - interlocker: %s - finish",
 				              data_interlocker);

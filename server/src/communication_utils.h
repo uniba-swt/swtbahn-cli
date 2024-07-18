@@ -37,17 +37,6 @@
 #define CUSTOM_HTTP_CODE_CONFLICT 409
 
 /**
- * @brief Build a json object (in form of a string) containing
- * the field "msg" with a string value.
- * @attention the returned GString * has to be freed/managed by the caller.
- * 
- * @param message value of the string "msg" field in the json object. 
- * If NULL is passed, the field will be empty.
- * @return GString* json object string with msg field.
- */
-//GString *get_common_feedback_json(const char *message);
-
-/**
  * @brief Constructs the common-feedback json and sends it via the response res.
  * 
  * @param res the response over which to send. Shall not be NULL, otherwise no sending takes place.

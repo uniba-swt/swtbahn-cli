@@ -32,17 +32,6 @@
 
 #include <onion/response.h>
 
-/*
-GString *get_common_feedback_json(const char* message) {
-	const gsize add_len = message != NULL ? MAX(256, strlen(message)) : 0;
-	GString *g_feedback = g_string_sized_new(32 + add_len);
-	g_string_assign(g_feedback, "");
-	append_start_of_obj(g_feedback, false);
-	append_field_str_value(g_feedback, "msg", message != NULL ? message : "", false);
-	append_end_of_obj(g_feedback, false);
-	return g_feedback;
-}*/
-
 bool send_common_feedback(onion_response *res, int status_code, const char* message) {
 	if (res == NULL) {
 		return false;
