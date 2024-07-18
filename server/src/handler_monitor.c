@@ -1130,12 +1130,13 @@ onion_connection_status handler_get_debug_info(void *_, onion_request *req, onio
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *debug_info_str = debug_info();
-		char response[strlen(debug_info_str->str) + 1];
-		strcpy(response, debug_info_str->str);
-		g_string_free(debug_info_str, true);
-		
-		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get debug info");
+		if (debug_info_str != NULL && debug_info_str->str != NULL) {
+			onion_response_printf(res, "%s", debug_info_str->str);
+			g_string_free(debug_info_str, true);
+			syslog_server(LOG_NOTICE, "Request: Get debug info - done");
+		} else {
+			syslog_server(LOG_ERR, "Request: Get debug info - internal error");
+		}
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Get debug info - system not running or wrong request type");
@@ -1170,12 +1171,13 @@ onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		GString *debug_info_extra_str = debug_info_extra();
-		char response[strlen(debug_info_extra_str->str) + 1];
-		strcpy(response, debug_info_extra_str->str);
-		g_string_free(debug_info_extra_str, true);
-		
-		onion_response_printf(res, "%s", response);
-		syslog_server(LOG_NOTICE, "Request: Get debug info extra");
+		if (debug_info_extra_str != NULL && debug_info_extra_str->str != NULL) {
+			onion_response_printf(res, "%s", debug_info_extra_str->str);
+			g_string_free(debug_info_extra_str, true);
+			syslog_server(LOG_NOTICE, "Request: Get debug info extra");
+		} else {
+			syslog_server(LOG_ERR, "Request: Get debug info extra - internal error");
+		}
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 

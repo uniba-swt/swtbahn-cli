@@ -387,8 +387,9 @@ bool release_route(const char *route_id) {
 				syslog_server(LOG_ERR, 
 				              "Release route - route: %s - unable to set signal to aspect %s", 
 				              route_id, signal_aspect);
+			} else {
+				bidib_flush();
 			}
-			bidib_flush();
 		}
 
 		free(route->train);
