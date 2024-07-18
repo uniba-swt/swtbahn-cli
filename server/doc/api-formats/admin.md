@@ -8,3 +8,5 @@ For the admin endpoints:
 - admin/set-dcc-train-speed
 
 See common_feedback.json.
+
+There are no other endpoints.

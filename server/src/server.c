@@ -104,7 +104,7 @@ static onion_connection_status handler_assets(void *_, onion_request *req, onion
 
 	onion_connection_status status = 
 	    onion_shortcut_response_file(full_filename->str, req, res);
-	g_string_free(full_filename, TRUE);
+	g_string_free(full_filename, true);
 	return status;
 }
 

@@ -39,6 +39,7 @@
 #include "param_verification.h"
 #include "bahn_data_util.h"
 #include "websocket_uploader/engine_uploader.h"
+#include "communication_utils.h"
 
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t poll_bidib_messages_thread;
@@ -101,7 +102,7 @@ static bool startup_server(void) {
 		return false;
 	}
 	
-	const int err_interlocker = load_default_interlocker_instance();
+	const bool err_interlocker = load_default_interlocker_instance();
 	if (err_interlocker) {
 		syslog_server(LOG_ERR, "Startup server - Could not load default interlocker instance");
 		return false;
@@ -132,53 +133,47 @@ void shutdown_server(void) {
 
 onion_connection_status handler_startup(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	int retval = OCS_NOT_IMPLEMENTED;
-	
 	pthread_mutex_lock(&start_stop_mutex);
 	if (!running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		// Necessary when restarting the server because libbidib closes syslog on exit
 		openlog("swtbahn", 0, LOG_LOCAL0);
-
 		session_id = time(NULL);
 		syslog_server(LOG_NOTICE, "Request: Startup server - session id: %ld - start", session_id);
 
-		if (startup_server()) { 
-			retval = OCS_PROCESSED;
+		if (startup_server()) {
+			pthread_mutex_unlock(&start_stop_mutex);
+			send_common_feedback(res, HTTP_OK, "");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Startup server - session id: %ld - finish", 
 			              session_id);
-		}  else {
+		} else {
+			pthread_mutex_unlock(&start_stop_mutex);
+			send_common_feedback(res, HTTP_INTERNAL_ERROR, "unable to start BiDiB");
 			syslog_server(LOG_ERR, 
 			              "Request: Startup server - session id: %ld - unable to start BiDiB - abort", 
 			              session_id);
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, 
-		              "Request: Startup server - BiDiB system is already running or wrong request type");
+		pthread_mutex_unlock(&start_stop_mutex);
+		return handle_req_run_or_method_fail(res, running, "Startup server");
 	}
-	pthread_mutex_unlock(&start_stop_mutex);
-
-	return retval;
 }
 
 onion_connection_status handler_shutdown(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	int retval = OCS_NOT_IMPLEMENTED;
-	
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_NOTICE, "Request: Shutdown server - start");
 		shutdown_server();
 		// Can't log "finished" here since bidib closes the syslog when stopping
-		retval = OCS_PROCESSED;
+		pthread_mutex_unlock(&start_stop_mutex);
+		send_common_feedback(res, HTTP_OK, "");
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, 
-		              "Request: Shutdown server - BiDiB system is not running or wrong request type");
-		retval = OCS_NOT_IMPLEMENTED;
+		pthread_mutex_unlock(&start_stop_mutex);
+		return handle_req_run_or_method_fail(res, running, "Shutdown server");
 	}
-	pthread_mutex_unlock(&start_stop_mutex);
-	
-	return retval;
 }
 
 onion_connection_status handler_set_track_output(void *_, onion_request *req, onion_response *res) {
@@ -188,19 +183,18 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req, on
 		const char *data_state = onion_request_get_post(req, "state");
 		long int state = strtol(data_state, &end, 10);
 		if (data_state == NULL || (state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter(s)");
 			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
-			return OCS_NOT_IMPLEMENTED;
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - start", state);
 			bidib_set_track_output_state_all(state);
 			bidib_flush();
+			send_common_feedback(res, HTTP_OK, "");
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - finish", state);
-			return OCS_PROCESSED;
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, 
-		              "Request: Set track output - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set track output");
 	}
 }
 
@@ -210,8 +204,9 @@ onion_connection_status handler_set_verification_option(void *_, onion_request *
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_option = onion_request_get_post(req, "verification-option");
 		if (!params_check_is_bool_string(data_verification_option)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification option parameter");
 			syslog_server(LOG_ERR, "Request: Set verification option - invalid parameters");
-			return OCS_NOT_IMPLEMENTED;
+			return OCS_PROCESSED;
 		}
 		if (strcmp("true", data_verification_option) == 0 
 			|| strcmp("True", data_verification_option) == 0 
@@ -220,13 +215,13 @@ onion_connection_status handler_set_verification_option(void *_, onion_request *
 		} else {
 			verification_enabled = false;
 		}
+		send_common_feedback(res, HTTP_OK, "");
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set verification option - new state: %s - done", 
 		              verification_enabled ? "enabled" : "disabled");
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set verification option - wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set verification option");
 	}
 }
 
@@ -236,17 +231,18 @@ onion_connection_status handler_set_verification_url(void *_, onion_request *req
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_url = onion_request_get_post(req, "verification-url");
 		if (data_verification_url == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification URL parameter");
 			syslog_server(LOG_ERR, "Request: Set verification URL - invalid parameters");
-			return OCS_NOT_IMPLEMENTED;
+			return OCS_PROCESSED;
 		}
 		set_verifier_url(data_verification_url);
+		send_common_feedback(res, HTTP_OK, "");
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set verification URL - new URL: %s - done", 
 		              data_verification_url);
 		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set verification URL - wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set verification URL");
 	}
 }
 
@@ -260,10 +256,11 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid train id or train not grabbed");
 			syslog_server(LOG_ERR, 
 			              "Request: Admin release train - invalid train id or train %s not grabbed",
 			              data_train);
-			return OCS_NOT_IMPLEMENTED;
+			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s - start", data_train);
 		
@@ -283,20 +280,19 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 		
 		
 		if (!release_train(grab_id)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab id parameter");
 			syslog_server(LOG_ERR, 
 			              "Request: Admin release train - train: %s - invalid grab id - abort", 
 			              data_train);
-			return OCS_NOT_IMPLEMENTED;
 		} else {
+			send_common_feedback(res, HTTP_OK, "");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Admin release train - train: %s - finish",
 			              data_train);
-			return OCS_PROCESSED;
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, 
-		              "Request: Admin release train - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Admin release train");
 	}
 }
 
@@ -307,40 +303,42 @@ onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request
 		const char *data_train = onion_request_get_post(req, "train");
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
-		int speed = params_check_speed(data_speed);
+		const int speed = params_check_speed(data_speed);
 		
 		if (speed == 999) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid speed parameter");
 			syslog_server(LOG_ERR, 
 			              "Request: Admin set dcc train speed - train: %s speed: %d - invalid speed",
 			              data_train, speed);
-			return OCS_NOT_IMPLEMENTED;
-		} else if (data_track_output == NULL) {
-			syslog_server(LOG_ERR, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - invalid track output", 
-			              data_train, speed);
-			return OCS_NOT_IMPLEMENTED;
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - start", 
-			              data_train, speed);
-			pthread_mutex_lock(&grabbed_trains_mutex);
-			if (bidib_set_train_speed(data_train, speed, data_track_output)) {
-				syslog_server(LOG_ERR, 
-				              "Request: Admin set dcc train speed - train: %s speed: %d - "
-				              "invalid parameters - abort", 
-				              data_train, speed);
-			} else {
-				bidib_flush();
-				syslog_server(LOG_NOTICE, 
-				              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 
-				              data_train, speed);
-			}
-			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
+		} else if (data_track_output == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid track output parameter");
+			syslog_server(LOG_ERR, 
+			              "Request: Admin set dcc train speed - "
+			              "train: %s speed: %d - invalid track output", 
+			              data_train, speed);
+			return OCS_PROCESSED;
+		} 
+		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Admin set dcc train speed - train: %s speed: %d - start", 
+		              data_train, speed);
+		// Does not require lock on grabbed trains mutex as this bidib function is threadsafe.
+		if (bidib_set_train_speed(data_train, speed, data_track_output)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters");
+			syslog_server(LOG_ERR, 
+			              "Request: Admin set dcc train speed - train: %s speed: %d - "
+			              "invalid parameters - abort", 
+			              data_train, speed);
+		} else {
+			bidib_flush();
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 
+			              data_train, speed);
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, 
-		              "Request: Admin set dcc train speed - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Admin set dcc train speed");
 	}
 }

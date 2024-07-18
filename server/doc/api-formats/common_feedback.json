@@ -1,4 +1,3 @@
 {
-	"success": true,
-	"message": "something has been set to something"
+	"msg": "something has been set to something"
 }

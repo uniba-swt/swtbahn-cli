@@ -48,9 +48,9 @@ void release_all_interlockers(void);
 
 /**
  * Loads the default interlocker
- * @return 0 if successful, otherwise 1
+ * @return false if successful, otherwise true
  */
-const int load_default_interlocker_instance();
+bool load_default_interlocker_instance();
 
 /**
  * Finds conflicting routes that have been granted.
@@ -110,8 +110,10 @@ const char *grant_route_id(const char *train_id,
   * Releases the requested route id.
   * 
   * @param ID of the requested route
+  * @return true if the release succeeded
+  * @return false if the release failed
   */ 
-void release_route(const char *route_id);
+bool release_route(const char *route_id);
 
 /**
  * Requests the reverser state to be updated and waits

@@ -34,63 +34,48 @@
 
 //########################## COMMON UTIL ##########################
 
-/**
- * @brief Build a json object (in form of a string) containing
- * the fields "success" with a boolean value and "message" with a string
- * value.
- * @attention the returned GString * has to be freed/managed by the caller.
- * 
- * @param success value of the boolean "success" field in the json object.
- * @param message value of the string "message" field in the json object. 
- * If NULL is passed, the field will be empty.
- * @return GString* json object string with success and message field.
- */
-GString *get_common_feedback_json(bool success, const char *message);
+#define CUSTOM_HTTP_CODE_CONFLICT 409
 
 /**
  * @brief Build a json object (in form of a string) containing
- * the field "err_message" with a string value, value is content of err_message parameter.
+ * the field "msg" with a string value.
  * @attention the returned GString * has to be freed/managed by the caller.
  * 
- * @param err_message the error message value for the "err_message" field in the json object.
+ * @param message value of the string "msg" field in the json object. 
  * If NULL is passed, the field will be empty.
- * @return GString* json object string with the err_message field.
+ * @return GString* json object string with msg field.
  */
-GString *get_common_error_message_json(const char *err_message);
+//GString *get_common_feedback_json(const char *message);
 
 /**
  * @brief Constructs the common-feedback json and sends it via the response res.
  * 
  * @param res the response over which to send. Shall not be NULL, otherwise no sending takes place.
- * @param success intended value of the boolean "success" field in the json to be sent
- * @param message intended value of the string "message" field in the json to be sent.
- * If message is NULL, the message field will be empty.
+ * @param status_code http status code to set for the response to be sent
+ * @param message intended value of the string "msg" field in the json to be sent.
+ * If message is NULL or empty, no response will be sent at all, just the code will be set.
  * @return true if parameters were valid
  * @return false if parameters were invalid or an internal error occurred (nothing will be sent)
  */
-bool send_common_feedback(onion_response *res, bool success, const char* message);
-
-/**
- * @brief Constructs the common error message json and sends it via the response res.
- * 
- * @param res the response over which to send. Shall not be NULL, otherwise no sending takes place.
- * @param err_message intended value of the string "err_message" field in the json to be sent.
- * If err_message is NULL, the err_message field will be empty.
- * @return true if parameters were valid
- * @return false if parameters were invalid or an internal error occurred (nothing will be sent)
- */
-bool send_common_error_message(onion_response *res, const char* err_message);
+bool send_common_feedback(onion_response *res, int status_code, const char* message);
 
 /**
  * @brief Sends the content of gstr via the response res. Then free's the GString,
  * i.e., this is a transfer of ownership.
  * 
  * @param res the response over which to send. Shall not be NULL.
- * @param gstr the gstring whose contents to send. Shall not be NULL. 
- * Will be free'd if it is not null, regardless of whether true or false is returned.
+ * @param status_code http status code to set for the response to be sent
+ * @param gstr the gstring whose contents to send. If it is NULL, only the code will be set, nothing
+ * will be send. The gstr gstring will be free'd if it is not null, regardless of the return value.
  * @return true if parameters were valid and sending succeeded,
  * @return false otherwise.
  */
-bool send_some_gstring(onion_response *res, GString *gstr);
+bool send_some_gstring(onion_response *res, int status_code, GString *gstr);
+
+// This does not free the passed string to be sent (in contrast to the gstring version).
+bool send_some_cstring(onion_response *res, int status_code, const char *cstr);
+
+onion_connection_status 
+handle_req_run_or_method_fail(onion_response *res, bool is_running, const char *caller_logname);
 
 #endif // JSON_COMMUNICATION_UTILS_H

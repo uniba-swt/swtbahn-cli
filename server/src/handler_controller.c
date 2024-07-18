@@ -41,7 +41,7 @@
 #include "bahn_data_util.h"
 #include "check_route_sectional/check_route_sectional_direct.h"
 #include "json_response_builder.h"
-#include "json_communication_utils.h"
+#include "communication_utils.h"
 
 pthread_mutex_t interlocker_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -55,12 +55,15 @@ static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] 
 static GString *selected_interlocker_name;
 static int selected_interlocker_instance = -1;
 
-const int set_interlocker(const char *interlocker_name) {
+// Returns a value >= 0 if the interlocker with the specified name was set. Otherwise returns -1.
+static int set_interlocker(const char *interlocker_name) {
+	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_instance != -1) {
-		return selected_interlocker_instance;
+		pthread_mutex_unlock(&interlocker_mutex);
+		// Another interlocker is already set, return -1
+		return -1;
 	}
 
-	pthread_mutex_lock(&interlocker_mutex);
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		if (!interlocker_instances[i].is_valid) {
 			if (dyn_containers_set_interlocker_instance(&interlocker_instances[i], interlocker_name)) {
@@ -75,16 +78,20 @@ const int set_interlocker(const char *interlocker_name) {
 			break;
 		}
 	}
+	int ret = selected_interlocker_instance;
 	pthread_mutex_unlock(&interlocker_mutex);
-	return selected_interlocker_instance;
+	return ret;
 }
 
-const int unset_interlocker(const char *interlocker_name) {
+// Returns the value -1 if the interlocker with the specified name was unset. Otherwise returns -1.
+static int unset_interlocker(const char *interlocker_name) {
+	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_instance == -1) {
-		return selected_interlocker_instance;
+		pthread_mutex_unlock(&interlocker_mutex);
+		// Selected interlocker instance is -1 -> no interlocker to unset.
+		return -1;
 	}
 
-	pthread_mutex_lock(&interlocker_mutex);
 	if (strcmp(selected_interlocker_name->str, interlocker_name) == 0
 			&& interlocker_instances[selected_interlocker_instance].is_valid) {
 		dyn_containers_free_interlocker_instance(&interlocker_instances[selected_interlocker_instance]);
@@ -93,25 +100,28 @@ const int unset_interlocker(const char *interlocker_name) {
 		selected_interlocker_name = NULL;
 		selected_interlocker_instance = -1;
 	}
+	int ret = selected_interlocker_instance;
 	pthread_mutex_unlock(&interlocker_mutex);
-	return selected_interlocker_instance;
+	// return -1 if unsetting succeeded, otherwise a value >= 0
+	return ret;
 }
 
-const int load_default_interlocker_instance() {
+bool load_default_interlocker_instance() {
 	while (!dyn_containers_is_running()) {
 		// Empty
 	}
-
-	selected_interlocker_name = g_string_new("libinterlocker_default (unremovable)");
-	const int result = set_interlocker(selected_interlocker_name->str);
+	const int result = set_interlocker("libinterlocker_default (unremovable)");
+	// return true if loading failed, otherwise false
 	return (result == -1);
 }
 
 void release_all_interlockers(void) {
+	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_name != NULL) {
 		g_string_free(selected_interlocker_name, true);
 		selected_interlocker_name = NULL;
 	}
+	pthread_mutex_unlock(&interlocker_mutex);
 
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		pthread_mutex_lock(&interlocker_mutex);
@@ -121,8 +131,9 @@ void release_all_interlockers(void) {
 		}
 		pthread_mutex_unlock(&interlocker_mutex);
 	}
-
+	pthread_mutex_lock(&interlocker_mutex);
 	selected_interlocker_instance = -1;
+	pthread_mutex_unlock(&interlocker_mutex);
 }
 
 GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_train_info) {
@@ -349,14 +360,15 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 }
 
 ///TODO: This should not unconditionally set all route signals to stop, because that would
-//       prevent sectional route release from working correctly!
-void release_route(const char *route_id) {
+//       prevent sectional route release from working correctly
+bool release_route(const char *route_id) {
 	if (route_id == NULL) {
 		syslog_server(LOG_ERR, "Release route - invalid parameter, route_id is null");
-		return;
+		return false;
 	}
 	pthread_mutex_lock(&interlocker_mutex);
 	t_interlocking_route *route = get_route(route_id);
+	bool ret = false;
 	if (route != NULL && route->train != NULL) {
 		syslog_server(LOG_INFO, 
 		              "Release route - route: %s - currently granted to train %s, "
@@ -378,13 +390,14 @@ void release_route(const char *route_id) {
 		free(route->train);
 		route->train = NULL;
 		syslog_server(LOG_NOTICE, "Release route - route: %s - released", route_id);
+		ret = true;
 	} else if (route == NULL) {
 		syslog_server(LOG_ERR, "Release route - route: %s - does not exist", route_id);
 	} else {
 		syslog_server(LOG_ERR, "Release route - route: %s - is not granted to any train", route_id);
 	}
-
 	pthread_mutex_unlock(&interlocker_mutex);
+	return ret;
 }
 
 const bool reversers_state_update(void) {
@@ -427,18 +440,21 @@ onion_connection_status handler_release_route(void *_, onion_request *req, onion
 		const char *route_id = params_check_route_id(data_route_id);
 		if (strcmp(route_id, "") == 0) {
 			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
-			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - start", route_id);
-			release_route(route_id);
-			send_common_feedback(res, true, "");
+			bool release_success = release_route(route_id);
+			if (release_success) {
+				send_common_feedback(res, HTTP_OK, "");
+			} else {
+				send_common_feedback(res, HTTP_BAD_REQUEST, 
+				                     "invalid parameters, route does not exist or is not granted");
+			}
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - finish", route_id);
-			return OCS_PROCESSED;
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Release route - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Release route");
 	}
 }
 
@@ -449,8 +465,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req, onion_res
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_point == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
-			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set point - point: %s state: %s - start",
@@ -459,20 +474,18 @@ onion_connection_status handler_set_point(void *_, onion_request *req, onion_res
 				syslog_server(LOG_ERR, 
 				              "Request: Set point - point: %s state: %s - invalid parameters - abort",
 				              data_point, data_state);
-				send_common_feedback(res, false, "invalid parameters");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters");
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set point - point: %s state: %s - finish",
 				              data_point, data_state);
-				send_common_feedback(res, true, "");
-				return OCS_PROCESSED;
+				send_common_feedback(res, HTTP_OK, "");
 			}
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set point - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set point");
 	}
 }
 
@@ -483,8 +496,7 @@ onion_connection_status handler_set_signal(void *_, onion_request *req, onion_re
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_signal == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
-			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set signal - signal: %s state: %s - start",
@@ -494,20 +506,18 @@ onion_connection_status handler_set_signal(void *_, onion_request *req, onion_re
 				              "Request: Set signal - signal: %s state: %s - "
 				              "invalid parameters - abort", 
 				              data_signal, data_state);
-				send_common_feedback(res, false, "invalid parameters");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters");
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set signal - signal: %s state: %s - finish",
 				              data_signal, data_state);
-				send_common_feedback(res, true, "");
-				return OCS_PROCESSED;
+				send_common_feedback(res, HTTP_OK, "");
 			}
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set signal - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set signal");
 	}
 }
 
@@ -518,8 +528,7 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req, onio
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_peripheral == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
-			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set peripheral - peripheral: %s state: %s - start",
@@ -529,39 +538,41 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req, onio
 				              "Request: Set peripheral - peripheral: %s state: %s - "
 				              "invalid parameters - abort", 
 				              data_peripheral, data_state);
-				send_common_feedback(res, false, "invalid parameters");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters");
 			} else {
 				bidib_flush();
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set peripheral - peripheral: %s state: %s - finish", 
 				              data_peripheral, data_state);
-				send_common_feedback(res, true, "");
-				return OCS_PROCESSED;
+				send_common_feedback(res, HTTP_OK, "");
 			}
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set peripheral - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set peripheral");
 	}
 }
 
 onion_connection_status handler_get_interlocker(void *_, onion_request *req, onion_response *res) {
+	///TODO: Changed to GET, adjust clients!
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
+		pthread_mutex_lock(&interlocker_mutex);
 		if (selected_interlocker_instance != -1 && selected_interlocker_name != NULL) {
-			onion_response_printf(res, "{\n\"interlocker\":\"%s\"\n}", 
-			                      selected_interlocker_name->str);
+			GString *g_resstr = g_string_new("{\n\"interlocker\":\"");
+			g_string_append_printf(g_resstr, "%s\"\n}", 
+			                       selected_interlocker_name->str);
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_some_gstring(res, HTTP_OK, g_resstr);
 			syslog_server(LOG_INFO, "Request: Get interlocker - done");
-			return OCS_PROCESSED;
 		} else {
-			send_common_error_message(res, "No interlocker is currently selected");
+			pthread_mutex_unlock(&interlocker_mutex);
 			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "No interlocker is currently selected");
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Get interlocker - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Get interlocker");
 	}
 }
 
@@ -571,41 +582,46 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
 			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
-			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set interlocker - interlocker: %s - start",
 			              data_interlocker);
+			pthread_mutex_lock(&interlocker_mutex);
 			if (selected_interlocker_instance != -1) {
+				pthread_mutex_unlock(&interlocker_mutex);
 				syslog_server(LOG_ERR, 
 				              "Request: Set interlocker - interlocker: %s - another "
 				              "interlocker instance is already set - abort", 
 				              data_interlocker);
-				send_common_feedback(res, false, "another interlocker instance is already set");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
+				                     "another interlocker instance is already set");
+				return OCS_PROCESSED;
 			}
-
-			set_interlocker(data_interlocker);
-			if (selected_interlocker_instance == -1) {
+			pthread_mutex_unlock(&interlocker_mutex);
+			// Race condition here: someone else could set an interlocker inbetween 
+			// the unlock and the lock in set_interlocker that is called from here.
+			// Won't fix for now as we have little contention between controllers that 
+			// want to set different interlockers
+			int set_i = set_interlocker(data_interlocker);
+			if (set_i == -1) {
 				syslog_server(LOG_ERR, 
 				              "Request: Set interlocker - interlocker: %s - invalid "
 				              "parameters or no more interlocker instances can be loaded - abort", 
 				              data_interlocker);
-				send_common_feedback(res, false, "invalid parameters or no more interlocker "
-				                     "instances can be loaded");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters or no more "
+				                     "interlocker instances can be loaded");
 			} else {
-				send_common_feedback(res, true, selected_interlocker_name->str);
+				
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set interlocker - interlocker: %s - finish",
 				              data_interlocker);
-				return OCS_PROCESSED;
+				send_common_feedback(res, HTTP_OK, selected_interlocker_name->str);
 			}
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Set interlocker - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Set interlocker");
 	}
 }
 
@@ -615,18 +631,19 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
 			syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
-			send_common_feedback(res, false, "invalid parameters (> 0 parameters are NULL)");
-			return OCS_NOT_IMPLEMENTED;
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s - start",
 			              data_interlocker);
+			///TODO: Should this acquire the interlocker_mutex when checking that global var?
 			if (selected_interlocker_instance == -1) {
 				syslog_server(LOG_ERR, 
 				              "Request: Unset interlocker - interlocker: %s - "
 				              "no interlocker instance to unset - abort", 
 				              data_interlocker);
-				send_common_feedback(res, false, "no interlocker instance is set that can be unset");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, HTTP_BAD_REQUEST, 
+				                     "no interlocker instance is set that can be unset");
+				return OCS_PROCESSED;
 			}
 
 			unset_interlocker(data_interlocker);
@@ -635,22 +652,17 @@ onion_connection_status handler_unset_interlocker(void *_, onion_request *req, o
 				              "Request: Unset interlocker - interlocker: %s - "
 				              "invalid parameters - abort", 
 				              data_interlocker);
-				send_common_feedback(res, false, "invalid parameters (set interlocker doesn't "
-				                     "match passed interlocker name)");
-				return OCS_NOT_IMPLEMENTED;
+				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (set "
+				                     "interlocker doesn't match passed interlocker name)");
 			} else {
-				///TODO: This is not really needed -> a good status should imply
-				//       the common feedback with success = true and message empty.
-				send_common_feedback(res, true, "");
-				
 				syslog_server(LOG_NOTICE, 
 				              "Request: Unset interlocker - interlocker: %s - finish",
 				              data_interlocker);
-				return OCS_PROCESSED;
+				send_common_feedback(res, HTTP_OK, "");
 			}
 		}
+		return OCS_PROCESSED;
 	} else {
-		syslog_server(LOG_ERR, "Request: Unset interlocker - system not running or wrong request type");
-		return OCS_NOT_IMPLEMENTED;
+		return handle_req_run_or_method_fail(res, running, "Unset interlocker");
 	}
 }

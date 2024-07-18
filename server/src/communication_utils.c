@@ -25,68 +25,74 @@
  *
  */
 
-#include "json_communication_utils.h"
+#include "communication_utils.h"
 #include "json_response_builder.h"
+
+#include "server.h" // for logging
+
 #include <onion/response.h>
 
-GString *get_common_feedback_json(bool success, const char* message) {
+/*
+GString *get_common_feedback_json(const char* message) {
 	const gsize add_len = message != NULL ? MAX(256, strlen(message)) : 0;
 	GString *g_feedback = g_string_sized_new(32 + add_len);
 	g_string_assign(g_feedback, "");
 	append_start_of_obj(g_feedback, false);
-	append_field_bool_value(g_feedback, "success", success, true);
-	append_field_str_value(g_feedback, "message", message != NULL ? message : "", false);
+	append_field_str_value(g_feedback, "msg", message != NULL ? message : "", false);
 	append_end_of_obj(g_feedback, false);
 	return g_feedback;
-}
+}*/
 
-GString *get_common_error_message_json(const char *err_message) {
-	const gsize add_len = err_message != NULL ? MAX(256, strlen(err_message)) : 0;
-	GString *g_err_msg = g_string_sized_new(24 + add_len);
-	g_string_assign(g_err_msg, "");
-	append_start_of_obj(g_err_msg, false);
-	append_field_str_value(g_err_msg, "err_message", err_message != NULL ? err_message : "", false);
-	append_end_of_obj(g_err_msg, false);
-	return g_err_msg;
-}
-
-bool send_common_feedback(onion_response *res, bool success, const char* message) {
+bool send_common_feedback(onion_response *res, int status_code, const char* message) {
 	if (res == NULL) {
 		return false;
 	}
-	GString *ret_str = get_common_feedback_json(success, message);
-	if (ret_str == NULL) {
-		return false;
+	onion_response_set_code(res, status_code);
+	if (message != NULL && strlen(message) > 0) {
+		return onion_response_printf(res, "{\n\"msg\":\"%s\"\n}", message) >= 0;
+	} else {
+		return true;
 	}
-	bool ret = onion_response_printf(res, "%s", ret_str->str) >= 0;
-	g_string_free(ret_str, true);
-	return ret;
 }
 
-bool send_common_error_message(onion_response *res, const char* err_message) {
-	if (res == NULL) {
-		return false;
-	}
-	GString *ret_str = get_common_error_message_json(err_message);
-	if (ret_str == NULL) {
-		return false;
-	}
-	bool ret = onion_response_printf(res, "%s", ret_str->str) >= 0;
-	g_string_free(ret_str, true);
-	return ret;
-}
-
-bool send_some_gstring(onion_response *res, GString *gstr) {
+bool send_some_gstring(onion_response *res, int status_code, GString *gstr) {
 	if (res == NULL) {
 		if (gstr != NULL) {
 			g_string_free(gstr, true);
 		}
 		return false;
-	} else if (gstr == NULL) {
-		return false;
+	}
+	onion_response_set_code(res, status_code);
+	if (gstr == NULL) {
+		return true;
 	}
 	bool ret = onion_response_printf(res, "%s", gstr->str) >= 0;
 	g_string_free(gstr, true);
 	gstr = NULL;
 	return ret;
+}
+
+bool send_some_cstring(onion_response *res, int status_code, const char *cstr) {
+	if (res == NULL) {
+		return false;
+	}
+	onion_response_set_code(res, status_code);
+	if (cstr == NULL) {
+		return true;
+	} else {
+		return onion_response_printf(res, "%s", cstr) >= 0;
+	}
+}
+
+onion_connection_status 
+handle_req_run_or_method_fail(onion_response *res, bool is_running, const char *caller_logname) {
+	if (is_running) {
+		syslog_server(LOG_WARNING, "Request: %s - wrong request type", caller_logname);
+		onion_response_set_code(res, HTTP_METHOD_NOT_ALLOWED);
+		return OCS_NOT_IMPLEMENTED;
+	} else {
+		syslog_server(LOG_ERR, "Request: %s - system not running", caller_logname);
+		onion_response_set_code(res, HTTP_SERVICE_UNAVAILABLE);
+		return OCS_PROCESSED;
+	}
 }
