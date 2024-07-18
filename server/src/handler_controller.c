@@ -172,8 +172,12 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 				g_array_free(conflict_route_ids, true);
 				return NULL;
 			}
-			snprintf(conflict_route_id_string, conflict_entry_len, "%s (%s)",
-			         conflict_route->id, conflict_route->train);
+			if (include_conflict_train_info) {
+				snprintf(conflict_route_id_string, conflict_entry_len, "%s (%s)",
+				         conflict_route->id, conflict_route->train);
+			} else {
+				snprintf(conflict_route_id_string, conflict_entry_len, "%s", conflict_route->id);
+			}
 			g_array_append_val(conflict_route_ids, conflict_route_id_string);
 		}
 	}
