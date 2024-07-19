@@ -45,7 +45,6 @@
 
 ///NOTE: All handlers/endpoints now only accept GET, not POST. Need to adjust clients accordingly.
 
-
 static GArray* garray_points_to_garray_str_ids(GArray *points) {
 	if (points == NULL) {
 		return NULL;
@@ -103,7 +102,7 @@ static GString *get_trains_json() {
 	return g_trains;
 }
 
-onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_trains = get_trains_json();
@@ -176,7 +175,7 @@ static GString *get_train_state_json(const char *data_train) {
 	return g_train_state;
 }
 
-onion_connection_status handler_get_train_state(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_train_state(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_train = onion_request_get_post(req, "train");
@@ -227,8 +226,7 @@ static GString *get_train_states_json() {
 	return g_train_states;
 }
 
-onion_connection_status handler_get_train_states(void *_, onion_request *req,
-                                                 onion_response *res) {
+o_con_status handler_get_train_states(void *_, onion_request *req, onion_response *res) {
     build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_train_states = get_train_states_json();
@@ -275,8 +273,7 @@ static GString *get_train_peripherals_json(const char *data_train) {
 	return g_train_peripherals;
 }
 
-onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
-                                                      onion_response *res) {
+o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_train = onion_request_get_post(req, "train");
@@ -328,9 +325,8 @@ static GString *get_engines_or_interlockers_json(bool engines) {
 	return g_json_ret;
 }
 
-static onion_connection_status get_engines_interlockers_common(onion_request *req, 
-                                                               onion_response *res, 
-                                                               bool engines) {
+static o_con_status get_engines_interlockers_common(onion_request *req, onion_response *res, 
+                                                    bool engines) {
 	build_response_header(res);
 	const char *l_name = engines ? "Get engines" : "Get interlockers";
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -347,11 +343,11 @@ static onion_connection_status get_engines_interlockers_common(onion_request *re
 	}
 }
 
-onion_connection_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
 	return get_engines_interlockers_common(req, res, true);
 }
 
-onion_connection_status handler_get_interlockers(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_interlockers(void *_, onion_request *req, onion_response *res) {
 	return get_engines_interlockers_common(req, res, false);
 }
 
@@ -397,8 +393,7 @@ static GString *get_track_outputs_json() {
 	return g_track_outputs;
 }
 
-onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
-                                                  onion_response *res) {
+o_con_status handler_get_track_outputs(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_track_outputs = get_track_outputs_json();
@@ -451,9 +446,7 @@ static GString *get_accessories_json(bool point_accessories) {
 	return g_accs;
 }
 
-static onion_connection_status get_points_signals_common(onion_request *req, 
-                                                         onion_response *res, 
-                                                         bool points) {
+static o_con_status get_points_signals_common(onion_request *req, onion_response *res, bool points) {
 	build_response_header(res);
 	const char *l_name = points ? "Get points" : "Get signals";
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
@@ -466,11 +459,11 @@ static onion_connection_status get_points_signals_common(onion_request *req,
 	}
 }
 
-onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_points(void *_, onion_request *req, onion_response *res) {
 	return get_points_signals_common(req, res, true);
 }
 
-onion_connection_status handler_get_signals(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_signals(void *_, onion_request *req, onion_response *res) {
 	return get_points_signals_common(req, res, false);
 }
 
@@ -522,7 +515,7 @@ static GString *get_point_details_json(const char *data_id) {
 	return g_details;
 }
 
-onion_connection_status handler_get_point_details(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_point_details(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_point = onion_request_get_post(req, "point");
@@ -578,9 +571,7 @@ static GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	return g_aspects;
 }
 
-static onion_connection_status get_point_signal_aspects_common(onion_request *req,
-                                                               onion_response *res, 
-                                                               bool point) {
+static o_con_status get_acc_aspects_common(onion_request *req, onion_response *res, bool point) {
 	build_response_header(res);
 	const char *l_name = point ? "Get point aspects" : "Get signal aspects";
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
@@ -608,18 +599,16 @@ static onion_connection_status get_point_signal_aspects_common(onion_request *re
 	}
 }
 
-onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
-                                                  onion_response *res) {
-	return get_point_signal_aspects_common(req, res, true);
+o_con_status handler_get_point_aspects(void *_, onion_request *req, onion_response *res) {
+	return get_acc_aspects_common(req, res, true);
 }
 
 // Probably want to have a signal-details endpoint too, once we 
 // have more information about signals we can return; at the moment it
 // is quite limited. One interesting property may be, for example,
 // to know what segment->segment travel means the signal has been driven past.
-onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
-                                                   onion_response *res) {
-	return get_point_signal_aspects_common(req, res, false);
+o_con_status handler_get_signal_aspects(void *_, onion_request *req, onion_response *res) {
+	return get_acc_aspects_common(req, res, false);
 }
 
 static GString *get_segments_json() {
@@ -666,7 +655,7 @@ static GString *get_segments_json() {
 	return g_segments;
 }
 
-onion_connection_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_segments = get_segments_json();
@@ -724,7 +713,7 @@ static GString *get_reversers_json() {
 	return g_reversers;
 }
 
-onion_connection_status handler_get_reversers(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_reversers(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		if (!reversers_state_update()) {
@@ -778,7 +767,7 @@ static GString *get_peripherals_json() {
 	return g_peripherals;
 }
 
-onion_connection_status handler_get_peripherals(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_peripherals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_peripherals = get_peripherals_json();
@@ -790,8 +779,7 @@ onion_connection_status handler_get_peripherals(void *_, onion_request *req, oni
 	}
 }
 
-onion_connection_status handler_get_verification_option(void *_, onion_request *req,
-                                                        onion_response *res) {
+o_con_status handler_get_verification_option(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		onion_response_set_code(res, HTTP_OK);
@@ -804,8 +792,7 @@ onion_connection_status handler_get_verification_option(void *_, onion_request *
 	}
 }
 
-onion_connection_status handler_get_verification_url(void *_, onion_request *req,
-                                                     onion_response *res) {
+o_con_status handler_get_verification_url(void *_, onion_request *req, onion_response *res) {
     build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		const char *verif_url = get_verifier_url();
@@ -860,8 +847,7 @@ static GString* get_granted_routes_json() {
 	return g_granted_routes;
 }
 
-onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
-                                                   onion_response *res) {
+o_con_status handler_get_granted_routes(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_granted_routes = get_granted_routes_json();
@@ -914,7 +900,7 @@ static GString* get_route_json(const char *route_id) {
 	return g_route;
 }
 
-onion_connection_status handler_get_route(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
@@ -1083,7 +1069,7 @@ static GString *debug_info(void) {
 	return info_str;
 }
 
-onion_connection_status handler_get_debug_info(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_debug_info(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *debug_info_str = debug_info();
@@ -1122,8 +1108,7 @@ static GString *debug_info_extra(void) {
 	return info_str;
 }
 
-onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req,
-                                                     onion_response *res) {
+o_con_status handler_get_debug_info_extra(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *debug_info_extra_str = debug_info_extra();

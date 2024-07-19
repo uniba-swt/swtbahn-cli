@@ -32,70 +32,51 @@
 #include "dyn_containers_interface.h"
 #include "dyn_containers.h"
 
+typedef onion_connection_status o_con_status;
 
 extern t_dyn_containers_interface *dyn_containers_interface;
 extern long long dyn_containers_reaction_counter__global_0_0;
 extern long long dyn_containers_actuate_reaction_counter;
 
-onion_connection_status handler_get_trains(void *_, onion_request *req,
-                                           onion_response *res);
+o_con_status handler_get_trains(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_train_state(void *_, onion_request *req,
-                                                onion_response *res);
+o_con_status handler_get_train_state(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_train_states(void *_, onion_request *req,
-                                                 onion_response *res);
+o_con_status handler_get_train_states(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
-                                                      onion_response *res);
+o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_engines(void *_, onion_request *req,
-                                            onion_response *res);
+o_con_status handler_get_engines(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_interlockers(void *_, onion_request *req,
-                                                 onion_response *res);
+o_con_status handler_get_interlockers(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
-                                                  onion_response *res);
+o_con_status handler_get_track_outputs(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_points(void *_, onion_request *req,
-                                           onion_response *res);
+o_con_status handler_get_points(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_signals(void *_, onion_request *req,
-                                            onion_response *res);
+o_con_status handler_get_signals(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
-                                                  onion_response *res);
+o_con_status handler_get_point_aspects(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
-                                                   onion_response *res);
+o_con_status handler_get_signal_aspects(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_segments(void *_, onion_request *req,
-                                             onion_response *res);
+o_con_status handler_get_segments(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_reversers(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_get_reversers(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_peripherals(void *_, onion_request *req,
-                                                onion_response *res);
+o_con_status handler_get_peripherals(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_verification_option(void *_, onion_request *req,
-                                                        onion_response *res);
+o_con_status handler_get_verification_option(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_verification_url(void *_, onion_request *req,
-                                                     onion_response *res);
+o_con_status handler_get_verification_url(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_granted_routes(void *_, onion_request *req,
-                                                   onion_response *res);
+o_con_status handler_get_granted_routes(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_route(void *_, onion_request *req,
-                                          onion_response *res);
+o_con_status handler_get_route(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_debug_info(void *_, onion_request *req,
-                                               onion_response *res);
+o_con_status handler_get_debug_info(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_debug_info_extra(void *_, onion_request *req,
-                                                     onion_response *res);
+o_con_status handler_get_debug_info_extra(void *_, onion_request *req, onion_response *res);
 
 #endif  // HANDLER_MONITOR_H
 

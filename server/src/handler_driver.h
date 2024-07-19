@@ -37,6 +37,8 @@
 #define MICROSECOND 1
 #define TRAIN_DRIVE_TIME_STEP 	10000 * MICROSECOND		// 0.01 seconds
 
+typedef onion_connection_status o_con_status;
+
 extern pthread_mutex_t grabbed_trains_mutex;
 
 typedef struct {
@@ -65,36 +67,25 @@ void release_all_grabbed_trains(void);
  */
 char *train_id_from_grab_id(int grab_id);
 
-onion_connection_status handler_grab_train(void *_, onion_request *req,
-                                           onion_response *res);
+o_con_status handler_grab_train(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_release_train(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_release_train(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_request_route(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_request_route(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_request_route_id(void *_, onion_request *req,
-                                                 onion_response *res);
+o_con_status handler_request_route_id(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_driving_direction(void *_, onion_request *req,
-                                                  onion_response *res);
+o_con_status handler_driving_direction(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_drive_route(void *_, onion_request *req,
-                                            onion_response *res);
+o_con_status handler_drive_route(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
-                                                    onion_response *res);
+o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_calibrated_train_speed(void *_,
-                                                           onion_request *req,
-                                                           onion_response *res);
+o_con_status handler_set_calibrated_train_speed(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_train_peripheral(void *_, onion_request *req,
-                                                     onion_response *res);
+o_con_status handler_set_train_peripheral(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_train_emergency_stop(void *_, onion_request *req,
-                                                         onion_response *res);
+o_con_status handler_set_train_emergency_stop(void *_, onion_request *req, onion_response *res);
 
 
 #endif  // HANDLER_DRIVER_H

@@ -43,7 +43,7 @@
 
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t poll_bidib_messages_thread;
-
+typedef onion_connection_status o_con_status;
 
 void build_message_hex_string(unsigned char *message, char *dest) {
 	for (size_t i = 0; i <= message[0]; i++) {
@@ -131,7 +131,7 @@ void shutdown_server(void) {
 	bidib_stop();
 }
 
-onion_connection_status handler_startup(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	pthread_mutex_lock(&start_stop_mutex);
 	if (!running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -160,7 +160,7 @@ onion_connection_status handler_startup(void *_, onion_request *req, onion_respo
 	}
 }
 
-onion_connection_status handler_shutdown(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_shutdown(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	pthread_mutex_lock(&start_stop_mutex);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -176,7 +176,7 @@ onion_connection_status handler_shutdown(void *_, onion_request *req, onion_resp
 	}
 }
 
-onion_connection_status handler_set_track_output(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_set_track_output(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		char *end;
@@ -198,7 +198,7 @@ onion_connection_status handler_set_track_output(void *_, onion_request *req, on
 	}
 }
 
-onion_connection_status handler_set_verification_option(void *_, onion_request *req,
+o_con_status handler_set_verification_option(void *_, onion_request *req,
                                                         onion_response *res) {
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
@@ -225,7 +225,7 @@ onion_connection_status handler_set_verification_option(void *_, onion_request *
 	}
 }
 
-onion_connection_status handler_set_verification_url(void *_, onion_request *req,
+o_con_status handler_set_verification_url(void *_, onion_request *req,
                                                      onion_response *res) {
     build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
@@ -246,7 +246,7 @@ onion_connection_status handler_set_verification_url(void *_, onion_request *req
 	}
 }
 
-onion_connection_status handler_admin_release_train(void *_, onion_request *req,
+o_con_status handler_admin_release_train(void *_, onion_request *req,
                                                     onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -296,7 +296,7 @@ onion_connection_status handler_admin_release_train(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
+o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
                                                           onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {

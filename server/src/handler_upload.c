@@ -42,6 +42,8 @@
 #include "websocket_uploader/engine_uploader.h"
 #include "communication_utils.h"
 
+typedef onion_connection_status o_con_status;
+
 static const char engine_dir[] = "engines";
 static const char engine_extensions[][5] = { "c", "h", "sctx" };
 static const int engine_extensions_count = 3;
@@ -140,7 +142,7 @@ static bool plugin_is_unremovable(const char name[]) {
 }
 
 
-onion_connection_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
@@ -234,7 +236,7 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 	}
 }
 
-onion_connection_status handler_remove_engine(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
@@ -319,8 +321,7 @@ static bool remove_interlocker_files(const char library_name[]) {
 	return (result == 0);
 }
 
-onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
-                                                   onion_response *res) {
+o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
@@ -399,8 +400,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
-                                                   onion_response *res) {
+o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
@@ -426,9 +426,9 @@ onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
 			return OCS_PROCESSED;
 		}
 
-		const bool interlocker_freed_successfully = dyn_containers_free_interlocker(interlocker_slot);
+		const bool free_success = dyn_containers_free_interlocker(interlocker_slot);
 		pthread_mutex_unlock(&dyn_containers_mutex);
-		if (!interlocker_freed_successfully) {
+		if (!free_success) {
 			syslog_server(LOG_WARNING, 
 			              "Request: Remove interlocker - interlocker: %s - "
 			              "interlocker is still in use - abort", 

@@ -809,7 +809,7 @@ void fill_grab_feedback(int grab_id, GString *ret_str, int *http_code) {
 	}
 }
 
-onion_connection_status handler_grab_train(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_grab_train(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
@@ -866,7 +866,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 	}
 }
 
-onion_connection_status handler_release_train(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_release_train(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
@@ -961,7 +961,7 @@ void fill_request_route_feedback(GString *route_id, GString *ret_str, int *http_
 	}
 }
 
-onion_connection_status handler_request_route(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_request_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	///TODO: Changed to GET (from POST), adjust clients.
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
@@ -1017,7 +1017,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 
 ///TODO: Discuss - maybe this should be called "request_route_by_id", to distinguish it from 
 // just getting a route id of/for something (similar to a monitor endpoint).
-onion_connection_status handler_request_route_id(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_request_route_id(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	///TODO: Changed to GET (from POST), adjust clients.
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
@@ -1078,8 +1078,7 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 	}
 }
 
-onion_connection_status handler_driving_direction(void *_, onion_request *req,
-                                                  onion_response *res) {
+o_con_status handler_driving_direction(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	///TODO: Changed to GET (from POST), adjust clients.
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
@@ -1114,7 +1113,7 @@ onion_connection_status handler_driving_direction(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_drive_route(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_drive_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
@@ -1172,8 +1171,7 @@ onion_connection_status handler_drive_route(void *_, onion_request *req, onion_r
 	}
 }
 
-onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
-                                                    onion_response *res) {
+o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
@@ -1232,9 +1230,7 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 	}
 }
 
-onion_connection_status handler_set_calibrated_train_speed(void *_,
-                                                           onion_request *req,
-                                                           onion_response *res) {
+o_con_status handler_set_calibrated_train_speed(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
@@ -1298,9 +1294,7 @@ onion_connection_status handler_set_calibrated_train_speed(void *_,
 	}
 }
 
-onion_connection_status handler_set_train_emergency_stop(void *_,
-                                                         onion_request *req,
-                                                         onion_response *res) {
+o_con_status handler_set_train_emergency_stop(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
@@ -1352,9 +1346,7 @@ onion_connection_status handler_set_train_emergency_stop(void *_,
 	}
 }
 
-onion_connection_status handler_set_train_peripheral(void *_,
-                                                     onion_request *req,
-                                                     onion_response *res) {
+o_con_status handler_set_train_peripheral(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");

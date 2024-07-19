@@ -32,6 +32,8 @@
 #include <onion/onion.h>
 #include <glib.h>
 
+typedef onion_connection_status o_con_status;
+
 #define INTERLOCKER_COUNT_MAX           4
 #define INTERLOCKER_INSTANCE_COUNT_MAX  4
 
@@ -124,26 +126,19 @@ bool release_route(const char *route_id);
  */
 bool reversers_state_update(void);
 
-onion_connection_status handler_release_route(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_release_route(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_point(void *_, onion_request *req,
-                                          onion_response *res);
+o_con_status handler_set_point(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_signal(void *_, onion_request *req,
-                                           onion_response *res);
+o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_peripheral(void *_, onion_request *req,
-                                               onion_response *res);
+o_con_status handler_set_peripheral(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_interlocker(void *_, onion_request *req,
-                                                onion_response *res);
+o_con_status handler_get_interlocker(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_interlocker(void *_, onion_request *req,
-                                                onion_response *res);
+o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
-                                                  onion_response *res);
+o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_response *res);
 
 #endif  // HANDLER_CONTROLLER_H
 

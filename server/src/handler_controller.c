@@ -440,7 +440,7 @@ bool reversers_state_update(void) {
 	return !error;
 }
 
-onion_connection_status handler_release_route(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_release_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
@@ -465,7 +465,7 @@ onion_connection_status handler_release_route(void *_, onion_request *req, onion
 	}
 }
 
-onion_connection_status handler_set_point(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_set_point(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
@@ -496,7 +496,7 @@ onion_connection_status handler_set_point(void *_, onion_request *req, onion_res
 	}
 }
 
-onion_connection_status handler_set_signal(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_signal = onion_request_get_post(req, "signal");
@@ -528,7 +528,7 @@ onion_connection_status handler_set_signal(void *_, onion_request *req, onion_re
 	}
 }
 
-onion_connection_status handler_set_peripheral(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_set_peripheral(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_peripheral = onion_request_get_post(req, "peripheral");
@@ -560,7 +560,7 @@ onion_connection_status handler_set_peripheral(void *_, onion_request *req, onio
 	}
 }
 
-onion_connection_status handler_get_interlocker(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_get_interlocker(void *_, onion_request *req, onion_response *res) {
 	///TODO: Changed to GET, adjust clients!
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
@@ -583,7 +583,7 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req, oni
 	}
 }
 
-onion_connection_status handler_set_interlocker(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
@@ -628,7 +628,7 @@ onion_connection_status handler_set_interlocker(void *_, onion_request *req, oni
 	}
 }
 
-onion_connection_status handler_unset_interlocker(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
