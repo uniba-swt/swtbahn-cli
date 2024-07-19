@@ -117,13 +117,13 @@ onion_connection_status handler_get_trains(void *_, onion_request *req, onion_re
 
 static GString *get_train_state_json(const char *data_train) {
 	if (data_train == NULL) {
-		return g_string_new("");
+		return NULL;
 	}
 	
 	t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 	if (!train_state_query.known) {
 		bidib_free_train_state_query(train_state_query);
-		return g_string_new("");
+		return NULL;
 	}
 	
 	GString *g_train_state = g_string_sized_new(256);
@@ -187,7 +187,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 		} 
 		
 		GString *ret_string = get_train_state_json(data_train);
-		if (ret_string->len > 0) {
+		if (ret_string != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, ret_string);
 			syslog_server(LOG_INFO, "Request: Get train state - train: %s - done", data_train);
 		} else {
@@ -195,7 +195,6 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 			syslog_server(LOG_ERR, 
 			              "Request: Get train state - train: %s - invalid train", 
 			              data_train);
-			g_string_free(ret_string, true);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -213,10 +212,12 @@ static GString *get_train_states_json() {
 	
 	for (size_t i = 0; i < query.length; i++) {
 		GString *g_train_state = get_train_state_json(query.ids[i]);
-		g_string_append_printf(g_train_states, "%s", g_train_state->str);
-		g_string_free(g_train_state, true);
-		if (i + 1 < query.length) {
-			g_string_append_printf(g_train_states, "%s", ",");
+		if (g_train_state != NULL) {
+			g_string_append_printf(g_train_states, "%s", g_train_state->str);
+			g_string_free(g_train_state, true);
+			if (i + 1 < query.length) {
+				g_string_append_printf(g_train_states, "%s", ",");
+			}
 		}
 	}
 	append_end_of_list(g_train_states, false, query.length > 0);
@@ -241,7 +242,7 @@ onion_connection_status handler_get_train_states(void *_, onion_request *req,
 
 static GString *get_train_peripherals_json(const char *data_train) {
 	if (data_train == NULL) {
-		return g_string_new("");
+		return NULL;
 	}
 	
 	t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
@@ -286,16 +287,16 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 		}
 		
 		GString *g_train_peripherals = get_train_peripherals_json(data_train);
-		if (g_train_peripherals->len > 0) {
+		if (g_train_peripherals != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, g_train_peripherals);
 			syslog_server(LOG_INFO, 
 			              "Request: Get train peripherals - train: %s - done",
 			              data_train);
 		} else {
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_ERR, 
 			              "Request: Get train peripherals - train: %s - invalid train",
 			              data_train);
-			g_string_free(g_train_peripherals, true);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -475,16 +476,17 @@ onion_connection_status handler_get_signals(void *_, onion_request *req, onion_r
 
 static GString *get_point_details_json(const char *data_id) {
 	if (data_id == NULL) {
-		return g_string_new("");
+		return NULL;
 	}
 	
 	t_bidib_id_list_query aspects_query = bidib_get_point_aspects(data_id);
 	if (aspects_query.length <= 0 || aspects_query.ids == NULL) {
-		return g_string_new("");
+		return NULL;
 	}
 	t_bidib_unified_accessory_state_query acc_state = bidib_get_point_state(data_id);
 	if (!acc_state.known) {
-		return g_string_new("");
+		bidib_free_id_list_query(aspects_query);
+		return NULL;
 	}
 	
 	GString *g_details = g_string_sized_new(156);
@@ -496,6 +498,8 @@ static GString *get_point_details_json(const char *data_id) {
 	for (size_t i = 0; i < aspects_query.length; i++) {
 		g_string_append_printf(g_details, "%s\"%s\"", i != 0 ? ", " : "", aspects_query.ids[i]);
 	}
+	bidib_free_id_list_query(aspects_query);
+	
 	append_end_of_list(g_details, true, false);
 	append_field_str_value(g_details, "state", 
 	                       acc_state.type == BIDIB_ACCESSORY_BOARD ?
@@ -515,7 +519,6 @@ static GString *get_point_details_json(const char *data_id) {
 	}
 	
 	append_end_of_obj(g_details, false);
-	bidib_free_id_list_query(aspects_query);
 	return g_details;
 }
 
@@ -530,14 +533,14 @@ onion_connection_status handler_get_point_details(void *_, onion_request *req, o
 		}
 		
 		GString *g_details = get_point_details_json(data_point);
-		if (g_details->len > 0) {
+		if (g_details != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, g_details);
 			syslog_server(LOG_INFO, "Request: Get point details - point: %s - done", data_point);
 		} else {
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_ERR, 
 			              "Request: Get point details - point: %s - invalid point", 
 			              data_point);
-			g_string_free(g_details, true);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -548,7 +551,7 @@ onion_connection_status handler_get_point_details(void *_, onion_request *req, o
 
 static GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	if (data_id == NULL) {
-		return g_string_new("");
+		return NULL;
 	}
 	t_bidib_id_list_query query;
 	if (is_point) {
@@ -558,7 +561,7 @@ static GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	}
 	
 	if (query.length <= 0 || query.ids == NULL) {
-		return g_string_new("");
+		return NULL;
 	}
 	
 	GString *g_aspects = g_string_sized_new(32 * (query.length + 1));
@@ -575,31 +578,39 @@ static GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
 	return g_aspects;
 }
 
-onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
-                                                  onion_response *res) {
+static onion_connection_status get_point_signal_aspects_common(onion_request *req,
+                                                               onion_response *res, 
+                                                               bool point) {
 	build_response_header(res);
+	const char *l_name = point ? "Get point aspects" : "Get signal aspects";
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
-		const char *data_point = onion_request_get_post(req, "point");
-		if (data_point == NULL) {
+		const char *acc_type_name = point ? "point" : "signal";
+		const char *data_acc = onion_request_get_post(req, acc_type_name);
+		if (data_acc == NULL) {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get point aspects - invalid parameters");
+			syslog_server(LOG_ERR, "Request: %s - invalid parameters", l_name);
 			return OCS_PROCESSED;
 		}
 		
-		GString *g_aspects = get_accessory_aspects_json(data_point, true);
-		if (g_aspects->len > 0) {
+		GString *g_aspects = get_accessory_aspects_json(data_acc, point);
+		if (g_aspects != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, g_aspects);
-			syslog_server(LOG_INFO, "Request: Get point aspects - point: %s - done", data_point);
+			syslog_server(LOG_INFO, "Request: %s - %s: %s - done", l_name, acc_type_name, data_acc);
 		} else {
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_ERR, 
-			              "Request: Get point aspects - point: %s - invalid point", 
-			              data_point);
-			g_string_free(g_aspects, true);
+			              "Request: %s - %s: %s - invalid %s", 
+			               l_name, acc_type_name, data_acc, acc_type_name);
 		}
 		return OCS_PROCESSED;
 	} else {
-		return handle_req_run_or_method_fail(res, running, "Get point aspects");
+		return handle_req_run_or_method_fail(res, running, l_name);
 	}
+}
+
+onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
+                                                  onion_response *res) {
+	return get_point_signal_aspects_common(req, res, true);
 }
 
 // Probably want to have a signal-details endpoint too, once we 
@@ -608,31 +619,7 @@ onion_connection_status handler_get_point_aspects(void *_, onion_request *req,
 // to know what segment->segment travel means the signal has been driven past.
 onion_connection_status handler_get_signal_aspects(void *_, onion_request *req,
                                                    onion_response *res) {
-	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
-		const char *data_signal = onion_request_get_post(req, "signal");
-		if (data_signal == NULL) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get signal aspects - invalid parameters");
-			return OCS_PROCESSED;
-		}
-		
-		GString *g_aspects = get_accessory_aspects_json(data_signal, false);
-		if (g_aspects->len > 0) {
-			send_some_gstring_and_free(res, HTTP_OK, g_aspects);
-			syslog_server(LOG_INFO, 
-			              "Request: Get signal aspects - signal: %s - done", 
-			              data_signal);
-		} else {
-			syslog_server(LOG_ERR, 
-			              "Request: Get signal aspects - signal: %s - invalid signal", 
-			              data_signal);
-			g_string_free(g_aspects, true);
-		}
-		return OCS_PROCESSED;
-	} else {
-		return handle_req_run_or_method_fail(res, running, "Get signal aspects");
-	}
+	return get_point_signal_aspects_common(req, res, false);
 }
 
 static GString *get_segments_json() {
@@ -940,8 +927,13 @@ onion_connection_status handler_get_route(void *_, onion_request *req, onion_res
 		
 		syslog_server(LOG_INFO, "Request: Get route - route: %s - start", route_id);
 		GString* g_route = get_route_json(route_id);
-		send_some_gstring_and_free(res, HTTP_OK, g_route);
-		syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
+		if (g_route != NULL) {
+			send_some_gstring_and_free(res, HTTP_OK, g_route);
+			syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
+		} else {
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			syslog_server(LOG_ERR, "Request: Get route - route: %s - invalid route", route_id);
+		}
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Get route");
