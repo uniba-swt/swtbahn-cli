@@ -340,21 +340,22 @@ bool dyn_containers_free_engine(const int engine_slot) {
 	return true;
 }
 
-GString *dyn_containers_get_train_engines(void) {
-	GString *train_engine_names = g_string_new(NULL);
-	int i = 0;
-	for (i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
-		struct t_train_engine_io * const train_engine_io = 
-		    &dyn_containers_interface->train_engines_io[i];
-		if (!train_engine_io->output_in_use) {
+GArray *dyn_containers_get_train_engines_arr(void) {
+	GArray *train_engine_names = g_array_new(FALSE, FALSE, sizeof(char *));
+	pthread_mutex_lock(&dyn_containers_mutex);
+	for (size_t i = 0; i < TRAIN_ENGINE_COUNT_MAX; ++i) {
+		const struct t_train_engine_io *engine_io = &dyn_containers_interface->train_engines_io[i];
+		if (!engine_io->output_in_use) {
 			continue;
 		}
-		// Copy string
-		if (i != 0) {
-			g_string_append(train_engine_names, ",");
+		char *name = strdup(engine_io->output_name);
+		if (name != NULL) {
+			g_array_append_val(train_engine_names, name);
+		} else {
+			syslog_server(LOG_ERR, "dyn_containers_get_train_engines_arr unable to allocate memory");
 		}
-		g_string_append(train_engine_names, train_engine_io->output_name);
 	}
+	pthread_mutex_unlock(&dyn_containers_mutex);
 	return train_engine_names;
 }
 
@@ -527,6 +528,26 @@ bool dyn_containers_free_interlocker(const int interlocker_slot) {
 				  "Unloaded interlocker at slot %d", 
 				  interlocker_slot);
 	return true;
+}
+
+GArray *dyn_containers_get_interlockers_arr(void) {
+	GArray *interlocker_names = g_array_new(FALSE, FALSE, sizeof(char *));
+	pthread_mutex_lock(&dyn_containers_mutex);
+	for (size_t i = 0; i < INTERLOCKER_COUNT_MAX; ++i) {
+		const struct t_interlocker_io * interlocker_io =
+			&dyn_containers_interface->interlockers_io[i];
+		if (!interlocker_io->output_in_use) {
+			continue;
+		}
+		char *name = strdup(interlocker_io->output_name);
+		if (name != NULL) {
+			g_array_append_val(interlocker_names, name);
+		} else {
+			syslog_server(LOG_ERR, "dyn_containers_get_interlockers_arr unable to allocate memory");
+		}
+	}
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	return interlocker_names;
 }
 
 GString *dyn_containers_get_interlockers(void) {

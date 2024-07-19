@@ -49,6 +49,12 @@ onion_connection_status handler_get_train_states(void *_, onion_request *req,
 onion_connection_status handler_get_train_peripherals(void *_, onion_request *req,
                                                       onion_response *res);
 
+onion_connection_status handler_get_engines(void *_, onion_request *req,
+                                            onion_response *res);
+
+onion_connection_status handler_get_interlockers(void *_, onion_request *req,
+                                                 onion_response *res);
+
 onion_connection_status handler_get_track_outputs(void *_, onion_request *req,
                                                   onion_response *res);
 

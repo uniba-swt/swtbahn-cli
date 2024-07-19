@@ -188,16 +188,14 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
 	onion_url_add(urls, "upload/interlocker", handler_upload_interlocker);
 	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
-	///TODO: Move to monitor
-	onion_url_add(urls, "upload/refresh-engines", handler_get_engines);
-	///TODO: Move to monitor
-	onion_url_add(urls, "upload/refresh-interlockers", handler_get_interlockers);
 
 	// --- monitor functions ---
 	onion_url_add(urls, "monitor/trains", handler_get_trains);
 	onion_url_add(urls, "monitor/train-state", handler_get_train_state);
 	onion_url_add(urls, "monitor/train-states", handler_get_train_states);
 	onion_url_add(urls, "monitor/train-peripherals", handler_get_train_peripherals);
+	onion_url_add(urls, "monitor/engines", handler_get_engines);
+	onion_url_add(urls, "monitor/interlockers", handler_get_interlockers);
 	onion_url_add(urls, "monitor/track-outputs", handler_get_track_outputs);
 	onion_url_add(urls, "monitor/points", handler_get_points);
 	onion_url_add(urls, "monitor/signals", handler_get_signals);

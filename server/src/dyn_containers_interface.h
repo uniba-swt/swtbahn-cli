@@ -146,8 +146,8 @@ void dyn_containers_set_engine(const int engine_slot, const char filepath[]);
 // Can only be called while the dyn_containers_mutex is locked
 bool dyn_containers_free_engine(const int engine_slot);
 
-// Gets a comma-separated string of train engines that have been loaded
-GString *dyn_containers_get_train_engines(void);
+// Gets a char*-GArray with the names of train engines that have been loaded.
+GArray *dyn_containers_get_train_engines_arr(void);
 
 // Finds the requested train engine, and finds an available train engine instance to use
 int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
@@ -175,6 +175,9 @@ void dyn_containers_set_interlocker(const int interlocker_slot, const char filep
 // Unloads interlocker at specified slot
 // Can only be called while the dyn_containers_mutex is locked
 bool dyn_containers_free_interlocker(const int interlocker_slot);
+
+// Gets a char*-GArray with the names of interlockers that have been loaded
+GArray *dyn_containers_get_interlockers_arr(void);
 
 // Gets a comma-separated string of interlockers that have been loaded
 GString *dyn_containers_get_interlockers(void);

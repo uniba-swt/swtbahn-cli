@@ -303,6 +303,57 @@ onion_connection_status handler_get_train_peripherals(void *_, onion_request *re
 	}
 }
 
+static GString *get_engines_or_interlockers_json(bool engines) {
+	GString *g_json_ret = g_string_new("");
+	if (g_json_ret == NULL) {
+		syslog_server(LOG_ERR, "Get engines or interlockers json - can't allocate g_engines");
+		return NULL;
+	}
+	append_start_of_obj(g_json_ret, false);
+	GArray *names_list = NULL;
+	if (engines) {
+		names_list = dyn_containers_get_train_engines_arr();
+	} else {
+		names_list = dyn_containers_get_interlockers_arr();
+	}
+	if (names_list == NULL) {
+		syslog_server(LOG_ERR, "Get engines or interlockers json - list from dyncontainers is NULL");
+		return NULL;
+	}
+	const char *fieldname = engines ? "engines" : "interlockers";
+	append_field_strlist_value_garray_strs(g_json_ret, fieldname, names_list, false);
+	append_end_of_obj(g_json_ret, false);
+	free_g_strarray(names_list);
+	return g_json_ret;
+}
+
+static onion_connection_status get_engines_interlockers_common(onion_request *req, 
+                                                               onion_response *res, 
+                                                               bool engines) {
+	build_response_header(res);
+	const char *l_name = engines ? "Get engines" : "Get interlockers";
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		GString *g_ret = get_engines_or_interlockers_json(engines);
+		if (g_ret != NULL) {
+			send_some_gstring_and_free(res, HTTP_OK, g_ret);
+		} else {
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
+		}
+		syslog_server(LOG_INFO, "Request: %s - done", l_name);
+		return OCS_PROCESSED;
+	} else {
+		return handle_req_run_or_method_fail(res, running, l_name);
+	}
+}
+
+onion_connection_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
+	return get_engines_interlockers_common(req, res, true);
+}
+
+onion_connection_status handler_get_interlockers(void *_, onion_request *req, onion_response *res) {
+	return get_engines_interlockers_common(req, res, false);
+}
+
 static GString *get_track_outputs_json() {
 	t_bidib_id_list_query query = bidib_get_track_outputs();
 	GString *g_track_outputs = g_string_sized_new(48 * (query.length + 1));
@@ -399,28 +450,27 @@ static GString *get_accessories_json(bool point_accessories) {
 	return g_accs;
 }
 
-onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
+static onion_connection_status get_points_signals_common(onion_request *req, 
+                                                         onion_response *res, 
+                                                         bool points) {
 	build_response_header(res);
+	const char *l_name = points ? "Get points" : "Get signals";
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
-		GString *g_points = get_accessories_json(true);
-		send_some_gstring_and_free(res, HTTP_OK, g_points);
-		syslog_server(LOG_INFO, "Request: Get points - done");
+		GString *g_ret = get_accessories_json(points);
+		send_some_gstring_and_free(res, HTTP_OK, g_ret);
+		syslog_server(LOG_INFO, "Request: %s - done", l_name);
 		return OCS_PROCESSED;
 	} else {
-		return handle_req_run_or_method_fail(res, running, "Get points");
+		return handle_req_run_or_method_fail(res, running, l_name);
 	}
 }
 
+onion_connection_status handler_get_points(void *_, onion_request *req, onion_response *res) {
+	return get_points_signals_common(req, res, true);
+}
+
 onion_connection_status handler_get_signals(void *_, onion_request *req, onion_response *res) {
-	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
-		GString *g_signals = get_accessories_json(false);
-		send_some_gstring_and_free(res, HTTP_OK, g_signals);
-		syslog_server(LOG_INFO, "Request: Get signals - done");
-		return OCS_PROCESSED;
-	} else {
-		return handle_req_run_or_method_fail(res, running, "Get signals");
-	}
+	return get_points_signals_common(req, res, false);
 }
 
 static GString *get_point_details_json(const char *data_id) {

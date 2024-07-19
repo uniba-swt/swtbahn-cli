@@ -234,20 +234,6 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 	}
 }
 
-///TODO: Move to monitor
-onion_connection_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
-	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		GString *train_engines = dyn_containers_get_train_engines();
-		onion_response_printf(res, "%s", train_engines->str);
-		g_string_free(train_engines, true);
-		syslog_server(LOG_INFO, "Request: Get engines - done");
-		return OCS_PROCESSED;
-	} else {
-		return handle_req_run_or_method_fail(res, running, "Get engines");
-	}
-}
-
 onion_connection_status handler_remove_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -410,21 +396,6 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Upload interlocker");
-	}
-}
-
-///TODO: Move to monitor
-onion_connection_status handler_get_interlockers(void *_, onion_request *req,
-                                                     onion_response *res) {
-	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		GString *interlockers = dyn_containers_get_interlockers();
-		onion_response_printf(res, "%s", interlockers->str);
-		g_string_free(interlockers, true);
-		syslog_server(LOG_INFO, "Request: Get interlockers - done");
-		return OCS_PROCESSED;
-	} else {
-		return handle_req_run_or_method_fail(res, running, "Get interlockers");
 	}
 }
 
