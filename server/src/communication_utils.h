@@ -59,7 +59,7 @@ bool send_common_feedback(onion_response *res, int status_code, const char* mess
  * @return true if parameters were valid and sending succeeded,
  * @return false otherwise.
  */
-bool send_some_gstring(onion_response *res, int status_code, GString *gstr);
+bool send_some_gstring_and_free(onion_response *res, int status_code, GString *gstr);
 
 // This does not free the passed string to be sent (in contrast to the gstring version).
 bool send_some_cstring(onion_response *res, int status_code, const char *cstr);

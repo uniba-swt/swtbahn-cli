@@ -568,7 +568,7 @@ onion_connection_status handler_get_interlocker(void *_, onion_request *req, oni
 			g_string_append_printf(g_resstr, "%s\"\n}", 
 			                       selected_interlocker_name->str);
 			pthread_mutex_unlock(&interlocker_mutex);
-			send_some_gstring(res, HTTP_OK, g_resstr);
+			send_some_gstring_and_free(res, HTTP_OK, g_resstr);
 			syslog_server(LOG_INFO, "Request: Get interlocker - done");
 		} else {
 			pthread_mutex_unlock(&interlocker_mutex);

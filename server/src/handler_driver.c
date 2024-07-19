@@ -818,7 +818,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		if (data_train == NULL || data_engine == NULL) {
 			syslog_server(LOG_ERR, "Request: Grab train - invalid parameters");
 			GString *feedback = get_grab_fdbk_json("invalid parameters", 0, -1);
-			send_some_gstring(res, HTTP_BAD_REQUEST, feedback);
+			send_some_gstring_and_free(res, HTTP_BAD_REQUEST, feedback);
 			return OCS_PROCESSED;
 		}
 		
@@ -831,7 +831,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		bidib_free_train_state_query(train_state_query);
 		if (!trainstate_known) {
 			GString *ret = get_grab_fdbk_json("unknown train or invalid train state", 0, -1);
-			send_some_gstring(res, HTTP_NOT_FOUND, ret);
+			send_some_gstring_and_free(res, HTTP_NOT_FOUND, ret);
 			syslog_server(LOG_ERR, 
 			              "Request: Grab train - train: %s engine: %s - "
 			              "unknown train or train state - abort", 
@@ -849,7 +849,7 @@ onion_connection_status handler_grab_train(void *_, onion_request *req, onion_re
 		fill_grab_feedback(grab_id, ret_str, &http_code);
 		
 		if (ret_str != NULL) {
-			send_some_gstring(res, http_code, ret_str);
+			send_some_gstring_and_free(res, http_code, ret_str);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Grab train - train: %s engine: %s - finish", 
 			              data_train, data_engine);
@@ -972,11 +972,11 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		
 		if (data_source_name == NULL || data_destination_name == NULL) {
-			send_some_gstring(res, HTTP_BAD_REQUEST, get_reqroute_fdbk_json("invalid parameters", ""));
+			send_some_gstring_and_free(res, HTTP_BAD_REQUEST, get_reqroute_fdbk_json("invalid parameters", ""));
 			syslog_server(LOG_ERR, "Request: Request train route - invalid parameters");
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
-			send_some_gstring(res, HTTP_BAD_REQUEST, get_reqroute_fdbk_json("invalid session-id", ""));
+			send_some_gstring_and_free(res, HTTP_BAD_REQUEST, get_reqroute_fdbk_json("invalid session-id", ""));
 			syslog_server(LOG_ERR, 
 			              "Request: Request train route - from: %s to: %s - invalid session id", 
 			              data_source_name, data_destination_name);
@@ -986,7 +986,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		// If grab_id is valid, train_id will be, too.
 		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
-			send_some_gstring(res, HTTP_BAD_REQUEST, get_reqroute_fdbk_json("invalid grab-id", ""));
+			send_some_gstring_and_free(res, HTTP_BAD_REQUEST, get_reqroute_fdbk_json("invalid grab-id", ""));
 			syslog_server(LOG_ERR, 
 			              "Request: Request train route - from: %s to: %s - invalid grab id",
 			              data_source_name, data_destination_name);
@@ -1002,7 +1002,7 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 		int http_code = 0;
 		GString *ret_str = NULL;
 		fill_request_route_feedback(route_id, ret_str, &http_code);
-		send_some_gstring(res, http_code, ret_str);
+		send_some_gstring_and_free(res, http_code, ret_str);
 		syslog_server(LOG_NOTICE, 
 		              "Request: Request train route - train: %s from: %s to: %s - finish",
 		              train_id, data_source_name, data_destination_name);

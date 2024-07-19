@@ -44,7 +44,7 @@ bool send_common_feedback(onion_response *res, int status_code, const char* mess
 	}
 }
 
-bool send_some_gstring(onion_response *res, int status_code, GString *gstr) {
+bool send_some_gstring_and_free(onion_response *res, int status_code, GString *gstr) {
 	if (res == NULL) {
 		if (gstr != NULL) {
 			g_string_free(gstr, true);
