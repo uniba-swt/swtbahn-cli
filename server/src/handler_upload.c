@@ -85,12 +85,14 @@ bool clear_interlocker_dir(void) {
 	return clear_dir(interlocker_dir);
 }
 
-static void remove_file_extension(char filepath_destination[], 
-                           const char filepath_source[], const char extension[]) {
+static void remove_file_extension(char filepath_destination[], const char filepath_source[], 
+                                  const char extension[]) {
 	strcpy(filepath_destination, filepath_source);
 	size_t filepath_len = strlen(filepath_source);
 	size_t extension_len = strlen(extension);
-	filepath_destination[filepath_len - extension_len] = '\0';
+	if (filepath_len > extension_len) {
+		filepath_destination[filepath_len - extension_len] = '\0';
+	}
 }
 
 static bool engine_file_exists(const char filename[]) {
