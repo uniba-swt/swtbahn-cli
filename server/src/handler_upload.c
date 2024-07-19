@@ -40,6 +40,7 @@
 #include "dynlib.h"
 #include "dyn_containers_interface.h"
 #include "websocket_uploader/engine_uploader.h"
+#include "communication_utils.h"
 
 static const char engine_dir[] = "engines";
 static const char engine_extensions[][5] = { "c", "h", "sctx" };
@@ -51,8 +52,7 @@ static const int interlocker_extensions_count = 1;
 
 extern pthread_mutex_t dyn_containers_mutex;
 
-
-bool clear_dir(const char dir[]) {
+static bool clear_dir(const char dir[]) {
 	int result = 0;
 	
 	DIR *dir_handle = opendir(dir);
@@ -85,7 +85,7 @@ bool clear_interlocker_dir(void) {
 	return clear_dir(interlocker_dir);
 }
 
-void remove_file_extension(char filepath_destination[], 
+static void remove_file_extension(char filepath_destination[], 
                            const char filepath_source[], const char extension[]) {
 	strcpy(filepath_destination, filepath_source);
 	size_t filepath_len = strlen(filepath_source);
@@ -93,7 +93,7 @@ void remove_file_extension(char filepath_destination[],
 	filepath_destination[filepath_len - extension_len] = '\0';
 }
 
-bool engine_file_exists(const char filename[]) {
+static bool engine_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(engine_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
@@ -116,7 +116,7 @@ bool engine_file_exists(const char filename[]) {
 	return false;
 }
 
-bool remove_engine_files(const char library_name[]) {
+static bool remove_engine_files(const char library_name[]) {
 	// Remove the prefix "lib"
 	char name[PATH_MAX + NAME_MAX];
 	strcpy(name, library_name + 3);
@@ -133,7 +133,7 @@ bool remove_engine_files(const char library_name[]) {
 	return (result == 0);
 } 
 
-bool plugin_is_unremovable(const char name[]) {
+static bool plugin_is_unremovable(const char name[]) {
 	return (strstr(name, "(unremovable)") != NULL);
 }
 
@@ -237,13 +237,13 @@ onion_connection_status handler_upload_engine(void *_, onion_request *req, onion
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, "Request: Upload engine - system not running or wrong request type");
-		///TODO: Discuss which code to return
 		onion_response_set_code(res, HTTP_BAD_REQUEST);
 		onion_response_printf(res, "System not running or wrong request type");
 		return OCS_PROCESSED;
 	}
 }
 
+///TODO: Move to monitor
 onion_connection_status handler_get_engines(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -302,8 +302,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req, onion
 			syslog_server(LOG_ERR, 
 			              "Request: Remove engine - engine: %s - files could not be removed - abort", 
 			              name);
-			///TODO: This is an internal error, should return different response code IMO
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			onion_response_printf(res, "Engine %s files could not be removed", name);
 			return OCS_PROCESSED;
 		}
@@ -318,7 +317,7 @@ onion_connection_status handler_remove_engine(void *_, onion_request *req, onion
 	}
 }
 
-bool interlocker_file_exists(const char filename[]) {
+static bool interlocker_file_exists(const char filename[]) {
 	DIR *dir_handle = opendir(interlocker_dir);
 	if (dir_handle == NULL) {
 		closedir(dir_handle);
@@ -338,7 +337,7 @@ bool interlocker_file_exists(const char filename[]) {
 	return false;
 }
 
-bool remove_interlocker_files(const char library_name[]) {
+static bool remove_interlocker_files(const char library_name[]) {
 	// Remove the prefix "libinterlocker_"
 	char name[PATH_MAX + NAME_MAX];
 	strcpy(name, library_name + 15);
@@ -447,6 +446,7 @@ onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
 	}
 }
 
+///TODO: Move to monitor
 onion_connection_status handler_get_interlockers(void *_, onion_request *req,
                                                      onion_response *res) {
 	build_response_header(res);

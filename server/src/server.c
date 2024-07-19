@@ -185,11 +185,13 @@ int main(int argc, char **argv) {
 
 	// --- upload functions ---
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
-	onion_url_add(urls, "upload/refresh-engines", handler_get_engines);
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
 	onion_url_add(urls, "upload/interlocker", handler_upload_interlocker);
-	onion_url_add(urls, "upload/refresh-interlockers", handler_get_interlockers);
 	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
+	///TODO: Move to monitor
+	onion_url_add(urls, "upload/refresh-engines", handler_get_engines);
+	///TODO: Move to monitor
+	onion_url_add(urls, "upload/refresh-interlockers", handler_get_interlockers);
 
 	// --- monitor functions ---
 	onion_url_add(urls, "monitor/trains", handler_get_trains);

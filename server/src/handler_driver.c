@@ -963,7 +963,8 @@ void fill_request_route_feedback(GString *route_id, GString *ret_str, int *http_
 
 onion_connection_status handler_request_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	///TODO: Changed to GET (from POST), adjust clients.
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_source_name = onion_request_get_post(req, "source");
@@ -1018,7 +1019,8 @@ onion_connection_status handler_request_route(void *_, onion_request *req, onion
 // just getting a route id of/for something (similar to a monitor endpoint).
 onion_connection_status handler_request_route_id(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	///TODO: Changed to GET (from POST), adjust clients.
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_route_id = onion_request_get_post(req, "route-id");
@@ -1079,7 +1081,8 @@ onion_connection_status handler_request_route_id(void *_, onion_request *req, on
 onion_connection_status handler_driving_direction(void *_, onion_request *req,
                                                   onion_response *res) {
 	build_response_header(res);
-	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+	///TODO: Changed to GET (from POST), adjust clients.
+	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
@@ -1177,9 +1180,9 @@ onion_connection_status handler_set_dcc_train_speed(void *_, onion_request *req,
 		const char *data_grab_id = onion_request_get_post(req, "grab-id");
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
-		int client_session_id = params_check_session_id(data_session_id);
-		int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
-		int speed = params_check_speed(data_speed);
+		const int client_session_id = params_check_session_id(data_session_id);
+		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
+		const int speed = params_check_speed(data_speed);
 		
 		if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");

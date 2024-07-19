@@ -52,8 +52,10 @@ static t_interlocker_data interlocker_instances[INTERLOCKER_INSTANCE_COUNT_MAX] 
 	{ .is_valid = false, .dyn_containers_interlocker_instance = -1 }
 };
 
-static GString *selected_interlocker_name;
+static GString *selected_interlocker_name = NULL;
 static int selected_interlocker_instance = -1;
+static const size_t max_signals_in_route_assmptn = 1024;
+static const size_t max_items_in_route_assmptn = 1024;
 
 // Returns a value >= 0 if the interlocker with the specified name was set. Otherwise returns -1.
 // Only call with interlocker_mutex locked.
@@ -138,7 +140,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 	// check for route availability.
 	bool sectional_in_use = (g_strrstr(selected_interlocker_name->str, "sectional") != NULL);
 	
-	const unsigned int route_count = MAX(interlocking_table_get_size(), 1024);
+	const unsigned int route_count = MAX(interlocking_table_get_size(), max_signals_in_route_assmptn);
 	char *conflict_routes[route_count];
 	const size_t conflict_routes_len = 
 			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
@@ -187,7 +189,7 @@ bool get_route_is_clear(const char *route_id) {
 	bahn_data_util_init_cached_track_state();
 
 	// Check that all route signals are in the Stop aspect
-	char *signal_ids[1024];
+	char *signal_ids[max_signals_in_route_assmptn];
 	const size_t signal_ids_len = config_get_array_string_value("route", route_id, 
 	                                                            "route_signals", signal_ids);
 	for (size_t i = 0; i < signal_ids_len; i++) {
@@ -199,7 +201,7 @@ bool get_route_is_clear(const char *route_id) {
 	}
 
 	// Check that all blocks are unoccupied
-	char *item_ids[1024];
+	char *item_ids[max_items_in_route_assmptn];
 	const size_t item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
 	for (size_t i = 0; i < item_ids_len; i++) {
 		if (is_type_segment(item_ids[i]) && is_segment_occupied(item_ids[i])) {
