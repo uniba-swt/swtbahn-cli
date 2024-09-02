@@ -93,7 +93,7 @@ void free_config_data(t_config_data config_data) {
     }
 
     nullify_track_config_tables();
-        
+    
     if (config_data.table_trains != NULL) {
         g_hash_table_destroy(config_data.table_trains);
         config_data.table_trains = NULL;

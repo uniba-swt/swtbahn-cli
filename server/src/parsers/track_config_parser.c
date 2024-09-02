@@ -72,43 +72,109 @@ void free_track_id_key(void *pointer) {
 
 void free_segment(void *pointer) {
     t_config_segment *segment = (t_config_segment *) pointer;
-    log_debug("free segment: %s", segment->id);
+    if (segment == NULL) {
+        return;
+    }
+    if (segment->id != NULL) {
+        log_debug("free segment: %s", segment->id);
+        free(segment->id);
+        segment->id = NULL;
+    }
     free(segment);
 }
 
 void free_signal(void *pointer) {
     t_config_signal *signal = (t_config_signal *) pointer;
-    log_debug("free signal: %s", signal->id);
-
+    if (signal == NULL) {
+        return;
+    }
+    if (signal->id != NULL) {
+        log_debug("free signal: %s", signal->id);
+        free(signal->id);
+        signal->id = NULL;
+    }
     if (signal->aspects != NULL) {
-        log_debug("\tfree aspects:");
+        log_debug("\tfree signal aspects");
         for (int i = 0; i < signal->aspects->len; ++i) {
-            log_debug("\t\t%s", g_array_index(signal->aspects, char *, i));
+            free(g_array_index(signal->aspects, char *, i));
         }
         g_array_free(signal->aspects, true);
     }
-
+    if (signal->initial != NULL) {
+        log_debug("\tfree signal initial");
+        free(signal->initial);
+        signal->initial = NULL;
+    }
+    if (signal->type != NULL) {
+        log_debug("\tfree signal type");
+        free(signal->type);
+        signal->type = NULL;
+    }
+    
     free(signal);
 }
 
 void free_point(void *pointer) {
     t_config_point *point = (t_config_point *) pointer;
-    log_debug("free point: %s", point->id);
+    if (point == NULL) {
+        return;
+    }
+    if (point->id != NULL) {
+        log_debug("free point: %s", point->id);
+        free(point->id);
+        point->id = NULL;
+    }
+    if (point->initial != NULL) {
+        log_debug("\tfree point initial");
+        free(point->initial);
+        point->initial = NULL;
+    }
+    if (point->normal_aspect != NULL) {
+        log_debug("\tfree point normal aspect");
+        free(point->normal_aspect);
+        point->normal_aspect = NULL;
+    }
+    if (point->reverse_aspect != NULL) {
+        log_debug("\tfree point reverse aspect");
+        free(point->reverse_aspect);
+        point->reverse_aspect = NULL;
+    }
+    if (point->segment != NULL) {
+        log_debug("\tfree point segment");
+        free(point->segment);
+        point->segment = NULL;
+    }
     free(point);
 }
 
 void free_peripheral(void *pointer) {
     t_config_peripheral *peripheral = (t_config_peripheral *) pointer;
-    log_debug("free peripheral: %s", peripheral->id);
+    if (peripheral == NULL) {
+        return;
+    }
+    if (peripheral->id != NULL) {
+        log_debug("free peripheral: %s", peripheral->id);
+        free(peripheral->id);
+        peripheral->id = NULL;
+    }
 
     if (peripheral->aspects != NULL) {
-        log_debug("\tfree aspects:");
+        log_debug("\tfree peripheral aspects");
         for (int i = 0; i < peripheral->aspects->len; ++i) {
-            log_debug("\t\t%s", g_array_index(peripheral->aspects, char *, i));
+            free(g_array_index(peripheral->aspects, char *, i));
         }
         g_array_free(peripheral->aspects, true);
     }
-
+    if (peripheral->initial != NULL) {
+        log_debug("\tfree peripheral initial");
+        free(peripheral->initial);
+        peripheral->initial = NULL;
+    }
+    if (peripheral->type != NULL) {
+        log_debug("\tfree peripheral type");
+        free(peripheral->type);
+        peripheral->type = NULL;
+    }
     free(peripheral);
 }
 
@@ -137,44 +203,22 @@ void initialise_hashtables(void) {
 void track_yaml_sequence_start(char *scalar) {
     if (track_mapping == TRACK_ROOT && str_equal(scalar, "boards")) {
         track_sequence = BOARDS;
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "segments")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "segments")) {
         track_sequence = SEGMENTS;
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "signals-board")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "signals-board")) {
         track_sequence = SIGNALS;
-        return;
-    }
-
-    if (track_mapping == SIGNAL && str_equal(scalar, "aspects")) {
+    } else if (track_mapping == SIGNAL && str_equal(scalar, "aspects")) {
         track_sequence = SIGNAL_ASPECTS;
         cur_signal->aspects = g_array_sized_new(false, false, sizeof(char *), 4);
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "points-board")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "points-board")) {
         track_sequence = POINTS;
-        return;
-    }
-
-    if (track_mapping == POINT && str_equal(scalar, "aspects")) {
+    } else if (track_mapping == POINT && str_equal(scalar, "aspects")) {
         track_sequence = POINT_ASPECTS;
-        return;
-    }
-
-    if (track_mapping == BOARD && str_equal(scalar, "peripherals")) {
+    } else if (track_mapping == BOARD && str_equal(scalar, "peripherals")) {
         track_sequence = PERIPHERALS;
-        return;
-    }
-
-    if (track_mapping == PERIPHERAL && str_equal(scalar, "aspects")) {
+    } else if (track_mapping == PERIPHERAL && str_equal(scalar, "aspects")) {
         track_sequence = PERIPHERAL_ASPECTS;
         cur_peripheral->aspects = g_array_sized_new(false, false, sizeof(char *), 4);
-        return;
     }
 }
 
@@ -209,11 +253,19 @@ void track_yaml_mapping_start(char *scalar) {
         case SEGMENTS:
             track_mapping = SEGMENT;
             cur_segment = malloc(sizeof(t_config_segment));
+            if (cur_segment == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_segment");
+                exit(1);
+            }
             cur_segment->id = NULL;
             break;
         case SIGNALS:
             track_mapping = SIGNAL;
             cur_signal = malloc(sizeof(t_config_signal));
+            if (cur_signal == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_signal");
+                exit(1);
+            }
             cur_signal->id = NULL;
             cur_signal->initial = NULL;
             cur_signal->aspects = NULL;
@@ -225,6 +277,10 @@ void track_yaml_mapping_start(char *scalar) {
         case POINTS:
             track_mapping = POINT;
             cur_point = malloc(sizeof(t_config_point));
+            if (cur_point == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_point");
+                exit(1);
+            }
             cur_point->id = NULL;
             cur_point->initial = NULL;
             cur_point->segment = NULL;
@@ -237,6 +293,10 @@ void track_yaml_mapping_start(char *scalar) {
         case PERIPHERALS:
             track_mapping = PERIPHERAL;
             cur_peripheral = malloc(sizeof(t_config_peripheral));
+            if (cur_peripheral == NULL) {
+                log_debug("track_yaml_mapping_start: failed to allocate memory for cur_peripheral");
+                exit(1);
+            }
             cur_peripheral->id = NULL;
             cur_peripheral->initial = NULL;
             cur_peripheral->aspects = NULL;
@@ -305,11 +365,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_segment->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "length")) {
+            } else if (str_equal(last_scalar, "length")) {
                 cur_segment->length = parse_float(cur_scalar);
-                return;
+                // no return here intentional, have to free cur_scalar since no ownership is 
+                // transferred here.
             }
             break;
 
@@ -317,14 +376,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_signal->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_signal->initial = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "type")) {
+            } else if (str_equal(last_scalar, "type")) {
                 cur_signal->type = cur_scalar;
                 return;
             }
@@ -334,14 +389,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_point->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_point->initial = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "segment")) {
+            } else if (str_equal(last_scalar, "segment")) {
                 cur_point->segment = cur_scalar;
                 return;
             }
@@ -351,14 +402,10 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
             if (str_equal(last_scalar, "id")) {
                 cur_peripheral->id = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "initial")) {
+            } else if (str_equal(last_scalar, "initial")) {
                 cur_peripheral->initial = cur_scalar;
                 return;
-            }
-
-            if (str_equal(last_scalar, "type")) {
+            } else if (str_equal(last_scalar, "type")) {
                 cur_peripheral->type = cur_scalar;
                 return;
             }
@@ -367,6 +414,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case SIGNAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_signal->aspects, cur_scalar);
+                return;
             }
             break;
 
@@ -375,9 +423,7 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
                 if (str_equal(cur_scalar, "normal")) {
                     cur_point->normal_aspect = cur_scalar;
                     return;
-                }
-
-                if (str_equal(cur_scalar, "reverse")) {
+                } else if (str_equal(cur_scalar, "reverse")) {
                     cur_point->reverse_aspect = cur_scalar;
                     return;
                 }
@@ -387,12 +433,15 @@ void track_yaml_scalar(char *last_scalar, char *cur_scalar) {
         case PERIPHERAL_ASPECT:
             if (str_equal(last_scalar, "id")) {
                 g_array_append_val(cur_peripheral->aspects, cur_scalar);
+                return;
             }
             break;
             
         default:
-            return;
+            break;
     }
+    free(cur_scalar);
+    cur_scalar = NULL;
 }
 
 void parse_track_yaml(yaml_parser_t *parser, t_config_data *data) {

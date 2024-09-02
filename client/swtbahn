@@ -65,7 +65,7 @@ def create_config(hostname, port, default_output):
     click.echo("Connection test:")
     try:
         response = requests.get(server)
-        if (response.text != "SWTbahn server"):
+        if (response.status_code != requests.codes.ok):
             click.echo("No SWTbahn server on " + server, err=True)
         else:
             click.echo("Running SWTbahn server found on " + server)

@@ -2,6 +2,7 @@ var driver = null;           // Train driver logic.
 var drivingTimer = null;     // Timer for driving a train.
 var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
+var isEasyMode = false;      // User interface verbosity.
 
 /**************************************************
  * Destination related information and UI elements
@@ -430,10 +431,20 @@ class Driver {
 						$(obj).removeClass("btn-danger");
 						$(obj).addClass("btn-primary");
 						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
+						
+						function setVisibility(isShow) {
+							if (isShow) {
+								return "";
+							} else {
+								return "style='display: none;'";
+							}
+						}
 						$(obj).children().each(function() {
-							switch($(this).attr('lang')){
-								case "de": $(this).text("Fahre diesen Zug"); break;
-								case "en": $(this).text("Drive this train"); break;
+							switch ($(this).attr('lang')) {
+								case "de": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Klicke um den Zug zu fahren</span><span class='normal' ${setVisibility(!isEasyMode)}>Zug fahren</span>`);
+								           break;
+								case "en": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Click to drive this train</span><span class='normal' ${setVisibility(!isEasyMode)}>Drive this train</span>`);
+								           break;
 							}
 						});
 					},
@@ -800,15 +811,27 @@ function initialise() {
 	//-----------------------------------------------------
 
 	// Set the initial language.
-	$('span:lang(en)').hide();
-	$('span:lang(de)').show();
 	language = 'de';
+	$('span:lang(de):not(span span)').show();
+	$('span:lang(en):not(span span)').hide();
 	
 	// Handle language selection.
 	$('#changeLang').click(function () {
-		$('span:lang(en)').toggle();
-		$('span:lang(de)').toggle();
 		language = (language == 'en') ? 'de' : 'en';
+		$('span:lang(de):not(span span)').toggle();
+		$('span:lang(en):not(span span)').toggle();
+	});
+
+	// Set the text verbosity.
+	isEasyMode = false;
+	$('.normal').show();
+	$('.easy').hide();
+	
+	// Handle the verbosity selection.
+	$('#changeTips').click(function (event) {
+		isEasyMode = !isEasyMode
+		$('.normal').toggle();
+		$('.easy').toggle();
 	});
 
 	// Hide the train driving buttons (destination selections).

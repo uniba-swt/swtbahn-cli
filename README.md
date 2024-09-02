@@ -19,8 +19,9 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 [libbidib](https://github.com/uniba-swt/libbidib)
 * ForeC command line compiler: [forecc](https://github.com/PRETgroup/ForeC/tree/master/ForeC%20Compiler)
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
-  * Path to the folder that contains the kico.jar has to be defined in the environment variable `KIELER_PATH`
+  * Path to the folder that contains `kico.jar` has to be defined in the environment variable `KIELER_PATH`
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
+  * Path to the folder that contains the `bahnc` has to be defined in the environment variable `BAHNDSL_PATH`
 * SCCharts verifier: [SWTbahn Verifier (SWT internal repository)](https://gitlab.rz.uni-bamberg.de/swt/swtbahn-verifier)
 
 #### Command Line Client
@@ -212,3 +213,29 @@ When is a grab-id reset?
 is not the same as the one at the server
 * If the user issues `swtbahn admin shutdown` and the system was running
 * If the user issues `swtbahn config`
+
+## Logging Format Notes
+We try to use a consistent logging format in all request handlers. General workflow of how request handlers generate log messages:
+1. Parse form data.
+2. Validate form data. If validation fails, make a log on `ERROR` level and stop processing.
+3. Make a log on log level `NOTICE` that represents the start of processing, with ` - start` at the end of the log.
+4. Process request. If processing causes an error, make a log on the `ERROR` or `WARNING` log level with ` - abort` at the end of the log and stop processing.
+5. Processing concluded. Indicate this by printing the log message of Step 3 again, on the same log level, with ` - finish` instead of ` - start` at the end.
+
+For request handlers that barely do any "processing" at all; e.g. where only a status variable is updated, they only generate one log message that ends with ` - done`.
+Request handlers that only return information (getters) also use the ` - done` pattern instead of `start` and `finish`, and use the log level `INFO` for the ` - done` log.
+
+As an example, when a request is made to set point10 to the normal state, the request handler (`handler_set_point`) generates the following log messages when the processing is successful:
+> LOG_NOTICE: `Request: Set point - point: point10 state: normal - start`   
+> _Intervening log messages from internal processing_   
+> LOG_NOTICE: `Request: Set point - point: point10 state: normal - finish`   
+
+If the above request was instead made with an unsupported state, e.g., `foobar`, then the request handler would generate the following log messages to say that the processing was stopped because of invalid parameters: 
+
+> LOG_NOTICE: `Request: Set point - point: point10 state: foobar - start`   
+> _Intervening log messages from internal processing_   
+> LOG_ERR: `Request: Set point - point: point10 state: foobar - invalid parameters - abort`   
+
+If the above request forgot to specify the state, i.e., the state parameter is `null`, then the request handler would only generate the following log message to say that the parameter validation failed:
+
+>  LOG_ERR: `Request: Set point - invalid parameters`

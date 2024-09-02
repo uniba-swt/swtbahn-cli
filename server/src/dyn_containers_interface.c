@@ -146,11 +146,13 @@ static void *dyn_containers_actuate(void *_) {
 												  ? engine_instance->output_nominal_speed 
 												  : -engine_instance->output_nominal_speed, 
 												  grabbed_trains[i].track_output)) {
-							syslog_server(LOG_ERR, "Request: Set train speed - train: %s: bad parameter values",
+							syslog_server(LOG_ERR, 
+							              "Dyn containers actuate - train: %s - invalid parameters",
 							              grabbed_trains[i].name->str);
 						} else {
 							bidib_flush();
-							syslog_server(LOG_NOTICE, "Request: Set train speed - train: %s speed: %d",
+							syslog_server(LOG_NOTICE, 
+							              "Dyn containers actuate - train: %s speed: %d - set train speed",
 							              grabbed_trains[i].name->str, 
 							              engine_instance->output_nominal_forwards 
 							              ? engine_instance->output_nominal_speed 
