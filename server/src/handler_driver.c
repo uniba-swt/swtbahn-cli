@@ -786,7 +786,7 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 
 	// Logging timestamp before trying to acquire the mutex for grabbed trains, 
 	// such that we can roughly measure the time it takes to acquire the mutex
-	struct timespec tva;
+	struct timespec tva, tvb;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
 	syslog_server(LOG_INFO, 
 	              "Drive route - route: %s train: %s - end of route (%s) reached detected at %d.%.9ld", 
@@ -794,11 +794,12 @@ static bool drive_route(const int grab_id, const char *route_id, const bool is_a
 	
 	// Driving stops
 	pthread_mutex_lock(&grabbed_trains_mutex);
+	clock_gettime(CLOCK_MONOTONIC, &tvb);
 	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	syslog_server(LOG_NOTICE, 
 	              "Drive route - route: %s train: %s - driving stops (commanded at %d.%.9ld)", 
-	              route->id, train_id, tva.tv_sec, tva.tv_nsec);
+	              route->id, train_id, tvb.tv_sec, tvb.tv_nsec);
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
