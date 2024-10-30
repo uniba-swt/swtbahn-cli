@@ -139,5 +139,15 @@ module SWTbahnUltraloop
             head_light bit 4 initial 1
             cabin_light bit 0 initial 1
         end
+
+        cargo_g1000bb 0x0050 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 10cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+        end
+
+        perso_sbb 0x004F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 12cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+        end
     end
 end

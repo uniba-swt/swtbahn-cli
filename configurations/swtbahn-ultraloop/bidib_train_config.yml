@@ -112,3 +112,43 @@ trains:
     weight: 100.0g
     length: 23.0cm
     type: passenger
+  - id: cargo_g1000bb
+    dcc-address: 0x0050
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4
+        initial: 1
+    weight: 100.0g
+    length: 10.0cm
+    type: cargo
+  - id: perso_sbb
+    dcc-address: 0x004F
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4
+        initial: 1
+    weight: 100.0g
+    length: 12.0cm
+    type: passenger
