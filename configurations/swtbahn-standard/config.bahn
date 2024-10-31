@@ -218,21 +218,21 @@ module SWTbahnStandard
 
     trains
         cargo_db 0x007F  # addr high | addr low
-        steps 126 
-        calibration
-            5 
-            15 
-            30 
-            45 
-            60 
-            75 
-            90 
-            105 
-            120 
-        end 
-        weight 100g 
-        length 13cm 
-        type cargo
+            steps 126 
+            calibration
+                5 
+                15 
+                30 
+                45 
+                60 
+                75 
+                90 
+                105 
+                120 
+            end 
+            weight 77g 
+            length 13cm 
+            type cargo
         peripherals
             head_light 
                 bit 4        # a value in range 0..31
@@ -241,36 +241,36 @@ module SWTbahnStandard
                 bit 0        # a value in range 0..31
                 initial 1
         end
-        
-        cargo_bayern 0x0070 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
-        peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
-        end
-        
-        cargo_green 0x006F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
-        peripherals
-            head_light bit 4 initial 1
-        end
 
-        regional_odeg 0x0060 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
-        peripherals
-            head_light bit 4 initial 1
-            cabin_light bit 0 initial 1
-        end
-        
-        regional_brengdirect 0x005F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
+        cargo_bayern 0x0070 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 72g length 13cm type cargo
         peripherals
             head_light bit 4 initial 1
             cabin_light bit 0 initial 1
         end
 
-        cargo_g1000bb 0x0050 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 10cm type cargo
+        cargo_green 0x006F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 80g length 13cm type cargo
         peripherals
             head_light bit 4 initial 1
         end
 
-        perso_sbb 0x004F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 12cm type passenger
+        regional_odeg 0x0060 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 194g length 25cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+
+        regional_brengdirect 0x005F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 236g length 35cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+
+        cargo_g1000bb 0x0050 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 35g length 10cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+        end
+
+        perso_sbb 0x004F steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 81g length 12cm type passenger
         peripherals
             head_light bit 4 initial 1
         end
