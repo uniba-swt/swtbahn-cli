@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_granted-routes.schema.json",
+  "title": "granted-routes",
+  "description": "List of granted routes, each entry has the route identifier and name of train which the route is granted to",
+  "type": "object",
+  "properties": {
+    "granted-routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 0,
+      "items": {
+        "required": [
+          "id",
+          "train"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "train": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "granted-routes"
+  ]
+}

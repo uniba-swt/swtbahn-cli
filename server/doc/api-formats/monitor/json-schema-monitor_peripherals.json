@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_peripherals.schema.json",
+  "title": "peripherals",
+  "description": "List of peripherals, with their identifier and info on their state id and state value",
+  "type": "object",
+  "properties": {
+    "peripherals": {
+      "type": "array",
+      "uniqueItems": true,
+      "$comment": "peripherals should be unique thanks to their identifier, if that changes, prop above has to be adjusted",
+      "minItems": 0,
+      "items": {
+        "required": [
+          "id",
+          "state-id",
+          "state-value"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state-id": {
+            "type": "string",
+            "minLength": 0,
+            "$comment": "not sure if we may have an empty state-id for some peripherals"
+          },
+          "state-value": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "peripherals"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "driver_grab-train.schema.json",
+  "title": "grab-train",
+  "description": "train grabbing result. Relevant IDs if successfull, otherwise rejection/error message",
+  "type": "object",
+  "properties": {
+    "msg": {
+      "type": "string",
+      "description": "rejection/error message",
+      "minLength": 1
+    },
+    "session-id": {
+      "type": "integer",
+      "description": "identifier for the current server session",
+      "minimum": 1
+    },
+    "grab-id": {
+      "type": "integer",
+      "description": "identifier for this grabbing of a train",
+      "minimum": 0
+    }
+  },
+  "oneOf": [
+    {"required": ["session-id", "grab-id"]},
+    {"required": ["msg"]}
+  ]
+}

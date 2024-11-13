@@ -2,11 +2,6 @@
 
 #include "json_response_builder.h"
 
-//const char *end_of_obj_noc = "}";
-//const char *end_of_obj_withc = "},";
-//const char *end_of_list_noc = "]";
-//const char *end_of_list_withc = "],";
-
 
 GString* append_field_str_value(GString *dest, const char *field, 
                                 const char *value_str, bool add_trailing_comma) {
@@ -72,7 +67,7 @@ GString* append_field_value_garray_strs_base(GString *dest, const char *field,
 	return dest;
 }
 
-GString* append_field_strlist_value_garray_strs(GString *dest, const char *field, 
+GString* append_field_strlist_value_from_garray_strs(GString *dest, const char *field, 
                                                 const GArray* g_strarray, bool add_trailing_comma) {
 	return append_field_value_garray_strs_base(dest, field, g_strarray, true, add_trailing_comma);
 }

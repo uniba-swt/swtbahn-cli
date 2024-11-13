@@ -560,11 +560,18 @@ class Driver {
 					// Take into account that a main segment could be split into a/b segments
 					for (let index in segments) {
 						segments[index] = segments[index].replace(/(a|b)$/, '');
+						///TODO: Investigate the point of this check.
+						// reads as if we return if the train occupies a segment
+						// that is not part of the route.
 						if (segments[index] != this.routeDetails['segment']) {
 							return;
 						}
 					}
-					
+					///NOTE: Only checks the first segment that the train occupies ->
+					// older segments the train has physically already left will still be
+					// contained and perhaps lead to the "is destination reached" staying
+					// false until they are officially left (delay of ~1 - 1.5s). 
+					// This could be a problem for short main segments!
 					if(segments[0] == this.routeDetails['segment']) {
 						this.clearDestinationReachedInterval();
 						this.isDestinationReached = true;

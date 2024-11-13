@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_signal-aspects.schema.json",
+  "title": "signal-aspects",
+  "description": "list of aspects that a specific signal (specified by the client request) supports",
+  "type": "object",
+  "properties": {
+    "aspects": {
+      "type": "array",
+      "minItems": 0,
+      "$comment": "currently allows answers with no aspects in the list, can occur if specified signal is unknown",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "uniqueItems": true
+      }
+    }
+  },
+  "required": [
+    "aspects"
+  ]
+}

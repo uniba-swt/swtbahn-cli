@@ -4,5 +4,5 @@
 	"state": "unknown",
 	"segment": "seg5",
 	"occupied": false,
-	"target_state_reached": true /*this field may not be present*/
+	"target_state_reached": true
 }

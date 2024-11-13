@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_reversers.schema.json",
+  "title": "reversers",
+  "description": "list of known reversers on the platform with their state",
+  "type": "object",
+  "properties": {
+    "reversers": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 0,
+      "items": {
+        "required": [
+          "id",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "pattern": "^(on|off|unknown)$"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "reversers"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_point-details.schema.json",
+  "title": "point-details",
+  "description": "Detailed information on a point",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aspects": {
+      "type": "array",
+      "minItems": 0,
+      "$comment": "currently allows answers with no aspects in the list, can occur if low-level querying of aspects fails",
+      "items": {
+        "type": "string"
+      }
+    },
+    "state": {
+      "type": "string",
+      "minLength": 0,
+      "$comment": "not sure if we may have an empty state in some non-erronous circumstance"
+    },
+    "segment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occupied": {
+      "type": "boolean"
+    },
+    "target_state_reached": {
+      "type": "boolean",
+      "$comment": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
+    }
+  },
+  "required": [
+    "id",
+    "aspects",
+    "state",
+    "segment",
+    "occupied"
+  ]
+}

@@ -9,4 +9,4 @@ For the controller endpoints:
 See common_feedback.json.
 
 For the other controller endpoint(s):
-- controller/get-interlocker: see controller_get-interlocker.json and in an error case: common_feedback.json.
+- controller/get-interlocker: see controller_get-interlocker.json (and in an error case: common_feedback.json).

@@ -5,12 +5,12 @@
 			"state": "on"
 		},
 		{
-			"id": "r2",
-			"state": "unknown"
+			"id": "reverser1",
+			"state": "on"
 		},
 		{
 			"id": "r3",
-			"state": "off"
+			"state": "unknown"
 		}
 	]
 }
