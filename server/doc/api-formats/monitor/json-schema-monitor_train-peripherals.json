@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_train-peripherals.schema.json",
+  "title": "train-peripherals",
+  "description": "List of peripherals of a train (train specified by client in request) with their state",
+  "type": "object",
+  "properties": {
+    "train-peripherals": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 0,
+      "items": {
+        "required": [
+          "id",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "minLength": 0
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "train-peripherals"
+  ]
+}

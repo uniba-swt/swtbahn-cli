@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_track-outputs.schema.json",
+  "title": "track-outputs",
+  "description": "list of track outputs with their identifier and their state.",
+  "type": "object",
+  "properties": {
+    "track-outputs": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 0,
+      "items": {
+        "required": [
+          "id",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "minLength": 0
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "track-outputs"
+  ]
+}

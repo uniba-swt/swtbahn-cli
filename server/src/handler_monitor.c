@@ -246,11 +246,16 @@ static GString *get_train_peripherals_json(const char *data_train) {
 	}
 	
 	t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
-	GString *g_train_peripherals = g_string_sized_new(40 * (query.length + 1));
+	GString *g_train_peripherals = g_string_sized_new(24 + 42 * query.length);
+	if (g_train_peripherals == NULL) {
+		bidib_free_id_list_query(query);
+		syslog_server(LOG_ERR, "Get train peripherals json - can't allocate g_train_peripherals");
+		return NULL;
+	}
 	g_string_assign(g_train_peripherals, "");
 	
 	append_start_of_obj(g_train_peripherals, false);
-	append_field_start_of_list(g_train_peripherals, "peripherals");
+	append_field_start_of_list(g_train_peripherals, "train-peripherals");
 	
 	for (size_t i = 0; i < query.length; i++) {
 		t_bidib_train_peripheral_state_query train_peripheral_state =
@@ -293,9 +298,9 @@ o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_re
 			              "Request: Get train peripherals - train: %s - done",
 			              data_train);
 		} else {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, 
-			              "Request: Get train peripherals - train: %s - invalid train",
+			              "Request: Get train peripherals - train: %s - unable to build reply message",
 			              data_train);
 		}
 		return OCS_PROCESSED;
@@ -357,7 +362,12 @@ o_con_status handler_get_interlockers(void *_, onion_request *req, onion_respons
 
 static GString *get_track_outputs_json() {
 	t_bidib_id_list_query query = bidib_get_track_outputs();
-	GString *g_track_outputs = g_string_sized_new(48 * (query.length + 1));
+	GString *g_track_outputs = g_string_sized_new(24 + 48 * query.length);
+	if (g_track_outputs == NULL) {
+		bidib_free_id_list_query(query);
+		syslog_server(LOG_ERR, "Get track outputs json - can't allocate g_track_outputs");
+		return NULL;
+	}
 	
 	g_string_assign(g_track_outputs, "");
 	append_start_of_obj(g_track_outputs, false);
@@ -401,8 +411,13 @@ o_con_status handler_get_track_outputs(void *_, onion_request *req, onion_respon
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_track_outputs = get_track_outputs_json();
-		send_some_gstring_and_free(res, HTTP_OK, g_track_outputs);
-		syslog_server(LOG_INFO, "Request: Get track outputs - done");
+		if (g_track_outputs != NULL) {
+			send_some_gstring_and_free(res, HTTP_OK, g_track_outputs);
+			syslog_server(LOG_INFO, "Request: Get track outputs - done");
+		} else {
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
+			syslog_server(LOG_ERR, "Request: Get track outputs - unable to build reply message");
+		}
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Get track outputs");
@@ -488,21 +503,27 @@ static GString *get_accessories_json(bool point_accessories) {
 			                       acc_state.type == BIDIB_ACCESSORY_BOARD ?
 			                       acc_state.board_accessory_state.state_id :
 			                       acc_state.dcc_accessory_state.state_id, 
-			                       !point_accessories || field_target_reached_present);
+			                       field_target_reached_present);
 		} else {
 			append_field_str_value(g_accs, "state", "unknown", 
-			                       !point_accessories || field_target_reached_present);
+			                       field_target_reached_present);
 		}
 		
+		///TODO: Remove the commented out part for actual pull request.
+		// Decided not to have the signal type in this "get all signals" monitor endpoint.
+		// But will have it in a "get signal details" kind of monitor endpoint.
 		if (field_target_reached_present) {
+			bool target_state_reached_val = 
+				acc_state.board_accessory_state.execution_state == BIDIB_EXEC_STATE_REACHED 
+				|| acc_state.board_accessory_state.execution_state == BIDIB_EXEC_STATE_REACHED_VERIFIED;
 			append_field_bool_value(g_accs, "target_state_reached", 
-			                        acc_state.board_accessory_state.execution_state, false);
-		} else if (!point_accessories) {
+			                        target_state_reached_val, false);
+		} /*else if (!point_accessories) {
 			// if the accessory is not a point, include the field "type" (signal type, e.g. "block")
 			append_field_str_value(g_accs, "type", 
 		                           config_get_scalar_string_value("signal", query.ids[i], "type"), 
 		                           false);
-		}
+		}*/
 		append_end_of_obj(g_accs, i+1 < query.length);
 		bidib_free_unified_accessory_state_query(acc_state);
 	}

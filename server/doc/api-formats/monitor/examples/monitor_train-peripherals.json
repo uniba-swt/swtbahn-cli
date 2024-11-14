@@ -1,5 +1,5 @@
 {
-	"peripherals": [
+	"train-peripherals": [
 		{
 			"id": "peripheralID1",
 			"state": "on"
