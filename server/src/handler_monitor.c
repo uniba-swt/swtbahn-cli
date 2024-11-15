@@ -77,6 +77,14 @@ static void free_g_strarray_and_contents(GArray *g_strarray) {
 	g_strarray = NULL;
 }
 
+/**
+ * @brief Get information on trains. 
+ * The returned string is formatted to comply with the json-schema:
+ * /server/doc/api-formats/monitor/json-schema-monitor_trains.json
+ * 
+ * @return GString* containing info on trains in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString *get_trains_json() {
 	t_bidib_id_list_query query = bidib_get_trains();
 	GString *g_trains = g_string_sized_new(60 * (query.length + 1));
@@ -127,12 +135,15 @@ o_con_status handler_get_trains(void *_, onion_request *req, onion_response *res
 }
 
 /**
- * @brief Get the train state json given a train state query and the trains ID.
+ * @brief Get information on the state of a train, given a train state query and the trains ID.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_train-state.json
  * 
  * @param train_id string with id of the train
- * @param tr_state_query train state query (from libbidib) for the train with the id spec. in train_id.
- * "tr_state_query.known" shall be true, otherwise the behaviour is undefined.
- * @return GString* json train state (according to schema TODO) glib string. NULL if malloc for string fails.
+ * @param tr_state_query train state query (from libbidib) for the train with the id specified 
+ * in train_id. "tr_state_query.known" shall be true, otherwise the behaviour is undefined.
+ * @return GString* containing info on train state in json format. 
+ * Returns NULL on failure to allocate the string.
  */
 static GString *get_train_state_json_given_statequery(const char *train_id, 
                                                       t_bidib_train_state_query tr_state_query) {
@@ -237,6 +248,14 @@ o_con_status handler_get_train_state(void *_, onion_request *req, onion_response
 	}
 }
 
+/**
+ * @brief Get information on the state of all known trains.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_train-states.json
+ * 
+ * @return GString* containing info on train states in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString *get_train_states_json() {
 	t_bidib_id_list_query query = bidib_get_trains();
 	GString *g_train_states = g_string_sized_new(256 * (query.length + 1));
@@ -289,6 +308,15 @@ o_con_status handler_get_train_states(void *_, onion_request *req, onion_respons
 	}
 }
 
+/**
+ * @brief Get information on a train's peripherals.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_train-peripherals.json
+ * 
+ * @param train_id id of the train whose peripherals to get information about.
+ * @return GString* containing info on train's peripherals in json format. 
+ * Returns NULL on failure to allocate the string, and/or if train_id is NULL.
+ */
 static GString *get_train_peripherals_json(const char *train_id) {
 	if (train_id == NULL) {
 		return NULL;
@@ -358,6 +386,20 @@ o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_re
 	}
 }
 
+/**
+ * @brief Get information on available engines or available interlockers.
+ * If the value of the parameter "engines" is true, it will contain info on engines,
+ * otherwise info on interlockers.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_engines.json (if engines is true), otherwise
+ * /server/doc/api-formats/monitor/json-schema-monitor_interlockers.json
+ * 
+ * 
+ * @param engines pass true if information about available engines is desired, if information on 
+ * available interlockers is desired then pass false.
+ * @return GString* containing info on available engines or interlockers in json format.
+ * Returns NULL on failure to allocate the string. 
+ */
 static GString *get_engines_or_interlockers_json(bool engines) {
 	GString *g_json_ret = g_string_new("");
 	if (g_json_ret == NULL) {
@@ -391,10 +433,11 @@ static o_con_status get_engines_interlockers_common(onion_request *req, onion_re
 		GString *g_ret = get_engines_or_interlockers_json(engines);
 		if (g_ret != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, g_ret);
+			syslog_server(LOG_INFO, "Request: %s - done", l_name);
 		} else {
 			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
+			syslog_server(LOG_ERR, "Request: %s - unable to build reply message", l_name);
 		}
-		syslog_server(LOG_INFO, "Request: %s - done", l_name);
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, l_name);
@@ -409,6 +452,14 @@ o_con_status handler_get_interlockers(void *_, onion_request *req, onion_respons
 	return get_engines_interlockers_common(req, res, false);
 }
 
+/**
+ * @brief Get information on known track outputs.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_track-outputs.json
+ * 
+ * @return GString* containing info on track outputs in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString *get_track_outputs_json() {
 	t_bidib_id_list_query query = bidib_get_track_outputs();
 	GString *g_track_outputs = g_string_sized_new(24 + 48 * query.length);
@@ -473,8 +524,18 @@ o_con_status handler_get_track_outputs(void *_, onion_request *req, onion_respon
 	}
 }
 
-// returns string with list of aspects of accessory in json format, with field identifier "aspects",
-// e.g., \"aspects": ["normal", "reverse"]\". If inputs invalid or internal error, returns NULL.
+/**
+ * @brief Get a string containing a json list field of aspects that the accessory 
+ * identified by acc_id supports. Accessory must be a signal or a point (indicate which one it
+ * is through parameter is_point).
+ * Example returned string: `"aspects": ["normal", "reverse"]`
+ * 
+ * @param acc_id id of the accessory whose aspects to get.
+ * @param is_point pass true if the accessory in question is a point, pass false if it is a signal.
+ * @return GString* containing a json field called "aspects" with a list of aspects the specified
+ * accessory supports. Returns NULL on failure to allocate the string, and/or on failure to query
+ * the accessories aspects.
+ */
 static GString *get_accessory_aspects_json_listonly(const char *acc_id, bool is_point) {
 	if (acc_id == NULL) {
 		syslog_server(LOG_ERR, "Get accessory aspects json listonly - invalid accessory identifier");
@@ -515,6 +576,19 @@ static GString *get_accessory_aspects_json_listonly(const char *acc_id, bool is_
 	return g_aspects_list;
 }
 
+/**
+ * @brief Get information on either all point accessories or signal accessories (choose by value
+ * passed in parameter point_accessories).
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_points.json if point_accessories is true, else:
+ * /server/doc/api-formats/monitor/json-schema-monitor_signals.json
+ * 
+ * @param point_accessories pass true if info on points is desired, pass false if info on signals
+ * is desired.
+ * @return GString* containing info on either points or signals in json format. 
+ * Returns NULL on failure to allocate the string, and/or on failure to query
+ * the accessories.
+ */
 static GString *get_accessories_json(bool point_accessories) {
 	t_bidib_id_list_query query;
 	if (point_accessories) {
@@ -524,6 +598,7 @@ static GString *get_accessories_json(bool point_accessories) {
 	}
 	if (query.ids == NULL) {
 		syslog_server(LOG_ERR, "Get accessories json - bidib returned NULL id list");
+		return NULL;
 	}
 	
 	GString *g_accs = g_string_sized_new(24 + 72 * query.length);
@@ -610,6 +685,15 @@ o_con_status handler_get_signals(void *_, onion_request *req, onion_response *re
 	return get_points_signals_common(req, res, false);
 }
 
+/**
+ * @brief Get detail information on a point specified by its id in point_id.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_point-details.json
+ * 
+ * @param point_id id of the point to get detail info on.
+ * @return GString* containing info on the point in json format. 
+ * Returns NULL on failure to allocate the string, and/or if point_id is NULL.
+ */
 static GString *get_point_details_json(const char *point_id) {
 	if (point_id == NULL) {
 		syslog_server(LOG_WARNING, "Get point details json - input data_id is NULL");
@@ -712,7 +796,18 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 	}
 }
 
-
+/**
+ * @brief Get information on the aspects an accessory supports, either for a point or a signal 
+ * (choose by value passed for is_point parameter). See also get_accessory_aspects_json_listonly.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_point-aspects.json if is_point is true, else
+ * /server/doc/api-formats/monitor/json-schema-monitor_signal-aspects.json
+ * 
+ * @param acc_id id of the accessory whose aspects to get info on
+ * @param is_point pass true if the accessory is a point, pass false if it is a signal.
+ * @return GString* containing info on the aspects the accessory supports, in json format. 
+ * Returns NULL on failure to allocate the string, and/or if acc_id is NULL.
+ */
 static GString *get_accessory_aspects_json(const char *acc_id, bool is_point) {
 	if (acc_id == NULL) {
 		syslog_server(LOG_ERR, "Get accessory aspects json - invalid accessory identifier");
@@ -776,6 +871,14 @@ o_con_status handler_get_signal_aspects(void *_, onion_request *req, onion_respo
 	return get_acc_aspects_common(req, res, false);
 }
 
+/**
+ * @brief Get information on all known segments, i.e., the identifier and occupancy information each.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_segments.json
+ * 
+ * @return GString* containing info on segments in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString *get_segments_json() {
 	t_bidib_id_list_query seg_query = bidib_get_connected_segments();
 	// empty query result will lead to reply with empty list, this is intended.
@@ -812,8 +915,10 @@ static GString *get_segments_json() {
 		}
 		// In case we know the segment is occupied, but no addresses are known, the 
 		// loop above won't add "unknown", so deal with this case separately
-		if (seg_state_query.known && seg_state_query.data.occupied && seg_state_query.data.dcc_addresses == 0) {
-			
+		if (seg_state_query.known 
+		    && seg_state_query.data.occupied 
+		    && seg_state_query.data.dcc_addresses == 0) {
+			g_string_append_printf(g_segments, "\"unknown\"");
 		}
 		
 		append_end_of_list(g_segments, false, false);
@@ -839,6 +944,14 @@ o_con_status handler_get_segments(void *_, onion_request *req, onion_response *r
 	}
 }
 
+/**
+ * @brief Get information on the known reversers, i.e., the identifier and the reverser state each.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_reversers.json
+ * 
+ * @return GString* containing info on reversers in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString *get_reversers_json() {
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
 	// Size heuristic/guess from examples. Will be auto-resized if too small.
@@ -913,6 +1026,15 @@ o_con_status handler_get_reversers(void *_, onion_request *req, onion_response *
 	}
 }
 
+/**
+ * @brief Get information on all known peripherals (this does NOT include train peripherals!),
+ * i.e., the identifier, the peripheral's state ID and its state value.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_peripherals.json
+ * 
+ * @return GString* containing info on peripherals in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString *get_peripherals_json() {
 	// Trying out ways of estimating size. The +1 is there to avoid size 0 if query length is 0.
 	t_bidib_id_list_query per_query = bidib_get_connected_peripherals();
@@ -1002,17 +1124,23 @@ o_con_status handler_get_verification_url(void *_, onion_request *req, onion_res
 	}
 }
 
+/**
+ * @brief Get information on granted routes, i.e., the route identifier and the train that the
+ * route is granted to for each granted route.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_granted-routes.json
+ * 
+ * @return GString* containing info on granted routes in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString* get_granted_routes_json() {
-	// Size is a guess/heuristic - will be auto-resized if not sufficient.
+	// Size based on examples, will be auto-resized if not enough.
 	GString *g_granted_routes = g_string_sized_new(128);
 	if (g_granted_routes == NULL) {
 		syslog_server(LOG_ERR, "Get granted routes json - can't allocate g_granted_routes");
 		return NULL;
 	}
 	g_string_assign(g_granted_routes, "");
-	
-	// Old "normal" way without sized new
-	//GString *g_granted_routes = g_string_new("");
 	
 	append_start_of_obj(g_granted_routes, false);
 	append_field_start_of_list(g_granted_routes, "granted-routes");
@@ -1039,6 +1167,10 @@ static GString* get_granted_routes_json() {
 		}
 		// free the GArray but not the contained strings, as it was created by shallow copy.
 		g_array_free(route_ids, true);
+	} else {
+		syslog_server(LOG_WARNING, 
+		              "Get granted routes json - "
+		              "route ID array copied from interlocking table is NULL");
 	}
 	pthread_mutex_unlock(&interlocker_mutex);
 	
@@ -1064,14 +1196,23 @@ o_con_status handler_get_granted_routes(void *_, onion_request *req, onion_respo
 	}
 }
 
-///TODO: Think about a possible endpoint with less details; e.g., no length, 
-///      no conflicting-route-ids, no sections; to reduce bandwidth load where those fields
-///      are not needed by the client anyway.
-///      Also, this does not return info on the required position of points, is that not needed
-///      by any client?
+/**
+ * @brief Get information on a particular route, specified by the parameter route_id.
+ * The returned string is formatted to comply with the json-schema: 
+ * /server/doc/api-formats/monitor/json-schema-monitor_route.json
+ * 
+ * @param route_id id of the route to get info on.
+ * @return GString* containing info on the route in json format. 
+ * Returns NULL on failure to allocate the string.
+ */
 static GString* get_route_json(const char *route_id) {
+	///TODO: Think about a possible endpoint with less details; e.g., no length, 
+	///      no conflicting-route-ids, no sections; to reduce bandwidth load where those fields
+	///      are not needed by the client anyway.
+	///      Also, this does not return info on the required position of points, is that not needed
+	///      by any client?
+	
 	if (route_id == NULL) {
-		syslog_server(LOG_ERR, "Get route json - route_id parameter is NULL");
 		return NULL;
 	}
 	pthread_mutex_lock(&interlocker_mutex);
