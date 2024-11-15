@@ -32,6 +32,7 @@
 #include <stdbool.h>
 
 GString* append_field_str_value(GString *dest, const char *field, const char *value_str, bool add_trailing_comma);
+GString* append_field_str_value_from_int(GString *dest, const char *field, int value_int, bool add_trailing_comma);
 GString* append_field_bare_value_from_str(GString *dest, const char *field, const char *value_str, bool add_trailing_comma);
 GString* append_field_strlist_value(GString *dest, const char *field, const char **value_liststr, unsigned int list_len, bool add_trailing_comma);
 GString* append_field_strlist_value_from_garray_strs(GString *dest, const char *field, const GArray* g_strarray, bool add_trailing_comma);

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_verification-url.schema.json",
+  "title": "verification-url",
+  "description": "verification url value",
+  "type": "object",
+  "properties": {
+    "verification-url": {
+      "type": "string",
+      "minLength": 0
+    }
+  },
+  "required": [
+    "verification-url"
+  ]
+}

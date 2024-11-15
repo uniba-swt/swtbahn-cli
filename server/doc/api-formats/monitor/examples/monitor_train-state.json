@@ -3,9 +3,9 @@
 	"grabbed": true,
 	"orientation": "left",
 	"direction": "forwards",
-	"speed_step": 10,
-	"detected_kmh_speed": 2,
-	"route_id": -1,
+	"speed_step": 50,
+	"detected_kmh_speed": 120,
+	"route_id": "25",
 	"on_track": true,
 	"occupied_segments": ["seg1", "seg2"], 
 	"occupied_blocks": ["block1"]

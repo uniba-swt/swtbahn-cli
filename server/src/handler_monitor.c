@@ -80,6 +80,11 @@ static void free_g_strarray_and_contents(GArray *g_strarray) {
 static GString *get_trains_json() {
 	t_bidib_id_list_query query = bidib_get_trains();
 	GString *g_trains = g_string_sized_new(60 * (query.length + 1));
+	if (g_trains == NULL) {
+		bidib_free_id_list_query(query);
+		syslog_server(LOG_ERR, "Get trains json - can't allocate g_trains");
+		return NULL;
+	}
 	g_string_assign(g_trains, "");
 	
 	append_start_of_obj(g_trains, false);
@@ -107,53 +112,65 @@ o_con_status handler_get_trains(void *_, onion_request *req, onion_response *res
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_trains = get_trains_json();
-		send_some_gstring_and_free(res, HTTP_OK, g_trains);
-		syslog_server(LOG_INFO, "Request: Get available trains - done");
+		if (g_trains != NULL) {
+			send_some_gstring_and_free(res, HTTP_OK, g_trains);
+			syslog_server(LOG_INFO, "Request: Get available trains - done");
+		} else {
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
+			syslog_server(LOG_ERR, "Request: Get trains - unable to build reply message");
+		}
+		
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "");
 	}
 }
 
-static GString *get_train_state_json(const char *data_train) {
-	if (data_train == NULL) {
-		return NULL;
-	}
-	
-	t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
-	if (!train_state_query.known) {
-		bidib_free_train_state_query(train_state_query);
-		return NULL;
-	}
-	
+/**
+ * @brief Get the train state json given a train state query and the trains ID.
+ * 
+ * @param train_id string with id of the train
+ * @param tr_state_query train state query (from libbidib) for the train with the id spec. in train_id.
+ * "tr_state_query.known" shall be true, otherwise the behaviour is undefined.
+ * @return GString* json train state (according to schema TODO) glib string. NULL if malloc for string fails.
+ */
+static GString *get_train_state_json_given_statequery(const char *train_id, 
+                                                      t_bidib_train_state_query tr_state_query) {
+	const char *f_logname = "Get train state json given statequery";
 	GString *g_train_state = g_string_sized_new(256);
+	if (g_train_state == NULL) {
+		syslog_server(LOG_ERR, "%s - can't allocate g_train_state", f_logname);
+		return NULL;
+	}
 	g_string_assign(g_train_state, "");
+	
 	append_start_of_obj(g_train_state, false);
-	append_field_str_value(g_train_state, "id", data_train, true);
-	append_field_bool_value(g_train_state, "grabbed", train_grabbed(data_train), true);
-	const char *orientation_str = (train_state_query.data.orientation ==
+	append_field_str_value(g_train_state, "id", train_id, true);
+	append_field_bool_value(g_train_state, "grabbed", train_grabbed(train_id), true);
+	const char *orientation_str = (tr_state_query.data.orientation ==
 			                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
 			                       "left" : "right";
 	append_field_str_value(g_train_state, "orientation", orientation_str, true);
-	const char *direction_str = train_state_query.data.set_is_forwards ? "forwards" : "backwards";
+	const char *direction_str = tr_state_query.data.set_is_forwards ? "forwards" : "backwards";
 	append_field_str_value(g_train_state, "direction", direction_str, true);
 	
-	append_field_int_value(g_train_state, "speed_step", train_state_query.data.set_speed_step, true);
-	append_field_int_value(g_train_state, "detected_kmh_speed", train_state_query.data.detected_kmh_speed, true);
-	
-	bidib_free_train_state_query(train_state_query);
+	append_field_int_value(g_train_state, "speed_step", tr_state_query.data.set_speed_step, true);
+	append_field_int_value(g_train_state, "detected_kmh_speed", tr_state_query.data.detected_kmh_speed, true);
 	
 	pthread_mutex_lock(&interlocker_mutex);
-	int route_id = interlocking_table_get_route_id_of_train(data_train);
+	int route_id = interlocking_table_get_route_id_of_train(train_id);
 	pthread_mutex_unlock(&interlocker_mutex);
-	append_field_int_value(g_train_state, "route_id", route_id, true);
+	if (route_id > -1) {
+		append_field_str_value_from_int(g_train_state, "route_id", route_id, true);
+	} else {
+		append_field_str_value(g_train_state, "route_id", "", true);
+	}
 	
-	t_bidib_train_position_query train_position_query = bidib_get_train_position(data_train);
+	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	bool is_on_track = train_position_query.length > 0;
 	// is_on_track intentionally used for both value and add_trailing_comma parameters.
 	append_field_bool_value(g_train_state, "on_track", is_on_track, is_on_track);
 	if (is_on_track) {
-		// two passes likely needed, one for segments, one for blocks.
 		append_field_strlist_value(g_train_state, "occupied_segments", 
 		                          (const char **) train_position_query.segments, 
 		                          train_position_query.length, true);
@@ -162,11 +179,17 @@ static GString *get_train_state_json(const char *data_train) {
 		int added_blocks = 0;
 		for (size_t i = 0; i < train_position_query.length; i++) {
 			const char *block_id = config_get_block_id_of_segment(train_position_query.segments[i]);
+			GString *search_str = g_string_new(block_id);
+			g_string_prepend_c(search_str, '"');
+			g_string_append_c(search_str, '"');
 			// only add block if it does not already exist in the list (and thus in g_train_state)
-			if (block_id != NULL && strstr(g_train_state->str, block_id) == NULL) {
+			// Naively, if e.g., "block12" was added, then block1 will be found.
+			// -> fix is to include the '"'s in the search.
+			if (block_id != NULL && strstr(g_train_state->str, search_str->str) == NULL) {
 				g_string_append_printf(g_train_state, "%s\"%s\"", added_blocks > 0 ? ", " : "", block_id);
 				++added_blocks;
 			}
+			g_string_free(search_str, true);
 		}
 		append_end_of_list(g_train_state, false, false);
 	}
@@ -185,16 +208,27 @@ o_con_status handler_get_train_state(void *_, onion_request *req, onion_response
 			syslog_server(LOG_ERR, "Request: Get train state - invalid parameters");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			return OCS_PROCESSED;
-		} 
+		}
 		
-		GString *ret_string = get_train_state_json(data_train);
+		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
+		if (!train_state_query.known) {
+			bidib_free_train_state_query(train_state_query);
+			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			syslog_server(LOG_WARNING, 
+			              "Request: Get train state - train: %s - unknown train/train state", 
+			              data_train);
+			return OCS_PROCESSED;
+		}
+		
+		GString *ret_string = get_train_state_json_given_statequery(data_train, train_state_query);
+		bidib_free_train_state_query(train_state_query);
 		if (ret_string != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, ret_string);
 			syslog_server(LOG_INFO, "Request: Get train state - train: %s - done", data_train);
 		} else {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, 
-			              "Request: Get train state - train: %s - invalid train", 
+			              "Request: Get train state - train: %s - unable to build reply message", 
 			              data_train);
 		}
 		return OCS_PROCESSED;
@@ -206,20 +240,30 @@ o_con_status handler_get_train_state(void *_, onion_request *req, onion_response
 static GString *get_train_states_json() {
 	t_bidib_id_list_query query = bidib_get_trains();
 	GString *g_train_states = g_string_sized_new(256 * (query.length + 1));
+	if (g_train_states == NULL) {
+		bidib_free_id_list_query(query);
+		syslog_server(LOG_ERR, "Get train states json - can't allocate g_train_states");
+		return NULL;
+	}
 	g_string_assign(g_train_states, "");
 	
 	append_start_of_obj(g_train_states, false);
 	append_field_start_of_list(g_train_states, "train-states");
-	
+	int added_trains = 0;
 	for (size_t i = 0; i < query.length; i++) {
-		GString *g_train_state = get_train_state_json(query.ids[i]);
-		if (g_train_state != NULL) {
-			g_string_append_printf(g_train_states, "%s", g_train_state->str);
-			g_string_free(g_train_state, true);
-			if (i + 1 < query.length) {
-				g_string_append_printf(g_train_states, "%s", ",");
+		t_bidib_train_state_query tr_state_q = bidib_get_train_state(query.ids[i]);
+		if (tr_state_q.known) {	
+			GString *g_train_state = get_train_state_json_given_statequery(query.ids[i], tr_state_q);
+			if (g_train_state != NULL) {
+				if (added_trains > 0) {
+					g_string_append_printf(g_train_states, "%s", ",\n");
+				}
+				added_trains++;
+				g_string_append_printf(g_train_states, "%s", g_train_state->str);
+				g_string_free(g_train_state, true);
 			}
 		}
+		bidib_free_train_state_query(tr_state_q);
 	}
 	append_end_of_list(g_train_states, false, query.length > 0);
 	append_end_of_obj(g_train_states, false);
@@ -232,20 +276,25 @@ o_con_status handler_get_train_states(void *_, onion_request *req, onion_respons
     build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_train_states = get_train_states_json();
-		send_some_gstring_and_free(res, HTTP_OK, g_train_states);
-		syslog_server(LOG_INFO, "Request: Get train states - done");
+		if (g_train_states != NULL) {
+			send_some_gstring_and_free(res, HTTP_OK, g_train_states);
+			syslog_server(LOG_INFO, "Request: Get train states - done");
+		} else {
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
+			syslog_server(LOG_ERR, "Request: Get train states - unable to build reply message");
+		}
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Get train states");
 	}
 }
 
-static GString *get_train_peripherals_json(const char *data_train) {
-	if (data_train == NULL) {
+static GString *get_train_peripherals_json(const char *train_id) {
+	if (train_id == NULL) {
 		return NULL;
 	}
 	
-	t_bidib_id_list_query query = bidib_get_train_peripherals(data_train);
+	t_bidib_id_list_query query = bidib_get_train_peripherals(train_id);
 	GString *g_train_peripherals = g_string_sized_new(24 + 42 * query.length);
 	if (g_train_peripherals == NULL) {
 		bidib_free_id_list_query(query);
@@ -259,7 +308,7 @@ static GString *get_train_peripherals_json(const char *data_train) {
 	
 	for (size_t i = 0; i < query.length; i++) {
 		t_bidib_train_peripheral_state_query train_peripheral_state =
-				bidib_get_train_peripheral_state(data_train, query.ids[i]);
+				bidib_get_train_peripheral_state(train_id, query.ids[i]);
 		char *state_string;
 		if (train_peripheral_state.available) {
 			state_string = train_peripheral_state.state == 1 ? "on" : "off";
@@ -426,22 +475,22 @@ o_con_status handler_get_track_outputs(void *_, onion_request *req, onion_respon
 
 // returns string with list of aspects of accessory in json format, with field identifier "aspects",
 // e.g., \"aspects": ["normal", "reverse"]\". If inputs invalid or internal error, returns NULL.
-static GString *get_accessory_aspects_json_listonly(const char *data_id, bool is_point) {
-	if (data_id == NULL) {
+static GString *get_accessory_aspects_json_listonly(const char *acc_id, bool is_point) {
+	if (acc_id == NULL) {
 		syslog_server(LOG_ERR, "Get accessory aspects json listonly - invalid accessory identifier");
 		return NULL;
 	}
 	t_bidib_id_list_query query;
 	if (is_point) {
-		query = bidib_get_point_aspects(data_id);
+		query = bidib_get_point_aspects(acc_id);
 	} else {
-		query = bidib_get_signal_aspects(data_id);
+		query = bidib_get_signal_aspects(acc_id);
 	}
 	if (query.ids == NULL) {
 		syslog_server(LOG_ERR, 
 		              "Get accessory aspects json listonly - accessory: %s - "
 		              "bidib query id list is NULL", 
-		              data_id);
+		              acc_id);
 		return NULL;
 	}
 	// size 16 general plus 16 per aspect (heuristic/estimate)
@@ -451,7 +500,7 @@ static GString *get_accessory_aspects_json_listonly(const char *data_id, bool is
 		syslog_server(LOG_ERR, 
 		              "Get accessory aspects json listonly - accessory: %s - "
 		              "can't allocate g_aspects_list", 
-		              data_id);
+		              acc_id);
 		return NULL;
 	}
 	
@@ -561,26 +610,26 @@ o_con_status handler_get_signals(void *_, onion_request *req, onion_response *re
 	return get_points_signals_common(req, res, false);
 }
 
-static GString *get_point_details_json(const char *data_id) {
-	if (data_id == NULL) {
+static GString *get_point_details_json(const char *point_id) {
+	if (point_id == NULL) {
 		syslog_server(LOG_WARNING, "Get point details json - input data_id is NULL");
 		return NULL;
 	}
 	
 	GString *g_details = g_string_sized_new(156);
 	if (g_details == NULL) {
-		syslog_server(LOG_ERR, "Get point details json - point: %s - can't allocate g_details", data_id);
+		syslog_server(LOG_ERR, "Get point details json - point: %s - can't allocate g_details", point_id);
 		return NULL;
 	}
 	g_string_assign(g_details, "");
 	append_start_of_obj(g_details, false);
 	// field: id
-	append_field_str_value(g_details, "id", data_id, true);
+	append_field_str_value(g_details, "id", point_id, true);
 	
 	// field: aspects
-	GString *g_aspects_list = get_accessory_aspects_json_listonly(data_id, true);
+	GString *g_aspects_list = get_accessory_aspects_json_listonly(point_id, true);
 	if (g_aspects_list == NULL) {
-		syslog_server(LOG_ERR, "Get point details json - point: %s - failed to get aspects list", data_id);
+		syslog_server(LOG_ERR, "Get point details json - point: %s - failed to get aspects list", point_id);
 		g_string_free(g_details, true);
 		return NULL;
 	}
@@ -589,7 +638,7 @@ static GString *get_point_details_json(const char *data_id) {
 	g_string_free(g_aspects_list, true);
 	
 	// field: state
-	t_bidib_unified_accessory_state_query acc_state = bidib_get_point_state(data_id);
+	t_bidib_unified_accessory_state_query acc_state = bidib_get_point_state(point_id);
 	// Accessories with type "BIDIB_ACCESSORY_BOARD" have the field "target_state_reached"
 	bool has_target_reached_field = acc_state.type == BIDIB_ACCESSORY_BOARD;
 	if (!acc_state.known) {
@@ -597,7 +646,7 @@ static GString *get_point_details_json(const char *data_id) {
 		has_target_reached_field = false;
 		syslog_server(LOG_WARNING, 
 		              "Get point details json - point: %s - bidib get point state query is empty"
-		              "/point (state) is not known", data_id);
+		              "/point (state) is not known", point_id);
 		append_field_str_value(g_details, "state", "unknown", true);
 	} else {
 		append_field_str_value(g_details, "state", 
@@ -608,7 +657,7 @@ static GString *get_point_details_json(const char *data_id) {
 	}
 	
 	// field: segment
-	const char *point_segment = config_get_scalar_string_value("point", data_id, "segment");
+	const char *point_segment = config_get_scalar_string_value("point", point_id, "segment");
 	append_field_str_value(g_details, "segment", point_segment, true);
 	
 	append_field_bool_value(g_details, "occupied", 
@@ -624,7 +673,7 @@ static GString *get_point_details_json(const char *data_id) {
 		if (ex_state == BIDIB_EXEC_STATE_ERROR) {
 			syslog_server(LOG_NOTICE, 
 			              "Get point details json - point: %s - target_state_reached reported as false, "
-			              "execution state is BIDIB_EXEC_STATE_ERROR", data_id);
+			              "execution state is BIDIB_EXEC_STATE_ERROR", point_id);
 		}
 		
 		append_field_bool_value(g_details, "target_state_reached", target_state_reached_val, false);
@@ -664,16 +713,16 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 }
 
 
-static GString *get_accessory_aspects_json(const char *data_id, bool is_point) {
-	if (data_id == NULL) {
+static GString *get_accessory_aspects_json(const char *acc_id, bool is_point) {
+	if (acc_id == NULL) {
 		syslog_server(LOG_ERR, "Get accessory aspects json - invalid accessory identifier");
 		return NULL;
 	}
-	GString *g_aspects = get_accessory_aspects_json_listonly(data_id, is_point);
+	GString *g_aspects = get_accessory_aspects_json_listonly(acc_id, is_point);
 	if (g_aspects == NULL) {
 		syslog_server(LOG_ERR, 
 		              "Get accessory aspects json - accessory: %s - getting aspects json list failed", 
-		              data_id);
+		              acc_id);
 		return NULL;
 	}
 	// g_aspects now has the list field, need to enclose it in json obj.

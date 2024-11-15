@@ -13,6 +13,15 @@ GString* append_field_str_value(GString *dest, const char *field,
 	return dest;
 }
 
+GString* append_field_str_value_from_int(GString *dest, const char *field, int value_int, bool add_trailing_comma) {
+	if (dest == NULL || field == NULL) {
+		return NULL;
+	}
+	g_string_append_printf(dest, "\n\"%s\": \"%d\"%s", 
+	                       field, value_int, add_trailing_comma ? "," : "");
+	return dest;
+}
+
 GString* append_field_bare_value_from_str(GString *dest, const char *field, 
                                           const char *value_str, bool add_trailing_comma) {
 	if (dest == NULL || field == NULL) {

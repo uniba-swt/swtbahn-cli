@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "monitor_trains.schema.json",
+  "title": "trains",
+  "description": "list of trains.",
+  "type": "object",
+  "properties": {
+    "trains": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 0,
+      "items": {
+        "required": [
+          "id",
+          "grabbed",
+          "on_track"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "grabbed": {
+            "type": "boolean"
+          },
+          "on_track": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "trains"
+  ]
+}

@@ -3,50 +3,46 @@
 		{
 			"id": "cargo_db",
 			"grabbed": true,
+			"orientation": "left",
+			"direction": "forwards",
+			"speed_step": 50,
+			"detected_kmh_speed": 120,
+			"route_id": "25",
 			"on_track": true,
 			"occupied_segments": ["seg1", "seg2"], 
-			"occupied_blocks": ["block1"],
-			"orientation": "right",
-			"direction": "forwards",
-			"speed_step": 10,
-			"detected_speed_kmh": 2,
-			"route_id": 54
+			"occupied_blocks": ["block1"]
 		},
 		{
 			"id": "cargo_green",
 			"grabbed": true,
-			"on_track": false,
-			"occupied_segments": [], 
-			"occupied_blocks": [],
-			"orientation": "",
-			"direction": "",
+			"orientation": "right",
+			"direction": "forwards",
 			"speed_step": 0,
 			"detected_speed_kmh": 0,
-			"route_id": -1
+			"route_id": "",
+			"on_track": false
 		},
 		{
 			"id": "cargo_bayern",
 			"grabbed": false,
-			"on_track": false,
-			"occupied_segments": [], 
-			"occupied_blocks": [],
 			"orientation": "",
 			"direction": "",
 			"speed_step": 0,
 			"detected_speed_kmh": 0,
-			"route_id": -1
+			"route_id": "",
+			"on_track": false
 		},
 		{
 			"id": "regional_odeg",
 			"grabbed": false,
-			"on_track": true,
-			"occupied_segments": ["seg58"],
-			"occupied_blocks": ["platform4"],
 			"orientation": "left",
 			"direction": "forwards",
 			"speed_step": 0,
 			"detected_speed_kmh": 0,
-			"route_id": -1
+			"route_id": "",
+			"on_track": true,
+			"occupied_segments": ["seg58"],
+			"occupied_blocks": ["platform4"]
 		}
 	]
 }
