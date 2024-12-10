@@ -15,7 +15,7 @@
 	<script src="destinations-swtbahn-standard.json"></script>
 	<script src="destinations-swtbahn-full.json"></script>
 	<script src="flags-swtbahn-full.json"></script>
-	
+
 	<script src="script-game-timer.js"></script>
 	<script src="script-game-mutex.js"></script>
 	<script src="script-game.js"></script>
@@ -32,28 +32,28 @@
 			stroke: var(--flag-stroke);
 			fill: var(--flag-fill);
 		}
-		
+
 		circle.topLeft {
 			fill: var(--flag-topLeft-fill);
 		}
-		
+
 		circle.topRight {
 			fill: var(--flag-topRight-fill);
 		}
-		
+
 		circle.centre {
 			fill: var(--flag-centre-fill);
 		}
-		
+
 		circle.bottomLeft {
 			fill: var(--flag-bottomLeft-fill);
 		}
-		
+
 		circle.bottomRight {
 			fill: var(--flag-bottomRight-fill);
 		}
 	</style>
-	
+
 	<symbol id="flagDef">
 		<rect width="100" height="100"></rect>
 		<circle class="topLeft" cx="25" cy="25" r="10"></circle>
@@ -77,7 +77,7 @@
 						<span lang="en">End Trip</span>
 					</button>
 				</div>
-					
+
 				<div class="col-auto">
 					<div class="btn-group gx-0">
 						<input id="changeTips" type="checkbox" class="btn-check">
@@ -85,7 +85,7 @@
 							<span lang="de">Tipps</span>
 							<span lang="en">Tips</span>
 						</label>
-						
+
 						<button id="changeLang" class="btn btn-outline-primary">
 							<span lang="de">🇩🇪</span>
 							<span lang="en">🇬🇧</span>
@@ -95,11 +95,11 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="row">
 		<img id="chosenTrain" class="col pt-2 img-fluid" src=""></img>
 	</div>
-	
+
 	<hr />
 
 	<div id="trainSelection" class="row g-0">
@@ -155,7 +155,7 @@
 					<span lang="en">Unavailable</span>
 				</button>
 			</div>
-		 </div>
+		</div>
 
 		<div class="card mb-3 unavailableTrain">
 			<img src="train-regional-odeg.jpg" class="card-img-top" alt="Train Regional ODEG">
@@ -208,9 +208,54 @@
 			</div>
 		</div>
 	</div>
-
-
-
+	<div class="card mb-3 unavailableTrain">
+		<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="Train Regional BrengDirect">
+		<div class="card-body">
+			<h5 class="card-title">Cargo G1000BB</h5>
+			<p class="card-text">
+				<span lang="de">
+					Gewicht: TBD <br />
+					Länge: TBD <br />
+					Breite: TBD<br />
+					Höchstgeschwindigkeit: TBD
+				</span>
+				<span lang="en">
+					Weight: TBD<br />
+					Length: TBD<br />
+					Width: TBD<br />
+					Max. Speed: TBD
+				</span>
+			</p>
+			<button class="selectTrainButton btn btn-danger" id="cargo_g1000bb">
+				<span lang="de">Nicht verfügbar</span>
+				<span lang="en">Unavailable</span>
+			</button>
+		</div>
+	</div>
+	<div class="card mb-3 unavailableTrain">
+		<img src="train-regional-brengdirect.jpg" class="card-img-top" alt="Train Regional BrengDirect">
+		<div class="card-body">
+			<h5 class="card-title">Regional Brengdirect</h5>
+			<p class="card-text">
+				<span lang="de">
+					Gewicht: TBD <br />
+					Länge: TBD <br />
+					Breite: TBD<br />
+					Höchstgeschwindigkeit: TBD
+				</span>
+				<span lang="en">
+					Weight: TBD<br />
+					Length: TBD<br />
+					Width: TBD<br />
+					Max. Speed: TBD
+				</span>
+			</p>
+			<button class="selectTrainButton btn btn-danger" id="perso_sbb">
+				<span lang="de">Nicht verfügbar</span>
+				<span lang="en">Unavailable</span>
+			</button>
+		</div>
+	</div>
 	<div class="m-4"></div>
 
 	<div id="serverAlertBox">
@@ -218,7 +263,7 @@
 			<span id="serverResponse"></span>
 		</div>
 	</div>
-	
+
 	<div id="serverModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -260,7 +305,7 @@
 				<svg class="flag" viewBox="0 0 100 100">
 					<use id="destination3" href="#flagDef" class="flagThemeBlank" value=""></use>
 				</svg>
-								
+
 				<div class="m-4"></div>
 
 				<svg class="flag" viewBox="0 0 100 100">
@@ -296,11 +341,11 @@
 	<form id="drivingForm">
 		<div class="row">
 			<label class="col-auto col-form-label-lg"><b>
-				<span lang="de">Fahrzeit:</span>
-				<span lang="en">Driving Time:</span>
-			</b></label>	
+					<span lang="de">Fahrzeit:</span>
+					<span lang="en">Driving Time:</span>
+				</b></label>
 			<label class="col-auto col-form-label-lg">
-			<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
+				<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
 			</label>
 		</div>
 
@@ -308,24 +353,26 @@
 
 		<div id="chosenDestination" class="row">
 			<label class="col-auto col-form-label-lg"><b>
-				<span lang="de">Ziel:</span>
-				<span lang="en">Destination:</span>
-			</b></label>
+					<span lang="de">Ziel:</span>
+					<span lang="en">Destination:</span>
+				</b></label>
 			<svg class="flag" viewBox="0 0 100 100">
 				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
 			</svg>
 			<label class="col-form-label-lg">
-				<span lang="en"><span class="easy">Please drive your train to the destination and then stop</span></span>
-				<span lang="de"><span class="easy">Bitte fahren Sie Ihren Zug zum Ziel und halten Sie kurz vor dem Ziel an</span></span>
-			</span>
+				<span lang="en"><span class="easy">Please drive your train to the destination and then
+						stop</span></span>
+				<span lang="de"><span class="easy">Bitte fahren Sie Ihren Zug zum Ziel und halten Sie kurz vor dem Ziel
+						an</span></span>
+				</span>
 		</div>
-		
+
 		<div class="m-3"></div>
-		
+
 		<label class="col-auto col-form-label-lg"><b>
-			<span lang="de">Geschwindigkeitssteuerung:</span>
-			<span lang="en">Speed control:</span>
-		</b></label>
+				<span lang="de">Geschwindigkeitssteuerung:</span>
+				<span lang="en">Speed control:</span>
+			</b></label>
 		<div class="input-group row">
 			<div class="col">
 				<div class="btn-group" role="group">
