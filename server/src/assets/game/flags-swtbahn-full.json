@@ -12,7 +12,6 @@ const signalFlagMapSwtbahnFull = {
   "signal21": "flagThemeBlack flagFilled flagZero",
   "signal50": "flagThemeBlue flagFilled flagOne",
   "signal48": "flagThemeBlue flagFilled flagTwo",
-  "signal44": "flagThemeBlue flagFilled flagThree",
   "signal46": "flagThemeBlue flagFilled flagFour",
   "signal22": "flagThemeBlue flagFilled flagFive",
   "signal35": "flagThemeBlue flagOutline flagOne",
