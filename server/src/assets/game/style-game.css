@@ -3,12 +3,59 @@ body {
   margin: 0 20px;
 }
 
+#bahn-logo {
+  max-width: 35%;
+  width: auto;
+  max-height: inherit;
+}
+
+#endGameButton {
+  font-size: inherit !important;
+  margin-right: 5px;
+  margin-left: auto;
+}
+
+#tipsLabel {
+  font-size: inherit !important;
+}
+
+.bahn-header {
+  margin-left: 10%;
+  margin-right: 10%;
+  width: auto;
+  display: flex;
+  align-items:center;
+  justify-content: space-between;
+  max-height: 10vh;
+}
+
+@media (max-width: 500px) {
+  .wide-largerfont {
+    font-size: normal !important;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 700px) {
+  .wide-largerfont {
+    font-size: larger !important;
+  }
+}
+
+@media (min-width: 700px) {
+  .wide-largerfont {
+    font-size: x-large !important;
+  }
+}
+
 #trainSelection {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   height: 100%;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .unavailableTrain {

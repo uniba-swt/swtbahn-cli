@@ -65,41 +65,27 @@
 </svg>
 
 <body>
-	<div class="row justify-content-between">
-		<div class="col p-2">
-			<img class="img-fluid" src="../swtbahn-logo.png">
-		</div>
-		<div class="col-auto p-2 align-self-end">
-			<div class="row justify-content-end">
-				<div class="col-auto gx-0">
-					<button id="endGameButton" type="button" class="btn btn-outline-primary">
-						<span lang="de">Beenden</span>
-						<span lang="en">End Trip</span>
-					</button>
-				</div>
-
-				<div class="col-auto">
-					<div class="btn-group gx-0">
-						<input id="changeTips" type="checkbox" class="btn-check">
-						<label class="btn btn-outline-primary" for="changeTips">
-							<span lang="de">Tipps</span>
-							<span lang="en">Tips</span>
-						</label>
-
-						<button id="changeLang" class="btn btn-outline-primary">
-							<span lang="de">🇩🇪</span>
-							<span lang="en">🇬🇧</span>
-						</button>
-					</div>
-				</div>
-			</div>
+	<div class="bahn-header wide-largerfont">
+		<img id="bahn-logo" src="../swtbahn-logo.png">
+		<button id="endGameButton" type="button" class="btn btn-outline-primary">
+			<span lang="de">Beenden</span>
+			<span lang="en">End Trip</span>
+		</button>
+		<div id="tippsAndLang-container" class="btn-group">
+			<input id="changeTips" type="checkbox" class="btn-check">
+			<label id="tipsLabel" class="btn btn-outline-primary" for="changeTips">
+				<span lang="de">Tipps</span>
+				<span lang="en">Tips</span>
+			</label>
+			<button id="changeLang" class="btn btn-outline-primary">
+				<span lang="de">🇩🇪</span>
+				<span lang="en">🇬🇧</span>
+			</button>
 		</div>
 	</div>
-
 	<div class="row">
 		<img id="chosenTrain" class="col pt-2 img-fluid" src=""></img>
 	</div>
-
 	<hr />
 
 	<div id="trainSelection" class="row g-0">
