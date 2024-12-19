@@ -36,6 +36,7 @@
 #include "handler_driver.h"
 
 typedef enum {
+    TYPE_MODULE_NAME,
     TYPE_ROUTE,
     TYPE_SEGMENT,
     TYPE_REVERSER,
@@ -97,7 +98,9 @@ void add_cache_str(char *state) {
 }
 
 e_config_type get_config_type(const char *type) {
-    if (string_equals(type, "route")) {
+    if (string_equals(type, "modulename")) {
+        return TYPE_MODULE_NAME;
+    } else if (string_equals(type, "route")) {
         return TYPE_ROUTE;
     } else if (string_equals(type, "segment")) {
         return TYPE_SEGMENT;
@@ -129,6 +132,8 @@ e_config_type get_config_type(const char *type) {
 void *get_object(e_config_type config_type, const char *id) {
     GHashTable *tb = NULL;
     switch (config_type) {
+        case TYPE_MODULE_NAME:
+            return config_get_module_name();
         case TYPE_ROUTE:
             return get_route(id);
         case TYPE_SEGMENT:
@@ -874,22 +879,18 @@ bool is_segment_occupied(const char *id) {
         result = state_query.known && state_query.data.occupied;
         bidib_free_segment_state_query(state_query);
     }
-
-    syslog_server(LOG_DEBUG, "Is segment occupied: %s => %s", id, result ? "true" : "false");
     return result;
 }
 
 bool is_type_segment(const char *id) {
     bool result = g_hash_table_contains(config_data.table_segments, id);
 
-    syslog_server(LOG_DEBUG, "Is %s a segment: %s", id, result ? "true" : "false");
     return result;
 }
 
 bool is_type_signal(const char *id) {
     bool result = g_hash_table_contains(config_data.table_signals, id);
 
-    syslog_server(LOG_DEBUG, "Is %s a signal: %s", id, result ? "true" : "false");
     return result;
 }
 
@@ -978,6 +979,14 @@ char *config_get_block_id_of_segment(const char *seg_id) {
     }
     
     return NULL;
+}
+
+char *config_get_module_name() {
+	if (config_data.module_name == NULL) {
+        return static_empty_str;
+    } else {
+        return config_data.module_name;
+    }
 }
 
 void log_bool(bool value) {

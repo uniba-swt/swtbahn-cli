@@ -72,6 +72,11 @@ bool parse_config_data(const char *config_dir, t_config_data *config_data) {
 }
 
 void free_config_data(t_config_data config_data) {
+    if (config_data.module_name != NULL) {
+        free(config_data.module_name);
+        config_data.module_name = NULL;
+    }
+    
     if (config_data.table_segments != NULL) {
         g_hash_table_destroy(config_data.table_segments);
         config_data.table_segments = NULL;
