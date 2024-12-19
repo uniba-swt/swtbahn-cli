@@ -41,6 +41,11 @@
 #include "bahn_data_util.h"
 #include "websocket_uploader/engine_uploader.h"
 
+onion_connection_status handler_get_platform_name(void *_, onion_request *req, onion_response *res) {
+	///TODO: implement once config parser ready.
+	return OCS_NOT_IMPLEMENTED;
+}
+
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
