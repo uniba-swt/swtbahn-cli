@@ -1,4 +1,5 @@
-# Block layout configuration: SWTbahnFull
+# Module Name and Block layout configuration: SWTbahnFull
+module-name: SWTbahnFull
 blocks:
   - id: block1
     length: 220.20cm
@@ -275,7 +276,7 @@ crossings:
     segment: seg20
   - id: crossing2
     segment: seg52
-signaltypes:
+signal-types:
   - id: entry
     aspects:
       - aspect_caution
@@ -335,7 +336,7 @@ compositions:
   - id: signal50
     block: signal50a
     distant: signal50b
-peripheraltypes:
+peripheral-types:
   - id: onebit
     aspects:
       - high
