@@ -182,7 +182,8 @@ GArray *dyn_containers_get_interlockers_arr(void);
 // Gets a comma-separated string of interlockers that have been loaded
 GString *dyn_containers_get_interlockers(void);
 
-// Finds the requested interlocker, and finds an available interlocker instance to use
+// Finds the requested interlocker, and finds an available interlocker instance to use; 
+// returns 1 on error/failure to set interlocker instance, and 0 on success.
 int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlocker_instance,
                                             const char *interlocker);
 

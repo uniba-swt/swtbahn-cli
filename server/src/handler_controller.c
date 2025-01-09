@@ -57,33 +57,58 @@ static int selected_interlocker_instance = -1;
 static const size_t max_signals_in_route_assmptn = 1024;
 static const size_t max_items_in_route_assmptn = 1024;
 
-// Returns a value >= 0 if the interlocker with the specified name was set. Otherwise returns -1.
-// Only call with interlocker_mutex locked.
+
+/**
+ * @brief Set the currently selected interlocker to be the interlocker with 
+ * name given by `interlocker_name interlocker_name`, if an interlocker with this name exists
+ * and no interlocker is currently set.
+ * Shall only be called with interlocker_mutex locked.
+ * 
+ * @param interlocker_name name of the interlocker to set, shall not be NULL
+ * @return int >= 0 if interlocker was set successfully, otherwise -1.
+ */
 static int set_interlocker(const char *interlocker_name) {
-	if (selected_interlocker_instance != -1) {
+	if (interlocker_name == NULL) {
+		syslog_server(LOG_ERR, "Set interlocker - invalid interlocker_name (NULL)");
+		return -1;
+	} else if (selected_interlocker_instance != -1) {
 		// Another interlocker is already set, return -1
+		syslog_server(LOG_ERR,
+		              "Set interlocker - interlocker: %s - another interlocker is already set!",
+		              interlocker_name);
 		return -1;
 	}
 
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		// Look for not already used interlocker instance slot (indicated by is_valid).
 		if (!interlocker_instances[i].is_valid) {
 			if (dyn_containers_set_interlocker_instance(&interlocker_instances[i], interlocker_name)) {
 				syslog_server(LOG_ERR, 
 				              "Set interlocker - interlocker: %s - could not be used in instance %d",
 				              interlocker_name, i);
+				return -1;
 			} else {
 				selected_interlocker_name = g_string_new(interlocker_name);
 				selected_interlocker_instance = i;
 				interlocker_instances[selected_interlocker_instance].is_valid = true;
+				return selected_interlocker_instance;
 			}
-			break;
 		}
 	}
-	return selected_interlocker_instance;
+	syslog_server(LOG_ERR,
+	              "Set interlocker - interlocker: %s - no interlocker instance/slot available",
+	              interlocker_name);
+	return -1;
 }
 
-// Returns the value -1 if the interlocker with the specified name was unset. Otherwise returns -1.
-// Only call with interlocker_mutex locked.
+/**
+ * @brief Un-set the interlocker given the name of the currently set interlocker.
+ * Shall only be called with interlocker_mutex locked.
+ * 
+ * @param interlocker_name name of the interlocker to unset
+ * @return int -1 if no interlocker is set after unsetting, >= 0 if an interlocker remains set, 
+ * i.e., unsetting failed if the returned value is >= 0.
+ */
 static int unset_interlocker(const char *interlocker_name) {
 	if (selected_interlocker_instance == -1) {
 		// Selected interlocker instance is -1 -> no interlocker to unset.
@@ -105,7 +130,7 @@ static int unset_interlocker(const char *interlocker_name) {
 
 bool load_default_interlocker_instance() {
 	while (!dyn_containers_is_running()) {
-		// Empty
+		usleep(let_period_us);
 	}
 	pthread_mutex_lock(&interlocker_mutex);
 	const int result = set_interlocker("libinterlocker_default (unremovable)");
@@ -146,7 +171,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
 	for (size_t i = 0; i < conflict_routes_len; i++) {
 		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
-		if (conflict_route->train != NULL) {
+		if (conflict_route != NULL && conflict_route->train != NULL) {
 			if (sectional_in_use && is_route_conflict_safe_sectional(conflict_routes[i], route_id)) {
 				// If a sectional checker is in use and it says that this conflict is 
 				// actually "safe" to grant, skip this conflict/dont add it to the list.
@@ -178,7 +203,6 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 			g_array_append_val(conflict_route_ids, conflict_route_id_string);
 		}
 	}
-
 	return conflict_route_ids;
 }
 
@@ -219,7 +243,6 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 		syslog_server(LOG_ERR, "Grant route - invalid (NULL) parameter(s)");
 		return g_string_new("not_grantable");
 	}
-	
 	
 	pthread_mutex_lock(&interlocker_mutex);
 	if (selected_interlocker_instance == -1) {
@@ -446,8 +469,8 @@ o_con_status handler_release_route(void *_, onion_request *req, onion_response *
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
 		if (strcmp(route_id, "") == 0) {
-			syslog_server(LOG_ERR, "Request: Release route - invalid parameters");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
+			syslog_server(LOG_ERR, "Request: Release route - invalid route-id parameter");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id parameter");
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - start", route_id);
 			bool release_success = release_route(route_id);
@@ -455,7 +478,7 @@ o_con_status handler_release_route(void *_, onion_request *req, onion_response *
 				send_common_feedback(res, HTTP_OK, "");
 			} else {
 				send_common_feedback(res, HTTP_BAD_REQUEST, 
-				                     "invalid parameters, route does not exist or is not granted");
+				                     "invalid parameter, route does not exist or is not granted");
 			}
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - finish", route_id);
 		}
@@ -588,8 +611,8 @@ o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
-			syslog_server(LOG_ERR, "Request: Set interlocker - invalid parameters");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
+			syslog_server(LOG_ERR, "Request: Set interlocker - invalid interlocker parameter (NULL)");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker parameter (NULL)");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set interlocker - interlocker: %s - start",
@@ -633,11 +656,13 @@ o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_respon
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
 		if (data_interlocker == NULL) {
-			syslog_server(LOG_ERR, "Request: Unset interlocker - invalid parameters");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
+			syslog_server(LOG_ERR, "Request: Unset interlocker - invalid interlocker parameter (NULL)");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker parameter (NULL)");
 		} else {
-			syslog_server(LOG_NOTICE, "Request: Unset interlocker - interlocker: %s - start",
+			syslog_server(LOG_NOTICE, 
+			              "Request: Unset interlocker - interlocker: %s - start",
 			              data_interlocker);
+			
 			pthread_mutex_lock(&interlocker_mutex);
 			if (selected_interlocker_instance == -1) {
 				pthread_mutex_unlock(&interlocker_mutex);
