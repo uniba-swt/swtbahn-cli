@@ -73,8 +73,8 @@ bool send_some_cstring(onion_response *res, int status_code, const char *cstr) {
 	}
 }
 
-onion_connection_status 
-handle_req_run_or_method_fail(onion_response *res, bool is_running, const char *caller_logname) {
+onion_connection_status handle_req_run_or_method_fail(onion_response *res, bool is_running, 
+                                                      const char *caller_logname) {
 	if (is_running) {
 		syslog_server(LOG_WARNING, "Request: %s - wrong request type", caller_logname);
 		onion_response_set_code(res, HTTP_METHOD_NOT_ALLOWED);

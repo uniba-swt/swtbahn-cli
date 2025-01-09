@@ -32,8 +32,7 @@
 #include <stdbool.h>
 #include <onion/types.h>
 
-//########################## COMMON UTIL ##########################
-
+// The onion library we use has no define for the 409 code. Add it here.
 #define CUSTOM_HTTP_CODE_CONFLICT 409
 
 /**
@@ -55,16 +54,39 @@ bool send_common_feedback(onion_response *res, int status_code, const char* mess
  * @param res the response over which to send. Shall not be NULL.
  * @param status_code http status code to set for the response to be sent
  * @param gstr the gstring whose contents to send. If it is NULL, only the code will be set, nothing
- * will be send. The gstr gstring will be free'd if it is not null, regardless of the return value.
+ * will be sent. The gstr gstring will be free'd if it is not null, regardless of the return value.
  * @return true if parameters were valid and sending succeeded,
  * @return false otherwise.
  */
 bool send_some_gstring_and_free(onion_response *res, int status_code, GString *gstr);
 
 // This does not free the passed string to be sent (in contrast to the gstring version).
+/**
+ * @brief Like send_some_gstring_and_free, but with a c-style 0-terminated string,
+ * but does NOT free the string.
+ * 
+ * @param res the response over which to send. Shall not be NULL.
+ * @param status_code http status code to set for the response to be sent
+ * @param cstr the c-style 0-terminated string whose contents to send. 
+ * If this is NULL, only the code will be set, nothing will be sent.
+ * @return true 
+ * @return false 
+ */
 bool send_some_cstring(onion_response *res, int status_code, const char *cstr);
 
-onion_connection_status 
-handle_req_run_or_method_fail(onion_response *res, bool is_running, const char *caller_logname);
+/**
+ * @brief Helper for logging to syslog and responding to request
+ * that either the system is not running (but it has to be running for the request in question)
+ * or that an incorrect HTTP method was used.
+ * 
+ * @param res the response over which to send. Shall not be NULL.
+ * @param is_running whether the system is running or not. Pass `true` if this does not matter
+ * for the request in question.
+ * @param caller_logname name of the request endpoint to log
+ * @return onion_connection_status OCS_NOT_IMPLEMENTED if wrong request type,
+ * otherwise OCS_PROCESSED
+ */
+onion_connection_status handle_req_run_or_method_fail(onion_response *res, bool is_running, 
+                                                      const char *caller_logname);
 
 #endif // JSON_COMMUNICATION_UTILS_H
