@@ -799,6 +799,20 @@ def get_engine_list():
 def monitor():
     pass
 
+@click.command(help="Get the name of the platform/railway that is being run")
+def get_platform_name():
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command", err=True)
+    else:
+        global server
+        try:
+            response = requests.get(server + "/monitor/platform-name")
+            if (response.status_code == requests.codes.ok):
+                click.echo("Platform name: " + response.text)
+            else:
+                click.echo("System not running!\n", err=True)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
 
 @click.command(help="Get a list of trains")
 def get_trains():
