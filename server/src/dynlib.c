@@ -64,17 +64,15 @@ dynlib_status dynlib_compile_scchart(const char filepath[], const char output_di
 	// Compile the SCCharts model to a C file
 	char command[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
 	sprintf(command, "%s -o %s %s.sctx", sccharts_compiler_c_command, output_dir, filepath);
-
+	
 	int ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
 		return DYNLIB_COMPILE_SCCHARTS_C_ERR;
 	}
-
+	
 	// Compile the C file into a shared library
 	sprintf(command, "%s -o %s/lib%s.so %s/%s.c", 
-			c_compiler_command, 
-			output_dir, filename, 
-			output_dir, filename);
+	        c_compiler_command, output_dir, filename, output_dir, filename);
 	
 	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
@@ -104,7 +102,8 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
 		// Try and move the shared library with *.dylib extension out of the bahnc folder
-		sprintf(command, bahndsl_move_command, output_dir, filename, "dylib", output_dir, filename, "dylib");
+		sprintf(command, bahndsl_move_command, output_dir, 
+		        filename, "dylib", output_dir, filename, "dylib");
 		ret = system(command);
 		
 		if (ret == -1 || WEXITSTATUS(ret) != 0) {
@@ -133,11 +132,13 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_ty
 		library->lib_handle = dlopen(library->filepath, RTLD_LAZY);
 		
 		if (library->lib_handle == NULL) {
-			syslog_server(LOG_ERR, "Could not load dynamic library %s.\n%s", library->filepath, dlerror());
+			syslog_server(LOG_ERR, 
+			              "Could not load dynamic library %s. Error message: %s", 
+			              library->filepath, dlerror());
 			return DYNLIB_LOAD_ERR;
 		}
 	}
-
+	
 	library->type = type;
 	
 	// Try and locate the functions of the library interface
@@ -169,57 +170,75 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_ty
 
 dynlib_status dynlib_load_train_engine_funcs(dynlib_data *library) {
 	char *error;
-
-	*(void **) (&library->train_engine_reset_func) = dlsym(library->lib_handle, dynlib_symbol_train_engine_reset);
+	
+	*(void **) (&library->train_engine_reset_func) = 
+			dlsym(library->lib_handle, dynlib_symbol_train_engine_reset);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_train_engine_reset, error);
+		syslog_server(LOG_ERR, 
+		              "Could not find address of symbol %s. Error message: %s", 
+		              dynlib_symbol_train_engine_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
 	
 	dlerror();
-	*(void **) (&library->train_engine_tick_func) = dlsym(library->lib_handle, dynlib_symbol_train_engine_tick);
+	*(void **) (&library->train_engine_tick_func) = 
+			dlsym(library->lib_handle, dynlib_symbol_train_engine_tick);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_train_engine_tick, error);
+		syslog_server(LOG_ERR, 
+		              "Could not find address of symbol %s. Error message: %s",
+		              dynlib_symbol_train_engine_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
 	}
-
+	
 	return DYNLIB_LOAD_SUCCESS;
 }
 
 dynlib_status dynlib_load_interlocker_funcs(dynlib_data *library) {
 	char *error;
-
-    *(void **) (&library->interlocker_reset_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_reset);
+	
+	*(void **) (&library->interlocker_reset_func) = 
+			dlsym(library->lib_handle, dynlib_symbol_interlocker_reset);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_interlocker_reset, error);
+		syslog_server(LOG_ERR, 
+		              "Could not find address of symbol %s. Error message: %s", 
+		              dynlib_symbol_interlocker_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
-
+	
 	dlerror();
-    *(void **) (&library->interlocker_tick_func) = dlsym(library->lib_handle, dynlib_symbol_interlocker_tick);
+	*(void **) (&library->interlocker_tick_func) = 
+			dlsym(library->lib_handle, dynlib_symbol_interlocker_tick);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_interlocker_tick, error);
+		syslog_server(LOG_ERR, 
+		              "Could not find address of symbol %s. Error message: %s", 
+		              dynlib_symbol_interlocker_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
 	}
-
+	
 	return DYNLIB_LOAD_SUCCESS;
 }
 
 dynlib_status dynlib_load_drive_route_funcs(dynlib_data *library) {
 	char *error;
-
-    *(void **) (&library->drive_route_reset_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_reset);
+	
+	*(void **) (&library->drive_route_reset_func) = 
+			dlsym(library->lib_handle, dynlib_symbol_drive_route_reset);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_drive_route_reset, error);
+		syslog_server(LOG_ERR, 
+		              "Could not find address of symbol %s. Error message: %s", 
+		              dynlib_symbol_drive_route_reset, error);
 		return DYNLIB_LOAD_RESET_ERR;
 	}
-
-    *(void **) (&library->drive_route_tick_func) = dlsym(library->lib_handle, dynlib_symbol_drive_route_tick);
+	
+	*(void **) (&library->drive_route_tick_func) = 
+			dlsym(library->lib_handle, dynlib_symbol_drive_route_tick);
 	if ((error = dlerror()) != NULL) {
-		syslog_server(LOG_ERR, "Could not find address of symbol %s.\n%s", dynlib_symbol_drive_route_tick, error);
+		syslog_server(LOG_ERR, 
+		              "Could not find address of symbol %s. Error message: %s", 
+		              dynlib_symbol_drive_route_tick, error);
 		return DYNLIB_LOAD_TICK_ERR;
 	}
-
+	
 	return DYNLIB_LOAD_SUCCESS;
 }
 
