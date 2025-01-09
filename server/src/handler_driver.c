@@ -175,7 +175,7 @@ static bool is_forward_driving(const t_interlocking_route *route, const char *tr
 		              train_id, is_forwards ? "forwards" : "backwards");
 		return is_forwards;
 	}
-
+	
 	// 2. Check whether the train is on a block controlled by a reverser
 	bool block_reversed = false;
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
@@ -183,7 +183,7 @@ static bool is_forward_driving(const t_interlocking_route *route, const char *tr
 		const char *reverser_id = rev_query.ids[i];
 		const char *reverser_block = 
 				config_get_scalar_string_value("reverser", reverser_id, "block");
-
+		
 		if (strcmp(block_id, reverser_block) == 0) {
 			const bool succ = reversers_state_update();
 			t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
@@ -603,13 +603,13 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 		syslog_server(LOG_ERR, "Drive route - unable to start driving because route is invalid");
 		return false;
 	}
-
+	
 	// Driving starts: Driving direction is computed from the route orientation
 	syslog_server(LOG_NOTICE, 
 	              "Drive route - route: %s train: %s - %s driving starts", 
 	              route->id, train_id, is_automatic ? "automatic" : "manual");
 	
-	pthread_mutex_lock(&grabbed_trains_mutex);	
+	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const bool requested_forwards = is_forward_driving(route, train_id);
 	if (is_automatic) {
@@ -1146,7 +1146,7 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 		} else if (strcmp(mode, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid driving mode");
 			syslog_server(LOG_ERR, "Request: Drive route - invalid driving mode");
-			return OCS_PROCESSED;			
+			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
 			syslog_server(LOG_ERR, "Request: Drive route - invalid route id");

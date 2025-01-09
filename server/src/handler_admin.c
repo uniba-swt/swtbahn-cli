@@ -121,7 +121,7 @@ static bool startup_server(void) {
 	}
 	
 	running = true;
-	pthread_create(&poll_bidib_messages_thread, NULL, poll_bidib_messages, NULL);	
+	pthread_create(&poll_bidib_messages_thread, NULL, poll_bidib_messages, NULL);
 	return true;
 }
 

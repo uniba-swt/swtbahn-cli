@@ -158,9 +158,8 @@ static GString *get_train_state_json_given_statequery(const char *train_id,
 	append_start_of_obj(g_train_state, false);
 	append_field_str_value(g_train_state, "id", train_id, true);
 	append_field_bool_value(g_train_state, "grabbed", train_grabbed(train_id), true);
-	const char *orientation_str = (tr_state_query.data.orientation ==
-			                       BIDIB_TRAIN_ORIENTATION_LEFT) ?
-			                       "left" : "right";
+	const char *orientation_str = 
+			(tr_state_query.data.orientation == BIDIB_TRAIN_ORIENTATION_LEFT) ? "left" : "right";
 	append_field_str_value(g_train_state, "orientation", orientation_str, true);
 	const char *direction_str = tr_state_query.data.set_is_forwards ? "forwards" : "backwards";
 	append_field_str_value(g_train_state, "direction", direction_str, true);
@@ -628,7 +627,6 @@ static GString *get_accessories_json(bool point_accessories) {
 			                       field_target_reached_present);
 		}
 		
-		///TODO: Remove the commented out part for actual pull request.
 		// Decided not to have the signal type in this "get all signals" monitor endpoint.
 		// But will have it in a "get signal details" kind of monitor endpoint.
 		if (field_target_reached_present) {
@@ -637,12 +635,7 @@ static GString *get_accessories_json(bool point_accessories) {
 				|| acc_state.board_accessory_state.execution_state == BIDIB_EXEC_STATE_REACHED_VERIFIED;
 			append_field_bool_value(g_accs, "target_state_reached", 
 			                        target_state_reached_val, false);
-		} /*else if (!point_accessories) {
-			// if the accessory is not a point, include the field "type" (signal type, e.g. "block")
-			append_field_str_value(g_accs, "type", 
-		                           config_get_scalar_string_value("signal", query.ids[i], "type"), 
-		                           false);
-		}*/
+		}
 		append_end_of_obj(g_accs, i+1 < query.length);
 		bidib_free_unified_accessory_state_query(acc_state);
 	}
@@ -708,7 +701,9 @@ static GString *get_point_details_json(const char *point_id) {
 	// field: aspects
 	GString *g_aspects_list = get_accessory_aspects_json_listonly(point_id, true);
 	if (g_aspects_list == NULL) {
-		syslog_server(LOG_ERR, "Get point details json - point: %s - failed to get aspects list", point_id);
+		syslog_server(LOG_ERR, 
+		              "Get point details json - point: %s - failed to get aspects list", 
+		              point_id);
 		g_string_free(g_details, true);
 		return NULL;
 	}
@@ -911,8 +906,8 @@ static GString *get_segments_json() {
 		// In case we know the segment is occupied, but no addresses are known, the 
 		// loop above won't add "unknown", so deal with this case separately
 		if (seg_state_query.known 
-		    && seg_state_query.data.occupied 
-		    && seg_state_query.data.dcc_addresses == 0) {
+				&& seg_state_query.data.occupied 
+				&& seg_state_query.data.dcc_addresses == 0) {
 			g_string_append_printf(g_segments, "\"unknown\"");
 		}
 		
@@ -1095,7 +1090,8 @@ o_con_status handler_get_verification_option(void *_, onion_request *req, onion_
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		onion_response_set_code(res, HTTP_OK);
-		onion_response_printf(res, "{\n\"verification-enabled\": %s\n}", 
+		onion_response_printf(res, 
+		                      "{\n\"verification-enabled\": %s\n}", 
 		                      verification_enabled ? "true" : "false");
 		syslog_server(LOG_INFO, "Request: Get verification option - done");
 		return OCS_PROCESSED;
@@ -1307,8 +1303,8 @@ o_con_status handler_get_route(void *_, onion_request *req, onion_response *res)
 // Provides data values seen by the environment (dyn_containers_interface.c)
 // and those set by the containers (dyn_containers.forec).
 static GString *debug_info(void) {
-	GString *info_str = g_string_new("");	
-
+	GString *info_str = g_string_new("");
+	
 	const char info_template0[] = 
 	    "Debug info: \n"
 	    "* dyn_containers_reaction_counter: %lld \n"
@@ -1320,7 +1316,7 @@ static GString *debug_info(void) {
 		dyn_containers_reaction_counter__global_0_0,
 		dyn_containers_actuate_reaction_counter
 	);
-
+	
 	const char info_template1[] = 
 	    "dyn_containers_interface: (external value, internal value) \n"
 	    "  running: %d \n"
@@ -1466,15 +1462,15 @@ o_con_status handler_get_debug_info(void *_, onion_request *req, onion_response 
 // Returns extra debugging information related to the ForeC thread scheduler
 // in dyn_containers.forec.
 static GString *debug_info_extra(void) {
-	GString *info_str = g_string_new("");	
-
+	GString *info_str = g_string_new("");
+	
 	const char info_template[] = 
 	    "Debug info extra: \n"
 	    "* mainParReactionCounter: %d \n"
 	    "* mainParCore1.reactionCounter: %d \n"
 	    "* mainParCore2.reactionCounter: %d \n"
 	    "\n";
-
+	
 	g_string_append_printf(
 		info_str, info_template, 
 		mainParReactionCounter,

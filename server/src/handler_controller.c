@@ -78,7 +78,7 @@ static int set_interlocker(const char *interlocker_name) {
 		              interlocker_name);
 		return -1;
 	}
-
+	
 	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		// Look for not already used interlocker instance slot (indicated by is_valid).
 		if (!interlocker_instances[i].is_valid) {
@@ -114,7 +114,7 @@ static int unset_interlocker(const char *interlocker_name) {
 		// Selected interlocker instance is -1 -> no interlocker to unset.
 		return -1;
 	}
-
+	
 	if (strcmp(selected_interlocker_name->str, interlocker_name) == 0
 			&& interlocker_instances[selected_interlocker_instance].is_valid) {
 		dyn_containers_free_interlocker_instance(&interlocker_instances[selected_interlocker_instance]);
@@ -160,7 +160,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 		return NULL;
 	}
 	GArray* conflict_route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-
+	
 	// When a sectional interlocker is in use, use the sectional checker to
 	// check for route availability.
 	bool sectional_in_use = (g_strrstr(selected_interlocker_name->str, "sectional") != NULL);
@@ -211,11 +211,11 @@ bool get_route_is_clear(const char *route_id) {
 		return false;
 	}
 	bahn_data_util_init_cached_track_state();
-
+	
 	// Check that all route signals are in the Stop aspect
 	char *signal_ids[max_signals_in_route_assmptn];
-	const size_t signal_ids_len = config_get_array_string_value("route", route_id, 
-	                                                            "route_signals", signal_ids);
+	const size_t signal_ids_len = 
+			config_get_array_string_value("route", route_id, "route_signals", signal_ids);
 	for (size_t i = 0; i < signal_ids_len; i++) {
 		const char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
@@ -223,7 +223,7 @@ bool get_route_is_clear(const char *route_id) {
 			return false;
 		}
 	}
-
+	
 	// Check that all blocks are unoccupied
 	char *item_ids[max_items_in_route_assmptn];
 	const size_t item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
@@ -233,8 +233,8 @@ bool get_route_is_clear(const char *route_id) {
 			return false;
 		}
 	}
-
-	bahn_data_util_free_cached_track_state();	
+	
+	bahn_data_util_free_cached_track_state();
 	return true;
 }
 
@@ -252,31 +252,31 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 		              train_id, source_id, destination_id);
 		return g_string_new("no_interlocker");
 	}
-
+	
 	bahn_data_util_init_cached_track_state();
-
+	
 	// Ask the interlocker to grant requested route.
 	// May take multiple ticks to process the request.
 	dyn_containers_set_interlocker_instance_inputs(&interlocker_instances[selected_interlocker_instance],
 	                                               source_id, destination_id,
 	                                               train_id);
-
+	
 	struct t_interlocker_instance_io interlocker_instance_io;
 	do {
 		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_has_reset);
-
+	
 	dyn_containers_set_interlocker_instance_reset(&interlocker_instances[selected_interlocker_instance],
 	                                              false);
-
+	
 	do {
 		usleep(let_period_us);
 		dyn_containers_get_interlocker_instance_outputs(&interlocker_instances[selected_interlocker_instance],
 		                                                &interlocker_instance_io);
 	} while (!interlocker_instance_io.output_terminated);
-
+	
 	// Return the result
 	GString *g_route_id_copy = g_string_new(interlocker_instance_io.output_route_id);
 	bahn_data_util_free_cached_track_state();
@@ -337,7 +337,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		              train_id, route_id);
 		return "not_grantable";
 	}
-
+	
 	// Check whether the route is physically available
 	if (!get_route_is_clear(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
@@ -346,9 +346,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		              train_id, route_id);
 		return "not_clear";
 	}
-
+	
 	// Grant the route to the train
-		
+	
 	syslog_server(LOG_INFO, 
 	              "Grant route id - train: %s route: %s - checks passed, now grant route", 
 	              train_id, route_id);
@@ -362,7 +362,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		              train_id, route_id);
 		return "not_grantable";
 	}
-
+	
 	// Set the points to their required positions
 	for (size_t i = 0; i < route->points->len; i++) {
 		const t_interlocking_point point = g_array_index(route->points, t_interlocking_point, i);
@@ -370,7 +370,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_switch_point(point.id, position);
 		bidib_flush();
 	}
-
+	
 	// Set the signals to their required aspects
 	for (size_t i = 0; i < route->signals->len - 1; i++) {
 		const char *signal = g_array_index(route->signals, char *, i);
@@ -383,7 +383,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	syslog_server(LOG_NOTICE, 
 	              "Grant route id - train: %s route: %s - route granted", 
 	              train_id, route_id);
-
+	
 	pthread_mutex_unlock(&interlocker_mutex);
 	return "granted";
 }
@@ -407,7 +407,7 @@ bool release_route(const char *route_id) {
 		const char *signal_aspect = "aspect_stop";
 		for (int signal_index = 0; signal_index < route->signals->len; signal_index++) {
 			const char *signal_id = g_array_index(route->signals, char *, signal_index);
-
+			
 			if (bidib_set_signal(signal_id, signal_aspect)) {
 				syslog_server(LOG_ERR, 
 				              "Release route - route: %s - unable to set signal to aspect %s", 
@@ -416,7 +416,7 @@ bool release_route(const char *route_id) {
 				bidib_flush();
 			}
 		}
-
+		
 		free(route->train);
 		route->train = NULL;
 		syslog_server(LOG_NOTICE, "Release route - route: %s - released", route_id);
@@ -433,7 +433,7 @@ bool release_route(const char *route_id) {
 bool reversers_state_update(void) {
 	const int max_retries = 5;
 	bool error = false;
-
+	
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
 	for (size_t i = 0; i < rev_query.length; i++) {
 		const char *reverser_id = rev_query.ids[i];
@@ -441,7 +441,7 @@ bool reversers_state_update(void) {
 				config_get_scalar_string_value("reverser", reverser_id, "board");
 		error |= bidib_request_reverser_state(reverser_id, reverser_board);
 		bidib_flush();
-
+		
 		bool state_unknown = true;
 		for (int retry = 0; retry < max_retries && state_unknown; retry++) {
 			t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
@@ -452,13 +452,13 @@ bool reversers_state_update(void) {
 			if (!state_unknown) {
 				break;
 			}
-
+			
 			usleep(50000);   // 0.05s
 		}
-
+		
 		error |= state_unknown;
 	}
-
+	
 	bidib_free_id_list_query(rev_query);
 	return !error;
 }

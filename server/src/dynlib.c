@@ -91,7 +91,7 @@ dynlib_status dynlib_compile_bahndsl(const char filepath[], const char output_di
 	
 	// Compile the BahnDSL model to a shared library
 	char command[MAX_INPUT + 2 * (PATH_MAX + NAME_MAX)];
-	sprintf(command, bahndsl_compiler_command, output_dir, output_dir, filename);	
+	sprintf(command, bahndsl_compiler_command, output_dir, output_dir, filename);
 	int ret = system(command);
 	if (ret == -1 || WEXITSTATUS(ret) != 0) {
 		return DYNLIB_COMPILE_SHARED_BAHNDSL_ERR;

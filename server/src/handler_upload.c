@@ -155,7 +155,7 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		}
 		
 		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - start", filename);
-  
+		
  		if (engine_file_exists(filename)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Upload engine - engine file: %s - "
@@ -169,14 +169,14 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		remove_file_extension(filename_noextension, filename, ".sctx");
 		char libname[sizeof(filename_noextension)];
 		snprintf(libname, sizeof(libname), "lib%s", filename_noextension);
-
+		
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", engine_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
 		syslog_server(LOG_DEBUG, 
 		              "Request: Upload engine - engine file: %s - copied engine file from %s to %s", 
 		              filename, temp_filepath, final_filepath);
-
+		
 		if (verification_enabled) {
 			verif_result engine_verif_result = verify_engine_model(final_filepath);
 			if (!engine_verif_result.success) {
@@ -199,7 +199,7 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		const dynlib_status status = dynlib_compile_scchart(filepath, engine_dir);
 		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
 			remove_engine_files(libname);
-
+			
 			syslog_server(LOG_ERR, 
 			              "Request: Upload engine - engine file: %s - could not be "
 			              "compiled into a C file and then to a shared library - abort", 
@@ -216,7 +216,7 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			remove_engine_files(libname);
-		
+			
 			syslog_server(LOG_WARNING, 
 			              "Request: Upload engine - engine file: %s - "
 			              "no available engine slot - abort", 
@@ -308,7 +308,7 @@ static bool remove_interlocker_files(const char library_name[]) {
 	// Remove the prefix "libinterlocker_"
 	char name[PATH_MAX + NAME_MAX];
 	strcpy(name, library_name + 15);
-
+	
 	int result = 0;
 	char filepath[PATH_MAX + NAME_MAX];
 	for (int i = 0; i < interlocker_extensions_count; i++) {
@@ -334,7 +334,7 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		syslog_server(LOG_NOTICE, 
 		              "Request: Upload interlocker - interlocker file: %s - start", 
 		              filename);
-
+		
 		if (interlocker_file_exists(filename)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Upload interlocker - interlocker file: %s - "
@@ -343,12 +343,12 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 			send_common_feedback(res, HTTP_BAD_REQUEST, "Interlocker file already exists");
 			return OCS_PROCESSED;
 		}
-
+		
 		char filename_noextension[NAME_MAX];
 		remove_file_extension(filename_noextension, filename, ".bahn");
 		char libname[sizeof(filename_noextension)];
 		snprintf(libname, sizeof(libname), "libinterlocker_%s", filename_noextension);
-
+		
 		char final_filepath[PATH_MAX + NAME_MAX];
 		snprintf(final_filepath, sizeof(final_filepath), "%s/%s", interlocker_dir, filename);
 		onion_shortcut_rename(temp_filepath, final_filepath);
@@ -356,7 +356,7 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		              "Request: Upload interlocker - interlocker file: %s - "
 		              "copied interlocker BahnDSL file from %s to %s",
 		              filename, temp_filepath, final_filepath);
-
+		
 		char filepath[sizeof(final_filepath)];
 		remove_file_extension(filepath, final_filepath, ".bahn");
 		const dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
@@ -372,13 +372,13 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		syslog_server(LOG_DEBUG, 
 		              "Request: Upload interlocker - interlocker file: %s - interlocker compiled", 
 		              filename);
-
+		
 		pthread_mutex_lock(&dyn_containers_mutex);
 		const int interlocker_slot = dyn_containers_get_free_interlocker_slot();
 		if (interlocker_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			remove_interlocker_files(libname);
-
+			
 			syslog_server(LOG_WARNING, 
 			              "Request: Upload interlocker - interlocker file: %s - "
 			              "no available interlocker slot - abort", 
@@ -386,7 +386,7 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "No available interlocker slot");
 			return OCS_PROCESSED;
 		}
-
+		
 		snprintf(filepath, sizeof(filepath), "%s/%s", interlocker_dir, libname);
 		dyn_containers_set_interlocker(interlocker_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
@@ -413,7 +413,7 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - start", name);
-
+		
 		pthread_mutex_lock(&dyn_containers_mutex);
 		const int interlocker_slot = dyn_containers_get_interlocker_slot(name);
 		if (interlocker_slot < 0) {
@@ -425,7 +425,7 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 			send_common_feedback(res, HTTP_NOT_FOUND, "Interlocker to remove could not be found");
 			return OCS_PROCESSED;
 		}
-
+		
 		const bool free_success = dyn_containers_free_interlocker(interlocker_slot);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		if (!free_success) {
@@ -436,7 +436,7 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "Interlocker is still in use");
 			return OCS_PROCESSED;
 		}
-
+		
 		if (!remove_interlocker_files(name)) {
 			syslog_server(LOG_ERR, 
 			              "Request: Remove interlocker - interlocker: %s - "

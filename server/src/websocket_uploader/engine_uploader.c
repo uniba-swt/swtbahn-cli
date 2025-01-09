@@ -376,7 +376,7 @@ void set_verifier_url(const char *upd_verifier_url) {
 
 
 const char * get_verifier_url() {
-   return verifier_url;
+	return verifier_url;
 }
 
 
@@ -434,7 +434,7 @@ void cache_verifier_url() {
 		syslog_server(LOG_ERR, "Cache verifier URL - cache file opening failed");
 		return;
 	}
-
+	
 	// Write the content to the file
 	fputs(verifier_url, file);
 	syslog_server(LOG_INFO, "Cache verifier URL - cached URL %s", verifier_url);
