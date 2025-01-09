@@ -169,13 +169,9 @@ static GString *get_train_state_json_given_statequery(const char *train_id,
 	append_field_int_value(g_train_state, "detected_kmh_speed", tr_state_query.data.detected_kmh_speed, true);
 	
 	pthread_mutex_lock(&interlocker_mutex);
-	int route_id = interlocking_table_get_route_id_of_train(train_id);
+	const char *route_id = interlocking_table_get_route_id_of_train(train_id);
 	pthread_mutex_unlock(&interlocker_mutex);
-	if (route_id > -1) {
-		append_field_str_value_from_int(g_train_state, "route_id", route_id, true);
-	} else {
-		append_field_str_value(g_train_state, "route_id", "", true);
-	}
+	append_field_str_value(g_train_state, "route_id", route_id == NULL ? "" : route_id, true);
 	
 	t_bidib_train_position_query train_position_query = bidib_get_train_position(train_id);
 	bool is_on_track = train_position_query.length > 0;

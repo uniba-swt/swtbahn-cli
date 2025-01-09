@@ -86,7 +86,7 @@ void free_interlocking_table(void);
 
 /**
  * Return all the route IDs in the interlocking table.
- * The caller IS responsible for freeing the array or its contents.
+ * The caller IS responsible for freeing the array and its contents.
  * 
  * @return array of route IDs.
  */
@@ -104,12 +104,13 @@ GArray *interlocking_table_get_all_route_ids_cpy(void);
 
 /**
  * Search for the first route granted to the specified train and return its id.
+ * The caller is NOT responsible for freeing the returned string.
  * 
  * @param train_id 
  * @return int id of the first route found that is granted to train. 
- *         -1 if no routes are granted to this train.
+ *         NULL if no routes are granted to this train or the train is unknown/invalid.
  */
-int interlocking_table_get_route_id_of_train(const char *train_id);
+const char *interlocking_table_get_route_id_of_train(const char *train_id);
 
 /**
  * Return the array of route IDs for a given source and destination signal.
@@ -118,15 +119,6 @@ int interlocking_table_get_route_id_of_train(const char *train_id);
  * @return array if it exists, otherwise NULL
  */
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id);
-
-/**
- * Return the first route between the source and destination signals.
- *
- * @param source_id
- * @param destination_id
- * @return
- */
-int interlocking_table_get_route_id(const char *source_id, const char *destination_id);
 
 /**
  * Return (pointer to) the route for a given route_id.

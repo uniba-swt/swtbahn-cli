@@ -426,7 +426,7 @@ GHashTable *parse(yaml_parser_t *parser) {
 GHashTable *parse_interlocking_table(const char *config_dir) {
     if (config_dir == NULL) {
         syslog_server(LOG_ERR, "Interlocking parser: config directory is missing");
-        return false;
+        return NULL;
     }
 
     // init
@@ -434,7 +434,7 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
     yaml_parser_t parser;
     if (!init_parser(config_dir, INTERLOCKING_TABLE_FILENAME, &fh, &parser)) {
         syslog_server(LOG_ERR, "Interlocking parser: Interlocking table file is missing");
-        return false;
+        return NULL;
     }
 
     // parse
