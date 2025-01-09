@@ -21,7 +21,7 @@
  * The following people contributed to the conception and realization of the
  * present swtbahn-cli (in alphabetic order by surname):
  *
- * - Bernhard Luedtke
+ * - Bernhard Luedtke <https://github.com/bluedtke>
  *
  */
 

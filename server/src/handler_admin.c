@@ -22,6 +22,7 @@
  * present swtbahn-cli (in alphabetic order by surname):
  *
  * - Nicolas Gross <https://github.com/nicolasgross>
+ * - Bernhard Luedtke <https://github.com/bluedtke>
  *
  */
 
@@ -41,12 +42,21 @@
 #include "websocket_uploader/engine_uploader.h"
 #include "communication_utils.h"
 
+// Mutex to lock when performing startup or shutdown
 static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
+// Thread that polls bidib messages periodically
 static pthread_t poll_bidib_messages_thread;
 typedef onion_connection_status o_con_status;
 
-void build_message_hex_string(unsigned char *message, char *dest) {
-	for (size_t i = 0; i <= message[0]; i++) {
+/**
+ * @brief Constructs a hex-string from a bidib message into `dest`.
+ * 
+ * @param message bidib msg string, first byte shall indicate length
+ * @param dest (in-out), filled with resulting hex string; caller responsible for ensuring 
+ * that this string is long enough to hold the hex string
+ */
+static void build_message_hex_string(unsigned char *message, char *dest) {
+	for (unsigned int i = 0; i <= message[0]; i++) {
 		if (i != 0) {
 			dest += sprintf(dest, " ");
 		}
@@ -58,6 +68,8 @@ static void *poll_bidib_messages(void *_) {
 	while (running) {
 		unsigned char *message;
 		while ((message = bidib_read_message()) != NULL) {
+			// message[0] holds length of msg; +1 for null-term(?), 
+			// and max. 5 chars per byte will be needed in hex representation
 			char hex_string[(message[0] + 1) * 5];
 			build_message_hex_string(message, hex_string);
 			syslog_server(LOG_NOTICE, "SWTbahn message queue: %s", hex_string);
@@ -69,13 +81,13 @@ static void *poll_bidib_messages(void *_) {
 			syslog_server(LOG_ERR, "SWTbahn error message queue: %s", hex_string);
 			free(message);
 		}
-		usleep(500000);	// 0.5 seconds
+		usleep(250000);	// 0.25 seconds
 	}
 	
 	pthread_exit(NULL);
 }
 
-// Must be called with start_stop_mutex already acquired
+// Shall only be called with start_stop_mutex acquired
 static bool startup_server(void) {
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
@@ -113,6 +125,7 @@ static bool startup_server(void) {
 	return true;
 }
 
+// Shall only be called with start_stop_mutex acquired
 void shutdown_server(void) {
 	session_id = 0;
 	syslog_server(LOG_NOTICE, "Shutdown server");
@@ -127,7 +140,8 @@ void shutdown_server(void) {
 	syslog_server(LOG_INFO, "Shutdown server - Released interlocking config and table data");
 	pthread_join(poll_bidib_messages_thread, NULL);
 	syslog_server(LOG_NOTICE, 
-	              "Shutdown server - BiDiB message poll thread joined, now stopping BiDiB and closing log");
+	              "Shutdown server - BiDiB message poll thread joined, "
+	              "now stopping BiDiB and closing log");
 	bidib_stop();
 }
 
@@ -139,7 +153,7 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 		openlog("swtbahn", 0, LOG_LOCAL0);
 		session_id = time(NULL);
 		syslog_server(LOG_NOTICE, "Request: Startup server - session id: %ld - start", session_id);
-
+		
 		if (startup_server()) {
 			pthread_mutex_unlock(&start_stop_mutex);
 			send_common_feedback(res, HTTP_OK, "");
@@ -148,9 +162,10 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 			              session_id);
 		} else {
 			pthread_mutex_unlock(&start_stop_mutex);
-			send_common_feedback(res, HTTP_INTERNAL_ERROR, "unable to start BiDiB");
+			send_common_feedback(res, HTTP_INTERNAL_ERROR, "unable to start the server");
 			syslog_server(LOG_ERR, 
-			              "Request: Startup server - session id: %ld - unable to start BiDiB - abort", 
+			              "Request: Startup server - session id: %ld - "
+			              "unable to start the server - abort", 
 			              session_id);
 		}
 		return OCS_PROCESSED;
@@ -166,9 +181,9 @@ o_con_status handler_shutdown(void *_, onion_request *req, onion_response *res) 
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		syslog_server(LOG_NOTICE, "Request: Shutdown server - start");
 		shutdown_server();
-		// Can't log "finished" here since bidib closes the syslog when stopping
 		pthread_mutex_unlock(&start_stop_mutex);
 		send_common_feedback(res, HTTP_OK, "");
+		// Can't log "finished" here since bidib closes the syslog when stopping
 		return OCS_PROCESSED;
 	} else {
 		pthread_mutex_unlock(&start_stop_mutex);
@@ -198,8 +213,7 @@ o_con_status handler_set_track_output(void *_, onion_request *req, onion_respons
 	}
 }
 
-o_con_status handler_set_verification_option(void *_, onion_request *req,
-                                                        onion_response *res) {
+o_con_status handler_set_verification_option(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_option = onion_request_get_post(req, "verification-option");
@@ -225,9 +239,8 @@ o_con_status handler_set_verification_option(void *_, onion_request *req,
 	}
 }
 
-o_con_status handler_set_verification_url(void *_, onion_request *req,
-                                                     onion_response *res) {
-    build_response_header(res);
+o_con_status handler_set_verification_url(void *_, onion_request *req, onion_response *res) {
+	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_url = onion_request_get_post(req, "verification-url");
 		if (data_verification_url == NULL) {
@@ -246,8 +259,7 @@ o_con_status handler_set_verification_url(void *_, onion_request *req,
 	}
 }
 
-o_con_status handler_admin_release_train(void *_, onion_request *req,
-                                                    onion_response *res) {
+o_con_status handler_admin_release_train(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
@@ -296,8 +308,7 @@ o_con_status handler_admin_release_train(void *_, onion_request *req,
 	}
 }
 
-o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
-                                                          onion_response *res) {
+o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
@@ -318,12 +329,18 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
 			              "train: %s speed: %d - invalid track output", 
 			              data_train, speed);
 			return OCS_PROCESSED;
-		} 
+		}
 		
 		syslog_server(LOG_NOTICE, 
 		              "Request: Admin set dcc train speed - train: %s speed: %d - start", 
 		              data_train, speed);
 		// Does not require lock on grabbed trains mutex as this bidib function is threadsafe.
+		///TODO: Directly setting the speed via bidib - i.e., not setting it via 
+		///      the dynamic containers - will cause an inconsistent state:
+		///      the train in the real world will stop, but the speed set in the dynamic container 
+		///      is not necessarily 0.
+		///      Todo for the future: set speed via dyn. container, check that speed is set to 0
+		//       with a timeout after which it is set to 0 directly via bidib as currently done.
 		if (bidib_set_train_speed(data_train, speed, data_track_output)) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters");
 			syslog_server(LOG_ERR, 
