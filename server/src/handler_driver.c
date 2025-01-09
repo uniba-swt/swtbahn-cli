@@ -163,21 +163,21 @@ static bool is_forward_driving(const t_interlocking_route *route, const char *tr
 	char *block_id = NULL;
 	for (size_t i = 0; i < train_position_query.length; i++) {
 		block_id = config_get_block_id_of_segment(train_position_query.segments[i]);
-		if (block_id != NULL) {
+		if (block_id != NULL && strlen(block_id) > 0) {
 			break;
 		}
 	}
 	bidib_free_train_position_query(train_position_query);
 	
-	if (block_id == NULL) {
+	if (block_id == NULL || strlen(block_id) == 0) {
 		syslog_server(LOG_ERR, 
-		              "Is forward driving - train: %s driving: %s - current block of train is unknown",
+		              "Is forward driving - train: %s driving: %s - current block of train unknown",
 		              train_id, is_forwards ? "forwards" : "backwards");
 		return is_forwards;
 	}
 
 	// 2. Check whether the train is on a block controlled by a reverser
-	bool electrically_reversed = false;
+	bool block_reversed = false;
 	t_bidib_id_list_query rev_query = bidib_get_connected_reversers();
 	for (size_t i = 0; i < rev_query.length; i++) {
 		const char *reverser_id = rev_query.ids[i];
@@ -189,7 +189,7 @@ static bool is_forward_driving(const t_interlocking_route *route, const char *tr
 			t_bidib_reverser_state_query rev_state_query = bidib_get_reverser_state(reverser_id);
 			// 3. Check the reverser's state
 			if (succ && rev_state_query.available) {
-				electrically_reversed = (rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
+				block_reversed = (rev_state_query.data.state_value == BIDIB_REV_EXEC_STATE_ON);
 			}
 			bidib_free_reverser_state_query(rev_state_query);
 			break;
@@ -197,9 +197,7 @@ static bool is_forward_driving(const t_interlocking_route *route, const char *tr
 	}
 	bidib_free_id_list_query(rev_query);
 	
-	const bool requested_forwards = electrically_reversed
-	                                ? !is_forwards
-	                                : is_forwards;
+	const bool requested_forwards = block_reversed ? !is_forwards : is_forwards;
 	syslog_server(LOG_NOTICE, 
 	              "Is forward driving - train: %s driving: %s",
 	              train_id, is_forwards ? "forwards" : "backwards");

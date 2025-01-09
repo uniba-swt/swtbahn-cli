@@ -56,8 +56,6 @@ t_config_data config_data = {};
 // Needed to temporarily store new strings created by track_state_get_value
 GArray *cached_allocated_str_array = NULL;
 
-char *static_empty_str = "";
-
 bool bahn_data_util_initialise_config(const char *config_dir) {
     if (!interlocking_table_initialise(config_dir)) {
         return false;
@@ -76,7 +74,11 @@ void bahn_data_util_free_config() {
 }
 
 bool string_equals(const char *str1, const char *str2) {
-    return strcmp(str1, str2) == 0;
+    if (str1 != NULL && str2 != NULL) {
+        return strcmp(str1, str2) == 0;
+    } else {
+        return false;
+    }
 }
 
 void bahn_data_util_init_cached_track_state() {
@@ -189,20 +191,26 @@ void *get_object(e_config_type config_type, const char *id) {
     return NULL;
 }
 
-///TODO: Document i/o param assumptions
 int interlocking_table_get_routes(const char *src_signal_id, const char *dst_signal_id, char *route_ids[]) {
-    GArray *arr = interlocking_table_get_route_ids(src_signal_id, dst_signal_id);
+    if (src_signal_id == NULL || dst_signal_id == NULL) {
+        syslog_server(LOG_ERR, "interlocking table get routes: called with invalid (NULL) parameters");
+        return 0;
+    }
+    const GArray *arr = interlocking_table_get_route_ids(src_signal_id, dst_signal_id);
     if (arr != NULL) {
         for (int i = 0; i < arr->len; ++i) {
             route_ids[i] = g_array_index(arr, char *, i);
         }
         return arr->len;
     }
-
     return 0;
 }
 
 int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char* data[]) {
+    if (route == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Get route array string value: called with invalid (NULL) parameters");
+        return 0;
+    }
     if (string_equals(prop_name, "path")) {
         if (route->path != NULL) {
             for (int i = 0; i < route->path->len; ++i) {
@@ -244,6 +252,10 @@ int get_route_array_string_value(t_interlocking_route *route, const char *prop_n
 }
 
 char *config_get_scalar_string_value(const char *type, const char *id, const char *prop_name) {
+    if (type == NULL || id == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Get scalar string: called with invalid (NULL) parameters");
+        return "";
+    }
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     char *result = NULL;
@@ -261,14 +273,12 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "train")) {
                     result = ((t_interlocking_route *) obj)->train;
                 }
-
                 break;
                 
             case TYPE_SEGMENT:
                 if (string_equals(prop_name, "id")) {
                     result = ((t_config_segment *) obj)->id;
                 }
-
                 break;
                 
             case TYPE_REVERSER:
@@ -279,7 +289,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "block")) {
                     result = ((t_config_reverser *) obj)->block;
                 }
-
                 break;
             
             case TYPE_SIGNAL:
@@ -290,7 +299,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "type")) {
                     result = ((t_config_signal *) obj)->type;
                 }
-
                 break;
                 
             case TYPE_POINT:
@@ -305,7 +313,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "reverse")) {
                     result = ((t_config_point *) obj)->reverse_aspect;
                 }
-
                 break;
                 
             case TYPE_PERIPHERAL:
@@ -316,7 +323,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "type")) {
                     result = ((t_config_peripheral *) obj)->type;
                 }
-                
                 break;
                 
             case TYPE_TRAIN:
@@ -325,7 +331,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "type")) {
                     result = ((t_config_train *) obj)->type;
                 }
-
                 break;
                 
             case TYPE_BLOCK:
@@ -334,7 +339,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "direction")) {
                     result = ((t_config_block *) obj)->direction;
                 }
-
                 break;
                 
             case TYPE_CROSSING:
@@ -343,7 +347,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "segment")) {
                     result = ((t_config_crossing *) obj)->main_segment;
                 }
-
                 break;
                 
             case TYPE_SIGNAL_TYPE:
@@ -352,7 +355,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "initial")) {
                     result = ((t_config_signal_type *) obj)->initial;
                 }
-
                 break;
 
             case TYPE_COMPOSITE_SIGNAL:
@@ -367,7 +369,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "distant")) {
                     result = ((t_config_composite_signal *) obj)->distant;
                 }
-
                 break;
                 
             case TYPE_PERIPHERAL_TYPE:
@@ -376,7 +377,6 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
                 } else if (string_equals(prop_name, "initial")) {
                     result = ((t_config_peripheral_type *) obj)->initial;
                 }
-
                 break;
                 
             default:
@@ -384,12 +384,16 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
         }
     }
 
-    result = result != NULL ? result : static_empty_str;
+    result = result != NULL ? result : "";
     syslog_server(LOG_DEBUG, "Get scalar string: %s %s.%s => \"%s\"", type, id, prop_name, result);
     return result;
 }
 
 float config_get_scalar_float_value(const char *type, const char *id, const char *prop_name) {
+    if (type == NULL || id == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Get scalar float: called with invalid (NULL) parameters");
+        return 0;
+    }
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     float result = 0;
@@ -408,7 +412,7 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
                     result = ((t_config_block *) obj)->limit_speed;
                 }
                 break;
-
+                
             case TYPE_SEGMENT:
                 if (string_equals(prop_name, "length")) {
                     result = ((t_config_segment *) obj)->length;
@@ -433,6 +437,10 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
 }
 
 bool config_get_scalar_bool_value(const char *type, const char *id, const char *prop_name) {
+    if (type == NULL || id == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Get scalar bool: called with invalid (NULL) parameters");
+        return "";
+    }
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     bool result = false;
@@ -453,6 +461,10 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
 }
 
 int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char *data[]) {
+    if (type == NULL || id == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Get array string: called with invalid (NULL) parameters");
+        return 0;
+    }
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     int result = 0;
@@ -467,21 +479,18 @@ int config_get_array_string_value(const char *type, const char *id, const char *
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_signal *) obj)->aspects;
                 }
-                
                 break;
                 
             case TYPE_PERIPHERAL:
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_peripheral *) obj)->aspects;
                 }
-                
                 break;
                 
             case TYPE_TRAIN:
                 if (string_equals(prop_name, "peripherals")) {
                     arr = ((t_config_train *) obj)->peripherals;
                 }
-                
                 break;
                 
             case TYPE_BLOCK:
@@ -494,21 +503,18 @@ int config_get_array_string_value(const char *type, const char *id, const char *
                 } else if (string_equals(prop_name, "overlaps")) {
                     arr = ((t_config_block *) obj)->overlaps;
                 }
-                
                 break;
                 
             case TYPE_SIGNAL_TYPE:
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_signal_type *) obj)->aspects;
                 }
-                
                 break;
                 
             case TYPE_PERIPHERAL_TYPE:
                 if (string_equals(prop_name, "aspects")) {
                     arr = ((t_config_peripheral_type *) obj)->aspects;
                 }
-                
                 break;
                 
             default:
@@ -528,6 +534,10 @@ int config_get_array_string_value(const char *type, const char *id, const char *
 }
 
 int config_get_array_int_value(const char *type, const char *id, const char *prop_name, int data[]) {
+    if (type == NULL || id == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Get array int value: called with invalid (NULL) parameters");
+        return 0;
+    }
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     int result = 0;
@@ -566,6 +576,10 @@ int config_get_array_bool_value(const char *type, const char *id, const char *pr
 }
 
 bool config_set_scalar_string_value(const char *type, const char *id, const char *prop_name, char *value) {
+    if (type == NULL || id == NULL || prop_name == NULL) {
+        syslog_server(LOG_ERR, "Config set scalar string value: called with invalid (NULL) parameters");
+        return false;
+    }
     e_config_type config_type = get_config_type(type);
     void *obj = get_object(config_type, id);
     bool result = false;
@@ -622,13 +636,15 @@ e_config_type get_track_state_type(const char *id) {
  * @param value stop, go, caution, or shunt
  * @return true of success, otherwise false
  */
-char *get_signal_state(const char *id) {
-    t_config_signal *signal = get_object(TYPE_SIGNAL, id);
-    if (signal == NULL)
+static char *get_signal_state(const char *id) {
+    if (id == NULL) {
         return "";
-
-    const char *type = signal->type;
-
+    }
+    const t_config_signal *signal = get_object(TYPE_SIGNAL, id);
+    if (signal == NULL) {
+        return "";
+    }
+    
     // load raw state
     char *raw_state = NULL;
     t_bidib_unified_accessory_state_query state_query = bidib_get_signal_state(id);
@@ -651,33 +667,33 @@ char *get_signal_state(const char *id) {
     char *result = NULL;
     
     if (string_equals(raw_state, "aspect_stop")) {
-        if (string_equals(type, "entry")
-            || string_equals(type, "exit")
-            || string_equals(type, "block")
-            || string_equals(type, "distant")
-            || string_equals(type, "shunting")
-            || string_equals(type, "halt")) {
+        if (string_equals(signal->type, "entry")
+            || string_equals(signal->type, "exit")
+            || string_equals(signal->type, "block")
+            || string_equals(signal->type, "distant")
+            || string_equals(signal->type, "shunting")
+            || string_equals(signal->type, "halt")) {
 
             result = "stop";
         }
     } else if (string_equals(raw_state, "aspect_go")) {
-        if (string_equals(type, "entry")
-            || string_equals(type, "exit")
-            || string_equals(type, "block")
-            || string_equals(type, "distant")) {
+        if (string_equals(signal->type, "entry")
+            || string_equals(signal->type, "exit")
+            || string_equals(signal->type, "block")
+            || string_equals(signal->type, "distant")) {
 
             result = "go";
         }
     } else if (string_equals(raw_state, "aspect_caution")) {
-        if (string_equals(type, "entry")
-            || string_equals(type, "exit")
-            || string_equals(type, "distant")) {
+        if (string_equals(signal->type, "entry")
+            || string_equals(signal->type, "exit")
+            || string_equals(signal->type, "distant")) {
 
             result = "caution";
         }
     } else if (string_equals(raw_state, "aspect_shunt")) {
-        if (string_equals(type, "exit")
-            || string_equals(type, "shunting")) {
+        if (string_equals(signal->type, "exit")
+            || string_equals(signal->type, "shunting")) {
             
             result = "shunt";
         }
@@ -687,7 +703,11 @@ char *get_signal_state(const char *id) {
     return result;
 }
 
-bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
+static bool set_signal_raw_aspect(const t_config_signal *signal, const char *value) {
+    if (signal == NULL || value == NULL) {
+        syslog_server(LOG_ERR, "Set signal raw aspect: invalid (NULL) parameters");
+        return false;
+    }
     if (signal->aspects != NULL) {
         for (int i = 0; i < signal->aspects->len; ++i) {
             char *aspect = g_array_index(signal->aspects, char *, i);
@@ -698,7 +718,6 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
             }
         }
     }
-
     return false;
 }
 
@@ -710,11 +729,16 @@ bool set_signal_raw_aspect(t_config_signal *signal, const char *value) {
  * @param value stop, go, caution, shunt
  * @return true if successful, otherwise false
  */
-bool set_signal_state(const char *id, const char *value) {
-    t_config_signal *signal = get_object(TYPE_SIGNAL, id);
-    if (signal == NULL)
+static bool set_signal_state(const char *id, const char *value) {
+    if (id == NULL || value == NULL) {
+        syslog_server(LOG_ERR, "Set signal state: invalid (NULL) parameters");
         return false;
-
+    }
+    const t_config_signal *signal = get_object(TYPE_SIGNAL, id);
+    if (signal == NULL) {
+        return false;
+    }
+    
     if (string_equals(value, "stop")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
@@ -725,11 +749,7 @@ bool set_signal_state(const char *id, const char *value) {
 
             return set_signal_raw_aspect(signal, "aspect_stop");
         }
-
-        return false;
-    }
-
-    if (string_equals(value, "go")) {
+    } else if (string_equals(value, "go")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
             || string_equals(signal->type, "distant")
@@ -737,35 +757,37 @@ bool set_signal_state(const char *id, const char *value) {
 
             return set_signal_raw_aspect(signal, "aspect_go");
         }
-
-        return false;
-    }
-
-    if (string_equals(value, "caution")) {
+    } else if (string_equals(value, "caution")) {
         if (string_equals(signal->type, "entry")
             || string_equals(signal->type, "exit")
             || string_equals(signal->type, "distant")) {
 
             return set_signal_raw_aspect(signal, "aspect_caution");
         }
-
-        return false;
-    }
-
-    if (string_equals(value, "shunt")) {
+    } else if (string_equals(value, "shunt")) {
         if (string_equals(signal->type, "exit")
             || string_equals(signal->type, "shunting")) {
 
             return set_signal_raw_aspect(signal, "aspect_shunt");
         }
-
-        return false;
     }
 
     return false;
 }
 
-bool set_peripheral_raw_aspect(t_config_peripheral *peripheral, const char *value) {
+/**
+ * Set the peripheral aspect to some value
+ * 
+ * @param peripheral peripheral whose aspect to set
+ * @param value value of the aspect
+ * @return true valid params
+ * @return false invalid params
+ */
+static bool set_peripheral_raw_aspect(t_config_peripheral *peripheral, const char *value) {
+    if (peripheral == NULL || value == NULL) {
+        syslog_server(LOG_ERR, "Set peripheral raw aspect: invalid (NULL) parameters");
+        return false;
+    }
     if (peripheral->aspects != NULL) {
         for (int i = 0; i < peripheral->aspects->len; ++i) {
             char *aspect = g_array_index(peripheral->aspects, char *, i);
@@ -788,30 +810,31 @@ bool set_peripheral_raw_aspect(t_config_peripheral *peripheral, const char *valu
  * @param value on or off
  * @return true if successful, otherwise false
  */
-bool set_peripheral_state(const char *id, const char *value) {
-    t_config_peripheral *peripheral = get_object(TYPE_PERIPHERAL, id);
-    if (peripheral == NULL)
+static bool set_peripheral_state(const char *id, const char *value) {
+    if (id == NULL || value == NULL) {
+        syslog_server(LOG_ERR, "Set peripheral state: invalid (NULL) parameters");
         return false;
-
-    if (string_equals(value, "on")) {
-        if (string_equals(peripheral->type, "onebit")) {
-            return set_peripheral_raw_aspect(peripheral, "high");
-        }
-        
+    }
+    t_config_peripheral *peripheral = get_object(TYPE_PERIPHERAL, id);
+    if (peripheral == NULL) {
         return false;
     }
     
-    if (string_equals(value, "off")) {
-        if (string_equals(peripheral->type, "onebit")) {
+    if (string_equals(peripheral->type, "onebit")) {
+        if (string_equals(value, "on")) {
+            return set_peripheral_raw_aspect(peripheral, "high");
+        } else if (string_equals(value, "off")) {
             return set_peripheral_raw_aspect(peripheral, "low");
         }
-        
-        return false;
     }
     return false;
 }
 
 char *track_state_get_value(const char *id) {
+    if (id == NULL) {
+        syslog_server(LOG_ERR, "Track state get value: called with invalid (NULL) id parameter");
+        return "";
+    }
     char *result = NULL;
     e_config_type config_type = get_track_state_type(id);
     void *obj = get_object(config_type, id);
@@ -844,9 +867,11 @@ char *track_state_get_value(const char *id) {
     }
 
     if (result != NULL) {
+        // Add to cache such that the memory can be freed later via 
+        // bahn_data_util_free_cached_track_state
         add_cache_str(result);
     } else {
-        result = static_empty_str;
+        result = "";
     }
 
     syslog_server(LOG_DEBUG, "Get track state: %s => %s", id, result);
@@ -854,6 +879,10 @@ char *track_state_get_value(const char *id) {
 }
 
 bool track_state_set_value(const char *id, const char *value) {
+    if (id == NULL || value == NULL) {
+        syslog_server(LOG_ERR, "Track state set value: invalid (NULL) parameters");
+        return false;
+    }
     e_config_type config_type = get_track_state_type(id);
     bool result = false;
     switch (config_type) {
@@ -888,11 +917,16 @@ bool track_state_set_value(const char *id, const char *value) {
 }
 
 bool is_segment_occupied(const char *id) {
+    if (id == NULL) {
+        return false;
+    }
     bool result = false;
     if (g_hash_table_contains(config_data.table_segments, id)) {
         t_bidib_segment_state_query state_query = bidib_get_segment_state(id);
         result = state_query.known && state_query.data.occupied;
         bidib_free_segment_state_query(state_query);
+    } else {
+        syslog_server(LOG_WARNING, "Is segment occupied: unknown segment %s", id);
     }
 
     syslog_server(LOG_DEBUG, "Is segment occupied: %s => %s", id, result ? "true" : "false");
@@ -900,6 +934,9 @@ bool is_segment_occupied(const char *id) {
 }
 
 bool is_type_segment(const char *id) {
+    if (id == NULL) {
+        return false;
+    }
     bool result = g_hash_table_contains(config_data.table_segments, id);
 
     syslog_server(LOG_DEBUG, "Is %s a segment: %s", id, result ? "true" : "false");
@@ -907,6 +944,9 @@ bool is_type_segment(const char *id) {
 }
 
 bool is_type_signal(const char *id) {
+    if (id == NULL) {
+        return false;
+    }
     bool result = g_hash_table_contains(config_data.table_signals, id);
 
     syslog_server(LOG_DEBUG, "Is %s a signal: %s", id, result ? "true" : "false");
@@ -914,6 +954,10 @@ bool is_type_signal(const char *id) {
 }
 
 int train_state_get_speed(const char *train_id) {
+    if (train_id == NULL) {
+        syslog_server(LOG_ERR, "Train state get speed (km/h): invalid (NULL) train_id parameter");
+        return 0;
+    }
     int result = 0;
     if (g_hash_table_contains(config_data.table_trains, train_id)) {
         t_bidib_train_speed_kmh_query kmh_query = bidib_get_train_speed_kmh(train_id);
@@ -929,6 +973,10 @@ int train_state_get_speed(const char *train_id) {
 }
 
 bool train_state_set_speed(const char *train_id, int speed) {
+    if (train_id == NULL) {
+        syslog_server(LOG_ERR, "Train state set speed: invalid (NULL) train_id parameter");
+        return false;
+    }
     bool result = false;
     if (g_hash_table_contains(config_data.table_trains, train_id)) {
         const int grab_id = train_get_grab_id(train_id);
@@ -947,6 +995,10 @@ bool train_state_set_speed(const char *train_id, int speed) {
 }
 
 char *config_get_point_position(const char *route_id, const char *point_id) {
+    if (route_id == NULL || point_id == NULL) {
+        syslog_server(LOG_ERR, "Get route point position: invalid (NULL) parameters");
+        return "";
+    }
     void *obj = get_object(TYPE_ROUTE, route_id);
     char *result = NULL;
 
@@ -961,12 +1013,16 @@ char *config_get_point_position(const char *route_id, const char *point_id) {
         }
     }
 
-    result = result != NULL ? result : static_empty_str;
+    result = result != NULL ? result : "";
     syslog_server(LOG_DEBUG, "Get route point position: %s.%s => %s", route_id, point_id, result);
     return result;
 }
 
 char *config_get_block_id_of_segment(const char *seg_id) {
+    if (seg_id == NULL) {
+        syslog_server(LOG_ERR, "Get block id of segment: invalid (NULL) seg_id parameter");
+        return "";
+    }
     GHashTableIter iterator;
     g_hash_table_iter_init(&iterator, config_data.table_blocks);
     
@@ -996,8 +1052,7 @@ char *config_get_block_id_of_segment(const char *seg_id) {
             }
         }
     }
-    
-    return NULL;
+    return "";
 }
 
 void log_bool(bool value) {

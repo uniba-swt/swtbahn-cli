@@ -190,13 +190,12 @@ static GString *get_train_state_json_given_statequery(const char *train_id,
 		int added_blocks = 0;
 		for (size_t i = 0; i < train_position_query.length; i++) {
 			const char *block_id = config_get_block_id_of_segment(train_position_query.segments[i]);
-			GString *search_str = g_string_new(block_id);
-			g_string_prepend_c(search_str, '"');
-			g_string_append_c(search_str, '"');
+			GString *search_str = g_string_new("");
+			g_string_append_printf(search_str, "\"%s\"", block_id);
 			// only add block if it does not already exist in the list (and thus in g_train_state)
 			// Naively, if e.g., "block12" was added, then block1 will be found.
 			// -> fix is to include the '"'s in the search.
-			if (block_id != NULL && strstr(g_train_state->str, search_str->str) == NULL) {
+			if (block_id != NULL && strlen(block_id) > 0 && strstr(g_train_state->str, search_str->str) == NULL) {
 				g_string_append_printf(g_train_state, "%s\"%s\"", added_blocks > 0 ? ", " : "", block_id);
 				++added_blocks;
 			}
