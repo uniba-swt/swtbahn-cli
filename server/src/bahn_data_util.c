@@ -109,7 +109,7 @@ void add_cache_str(char *state) {
     }
 }
 
-e_config_type get_config_type(const char *type) {
+static e_config_type get_config_type(const char *type) {
     if (string_equals(type, "route")) {
         return TYPE_ROUTE;
     } else if (string_equals(type, "segment")) {
@@ -139,7 +139,7 @@ e_config_type get_config_type(const char *type) {
     return TYPE_NOT_SUPPORTED;
 }
 
-void *get_object(e_config_type config_type, const char *id) {
+static void *get_object(e_config_type config_type, const char *id) {
     GHashTable *tb = NULL;
     switch (config_type) {
         case TYPE_ROUTE:
@@ -206,7 +206,7 @@ int interlocking_table_get_routes(const char *src_signal_id, const char *dst_sig
     return 0;
 }
 
-int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char* data[]) {
+static int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char* data[]) {
     if (route == NULL || prop_name == NULL) {
         syslog_server(LOG_ERR, "Get route array string value: called with invalid (NULL) parameters");
         return 0;
@@ -610,9 +610,9 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
     return result;
 }
 
-e_config_type get_track_state_type(const char *id) {
+static e_config_type get_track_state_accessory_type(const char *id) {
     if (id == NULL) {
-        syslog_server(LOG_ERR, "Get track state type: %s is NULL", id);
+        syslog_server(LOG_ERR, "Get accessory type: %s is NULL", id);
         return TYPE_NOT_SUPPORTED;
     }
     
@@ -624,7 +624,7 @@ e_config_type get_track_state_type(const char *id) {
         return TYPE_PERIPHERAL;
     }
 
-    syslog_server(LOG_ERR, "Get track state type: %s could not be found", id);
+    syslog_server(LOG_ERR, "Get accessory type: %s could not be found", id);
     return TYPE_NOT_SUPPORTED;
 }
 
@@ -638,6 +638,7 @@ e_config_type get_track_state_type(const char *id) {
  */
 static char *get_signal_state(const char *id) {
     if (id == NULL) {
+        syslog_server(LOG_ERR, "Get signal state: invalid (NULL) id parameter");
         return "";
     }
     const t_config_signal *signal = get_object(TYPE_SIGNAL, id);
@@ -836,7 +837,7 @@ char *track_state_get_value(const char *id) {
         return "";
     }
     char *result = NULL;
-    e_config_type config_type = get_track_state_type(id);
+    e_config_type config_type = get_track_state_accessory_type(id);
     void *obj = get_object(config_type, id);
     if (obj != NULL) {
         if (config_type == TYPE_POINT) {
@@ -883,7 +884,7 @@ bool track_state_set_value(const char *id, const char *value) {
         syslog_server(LOG_ERR, "Track state set value: invalid (NULL) parameters");
         return false;
     }
-    e_config_type config_type = get_track_state_type(id);
+    e_config_type config_type = get_track_state_accessory_type(id);
     bool result = false;
     switch (config_type) {
         case TYPE_POINT:

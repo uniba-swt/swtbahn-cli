@@ -87,6 +87,8 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
 
 int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char *data[]);
 
+int config_get_array_int_value(const char *type, const char *id, const char *prop_name, int data[]);
+
 int config_get_array_float_value(const char *type, const char *id, const char *prop_name, float data[]);
 
 int config_get_array_bool_value(const char *type, const char *id, const char *prop_name, bool data[]);
