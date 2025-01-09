@@ -53,8 +53,8 @@ typedef enum {
 
 t_config_data config_data = {};
 
-// Needed to temporarily store new strings created by config_get_... 
-GArray *cached_allocated_str = NULL;
+// Needed to temporarily store new strings created by track_state_get_value
+GArray *cached_allocated_str_array = NULL;
 
 char *static_empty_str = "";
 
@@ -80,19 +80,30 @@ bool string_equals(const char *str1, const char *str2) {
 }
 
 void bahn_data_util_init_cached_track_state() {
-    cached_allocated_str = g_array_sized_new(FALSE, FALSE, sizeof(char *), 16);
+    if (cached_allocated_str_array != NULL) {
+        syslog_server(LOG_ERR, 
+                      "bahn data util init cached track state - cache is not NULL, "
+                      "either concurrent usage or someone didn't free the cache correctly!");
+        return;
+    }
+    cached_allocated_str_array = g_array_sized_new(FALSE, FALSE, sizeof(char *), 16);
 }
 
 void bahn_data_util_free_cached_track_state() {
-    if (cached_allocated_str != NULL) {
-        g_array_free(cached_allocated_str, true);
-        cached_allocated_str = NULL;
+    if (cached_allocated_str_array != NULL) {
+        for (int i = 0; i < cached_allocated_str_array->len; ++i) {
+            free(g_array_index(cached_allocated_str_array, char *, i));
+        }
+        g_array_free(cached_allocated_str_array, true);
+        cached_allocated_str_array = NULL;
     }
 }
 
 void add_cache_str(char *state) {
-    if (cached_allocated_str != NULL) {
-        g_array_append_val(cached_allocated_str, state);
+    if (cached_allocated_str_array != NULL) {
+        g_array_append_val(cached_allocated_str_array, state);
+    } else {
+        syslog_server(LOG_ERR, "bahn data util add cache str - cache is NULL!");
     }
 }
 
@@ -168,16 +179,17 @@ void *get_object(e_config_type config_type, const char *id) {
             break;
     }
 
-    // check
     if (tb != NULL) {
         if (g_hash_table_contains(tb, id)) {
             return g_hash_table_lookup(tb, id);
         }
+    } else {
+        syslog_server(LOG_ERR, "bahn data util get object - unknown config type");
     }
-
     return NULL;
 }
 
+///TODO: Document i/o param assumptions
 int interlocking_table_get_routes(const char *src_signal_id, const char *dst_signal_id, char *route_ids[]) {
     GArray *arr = interlocking_table_get_route_ids(src_signal_id, dst_signal_id);
     if (arr != NULL) {
@@ -561,12 +573,20 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
         if (string_equals(prop_name, "train")) {
             // Set train
             t_interlocking_route *route = (t_interlocking_route *) obj;
-            route->train = strdup(value);
-            if (value != NULL && route->train == NULL) {
+            if (route->train != NULL) {
                 syslog_server(LOG_ERR, 
-                              "config set scalar string value: unable to allocate memory for route->train");
+                              "config set scalar string value: not allowed to "
+                              "overwrite route->train for route-id %s", 
+                              route->id);
+            } else {
+                route->train = strdup(value);
+                if (value != NULL && route->train == NULL) {
+                    syslog_server(LOG_ERR, 
+                                  "config set scalar string value: "
+                                  "unable to allocate memory for route->train");
+                }
+                result = true;
             }
-            result = true;
         }
     }
 
@@ -578,7 +598,7 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
 
 e_config_type get_track_state_type(const char *id) {
     if (id == NULL) {
-        syslog_server(LOG_ERR, "Get track state: %s is NULL", id);
+        syslog_server(LOG_ERR, "Get track state type: %s is NULL", id);
         return TYPE_NOT_SUPPORTED;
     }
     
@@ -590,7 +610,7 @@ e_config_type get_track_state_type(const char *id) {
         return TYPE_PERIPHERAL;
     }
 
-    syslog_server(LOG_ERR, "Get track state: %s could not be found", id);
+    syslog_server(LOG_ERR, "Get track state type: %s could not be found", id);
     return TYPE_NOT_SUPPORTED;
 }
 
@@ -614,13 +634,13 @@ char *get_signal_state(const char *id) {
     t_bidib_unified_accessory_state_query state_query = bidib_get_signal_state(id);
     if (state_query.known) {
         if (state_query.board_accessory_state.state_id == NULL) {
-            syslog_server(LOG_ERR, "get signal state: board accessory state id is NULL");
+            syslog_server(LOG_ERR, "Get signal state: board accessory state id is NULL");
             bidib_free_unified_accessory_state_query(state_query);
             return NULL;
         }
         raw_state = strdup(state_query.board_accessory_state.state_id);
         if (raw_state == NULL) {
-            syslog_server(LOG_ERR, "get signal state: unable to allocate memory for raw_state");
+            syslog_server(LOG_ERR, "Get signal state: unable to allocate memory for raw_state");
             bidib_free_unified_accessory_state_query(state_query);
             return NULL;
         }
@@ -808,7 +828,7 @@ char *track_state_get_value(const char *id) {
             }
             bidib_free_unified_accessory_state_query(state_query);
         } else if (config_type == TYPE_SIGNAL) {
-            result = get_signal_state(id);
+            result = strdup(get_signal_state(id));
         } else if (config_type == TYPE_PERIPHERAL) {
             t_bidib_peripheral_state_query state_query = bidib_get_peripheral_state(id);
             if (state_query.available) {

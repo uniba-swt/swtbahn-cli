@@ -86,15 +86,16 @@ void free_interlocking_table(void);
 
 /**
  * Return all the route IDs in the interlocking table.
+ * The caller IS responsible for freeing the array or its contents.
  * 
- * @return array of route IDs. Caller is responsible for freeing the GArray and its contents(!)
+ * @return array of route IDs.
  */
 GArray *interlocking_table_get_all_route_ids(void);
 
 /**
  * Return all the route IDs in the interlocking table. 
  * The strings containing the route IDs are shallow copies of the ones in the interlocking table.
- * That means, the caller of this function does not gain their ownership.
+ * That means, the caller has to free the GArray but not the contained strings!
  * 
  * @return array of route IDs. Caller is responsible for freeing the GArray, 
  * but not the contained strings(!)
@@ -111,7 +112,8 @@ GArray *interlocking_table_get_all_route_ids_cpy(void);
 int interlocking_table_get_route_id_of_train(const char *train_id);
 
 /**
- * Return the array of route ID for a given source and destination signal.
+ * Return the array of route IDs for a given source and destination signal.
+ * The caller is NOT responsible for freeing the array or its contents.
  * 
  * @return array if it exists, otherwise NULL
  */
@@ -127,7 +129,8 @@ GArray *interlocking_table_get_route_ids(const char *source_id, const char *dest
 int interlocking_table_get_route_id(const char *source_id, const char *destination_id);
 
 /**
- * Return the route (pointer to a struct) for a given route_id
+ * Return (pointer to) the route for a given route_id.
+ * The caller is NOT responsible for freeing the memory pointed to by the route pointer.
  *
  * @param route_id route
  * @return the route pointer if it exists, otherwise NULL

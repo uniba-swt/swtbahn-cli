@@ -122,9 +122,8 @@ GArray *interlocking_table_get_all_route_ids(void) {
         if (route_id_string == NULL) {
             syslog_server(LOG_ERR, 
                           "Interlocking table get all route ids: "
-                          "unable to allocate memory for route_id_string");
-            g_array_free(route_ids, true);
-            return NULL;
+                          "unable to allocate memory for a route_id_string");
+            continue;
         }
         g_array_append_val(route_ids, route_id_string);
     }
