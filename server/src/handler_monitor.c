@@ -1137,7 +1137,7 @@ static GString* get_granted_routes_json() {
 	append_field_start_of_list(g_granted_routes, "granted-routes");
 	
 	pthread_mutex_lock(&interlocker_mutex);
-	GArray *route_ids = interlocking_table_get_all_route_ids_cpy();
+	GArray *route_ids = interlocking_table_get_all_route_ids_shallowcpy();
 	
 	int routes_added = 0;
 	if (route_ids != NULL) {

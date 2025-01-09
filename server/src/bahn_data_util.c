@@ -101,7 +101,7 @@ void bahn_data_util_free_cached_track_state() {
     }
 }
 
-void add_cache_str(char *state) {
+static void add_cache_str(char *state) {
     if (cached_allocated_str_array != NULL) {
         g_array_append_val(cached_allocated_str_array, state);
     } else {

@@ -85,14 +85,6 @@ bool interlocking_table_initialise(const char *config_dir);
 void free_interlocking_table(void);
 
 /**
- * Return all the route IDs in the interlocking table.
- * The caller IS responsible for freeing the array and its contents.
- * 
- * @return array of route IDs.
- */
-GArray *interlocking_table_get_all_route_ids(void);
-
-/**
  * Return all the route IDs in the interlocking table. 
  * The strings containing the route IDs are shallow copies of the ones in the interlocking table.
  * That means, the caller has to free the GArray but not the contained strings!
@@ -100,7 +92,7 @@ GArray *interlocking_table_get_all_route_ids(void);
  * @return array of route IDs. Caller is responsible for freeing the GArray, 
  * but not the contained strings(!)
  */
-GArray *interlocking_table_get_all_route_ids_cpy(void);
+GArray *interlocking_table_get_all_route_ids_shallowcpy(void);
 
 /**
  * Search for the first route granted to the specified train and return its id.

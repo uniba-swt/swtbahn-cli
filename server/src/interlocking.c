@@ -37,14 +37,14 @@
 GHashTable *route_hash_table = NULL;
 GHashTable *route_string_to_ids_hashtable = NULL;
 
-void free_interlocking_hashtable_key(void *pointer) {
+static void free_interlocking_hashtable_key(void *pointer) {
 	if (pointer != NULL) {
 		free(pointer);
 		pointer = NULL;
 	}
 }
 
-void free_interlocking_hashtable_value(void *pointer) {
+static void free_interlocking_hashtable_value(void *pointer) {
 	// For use with route_string_to_ids_hashtable:
 	// Not necessary to free elements individually, as they are not allocated/owned here,
 	// they are owned by the route_hash_table instead.
@@ -123,28 +123,7 @@ void free_interlocking_table(void) {
 	syslog_server(LOG_NOTICE, "Interlocking table freed");
 }
 
-GArray *interlocking_table_get_all_route_ids(void) {
-	GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
-	
-	GHashTableIter iter;
-	gpointer key, value;
-	g_hash_table_iter_init (&iter, route_hash_table);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		t_interlocking_route *route = (t_interlocking_route *) value;
-		char *route_id_string = strdup(route->id);
-		if (route_id_string == NULL) {
-			syslog_server(LOG_ERR, 
-			              "Interlocking table get all route ids: "
-			              "unable to allocate memory for a route_id_string");
-			continue;
-		}
-		g_array_append_val(route_ids, route_id_string);
-	}
-	
-	return route_ids;
-}
-
-GArray *interlocking_table_get_all_route_ids_cpy(void) {
+GArray *interlocking_table_get_all_route_ids_shallowcpy(void) {
 	GArray* route_ids = g_array_new(FALSE, FALSE, sizeof(char *));
 	
 	GHashTableIter iter;

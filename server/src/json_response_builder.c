@@ -78,7 +78,7 @@ GString* append_field_strlist_value(GString *dest, const char *field,
 	return dest;
 }
 
-GString* append_field_value_garray_strs_base(GString *dest, const char *field, 
+static GString* append_field_value_garray_strs_base(GString *dest, const char *field, 
                                              const GArray* g_strarray, 
                                              bool add_value_quote_marks, 
                                              bool add_trailing_comma) {

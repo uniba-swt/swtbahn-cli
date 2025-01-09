@@ -760,7 +760,7 @@ char *train_id_from_grab_id(int grab_id) {
 	return train_id;
 }
 
-GString *get_simple_msg_json(const char *msg) {
+static GString *get_simple_msg_json(const char *msg) {
 	GString *g_smplemsg = g_string_sized_new(128);
 	g_string_assign(g_smplemsg, "");
 	append_start_of_obj(g_smplemsg, false);
@@ -769,7 +769,7 @@ GString *get_simple_msg_json(const char *msg) {
 	return g_smplemsg;
 }
 
-GString *get_grab_fdbk_json(int l_session_id, int grab_id) {
+static GString *get_grab_fdbk_json(int l_session_id, int grab_id) {
 	GString *g_feedback = g_string_sized_new(96);
 	g_string_assign(g_feedback, "");
 	append_start_of_obj(g_feedback, false);
@@ -779,7 +779,7 @@ GString *get_grab_fdbk_json(int l_session_id, int grab_id) {
 	return g_feedback;
 }
 
-void fill_grab_err_feedback(int grab_id, GString *ret_str, int *http_code) {
+static void fill_grab_err_feedback(int grab_id, GString *ret_str, int *http_code) {
 	ret_str = NULL;
 	if (grab_id == -4) {
 		ret_str = get_simple_msg_json("invalid parameters");
@@ -920,7 +920,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 	}
 }
 
-GString *get_reqroute_fdbk_json(const char* granted_route_id) {
+static GString *get_reqroute_fdbk_json(const char* granted_route_id) {
 	GString *g_feedback = g_string_sized_new(48);
 	g_string_assign(g_feedback, "");
 	append_start_of_obj(g_feedback, false);
@@ -929,7 +929,7 @@ GString *get_reqroute_fdbk_json(const char* granted_route_id) {
 	return g_feedback;
 }
 
-void fill_request_route_err_feedback(GString *route_id, GString *ret_str, int *http_code) {
+static void fill_request_route_err_feedback(GString *route_id, GString *ret_str, int *http_code) {
 	ret_str = NULL;
 	*http_code = HTTP_BAD_REQUEST;
 	if (route_id == NULL || route_id->str == NULL) {
