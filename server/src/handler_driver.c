@@ -611,7 +611,7 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	
 	pthread_mutex_lock(&grabbed_trains_mutex);	
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-	const char requested_forwards = is_forward_driving(route, train_id);
+	const bool requested_forwards = is_forward_driving(route, train_id);
 	if (is_automatic) {
 		dyn_containers_set_train_engine_instance_inputs(engine_instance,
 		                                                DRIVING_SPEED_SLOW, 

@@ -116,65 +116,65 @@ int dyn_containers_start(void);
 
 void dyn_containers_stop(void);
 
-const bool dyn_containers_is_running(void);
+bool dyn_containers_is_running(void);
 
 // Obtains a shared memory segment based on a given key
-void dyn_containers_shm_create(t_dyn_shm_config * const shm_config, 
-                              const int shm_permissions, const key_t shm_key, 
-                              t_dyn_containers_interface ** const shm_payload);
+void dyn_containers_shm_create(t_dyn_shm_config *shm_config, 
+                              int shm_permissions, key_t shm_key, 
+                              t_dyn_containers_interface **shm_payload);
 
 // Detaches the shared memory segment from our data space
-void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload);
+void dyn_containers_shm_detach(t_dyn_containers_interface **shm_payload);
 
 // Deletes the shared memory segment from our data space
-void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config);
+void dyn_containers_shm_delete(t_dyn_shm_config *shm_config);
 
 
 // Finds the first available slot for a train engine
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_free_engine_slot(void);
+int dyn_containers_get_free_engine_slot(void);
 
 // Finds the slot of a train engine
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_engine_slot(const char name[]);
+int dyn_containers_get_engine_slot(const char name[]);
 
 // Loads train engine into specified slot
 // Can only be called while the dyn_containers_mutex is locked
-void dyn_containers_set_engine(const int engine_slot, const char filepath[]);
+void dyn_containers_set_engine(int engine_slot, const char filepath[]);
 
 // Unloads train engine at specified slot
 // Can only be called while the dyn_containers_mutex is locked
-bool dyn_containers_free_engine(const int engine_slot);
+bool dyn_containers_free_engine(int engine_slot);
 
 // Gets a char*-GArray with the names of train engines that have been loaded.
 GArray *dyn_containers_get_train_engines_arr(void);
 
 // Finds the requested train engine, and finds an available train engine instance to use
-int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
+int dyn_containers_set_train_engine_instance(t_train_data *grabbed_train, 
                                              const char *train, const char *engine);
 
-void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_instance);
+void dyn_containers_free_train_engine_instance(int dyn_containers_engine_instance);
 
-void dyn_containers_set_train_engine_instance_inputs(const int dyn_containers_engine_instance, 
-                                                     const int requested_speed, 
-                                                     const char requested_forwards);
+void dyn_containers_set_train_engine_instance_inputs(int dyn_containers_engine_instance, 
+                                                     int requested_speed, 
+                                                     bool requested_forwards);
 
 
 // Finds the first available slot for a interlocker
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_free_interlocker_slot(void);
+int dyn_containers_get_free_interlocker_slot(void);
 
 // Finds the slot of a interlocker
 // Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_interlocker_slot(const char name[]);
+int dyn_containers_get_interlocker_slot(const char name[]);
 
 // Loads interlocker into specified slot
 // Can only be called while the dyn_containers_mutex is locked
-void dyn_containers_set_interlocker(const int interlocker_slot, const char filepath[]);
+void dyn_containers_set_interlocker(int interlocker_slot, const char filepath[]);
 
 // Unloads interlocker at specified slot
 // Can only be called while the dyn_containers_mutex is locked
-bool dyn_containers_free_interlocker(const int interlocker_slot);
+bool dyn_containers_free_interlocker(int interlocker_slot);
 
 // Gets a char*-GArray with the names of interlockers that have been loaded
 GArray *dyn_containers_get_interlockers_arr(void);
@@ -184,20 +184,20 @@ GString *dyn_containers_get_interlockers(void);
 
 // Finds the requested interlocker, and finds an available interlocker instance to use; 
 // returns 1 on error/failure to set interlocker instance, and 0 on success.
-int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlocker_instance,
+int dyn_containers_set_interlocker_instance(t_interlocker_data *interlocker_instance,
                                             const char *interlocker);
 
-void dyn_containers_free_interlocker_instance(t_interlocker_data * const interlocker_instance);
+void dyn_containers_free_interlocker_instance(t_interlocker_data *interlocker_instance);
 
-void dyn_containers_set_interlocker_instance_reset(t_interlocker_data * const interlocker_instance,
-                                                   const bool reset);
+void dyn_containers_set_interlocker_instance_reset(t_interlocker_data *interlocker_instance,
+                                                   bool reset);
 
-void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data * const interlocker_instance, 
+void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data *interlocker_instance, 
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id);
 
-void dyn_containers_get_interlocker_instance_outputs(t_interlocker_data * const interlocker_instance, 
+void dyn_containers_get_interlocker_instance_outputs(t_interlocker_data *interlocker_instance, 
                                                      struct t_interlocker_instance_io *interlocker_instance_io_copy);
 
 #endif  // DYN_CONTAINERS_INTERFACE_H
