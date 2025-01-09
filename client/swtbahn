@@ -1136,6 +1136,7 @@ driver.add_command(upload_engine)
 driver.add_command(delete_engine)
 driver.add_command(get_engine_list)
 
+monitor.add_command(get_platform_name)
 monitor.add_command(get_trains)
 monitor.add_command(get_train_state)
 monitor.add_command(get_train_peripherals)
