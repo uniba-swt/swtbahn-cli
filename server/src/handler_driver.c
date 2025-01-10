@@ -208,8 +208,7 @@ static bool drive_route_params_valid(const char *train_id, t_interlocking_route 
 	if (train_id == NULL || route == NULL) {
 		syslog_server(LOG_ERR, "Check drive route params - invalid (NULL) parameters");
 		return false;
-	}
-	if ((route->train == NULL) || strcmp(train_id, route->train) != 0) {
+	} else if (route->train == NULL || strcmp(train_id, route->train) != 0) {
 		syslog_server(LOG_WARNING, 
 		              "Check drive route params - route %s not granted to train %s", 
 		              route->id, train_id);
@@ -647,14 +646,16 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 			usleep(TRAIN_DRIVE_TIME_STEP);
 		}
 		
-		syslog_server(LOG_NOTICE, 
-		              "Drive route - route: %s train: %s - slowing down for end of route", 
-		              route_id, train_id);
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		dyn_containers_set_train_engine_instance_inputs(engine_instance, 
-		                                                DRIVING_SPEED_STOPPING,
-		                                                requested_forwards);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
+		if (train_get_grab_id(train_id) == grab_id) {
+			syslog_server(LOG_NOTICE, 
+			              "Drive route - route: %s train: %s - slowing down for end of route", 
+			              route_id, train_id);
+			pthread_mutex_lock(&grabbed_trains_mutex);
+			dyn_containers_set_train_engine_instance_inputs(engine_instance, 
+			                                                DRIVING_SPEED_STOPPING,
+			                                                requested_forwards);
+			pthread_mutex_unlock(&grabbed_trains_mutex);
+		}
 	}
 	
 	// Wait for train to reach the end of the route
@@ -665,12 +666,21 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	}
 	
 	// Driving stops
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
-	pthread_mutex_unlock(&grabbed_trains_mutex);
-	syslog_server(LOG_NOTICE, 
-	              "Drive route - route: %s train: %s - driving stops", 
-	              route_id, train_id);
+	if (train_get_grab_id(train_id) == grab_id) {
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+		syslog_server(LOG_NOTICE, 
+		              "Drive route - route: %s train: %s - stopping train", 
+		              route_id, train_id);
+	} else {
+		bidib_set_train_speed(train_id, 0, "master");
+		bidib_flush();
+		syslog_server(LOG_WARNING, 
+		              "Drive route - route: %s train: %s - stopping train directly via bidib, "
+		              "train was released during route driving!", 
+		              route_id, train_id);
+	}
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
@@ -1276,7 +1286,7 @@ o_con_status handler_set_calibrated_train_speed(void *_, onion_request *req, oni
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		const int client_session_id = params_check_session_id(data_session_id);
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
-		const int speed  = params_check_calibrated_speed(data_speed);
+		const int speed = params_check_calibrated_speed(data_speed);
 		
 		if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");

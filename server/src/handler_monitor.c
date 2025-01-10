@@ -1158,14 +1158,15 @@ static GString* get_granted_routes_json() {
 				}
 			}
 		}
+		pthread_mutex_unlock(&interlocker_mutex);
 		// free the GArray but not the contained strings, as it was created by shallow copy.
 		g_array_free(route_ids, true);
 	} else {
+		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
 		              "Get granted routes json - "
 		              "route ID array copied from interlocking table is NULL");
 	}
-	pthread_mutex_unlock(&interlocker_mutex);
 	
 	append_end_of_list(g_granted_routes, false, routes_added > 0);
 	append_end_of_obj(g_granted_routes, false);
