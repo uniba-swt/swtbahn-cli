@@ -64,7 +64,7 @@ static void dyn_containers_reset_interface(t_dyn_containers_interface *dyn_conta
 	
 	dyn_containers_interface->let_period_us = let_period_us;
 	
-	for (size_t i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		dyn_containers_interface->train_engines_io[i] = 
 		(struct t_train_engine_io) {
 			.input_load = false, 
@@ -75,7 +75,7 @@ static void dyn_containers_reset_interface(t_dyn_containers_interface *dyn_conta
 			.output_name = ""
 		};
 	}
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		dyn_containers_interface->train_engine_instances_io[i] = 
 		(struct t_train_engine_instance_io) {
 			.input_grab = false,
@@ -94,7 +94,7 @@ static void dyn_containers_reset_interface(t_dyn_containers_interface *dyn_conta
 		};
 	}
 	
-	for (size_t i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
 		dyn_containers_interface->interlockers_io[i] = 
 		(struct t_interlocker_io) {
 			.input_load = false,
@@ -103,7 +103,7 @@ static void dyn_containers_reset_interface(t_dyn_containers_interface *dyn_conta
 			.output_in_use = false
 		};
 	}
-	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		dyn_containers_interface->interlocker_instances_io[i] = 
 		(struct t_interlocker_instance_io) {
 			.input_grab = false,
@@ -172,7 +172,7 @@ static void *dyn_containers_actuate(void *_) {
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		pthread_mutex_lock(&dyn_containers_mutex);
 		
-		for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 			dyn_actuate_specific_engine(i);
 		}
 		
@@ -321,7 +321,7 @@ bool dyn_containers_free_engine(int engine_slot) {
 		return false;
 	}
 	// Check that no instance of the train engine is in use
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		struct t_train_engine_instance_io *eng_instance = 
 				&dyn_containers_interface->train_engine_instances_io[i];
 		if (eng_instance->output_in_use && eng_instance->output_train_engine_type == engine_slot) {
@@ -353,7 +353,7 @@ GArray *dyn_containers_get_train_engines_arr(void) {
 	}
 	GArray *train_engine_names = g_array_new(FALSE, FALSE, sizeof(char *));
 	pthread_mutex_lock(&dyn_containers_mutex);
-	for (size_t i = 0; i < TRAIN_ENGINE_COUNT_MAX; ++i) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; ++i) {
 		const struct t_train_engine_io *tr_eng_io = &dyn_containers_interface->train_engines_io[i];
 		if (!tr_eng_io->output_in_use) {
 			continue;
@@ -523,7 +523,7 @@ bool dyn_containers_free_interlocker(int interlocker_slot) {
 		return false;
 	}
 	// Check that no instance of the interlocker is in use
-	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		struct t_interlocker_instance_io *interlocker_instance =
 				&dyn_containers_interface->interlocker_instances_io[i];
 		if (interlocker_instance->output_in_use &&
@@ -557,7 +557,7 @@ GArray *dyn_containers_get_interlockers_arr(void) {
 	}
 	GArray *interlocker_names = g_array_new(FALSE, FALSE, sizeof(char *));
 	pthread_mutex_lock(&dyn_containers_mutex);
-	for (size_t i = 0; i < INTERLOCKER_COUNT_MAX; ++i) {
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; ++i) {
 		const struct t_interlocker_io *interlocker_io =
 				&dyn_containers_interface->interlockers_io[i];
 		if (!interlocker_io->output_in_use) {

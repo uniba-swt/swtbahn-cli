@@ -64,6 +64,12 @@ static void build_message_hex_string(unsigned char *message, char *dest) {
 	}
 }
 
+/**
+ * @brief While the system is running, polls bidib messages and logs them.
+ * 
+ * @param _ unused
+ * @return void* 
+ */
 static void *poll_bidib_messages(void *_) {
 	while (running) {
 		unsigned char *message;
@@ -87,8 +93,19 @@ static void *poll_bidib_messages(void *_) {
 	pthread_exit(NULL);
 }
 
-// Shall only be called with start_stop_mutex acquired
+/**
+ * @brief Starts the server/system. I.e., establishes BiDiB connection, 
+ * clears temporary directories, loads the config, starts the dynamic containers
+ * along with the default interlocker, and launches the thread that polls
+ * bidib messages.
+ * Shall only be called with start_stop_mutex acquired.
+ * 
+ * @return true if startup succeeded, otherwise returns false
+ */
 static bool startup_server(void) {
+	///TODO: Change this to return enum/code for what went wrong to give better feedback
+	///      to a client calling startup.
+	
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
 		syslog_server(LOG_ERR, "Startup server - Could not start BiDiB serial connection");
@@ -125,7 +142,13 @@ static bool startup_server(void) {
 	return true;
 }
 
-// Shall only be called with start_stop_mutex acquired
+/**
+ * @brief Stops the server/system. I.e., releases all grabbed trains, releases all interlockers,
+ * stops the dynamic containers, frees the loaded config memory, joins with the thread
+ * polling bidib messages, and stops bidib.
+ * 
+ * Shall only be called with start_stop_mutex acquired.
+ */
 void shutdown_server(void) {
 	session_id = 0;
 	syslog_server(LOG_NOTICE, "Shutdown server");
@@ -170,8 +193,9 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 		}
 		return OCS_PROCESSED;
 	} else {
+		o_con_status ret = handle_req_run_or_method_fail(res, running, "Startup server");
 		pthread_mutex_unlock(&start_stop_mutex);
-		return handle_req_run_or_method_fail(res, running, "Startup server");
+		return ret;
 	}
 }
 
@@ -186,8 +210,9 @@ o_con_status handler_shutdown(void *_, onion_request *req, onion_response *res) 
 		// Can't log "finished" here since bidib closes the syslog when stopping
 		return OCS_PROCESSED;
 	} else {
+		o_con_status ret = handle_req_run_or_method_fail(res, running, "Shutdown server");
 		pthread_mutex_unlock(&start_stop_mutex);
-		return handle_req_run_or_method_fail(res, running, "Shutdown server");
+		return ret;
 	}
 }
 
@@ -281,7 +306,6 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
@@ -290,18 +314,16 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 		}
 		bidib_free_train_state_query(train_state_query);
 		
-		
-		if (!release_train(grab_id)) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab id parameter");
-			syslog_server(LOG_ERR, 
-			              "Request: Admin release train - train: %s - invalid grab id - abort", 
-			              data_train);
-		} else {
-			send_common_feedback(res, HTTP_OK, "");
-			syslog_server(LOG_NOTICE, 
-			              "Request: Admin release train - train: %s - finish",
-			              data_train);
-		}
+		// We can ignore the return of release_train here, as it would only fail if someone else
+		// released the train with this grab_id in the meantime -> that is okay, objective achieved.
+		// (Due to how the dyn-containers work and how grabbed_trains_mutex is used, we can't
+		//  easily avoid such a race condition being possible - have to release the mutex whilst
+		//  waiting for the train to stop; thus someone else could do smth with it in the meantime)
+		release_train(grab_id);
+		send_common_feedback(res, HTTP_OK, "");
+		syslog_server(LOG_NOTICE, 
+		              "Request: Admin release train - train: %s - finish",
+		              data_train);
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Admin release train");

@@ -1141,7 +1141,7 @@ static GString* get_granted_routes_json() {
 	
 	int routes_added = 0;
 	if (route_ids != NULL) {
-		for (size_t i = 0; i < route_ids->len; i++) {
+		for (unsigned int i = 0; i < route_ids->len; i++) {
 			const char *route_id = g_array_index(route_ids, char *, i);
 			if (route_id != NULL) {
 				t_interlocking_route *route = get_route(route_id);
@@ -1216,7 +1216,7 @@ static GString* get_route_json(const char *route_id) {
 	// Size estimated from examples with some extra margins.
 	GString *g_route = g_string_sized_new(1024);
 	if (g_route == NULL) {
-		pthread_mutex_lock(&interlocker_mutex);
+		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Get route json - route: %s - can't allocate g_route", route_id);
 		return NULL;
 	}
@@ -1255,7 +1255,7 @@ static GString* get_route_json(const char *route_id) {
 	                                             g_conflicts, true);
 	if (g_conflicts == NULL) {
 		syslog_server(LOG_WARNING, 
-		              "Get route json - route: %s - g_conflicts null, no conflicts will be included", 
+		              "Get route json - route: %s - g_conflicts null, conflicts will be empty", 
 		              route_id);
 	} else {
 		free_g_strarray_and_contents(g_conflicts);

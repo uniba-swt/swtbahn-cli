@@ -56,12 +56,12 @@ typedef struct {
 	bool has_been_set_to_stop;
 	bool is_source_signal;
 	bool is_destination_signal;
-	size_t index_in_route_path;
+	unsigned int index_in_route_path;
 } t_route_signal_info;
 
 typedef struct {
 	t_route_signal_info **data_ptr;
-	size_t len;
+	unsigned int len;
 } t_route_signal_info_array;
 
 t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
@@ -70,7 +70,7 @@ t_train_data grabbed_trains[TRAIN_ENGINE_INSTANCE_COUNT_MAX] = {
 
 typedef struct {
 	bool *arr;
-	size_t len;
+	unsigned int len;
 } t_route_repeated_segment_flags;
 
 typedef enum {
@@ -81,7 +81,7 @@ typedef enum {
 } e_route_pos_error_code;
 
 typedef struct {
-	size_t pos_index;
+	unsigned int pos_index;
 	e_route_pos_error_code err_code;
 } t_train_index_on_route_query;
 
@@ -100,7 +100,7 @@ int train_get_grab_id(const char *train) {
 	}
 	int grab_id = -1;
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			grab_id = i;
 			break;
@@ -117,7 +117,7 @@ bool train_grabbed(const char *train) {
 	}
 	bool grabbed = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid 
 				&& grabbed_trains[i].name != NULL 
 				&& strcmp(grabbed_trains[i].name->str, train) == 0) {
@@ -236,7 +236,7 @@ static void free_route_signal_info_array(t_route_signal_info_array *route_signal
 		route_signal_info_array->len = 0;
 		return;
 	}
-	for (size_t i = 0; i < route_signal_info_array->len; ++i) {
+	for (unsigned int i = 0; i < route_signal_info_array->len; ++i) {
 		t_route_signal_info *elem = route_signal_info_array->data_ptr[i];
 		if (elem != NULL) {
 			if (elem->id != NULL) {
@@ -257,20 +257,20 @@ static void free_route_signal_info_array(t_route_signal_info_array *route_signal
 // continuing. Otherwise returns true.
 static bool add_signal_info_for_signal(t_route_signal_info_array *signal_info_array, 
                                        const char *signal_id_item, 
-                                       size_t index_in_info_array, 
-                                       size_t number_of_signal_infos) {
+                                       unsigned int index_in_info_array, 
+                                       unsigned int number_of_signal_infos) {
 	if (signal_info_array == NULL || signal_info_array->data_ptr == NULL) {
 		syslog_server(LOG_ERR, 
 		              "Add signal-info to signal_info_array - "
 		              "signal info array or signal info array data pointer is NULL");
 		return false;
 	}
-	const size_t i = index_in_info_array;
+	const unsigned int i = index_in_info_array;
 	// A. Return without adding signal-info if signal from route->signals is NULL
 	if (signal_id_item == NULL) {
 		syslog_server(LOG_WARNING,
 		              "Add signal-info to signal_info_array - "
-		              "skipping NULL signal at index %d of route->signals", 
+		              "skipping NULL signal at index %u of route->signals", 
 		              i);
 		signal_info_array->data_ptr[i] = NULL;
 		signal_info_array->len = i + 1;
@@ -282,7 +282,8 @@ static bool add_signal_info_for_signal(t_route_signal_info_array *signal_info_ar
 	signal_info_array->len = i + 1;
 	if (signal_info_array->data_ptr[i] == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Add signal-info to signal_info_array - unable to allocate memory for array index %d", 
+		              "Add signal-info to signal_info_array - "
+		              "unable to allocate memory for array index %u", 
 		              i);
 		return false;
 	}
@@ -296,7 +297,8 @@ static bool add_signal_info_for_signal(t_route_signal_info_array *signal_info_ar
 	signal_info_array->data_ptr[i]->id = strdup(signal_id_item);
 	if (signal_info_array->data_ptr[i]->id == NULL) {
 		syslog_server(LOG_ERR,
-		              "Add signal-info to signal_info_array - unable to allocate memory for signal id %s",
+		              "Add signal-info to signal_info_array - "
+		              "unable to allocate memory for signal id %s",
 		              signal_id_item);
 		return false;
 	}
@@ -312,8 +314,9 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 	}
 	
 	// 1. Allocate memory for array of pointers to t_route_signal_info type entities
-	const size_t number_of_signal_infos = route->signals->len;
-	info_arr.data_ptr = (t_route_signal_info**) malloc(sizeof(t_route_signal_info*) * number_of_signal_infos);
+	const unsigned int number_of_signal_infos = route->signals->len;
+	info_arr.data_ptr = 
+			(t_route_signal_info**) malloc(sizeof(t_route_signal_info*) * number_of_signal_infos);
 	
 	if (info_arr.data_ptr == NULL) {
 		syslog_server(LOG_ERR, 
@@ -322,23 +325,27 @@ static t_route_signal_info_array get_route_signal_info_array(const t_interlockin
 		return info_arr;
 	}
 	// 2. For every signal in route->signals...
-	for (size_t i = 0; i < number_of_signal_infos; ++i) {
+	for (unsigned int i = 0; i < number_of_signal_infos; ++i) {
 		const char *signal_id_item = g_array_index(route->signals, char *, i);
 		// ... Call function to add a signal-info to info_arr for signal_id_item
 		if (!add_signal_info_for_signal(&info_arr, signal_id_item, i, number_of_signal_infos)) {
+			syslog_server(LOG_ERR, 
+			              "Get route signal info array - route: %s - "
+			              "failed to add signal-info, abort",
+			              route->id);
 			free_route_signal_info_array(&info_arr);
-			return info_arr;
+			return (t_route_signal_info_array){.data_ptr = NULL, .len = 0};
 		}
 	}
 	// 3. For every signal_info, determine index of its signal-id in route->path and set member 
 	//    for index_in_route_path of signal_info accordingly
-	size_t path_index = 0;
-	for (size_t i = 0; i < info_arr.len; ++i) {
+	unsigned int path_index = 0;
+	for (unsigned int i = 0; i < info_arr.len; ++i) {
 		if (info_arr.data_ptr[i] == NULL) {
 			syslog_server(LOG_WARNING, 
 			              "Get route signal info array - route: %s - "
-			              "skipped NULL signal_info at pos %d of info_arr", 
-			              i);
+			              "skipped NULL signal_info at pos %u of info_arr", 
+			              route->id, i);
 			continue;
 		}
 		
@@ -375,7 +382,7 @@ static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_i
 	if (route == NULL || route->path == NULL) {
 		return r_seg_flags;
 	}
-	const size_t route_path_len = (size_t) route->path->len;
+	const unsigned int route_path_len = route->path->len;
 	r_seg_flags.arr = malloc(sizeof(bool) * route_path_len);
 	if (r_seg_flags.arr == NULL) {
 		syslog_server(LOG_ERR, 
@@ -385,17 +392,17 @@ static t_route_repeated_segment_flags get_route_repeated_segment_flags(const t_i
 	}
 	r_seg_flags.len = route_path_len;
 	
-	for (size_t i = 0; i < r_seg_flags.len; ++i) {
+	for (unsigned int i = 0; i < r_seg_flags.len; ++i) {
 		r_seg_flags.arr[i] = false;
 	}
 	
 	// For every segment in route->path, check if it occurs again at a different position. 
 	// If yes, set the respective flags in r_seg_flags to true.
 	
-	for (size_t path_index_i = 0; path_index_i < route_path_len; ++path_index_i) {
+	for (unsigned int path_index_i = 0; path_index_i < route_path_len; ++path_index_i) {
 		const char *path_item_i = g_array_index(route->path, char *, path_index_i);
 		if (path_item_i != NULL && is_type_segment(path_item_i) && (path_index_i + 1) < route_path_len) {
-			for (size_t path_index_n = path_index_i + 1; path_index_n < route_path_len; ++path_index_n) {
+			for (unsigned int path_index_n = path_index_i + 1; path_index_n < route_path_len; ++path_index_n) {
 				const char *path_item_n = g_array_index(route->path, char *, path_index_n);
 				if (path_item_n != NULL && strcmp(path_item_i, path_item_n) == 0) {
 					r_seg_flags.arr[path_index_i] = true;
@@ -431,14 +438,14 @@ static t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated
 	}
 	
 	ret_query.err_code = ERR_TRAIN_NOT_ON_ROUTE;
-	const size_t path_count = route->path->len;
-	for (size_t i = 0; i < train_pos_query.length; ++i) {
+	const unsigned int path_count = route->path->len;
+	for (unsigned int i = 0; i < train_pos_query.length; ++i) {
 		// Search starting at most recent pos_index to skip unnecessary comparisons
 		if ((ret_query.pos_index + 1) >= path_count) {
 			// pos_index at max, stop.
 			break;
 		}
-		for (size_t n = ret_query.pos_index + 1; n < path_count; ++n) {
+		for (unsigned int n = ret_query.pos_index + 1; n < path_count; ++n) {
 			bool ignore = repeated_segment_flags->arr[n];
 			if (!ignore) {
 				const char *path_item = g_array_index(route->path, char *, n);
@@ -457,18 +464,18 @@ static t_train_index_on_route_query get_train_pos_index_in_route_ignore_repeated
 // For a train at position train_pos_index in route->path, set all signals to stop that
 // the train has passed and have not yet been set to stop.
 // Returns the count of how many signals have been set to stop in this function
-static size_t update_route_signals_for_train_pos(t_route_signal_info_array *signal_info_array, 
-                                                 t_interlocking_route *route,
-                                                 size_t train_pos_index) {
-	size_t signals_set_to_stop = 0;
+static unsigned int update_route_signals_for_train_pos(t_route_signal_info_array *signal_info_array, 
+                                                       t_interlocking_route *route,
+                                                       unsigned int train_pos_index) {
+	unsigned int signals_set_to_stop = 0;
 	const char *signal_stop_aspect = "aspect_stop";
 	// 1. For every signal on the route, represented by an entry in signal_info_array
-	for (size_t sig_info_index = 0; sig_info_index < signal_info_array->len; ++sig_info_index) {
+	for (unsigned int sig_info_index = 0; sig_info_index < signal_info_array->len; ++sig_info_index) {
 		t_route_signal_info *sig_info = signal_info_array->data_ptr[sig_info_index];
 		
 		if (sig_info == NULL) {
 			syslog_server(LOG_WARNING, 
-			              "Update route signals - route: %s - signal_info_array[%d] is NULL", 
+			              "Update route signals - route: %s - signal_info_array[%u] is NULL", 
 			              route->id, sig_info_index);
 			continue;
 		}
@@ -479,13 +486,14 @@ static size_t update_route_signals_for_train_pos(t_route_signal_info_array *sign
 				// 4. Try to set the signal to signal_stop_aspect.
 				if (bidib_set_signal(sig_info->id, signal_stop_aspect)) {
 					syslog_server(LOG_WARNING, 
-					              "Update route signals - route: %s signal: %s - unable to set signal to %s",
+					              "Update route signals - route: %s signal: %s - "
+					              "unable to set signal to %s",
 					              route->id, sig_info->id, signal_stop_aspect);
 				} else {
 					bidib_flush();
 					syslog_server(LOG_NOTICE, 
 					              "Update route signals - route: %s signal: %s - signal set to %s",
-					              sig_info->id, signal_stop_aspect, route->id);
+					              route->id, sig_info->id, signal_stop_aspect);
 					sig_info->has_been_set_to_stop = true;
 					signals_set_to_stop++;
 				}
@@ -551,9 +559,11 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	
 	// Signals in a route shall be set to stop once the train has driven passed them.
 	// Destination signal is already in STOP aspect, thus signal_info_array.len - 1 signals.
-	const size_t signals_to_set_to_stop_count = signal_info_array.len - 1;
-	size_t signals_set_to_stop = 0;
-	size_t train_pos_index_previous = 0;
+	// No underflow/wraparound to be concerned about because the call to
+	// `drive_route_decoupled_signal_info_array_valid` above checks that signal_info_array.len >= 2.
+	const unsigned int signals_to_set_to_stop_count = signal_info_array.len - 1;
+	unsigned int signals_set_to_stop = 0;
+	unsigned int train_pos_index_previous = 0;
 	bool first_okay_position = true;
 	
 	while (running && drive_route_params_valid(train_id, route) 
@@ -573,11 +583,12 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		if (train_pos_index_previous != train_pos_query.pos_index || first_okay_position) {
 			const char *path_item = g_array_index(route->path, char *, train_pos_query.pos_index);
 			syslog_server(LOG_DEBUG, 
-			              "Drive route decoupled - route: %s train: %s - train is at index %d (%s)",
+			              "Drive route decoupled - route: %s train: %s - train is at index %u (%s)",
 			              route->id, train_id, train_pos_query.pos_index, 
-			              path_item != NULL ? path_item : "NULL");
+			              path_item != NULL ? path_item : "PATH-ITEM-IS-NULL");
 			signals_set_to_stop += 
-					update_route_signals_for_train_pos(&signal_info_array, route, train_pos_query.pos_index);
+					update_route_signals_for_train_pos(&signal_info_array, route, 
+			                                           train_pos_query.pos_index);
 			first_okay_position = false;
 		}
 		train_pos_index_previous = train_pos_query.pos_index;
@@ -585,8 +596,8 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	}
 	
 	syslog_server(LOG_INFO,
-	              "Drive route decoupled - Finished setting %d signals to stop for route id %s", 
-	              signals_set_to_stop, route->id);
+	              "Drive route decoupled - route: %s train: %s - Finished setting %u signals to stop", 
+	              route->id, train_id, signals_set_to_stop);
 	free_route_signal_info_array(&signal_info_array);
 	free_route_repeated_segment_flags(&repeated_segment_flags);
 	return true;
@@ -600,14 +611,17 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	
 	t_interlocking_route *route = get_route(route_id);
 	if (route == NULL || !drive_route_params_valid(train_id, route)) {
-		syslog_server(LOG_ERR, "Drive route - unable to start driving because route is invalid");
+		syslog_server(LOG_ERR, 
+		              "Drive route - route: %s train: %s - "
+		              "unable to start driving because route is invalid",
+		              route_id, train_id);
 		return false;
 	}
 	
 	// Driving starts: Driving direction is computed from the route orientation
 	syslog_server(LOG_NOTICE, 
 	              "Drive route - route: %s train: %s - %s driving starts", 
-	              route->id, train_id, is_automatic ? "automatic" : "manual");
+	              route_id, train_id, is_automatic ? "automatic" : "manual");
 	
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
@@ -625,6 +639,7 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	
 	// If driving is automatic, slow train down at the end of the route
 	if (is_automatic && result) {
+		// Assumes that all routes have a path with a length of at least 2.
 		const char *pre_dest_segment = g_array_index(route->path, char *, route->path->len - 2);
 		while (running && !train_position_is_at(train_id, pre_dest_segment)
 		               && drive_route_params_valid(train_id, route)) {
@@ -633,7 +648,7 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 		
 		syslog_server(LOG_NOTICE, 
 		              "Drive route - route: %s train: %s - slowing down for end of route", 
-		              train_id, route_id);
+		              route_id, train_id);
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 
 		                                                DRIVING_SPEED_STOPPING,
@@ -654,7 +669,7 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	syslog_server(LOG_NOTICE, 
 	              "Drive route - route: %s train: %s - driving stops", 
-	              route->id, train_id);
+	              route_id, train_id);
 	
 	// Release the route
 	if (drive_route_params_valid(train_id, route)) {
@@ -671,7 +686,7 @@ static int grab_train(const char *train, const char *engine) {
 	}
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	// Check if train is already grabbed
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		if (grabbed_trains[i].is_valid && strcmp(grabbed_trains[i].name->str, train) == 0) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			syslog_server(LOG_ERR, 
@@ -699,7 +714,11 @@ static int grab_train(const char *train, const char *engine) {
 	const int grab_id = next_grab_id;
 	increment_next_grab_id(); // increment for next "grab" action
 	grabbed_trains[grab_id].name = g_string_new(train);
+	
+	/// TODO: Discuss: is there a more elegant way to determine the track output 
+	///       than to hardcode `master`?
 	strcpy(grabbed_trains[grab_id].track_output, "master");
+	
 	if (dyn_containers_set_train_engine_instance(&grabbed_trains[grab_id], train, engine)) {
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_ERR, 
@@ -733,7 +752,7 @@ bool release_train(int grab_id) {
 }
 
 void release_all_grabbed_trains(void) {
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		release_train(i);
 	}
 }
@@ -755,7 +774,6 @@ char *train_id_from_grab_id(int grab_id) {
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (train_id == NULL) {
 		syslog_server(LOG_ERR, "Train id from grab id - unable to allocate memory for train_id");
-		return NULL;
 	}
 	return train_id;
 }
@@ -1056,8 +1074,8 @@ o_con_status handler_request_route_id(void *_, onion_request *req, onion_respons
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Request train route id - train: %s route: %s - start",
-		              train_id, route_id);
+		              "Request: Request train route id - route: %s train: %s - start",
+		              route_id, train_id);
 		
 		// Grant the route ID using an internal algorithm
 		const char *result = grant_route_id(train_id, route_id);
@@ -1074,8 +1092,8 @@ o_con_status handler_request_route_id(void *_, onion_request *req, onion_respons
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Request train route id - train: %s route: %s - finish",
-		              train_id, route_id);
+		              "Request: Request train route id - route: %s train: %s - finish",
+		              route_id, train_id);
 		free(train_id);
 		return OCS_PROCESSED;
 	} else {
@@ -1176,7 +1194,6 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 			              "Request: Drive route - route: %s train: %s drive mode: %s - "
 			              "driving failed - abort", 
 			              route_id, train_id, mode);
-			///TODO: Automatic countermeasures? e.g. set train speed to 0
 		}
 		free(train_id);
 		return OCS_PROCESSED;

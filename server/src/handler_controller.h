@@ -56,11 +56,14 @@ bool load_default_interlocker_instance();
 
 /**
  * Finds conflicting routes that have been granted.
+ * Shall only be called with interlocker_mutex locked.
+ * The caller is responsible for freeing the returned array and its contents.
  * 
  * @param route_id id of route for which conflicts should be checked
  * @param include_conflict_train_info whether the train to which a conflicting route is granted
  * shall be added for each element
- * @return GArray of granted route conflicts, described by strings
+ * @return GArray of granted route conflicts, described by strings. 
+ * returns NULL if inputs are invalid or internal error occured.
  */
 GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_train_info);
 
@@ -68,6 +71,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
  * Determines whether a route is physically ready for use:
  * All route signals are in the Stop aspect and all blocks 
  * are unoccupied.
+ * Shall only be called with interlocker_mutex locked.
  * 
  * @param ID of route for which clearance should be checked
  * @return true if clear, otherwise false
@@ -88,6 +92,7 @@ bool route_has_no_sectional_conflicts(const char *route_id);
 /**
   * Finds and grants a requested train route using an external algorithm.
   * A requested route is defined by a pair of source and destination signals. 
+  * The caller is responsible for freeing the returned string.
   * 
   * @param name of requesting train
   * @param name of the source signal

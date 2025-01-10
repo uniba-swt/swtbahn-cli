@@ -85,7 +85,7 @@ static void create_route_str_to_ids_hashtable() {
 			g_array_append_val(route_ids, route->id);
 		} else {
 			// entry with route_string as key does NOT exist in hashtable -> create new
-			GArray *route_ids = g_array_sized_new(FALSE, FALSE, sizeof(size_t), 8);
+			GArray *route_ids = g_array_sized_new(FALSE, FALSE, sizeof(char *), 8);
 			g_array_append_val(route_ids, route->id);
 			// Ownership of key (route_string) is transferred to hashtable
 			g_hash_table_insert(route_string_to_ids_hashtable, route_string, route_ids);

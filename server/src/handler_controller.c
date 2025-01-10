@@ -79,7 +79,7 @@ static int set_interlocker(const char *interlocker_name) {
 		return -1;
 	}
 	
-	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		// Look for not already used interlocker instance slot (indicated by is_valid).
 		if (!interlocker_instances[i].is_valid) {
 			if (dyn_containers_set_interlocker_instance(&interlocker_instances[i], interlocker_name)) {
@@ -123,9 +123,7 @@ static int unset_interlocker(const char *interlocker_name) {
 		selected_interlocker_name = NULL;
 		selected_interlocker_instance = -1;
 	}
-	int ret = selected_interlocker_instance;
-	// return -1 if unsetting succeeded, otherwise a value >= 0
-	return ret;
+	return selected_interlocker_instance;
 }
 
 bool load_default_interlocker_instance() {
@@ -145,7 +143,7 @@ void release_all_interlockers(void) {
 		g_string_free(selected_interlocker_name, true);
 		selected_interlocker_name = NULL;
 	}
-	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		if (interlocker_instances[i].is_valid) {
 			dyn_containers_free_interlocker_instance(&interlocker_instances[i]);
 			interlocker_instances[i].is_valid = false;
@@ -165,12 +163,16 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 	// check for route availability.
 	bool sectional_in_use = (g_strrstr(selected_interlocker_name->str, "sectional") != NULL);
 	
-	const unsigned int route_count = MAX(interlocking_table_get_size(), max_signals_in_route_assmptn);
+	// For the route with id=route_id, get all conflicting routes and add them to the
+	// GArray that will be returned if they are granted.
+	
+	// Amount of conflicting routes can't be larger than overall amount of routes known.
+	const unsigned int route_count = interlocking_table_get_size();
 	char *conflict_routes[route_count];
-	const size_t conflict_routes_len = 
+	const int conflict_routes_len = 
 			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
-	for (size_t i = 0; i < conflict_routes_len; i++) {
-		t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
+	for (int i = 0; i < conflict_routes_len; i++) {
+		const t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
 		if (conflict_route != NULL && conflict_route->train != NULL) {
 			if (sectional_in_use && is_route_conflict_safe_sectional(conflict_routes[i], route_id)) {
 				// If a sectional checker is in use and it says that this conflict is 
@@ -186,8 +188,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 				syslog_server(LOG_ERR, 
 				              "get_granted_route_conflicts - failed to allocate memory"
 				              " for conflict_route_id_string");
-				///TODO: Test if this freeing works.
-				for (size_t n = 0; n < conflict_route_ids->len; ++n) {
+				for (unsigned int n = 0; n < conflict_route_ids->len; ++n) {
 					char *elem = g_array_index(conflict_route_ids, char *, n);
 					free(elem);
 				}
@@ -214,9 +215,9 @@ bool get_route_is_clear(const char *route_id) {
 	
 	// Check that all route signals are in the Stop aspect
 	char *signal_ids[max_signals_in_route_assmptn];
-	const size_t signal_ids_len = 
+	const int signal_ids_len = 
 			config_get_array_string_value("route", route_id, "route_signals", signal_ids);
-	for (size_t i = 0; i < signal_ids_len; i++) {
+	for (int i = 0; i < signal_ids_len; i++) {
 		const char *signal_state = track_state_get_value(signal_ids[i]);
 		if (strcmp(signal_state, "stop")) {
 			bahn_data_util_free_cached_track_state();
@@ -224,10 +225,10 @@ bool get_route_is_clear(const char *route_id) {
 		}
 	}
 	
-	// Check that all blocks are unoccupied
+	// Check that all segments are unoccupied
 	char *item_ids[max_items_in_route_assmptn];
-	const size_t item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
-	for (size_t i = 0; i < item_ids_len; i++) {
+	const int item_ids_len = config_get_array_string_value("route", route_id, "path", item_ids);
+	for (int i = 0; i < item_ids_len; i++) {
 		if (is_type_segment(item_ids[i]) && is_segment_occupied(item_ids[i])) {
 			bahn_data_util_free_cached_track_state();
 			return false;
@@ -314,12 +315,17 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	pthread_mutex_lock(&interlocker_mutex);
 	// Check whether the route can be granted
 	t_interlocking_route *route = get_route(route_id);
+	if (route == NULL) {
+		pthread_mutex_unlock(&interlocker_mutex);
+		syslog_server(LOG_ERR, "Grant route id - unknown route id %s", route_id);
+		return "not_grantable";
+	}
 	GArray *granted_conflicts = get_granted_route_conflicts(route_id, false);
 	if (granted_conflicts == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
-		              "Grant route id - train: %s route: %s - search for conflicting routes failed",
-		              train_id, route_id);
+		              "Grant route id - route: %s train: %s - search for conflicting routes failed",
+		              route_id, train_id);
 		return "not_grantable";
 	}
 	const bool hasGrantedConflicts = (granted_conflicts->len > 0);
@@ -332,9 +338,9 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	if (route->train != NULL || hasGrantedConflicts) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
-		              "Grant route id - train: %s route: %s - route already granted "
+		              "Grant route id - route: %s train: %s - route already granted "
 		              "or conflicting routes are in use",
-		              train_id, route_id);
+		              route_id, train_id);
 		return "not_grantable";
 	}
 	
@@ -342,29 +348,29 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	if (!get_route_is_clear(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
-		              "Grant route id - train: %s route: %s - route is not clear",
-		              train_id, route_id);
+		              "Grant route id - route: %s train: %s - route is not clear",
+		              route_id, train_id);
 		return "not_clear";
 	}
 	
 	// Grant the route to the train
 	
 	syslog_server(LOG_INFO, 
-	              "Grant route id - train: %s route: %s - checks passed, now grant route", 
-	              train_id, route_id);
+	              "Grant route id - route: %s train: %s - checks passed, now grant route", 
+	              route_id, train_id);
 	
 	route->train = strdup(train_id);
 	
 	if (route->train == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, 
-		              "Grant route id - train: %s route: %s - unable to allocate memory for route->train",
-		              train_id, route_id);
+		              "Grant route id - route: %s train: %s - unable to allocate memory for route->train",
+		              route_id, train_id);
 		return "not_grantable";
 	}
 	
 	// Set the points to their required positions
-	for (size_t i = 0; i < route->points->len; i++) {
+	for (unsigned int i = 0; i < route->points->len; i++) {
 		const t_interlocking_point point = g_array_index(route->points, t_interlocking_point, i);
 		const char *position = (point.position == NORMAL) ? "normal" : "reverse";
 		bidib_switch_point(point.id, position);
@@ -372,7 +378,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	}
 	
 	// Set the signals to their required aspects
-	for (size_t i = 0; i < route->signals->len - 1; i++) {
+	for (unsigned int i = 0; i < route->signals->len - 1; i++) {
 		const char *signal = g_array_index(route->signals, char *, i);
 		const char *signal_type = config_get_scalar_string_value("signal", signal, "type");
 		const char *signal_aspect = strcmp(signal_type, "shunting") == 0 ? "aspect_shunt" : "aspect_go";
@@ -380,11 +386,16 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_flush();
 	}
 	
-	syslog_server(LOG_NOTICE, 
-	              "Grant route id - train: %s route: %s - route granted", 
-	              train_id, route_id);
+	/// TODO: Discuss - at this point we could add a wait of ~2s and then check if the points are
+	///       in their required position. 
+	///       Benefit: Detect hardware failures, thus preventing a potential short circuit later.
+	///       Drawback: Latency increases.
 	
 	pthread_mutex_unlock(&interlocker_mutex);
+	
+	syslog_server(LOG_NOTICE, 
+	              "Grant route id - route: %s train: %s - route granted", 
+	              route_id, train_id);
 	return "granted";
 }
 
@@ -495,7 +506,7 @@ o_con_status handler_set_point(void *_, onion_request *req, onion_response *res)
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_point == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set point - invalid parameters");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters, > 0 parameters are NULL");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set point - point: %s state: %s - start",
@@ -526,7 +537,7 @@ o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_signal == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set signal - invalid parameters");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters, > 0 parameters are NULL");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set signal - signal: %s state: %s - start",
@@ -558,7 +569,7 @@ o_con_status handler_set_peripheral(void *_, onion_request *req, onion_response 
 		const char *data_state = onion_request_get_post(req, "state");
 		if (data_peripheral == NULL || data_state == NULL) {
 			syslog_server(LOG_ERR, "Request: Set peripheral - invalid parameters");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters (> 0 parameters are NULL)");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters, > 0 parameters are NULL");
 		} else {
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set peripheral - peripheral: %s state: %s - start",
@@ -589,7 +600,7 @@ o_con_status handler_get_interlocker(void *_, onion_request *req, onion_response
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		pthread_mutex_lock(&interlocker_mutex);
 		if (selected_interlocker_instance != -1 && selected_interlocker_name != NULL) {
-			GString *g_resstr = g_string_new("{\n\"interlocker\":\"");
+			GString *g_resstr = g_string_new("{\n\"interlocker\": \"");
 			g_string_append_printf(g_resstr, "%s\"\n}", 
 			                       selected_interlocker_name->str);
 			pthread_mutex_unlock(&interlocker_mutex);
@@ -626,10 +637,7 @@ o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response
 				              data_interlocker);
 				send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
 				                     "another interlocker instance is already set");
-				return OCS_PROCESSED;
-			}
-			int set_i = set_interlocker(data_interlocker);
-			if (set_i == -1) {
+			} else if (set_interlocker(data_interlocker) == -1) {
 				pthread_mutex_unlock(&interlocker_mutex);
 				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters or no more "
 				                     "interlocker instances can be loaded");
@@ -672,11 +680,7 @@ o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_respon
 				              data_interlocker);
 				send_common_feedback(res, HTTP_BAD_REQUEST, 
 				                     "no interlocker instance is set that can be unset");
-				return OCS_PROCESSED;
-			}
-			
-			unset_interlocker(data_interlocker);
-			if (selected_interlocker_instance != -1) {
+			} else if (unset_interlocker(data_interlocker) != -1) {
 				pthread_mutex_unlock(&interlocker_mutex);
 				syslog_server(LOG_ERR, 
 				              "Request: Unset interlocker - interlocker: %s - "
