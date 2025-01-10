@@ -612,7 +612,7 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
 
 static e_config_type get_track_state_accessory_type(const char *id) {
     if (id == NULL) {
-        syslog_server(LOG_ERR, "Get accessory type: %s is NULL", id);
+        syslog_server(LOG_ERR, "Get accessory type: parameter id is NULL");
         return TYPE_NOT_SUPPORTED;
     }
     
@@ -833,7 +833,7 @@ static bool set_peripheral_state(const char *id, const char *value) {
 
 char *track_state_get_value(const char *id) {
     if (id == NULL) {
-        syslog_server(LOG_ERR, "Track state get value: called with invalid (NULL) id parameter");
+        syslog_server(LOG_ERR, "Track state get value: invalid parameter id (NULL)");
         return "";
     }
     char *result = NULL;

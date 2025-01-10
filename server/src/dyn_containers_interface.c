@@ -639,7 +639,7 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data *interlocker_inst
 			interlocker_instance->dyn_containers_interlocker_instance = i;
 			syslog_server(LOG_NOTICE, 
 			              "Interlocker %d in use by instance %d", 
-			              interlocker_type, *interlocker_instance);
+			              interlocker_type, i);
 			return 0;
 		}
 	}

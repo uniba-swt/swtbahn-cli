@@ -337,7 +337,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 			ws_verif_data.success = false;
 			syslog_server(LOG_WARNING, 
 			              "Websocket engine uploader: Verify engine model - "
-			              "verification did not start within %d ms, abort", 
+			              "verification did not start within %u ms, abort", 
 			              (poll_counter * websocket_single_poll_length_ms));
 		}
 	}
@@ -371,7 +371,7 @@ void set_verifier_url(const char *upd_verifier_url) {
 		verifier_url = NULL;
 	}
 	verifier_url = strdup(upd_verifier_url);
-	syslog_server(LOG_NOTICE,  "Set verifier URL - verifier URL set to: %s", verifier_url);
+	syslog_server(LOG_NOTICE, "Set verifier URL - verifier URL set to: %s", verifier_url);
 }
 
 
@@ -412,7 +412,7 @@ void load_cached_verifier_url() {
 			              "Load cached verifier URL - loaded URL %s from cache", 
 			              verifier_url);
 		} else {
-			syslog_server(LOG_NOTICE,  "Load cached verifier URL - no content in cache file");
+			syslog_server(LOG_NOTICE, "Load cached verifier URL - no content in cache file");
 		}
 	} else {
 		syslog_server(LOG_NOTICE, 

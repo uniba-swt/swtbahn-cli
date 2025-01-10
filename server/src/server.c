@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
 	cache_verifier_url();
 	free_verifier_url();
 	
-	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
+	syslog_server(LOG_NOTICE, "SWTbahn server stopped");
 	closelog();
 	
 	return 0;

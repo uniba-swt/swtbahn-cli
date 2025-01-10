@@ -52,7 +52,7 @@ bool init_parser(const char *config_dir, const char *table_file,
     *fh = fopen(full_path, "r");
 
     if (*fh == NULL) {
-        syslog_server(LOG_ERR, "%Interlocking parser: Failed to open %s", full_path);
+        syslog_server(LOG_ERR, "Interlocking parser: Failed to open %s", full_path);
         return false;
     }
 
@@ -218,7 +218,7 @@ GHashTable *parse(yaml_parser_t *parser) {
     char *last_scalar = NULL;
     do {
         if (!yaml_parser_parse(parser, &event)) {
-            syslog_server(LOG_ERR, "Parser error %d\n", (*parser).error);
+            syslog_server(LOG_ERR, "Parser error %d", (*parser).error);
             break;
         }
 
@@ -446,7 +446,7 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
 
     // success
     if (routes != NULL) {
-        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %d routes", 
+        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %u routes", 
                       g_hash_table_size(routes));
         return routes;
     }

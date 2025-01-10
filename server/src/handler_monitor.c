@@ -684,13 +684,15 @@ o_con_status handler_get_signals(void *_, onion_request *req, onion_response *re
  */
 static GString *get_point_details_json(const char *point_id) {
 	if (point_id == NULL) {
-		syslog_server(LOG_WARNING, "Get point details json - input data_id is NULL");
+		syslog_server(LOG_WARNING, "Get point details json - input point_id is NULL");
 		return NULL;
 	}
 	
 	GString *g_details = g_string_sized_new(156);
 	if (g_details == NULL) {
-		syslog_server(LOG_ERR, "Get point details json - point: %s - can't allocate g_details", point_id);
+		syslog_server(LOG_ERR, 
+		              "Get point details json - point: %s - can't allocate g_details", 
+		              point_id);
 		return NULL;
 	}
 	g_string_assign(g_details, "");
@@ -766,7 +768,7 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 		const char *data_point = onion_request_get_post(req, "point");
 		if (data_point == NULL) {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get point details - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get point details - invalid point parameter");
 			return OCS_PROCESSED;
 		}
 		
@@ -800,7 +802,7 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
  */
 static GString *get_accessory_aspects_json(const char *acc_id, bool is_point) {
 	if (acc_id == NULL) {
-		syslog_server(LOG_ERR, "Get accessory aspects json - invalid accessory identifier");
+		syslog_server(LOG_ERR, "Get accessory aspects json - invalid acc_id parameter (NULL)");
 		return NULL;
 	}
 	GString *g_aspects = get_accessory_aspects_json_listonly(acc_id, is_point);
@@ -825,7 +827,7 @@ static o_con_status get_acc_aspects_common(onion_request *req, onion_response *r
 		const char *data_acc = onion_request_get_post(req, acc_type_name);
 		if (data_acc == NULL) {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: %s - invalid parameters", l_name);
+			syslog_server(LOG_ERR, "Request: %s - invalid %s parameter", l_name, acc_type_name);
 			return OCS_PROCESSED;
 		}
 		

@@ -521,7 +521,7 @@ static bool drive_route_decoupled_signal_info_array_valid(const char *route_id,
 	} else if (signal_info_array->len < 2) {
 		syslog_server(LOG_ERR, 
 		              "Drive route decoupled signal info array validation - route: %s - "
-		              "signal info array has only %d elements (at least two elements needed)",
+		              "signal info array has only %u elements (at least two elements needed)",
 		              route_id, signal_info_array->len);
 		return false;
 	}
