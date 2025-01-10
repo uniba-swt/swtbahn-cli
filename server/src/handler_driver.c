@@ -502,23 +502,22 @@ static unsigned int update_route_signals_for_train_pos(t_route_signal_info_array
 	return signals_set_to_stop;
 }
 
-static bool drive_route_decoupled_signal_info_array_valid(const char *route_id, 
-                                                          t_route_signal_info_array *signal_info_array) {
+static bool validate_route_signal_info_array(const char *route_id, 
+                                             t_route_signal_info_array *signal_info_array) {
 	if (signal_info_array == NULL || route_id == NULL) {
-		syslog_server(LOG_ERR,
-		              "Drive route decoupled signal info array validation - invalid (NULL) parameters");
+		syslog_server(LOG_ERR, "Route signal info array validation - invalid (NULL) parameters");
 		return false;
 	}
-	// Check that signal_info_array array is not empty and has at least 2 entries (source, destination)
+	// Check that signal_info_array array is not empty and has >= 2 entries (source, destination)
 	if (signal_info_array->data_ptr == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Drive route decoupled signal info array validation - route: %s - "
+		              "Route signal info array validation - route: %s - "
 		              "signal info array is NULL", 
 		              route_id);
 		return false;
 	} else if (signal_info_array->len < 2) {
 		syslog_server(LOG_ERR, 
-		              "Drive route decoupled signal info array validation - route: %s - "
+		              "Route signal info array validation - route: %s - "
 		              "signal info array has only %u elements (at least two elements needed)",
 		              route_id, signal_info_array->len);
 		return false;
@@ -527,22 +526,22 @@ static bool drive_route_decoupled_signal_info_array_valid(const char *route_id,
 }
 
 /**
- * @brief For a train driving a route, set the signals to stop that the train passes
+ * @brief For a train driving a route, set the signals to stop that the train passes.
  * 
  * @param train_id The train driving the route
  * @param route The route to be driven
- * @return true signal updating successful (all signals were passed and set to stop)
- * @return false signal updating failed
+ * @return true if signal updating successful (all passed signals were set to stop, 
+ * and all signals have been passed or the route has been released or the system is stopping), 
+ * otherwise returns false. 
  */
-static bool drive_route_progressive_stop_signals_decoupled(const char *train_id, 
-                                                           t_interlocking_route *route) {
+static bool monitor_train_on_route(const char *train_id, t_interlocking_route *route) {
 	if (route == NULL || route->id == NULL) {
-		syslog_server(LOG_ERR, "Drive route decoupled - invalid (NULL) route or route->id");
+		syslog_server(LOG_ERR, "Monitor train on route - invalid (NULL) route or route->id");
 		return false;
 	}
 	if (train_id == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Drive route decoupled - route: %s - invalid (NULL) train_id", 
+		              "Monitor train on route - route: %s - invalid (NULL) train_id", 
 		              route->id);
 		return false;
 	}
@@ -551,7 +550,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	t_route_signal_info_array signal_info_array = get_route_signal_info_array(route);
 	t_route_repeated_segment_flags repeated_segment_flags = get_route_repeated_segment_flags(route);
 	
-	if (!drive_route_decoupled_signal_info_array_valid(route->id, &signal_info_array)) {
+	if (!validate_route_signal_info_array(route->id, &signal_info_array)) {
 		free_route_signal_info_array(&signal_info_array);
 		free_route_repeated_segment_flags(&repeated_segment_flags);
 		return false;
@@ -583,7 +582,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 		if (train_pos_index_previous != train_pos_query.pos_index || first_okay_position) {
 			const char *path_item = g_array_index(route->path, char *, train_pos_query.pos_index);
 			syslog_server(LOG_DEBUG, 
-			              "Drive route decoupled - route: %s train: %s - train is at index %u (%s)",
+			              "Monitor train on route - route: %s train: %s - train is at index %u (%s)",
 			              route->id, train_id, train_pos_query.pos_index, 
 			              path_item != NULL ? path_item : "PATH-ITEM-IS-NULL");
 			signals_set_to_stop += 
@@ -596,7 +595,7 @@ static bool drive_route_progressive_stop_signals_decoupled(const char *train_id,
 	}
 	
 	syslog_server(LOG_INFO,
-	              "Drive route decoupled - route: %s train: %s - Finished setting %u signals to stop", 
+	              "Monitor train on route - route: %s train: %s - Finished, set %u signals to stop", 
 	              route->id, train_id, signals_set_to_stop);
 	free_route_signal_info_array(&signal_info_array);
 	free_route_repeated_segment_flags(&repeated_segment_flags);
@@ -635,7 +634,7 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	
 	// Set the signals along the route to Stop as the train drives past them
 	// This will return as soon as the train has passed all but the destination signal
-	const bool result = drive_route_progressive_stop_signals_decoupled(train_id, route);
+	const bool result = monitor_train_on_route(train_id, route);
 	
 	// If driving is automatic, slow train down at the end of the route
 	if (is_automatic && result) {
