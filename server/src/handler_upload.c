@@ -261,20 +261,20 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 		const int engine_slot = dyn_containers_get_engine_slot(name);
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
+			send_common_feedback(res, HTTP_NOT_FOUND, "Engine could not be found");
 			syslog_server(LOG_WARNING, 
 			              "Request: Remove engine - engine: %s - engine could not be found - abort", 
 			              name);
-			send_common_feedback(res, HTTP_NOT_FOUND, "Engine could not be found");
 			return OCS_PROCESSED;
 		}
 		
 		const bool engine_freed_successfully = dyn_containers_free_engine(engine_slot);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		if (!engine_freed_successfully) {
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "Engine still in use");
 			syslog_server(LOG_WARNING, 
 			              "Request: Remove engine - engine: %s - engine is still in use - abort", 
 			              name);
-			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "Engine still in use");
 			return OCS_PROCESSED;
 		}
 		
