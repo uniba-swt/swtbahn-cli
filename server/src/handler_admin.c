@@ -222,9 +222,12 @@ o_con_status handler_set_track_output(void *_, onion_request *req, onion_respons
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
 		const long int state = strtol(data_state, &end, 10);
-		if (data_state == NULL || (state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter(s)");
-			syslog_server(LOG_ERR, "Request: Set track output - invalid parameters");
+		if (data_state == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter state");
+			syslog_server(LOG_ERR, "Request: Set track output - missing parameter state");
+		} else if ((state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid state");
+			syslog_server(LOG_ERR, "Request: Set track output - invalid state");
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - start", state);
 			bidib_set_track_output_state_all(state);
@@ -242,9 +245,15 @@ o_con_status handler_set_verification_option(void *_, onion_request *req, onion_
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_option = onion_request_get_post(req, "verification-option");
-		if (!params_check_is_bool_string(data_verification_option)) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification option parameter");
-			syslog_server(LOG_ERR, "Request: Set verification option - invalid parameters");
+		if (data_verification_option == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter verification-option");
+			syslog_server(LOG_ERR, 
+			              "Request: Set verification option - missing parameter verification-option");
+			return OCS_PROCESSED;
+		} else if (!params_check_is_bool_string(data_verification_option)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification-option");
+			syslog_server(LOG_ERR, 
+			              "Request: Set verification option - invalid verification-option");
 			return OCS_PROCESSED;
 		}
 		if (strcmp("true", data_verification_option) == 0 
@@ -269,8 +278,9 @@ o_con_status handler_set_verification_url(void *_, onion_request *req, onion_res
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_url = onion_request_get_post(req, "verification-url");
 		if (data_verification_url == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification URL parameter");
-			syslog_server(LOG_ERR, "Request: Set verification URL - invalid parameters");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter verification-url");
+			syslog_server(LOG_ERR, 
+			              "Request: Set verification URL - missing parameter verification-url");
 			return OCS_PROCESSED;
 		}
 		set_verifier_url(data_verification_url);
@@ -288,20 +298,23 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
+		if (data_train == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter train");
+			syslog_server(LOG_ERR, "Request: Admin release train - missing parameter train");
+			return OCS_PROCESSED;
+		}
 		const int grab_id = train_get_grab_id(data_train);
-		
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
-			pthread_mutex_unlock(&grabbed_trains_mutex);
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid train id or train not grabbed");
+		if (grab_id == -1) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid train or train not grabbed");
 			syslog_server(LOG_ERR, 
-			              "Request: Admin release train - invalid train id or train %s not grabbed",
+			              "Request: Admin release train - invalid train or train %s not grabbed",
 			              data_train);
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s - start", data_train);
 		
 		// Ensure that the train has stopped moving
+		pthread_mutex_lock(&grabbed_trains_mutex);
 		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
@@ -338,17 +351,21 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		const int speed = params_check_speed(data_speed);
 		
-		if (speed == 999) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid speed parameter");
+		if (data_train == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter train");
+			syslog_server(LOG_ERR, "Request: Admin set dcc train speed - missing parameter train");
+			return OCS_PROCESSED;
+		} else if (speed == 999) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "bad speed");
 			syslog_server(LOG_ERR, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - invalid speed",
+			              "Request: Admin set dcc train speed - train: %s speed: %d - bad speed",
 			              data_train, speed);
 			return OCS_PROCESSED;
 		} else if (data_track_output == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid track output parameter");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter track-output");
 			syslog_server(LOG_ERR, 
 			              "Request: Admin set dcc train speed - "
-			              "train: %s speed: %d - invalid track output", 
+			              "train: %s speed: %d - missing parameter track-output", 
 			              data_train, speed);
 			return OCS_PROCESSED;
 		}
@@ -364,10 +381,10 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 		///      Todo for the future: set speed via dyn. container, check that speed is set to 0
 		//       with a timeout after which it is set to 0 directly via bidib as currently done.
 		if (bidib_set_train_speed(data_train, speed, data_track_output)) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameters");
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
 			syslog_server(LOG_ERR, 
 			              "Request: Admin set dcc train speed - train: %s speed: %d - "
-			              "invalid parameters - abort", 
+			              "invalid parameter values - abort", 
 			              data_train, speed);
 		} else {
 			bidib_flush();

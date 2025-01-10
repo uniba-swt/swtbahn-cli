@@ -147,21 +147,23 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
-		
-		if (filename == NULL || temp_filepath == NULL) {
-			syslog_server(LOG_ERR, "Request: Upload engine - engine file is invalid");
+		if (filename == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter file");
+			syslog_server(LOG_ERR, "Request: Upload engine - missing parameter file");
+		} else if (temp_filepath == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "engine file is invalid");
+			syslog_server(LOG_ERR, "Request: Upload engine - engine file is invalid");
 			return OCS_PROCESSED;
 		}
 		
 		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - start", filename);
 		
  		if (engine_file_exists(filename)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "engine file already exists");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload engine - engine file: %s - "
 			              "engine file already exists - abort", 
 			              filename);
-			send_common_feedback(res, HTTP_BAD_REQUEST, "engine file already exists");
 			return OCS_PROCESSED;
 		}
 		
@@ -200,11 +202,11 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		if (status == DYNLIB_COMPILE_SCCHARTS_C_ERR || status == DYNLIB_COMPILE_SHARED_SCCHARTS_ERR) {
 			remove_engine_files(libname);
 			
+			send_common_feedback(res, HTTP_INTERNAL_ERROR, "engine file could not be compiled");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload engine - engine file: %s - could not be "
 			              "compiled into a C file and then to a shared library - abort", 
 			              filepath);
-			send_common_feedback(res, HTTP_INTERNAL_ERROR, "engine file could not be compiled");
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_DEBUG, 
@@ -217,11 +219,11 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			remove_engine_files(libname);
 			
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "No available engine slot");
 			syslog_server(LOG_WARNING, 
 			              "Request: Upload engine - engine file: %s - "
 			              "no available engine slot - abort", 
 			              filename);
-			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "No available engine slot");
 			return OCS_PROCESSED;
 		}
 		
@@ -240,12 +242,16 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
-		if (name == NULL || plugin_is_unremovable(name)) {
+		if (name == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter engine-name");
 			syslog_server(LOG_ERR, 
-			              "Request: Remove engine - engine name \"%s\" is "
-			              "invalid or engine is unremovable",
-			              (name == NULL) ? "null" : name);
-			send_common_feedback(res, HTTP_BAD_REQUEST, "Engine name invalid or engine unremovable");
+			              "Request: Remove engine - missing parameter engine-name");
+			return OCS_PROCESSED;
+		} else if (plugin_is_unremovable(name)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "engine to remove is unremovable");
+			syslog_server(LOG_ERR, 
+			              "Request: Remove engine - engine to remove (%s) is unremovable", 
+			              name);
 			return OCS_PROCESSED;
 		}
 		
@@ -273,10 +279,11 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 		}
 		
 		if (!remove_engine_files(name)) {
-			syslog_server(LOG_ERR, 
+			syslog_server(LOG_WARNING, 
 			              "Request: Remove engine - engine: %s - files could not be removed", 
 			              name);
 		}
+		send_common_feedback(res, HTTP_OK, "");
 		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - finish", name);
 		return OCS_PROCESSED;
 	} else {
@@ -326,9 +333,13 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
-		if (filename == NULL || temp_filepath == NULL) {
-			syslog_server(LOG_ERR, "Request: Upload - interlocker file is invalid");
-			send_common_feedback(res, HTTP_BAD_REQUEST, "Interlocker file is invalid");
+		if (filename == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter file");
+			syslog_server(LOG_ERR, "Request: Upload interlocker - missing parameter file");
+			return OCS_PROCESSED;
+		} else if (temp_filepath == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker file is invalid");
+			syslog_server(LOG_ERR, "Request: Upload interlocker - interlocker file is invalid");
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, 
@@ -336,11 +347,11 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		              filename);
 		
 		if (interlocker_file_exists(filename)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker file already exists");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload interlocker - interlocker file: %s - "
 			              "file already exists - abort", 
 			              filename);
-			send_common_feedback(res, HTTP_BAD_REQUEST, "Interlocker file already exists");
 			return OCS_PROCESSED;
 		}
 		
@@ -361,12 +372,12 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		remove_file_extension(filepath, final_filepath, ".bahn");
 		const dynlib_status status = dynlib_compile_bahndsl(filepath, interlocker_dir);
 		if (status == DYNLIB_COMPILE_SHARED_BAHNDSL_ERR) {
+			send_common_feedback(res, HTTP_INTERNAL_ERROR, "interlocker file could not be compiled");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload interlocker - interlocker file: %s - "
 			              "interlocker could not be compiled - abort", 
 			              filename);
 			remove_interlocker_files(libname);
-			send_common_feedback(res, HTTP_INTERNAL_ERROR, "Interlocker file could not be compiled");
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_DEBUG, 
@@ -379,11 +390,11 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			remove_interlocker_files(libname);
 			
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "no interlocker slot available");
 			syslog_server(LOG_WARNING, 
 			              "Request: Upload interlocker - interlocker file: %s - "
 			              "no available interlocker slot - abort", 
 			              filename);
-			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "No available interlocker slot");
 			return OCS_PROCESSED;
 		}
 		
@@ -404,12 +415,16 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
-		if (name == NULL || plugin_is_unremovable(name)) {
+		if (name == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter interlocker-name");
 			syslog_server(LOG_ERR, 
-			              "Request: Remove interlocker - interlocker name is invalid "
-			              "or interlocker is unremovable");
-			send_common_feedback(res, HTTP_BAD_REQUEST, 
-			                     "Interlocker name invalid or interlocker unremovable");
+			              "Request: Remove interlocker - missing parameter interlocker-name");
+			return OCS_PROCESSED;
+		} else if (plugin_is_unremovable(name)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker to remove is unremovable");
+			syslog_server(LOG_ERR, 
+			              "Request: Remove interlocker - interlocker to remove (%s) is unremovable", 
+			              name);
 			return OCS_PROCESSED;
 		}
 		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - start", name);
@@ -418,35 +433,35 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 		const int interlocker_slot = dyn_containers_get_interlocker_slot(name);
 		if (interlocker_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
+			send_common_feedback(res, HTTP_NOT_FOUND, "Interlocker to remove could not be found");
 			syslog_server(LOG_ERR, 
 			              "Request: Remove interlocker - interlocker: %s - "
 			              "interlocker could not be found - abort", 
 			              name);
-			send_common_feedback(res, HTTP_NOT_FOUND, "Interlocker to remove could not be found");
 			return OCS_PROCESSED;
 		}
 		
 		const bool free_success = dyn_containers_free_interlocker(interlocker_slot);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		if (!free_success) {
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "Interlocker is still in use");
 			syslog_server(LOG_WARNING, 
 			              "Request: Remove interlocker - interlocker: %s - "
 			              "interlocker is still in use - abort", 
 			              name);
-			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "Interlocker is still in use");
 			return OCS_PROCESSED;
 		}
 		
 		if (!remove_interlocker_files(name)) {
-			syslog_server(LOG_ERR, 
+			syslog_server(LOG_WARNING, 
 			              "Request: Remove interlocker - interlocker: %s - "
 			              "files could not be removed", 
 			              name);
 		}
+		send_common_feedback(res, HTTP_OK, "");
 		syslog_server(LOG_NOTICE, 
 		              "Request: Remove interlocker - interlocker: %s - finish",
 		              name);
-		send_common_feedback(res, HTTP_OK, "");
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Remove interlocker");

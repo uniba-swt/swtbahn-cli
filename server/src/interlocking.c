@@ -138,7 +138,7 @@ GArray *interlocking_table_get_all_route_ids_shallowcpy(void) {
 
 const char *interlocking_table_get_route_id_of_train(const char *train_id) {
 	if (train_id == NULL) {
-		syslog_server(LOG_ERR, "Get route id of train: invalid train_id parameter (NULL)");
+		syslog_server(LOG_ERR, "Get route id of train: invalid (NULL) train_id");
 		return NULL;
 	}
 	GHashTableIter iter;

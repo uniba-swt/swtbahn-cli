@@ -193,7 +193,7 @@ static void *get_object(e_config_type config_type, const char *id) {
 
 int interlocking_table_get_routes(const char *src_signal_id, const char *dst_signal_id, char *route_ids[]) {
     if (src_signal_id == NULL || dst_signal_id == NULL) {
-        syslog_server(LOG_ERR, "interlocking table get routes: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "interlocking table get routes: invalid (NULL) parameters");
         return 0;
     }
     const GArray *arr = interlocking_table_get_route_ids(src_signal_id, dst_signal_id);
@@ -208,7 +208,7 @@ int interlocking_table_get_routes(const char *src_signal_id, const char *dst_sig
 
 static int get_route_array_string_value(t_interlocking_route *route, const char *prop_name, char* data[]) {
     if (route == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Get route array string value: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Get route array string value: invalid (NULL) parameters");
         return 0;
     }
     if (string_equals(prop_name, "path")) {
@@ -253,7 +253,7 @@ static int get_route_array_string_value(t_interlocking_route *route, const char 
 
 char *config_get_scalar_string_value(const char *type, const char *id, const char *prop_name) {
     if (type == NULL || id == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Get scalar string: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Get scalar string: invalid (NULL) parameters");
         return "";
     }
     e_config_type config_type = get_config_type(type);
@@ -391,7 +391,7 @@ char *config_get_scalar_string_value(const char *type, const char *id, const cha
 
 float config_get_scalar_float_value(const char *type, const char *id, const char *prop_name) {
     if (type == NULL || id == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Get scalar float: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Get scalar float: invalid (NULL) parameters");
         return 0;
     }
     e_config_type config_type = get_config_type(type);
@@ -438,7 +438,7 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
 
 bool config_get_scalar_bool_value(const char *type, const char *id, const char *prop_name) {
     if (type == NULL || id == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Get scalar bool: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Get scalar bool: invalid (NULL) parameters");
         return "";
     }
     e_config_type config_type = get_config_type(type);
@@ -462,7 +462,7 @@ bool config_get_scalar_bool_value(const char *type, const char *id, const char *
 
 int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char *data[]) {
     if (type == NULL || id == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Get array string: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Get array string: invalid (NULL) parameters");
         return 0;
     }
     e_config_type config_type = get_config_type(type);
@@ -535,7 +535,7 @@ int config_get_array_string_value(const char *type, const char *id, const char *
 
 int config_get_array_int_value(const char *type, const char *id, const char *prop_name, int data[]) {
     if (type == NULL || id == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Get array int value: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Get array int value: invalid (NULL) parameters");
         return 0;
     }
     e_config_type config_type = get_config_type(type);
@@ -577,7 +577,7 @@ int config_get_array_bool_value(const char *type, const char *id, const char *pr
 
 bool config_set_scalar_string_value(const char *type, const char *id, const char *prop_name, char *value) {
     if (type == NULL || id == NULL || prop_name == NULL) {
-        syslog_server(LOG_ERR, "Config set scalar string value: called with invalid (NULL) parameters");
+        syslog_server(LOG_ERR, "Config set scalar string value: invalid (NULL) parameters");
         return false;
     }
     e_config_type config_type = get_config_type(type);
@@ -638,7 +638,7 @@ static e_config_type get_track_state_accessory_type(const char *id) {
  */
 static char *get_signal_state(const char *id) {
     if (id == NULL) {
-        syslog_server(LOG_ERR, "Get signal state: invalid (NULL) id parameter");
+        syslog_server(LOG_ERR, "Get signal state: invalid (NULL) id");
         return "";
     }
     const t_config_signal *signal = get_object(TYPE_SIGNAL, id);
@@ -833,7 +833,7 @@ static bool set_peripheral_state(const char *id, const char *value) {
 
 char *track_state_get_value(const char *id) {
     if (id == NULL) {
-        syslog_server(LOG_ERR, "Track state get value: invalid parameter id (NULL)");
+        syslog_server(LOG_ERR, "Track state get value: invalid (NULL) id");
         return "";
     }
     char *result = NULL;
@@ -956,7 +956,7 @@ bool is_type_signal(const char *id) {
 
 int train_state_get_speed(const char *train_id) {
     if (train_id == NULL) {
-        syslog_server(LOG_ERR, "Train state get speed (km/h): invalid (NULL) train_id parameter");
+        syslog_server(LOG_ERR, "Train state get speed (km/h): invalid (NULL) train_id");
         return 0;
     }
     int result = 0;
@@ -975,7 +975,7 @@ int train_state_get_speed(const char *train_id) {
 
 bool train_state_set_speed(const char *train_id, int speed) {
     if (train_id == NULL) {
-        syslog_server(LOG_ERR, "Train state set speed: invalid (NULL) train_id parameter");
+        syslog_server(LOG_ERR, "Train state set speed: invalid (NULL) train_id");
         return false;
     }
     bool result = false;
@@ -1021,7 +1021,7 @@ char *config_get_point_position(const char *route_id, const char *point_id) {
 
 char *config_get_block_id_of_segment(const char *seg_id) {
     if (seg_id == NULL) {
-        syslog_server(LOG_ERR, "Get block id of segment: invalid (NULL) seg_id parameter");
+        syslog_server(LOG_ERR, "Get block id of segment: invalid (NULL) seg_id");
         return "";
     }
     GHashTableIter iterator;

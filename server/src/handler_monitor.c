@@ -210,8 +210,8 @@ o_con_status handler_get_train_state(void *_, onion_request *req, onion_response
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
-			syslog_server(LOG_ERR, "Request: Get train state - invalid parameters");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			syslog_server(LOG_ERR, "Request: Get train state - missing parameter train");
 			return OCS_PROCESSED;
 		}
 		
@@ -357,8 +357,8 @@ o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_re
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
-			syslog_server(LOG_ERR, "Request: Get train peripherals - invalid parameters");
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			syslog_server(LOG_ERR, "Request: Get train peripherals - missing parameter train");
 			return OCS_PROCESSED;
 		}
 		
@@ -532,7 +532,7 @@ o_con_status handler_get_track_outputs(void *_, onion_request *req, onion_respon
  */
 static GString *get_accessory_aspects_json_listonly(const char *acc_id, bool is_point) {
 	if (acc_id == NULL) {
-		syslog_server(LOG_ERR, "Get accessory aspects json listonly - invalid accessory identifier");
+		syslog_server(LOG_ERR, "Get accessory aspects json listonly - invalid (NULL) acc_id");
 		return NULL;
 	}
 	t_bidib_id_list_query query;
@@ -684,7 +684,7 @@ o_con_status handler_get_signals(void *_, onion_request *req, onion_response *re
  */
 static GString *get_point_details_json(const char *point_id) {
 	if (point_id == NULL) {
-		syslog_server(LOG_WARNING, "Get point details json - input point_id is NULL");
+		syslog_server(LOG_WARNING, "Get point details json - invalid (NULL) point_id");
 		return NULL;
 	}
 	
@@ -768,7 +768,7 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 		const char *data_point = onion_request_get_post(req, "point");
 		if (data_point == NULL) {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get point details - invalid point parameter");
+			syslog_server(LOG_ERR, "Request: Get point details - missing parameter point");
 			return OCS_PROCESSED;
 		}
 		
@@ -802,7 +802,7 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
  */
 static GString *get_accessory_aspects_json(const char *acc_id, bool is_point) {
 	if (acc_id == NULL) {
-		syslog_server(LOG_ERR, "Get accessory aspects json - invalid acc_id parameter (NULL)");
+		syslog_server(LOG_ERR, "Get accessory aspects json - invalid (NULL) acc_id");
 		return NULL;
 	}
 	GString *g_aspects = get_accessory_aspects_json_listonly(acc_id, is_point);
@@ -827,7 +827,7 @@ static o_con_status get_acc_aspects_common(onion_request *req, onion_response *r
 		const char *data_acc = onion_request_get_post(req, acc_type_name);
 		if (data_acc == NULL) {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: %s - invalid %s parameter", l_name, acc_type_name);
+			syslog_server(LOG_ERR, "Request: %s - missing %s parameter", l_name, acc_type_name);
 			return OCS_PROCESSED;
 		}
 		
@@ -1212,7 +1212,7 @@ static GString* get_route_json(const char *route_id) {
 	const t_interlocking_route *route = get_route(route_id);
 	if (route == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_ERR, "Get route json - invalid route id (route not found)");
+		syslog_server(LOG_ERR, "Get route json - route: %s - no route with this ID found", route_id);
 		return NULL;
 	}
 	// Size estimated from examples with some extra margins.
@@ -1280,7 +1280,7 @@ o_con_status handler_get_route(void *_, onion_request *req, onion_response *res)
 		
 		if (route_id == NULL || strcmp(route_id, "") == 0 || get_route(route_id) == NULL) {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get route - invalid parameters");
+			syslog_server(LOG_ERR, "Request: Get route - invalid or missing route-id");
 			return OCS_PROCESSED;
 		}
 		
@@ -1292,7 +1292,7 @@ o_con_status handler_get_route(void *_, onion_request *req, onion_response *res)
 		} else {
 			onion_response_set_code(res, HTTP_BAD_REQUEST);
 			syslog_server(LOG_ERR, 
-			              "Request: Get route - route: %s - invalid route or internal error", 
+			              "Request: Get route - route: %s - invalid route-id or internal error", 
 			              route_id);
 		}
 		return OCS_PROCESSED;

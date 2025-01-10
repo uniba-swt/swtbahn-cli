@@ -143,7 +143,7 @@ static void dyn_actuate_specific_engine(int index_in_grabbed_trains) {
 				                         : -eng_instance->output_nominal_speed, 
 				                      grabbed_trains[i].track_output)) {
 				syslog_server(LOG_ERR, 
-				              "Dyn containers actuate - train: %s - invalid parameters",
+				              "Dyn containers actuate - train: %s - unable to set train speed",
 				              grabbed_trains[i].name->str);
 			} else {
 				bidib_flush();
@@ -249,7 +249,7 @@ void dyn_containers_shm_detach(t_dyn_containers_interface **shm_payload) {
 void dyn_containers_shm_delete(t_dyn_shm_config *shm_config) {
 	if (shm_config == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Error deleting shared memory segment: invalid shm_config parameter (NULL)");
+		              "Error deleting shared memory segment: invalid (NULL) shm_config");
 		return;
 	}
 	shm_config->shmid = shmctl(shm_config->shmid, IPC_RMID, NULL);
@@ -372,7 +372,7 @@ GArray *dyn_containers_get_train_engines_arr(void) {
 int dyn_containers_set_train_engine_instance(t_train_data *grabbed_train, 
                                              const char *train, const char *engine) {
 	if (engine == NULL || grabbed_train == NULL) {
-		syslog_server(LOG_ERR, "Set train engine instance: invalid (NULL) parameter(s)");
+		syslog_server(LOG_ERR, "Set train engine instance: invalid (NULL) parameters");
 		return 1;
 	} else if (dyn_containers_interface == NULL) {
 		return 1;
@@ -593,11 +593,11 @@ GString *dyn_containers_get_interlockers(void) {
 int dyn_containers_set_interlocker_instance(t_interlocker_data *interlocker_instance,
                                             const char *interlocker) {
 	if (interlocker == NULL) {
-		syslog_server(LOG_ERR, "Set interlocker instance: invalid interlocker parameter (NULL)");
+		syslog_server(LOG_ERR, "Set interlocker instance: invalid (NULL) interlocker");
 		return 1;
 	} else if (interlocker_instance == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Set interlocker instance: invalid interlocker_instance parameter (NULL)");
+		              "Set interlocker instance: invalid (NULL) interlocker_instance");
 		return 1;
 	} else if (dyn_containers_interface == NULL) {
 		return 1;
@@ -652,7 +652,7 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data *interlocker_inst
 void dyn_containers_free_interlocker_instance(t_interlocker_data *interlocker_instance) {
 	if (interlocker_instance == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Free interlocker instance: invalid interlocker_instance parameter (NULL)");
+		              "Free interlocker instance: invalid (NULL) interlocker_instance");
 		return;
 	} else if (dyn_containers_interface == NULL) {
 		return;
@@ -682,8 +682,7 @@ void dyn_containers_set_interlocker_instance_reset(t_interlocker_data *interlock
                                                    bool reset) {
 	if (interlocker_instance == NULL) {
 		syslog_server(LOG_ERR, 
-		              "Set interlocker instance reset: "
-		              "invalid interlocker_instance parameter (NULL)");
+		              "Set interlocker instance reset: invalid (NULL) interlocker_instance");
 		return;
 	} else if (dyn_containers_interface == NULL) {
 		return;
