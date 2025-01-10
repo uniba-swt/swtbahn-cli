@@ -95,7 +95,7 @@ static void increment_next_grab_id(void) {
 
 int train_get_grab_id(const char *train) {
 	if (train == NULL) {
-		syslog_server(LOG_ERR, "Train get grab id - invalid (NULL) train");
+		syslog_server(LOG_ERR, "Train get grab-id - invalid (NULL) train");
 		return -1;
 	}
 	int grab_id = -1;
@@ -713,14 +713,14 @@ static int grab_train(const char *train, const char *engine) {
 			if (next_grab_id == start) {
 				pthread_mutex_unlock(&grabbed_trains_mutex);
 				syslog_server(LOG_ERR, 
-				              "Grab train - train: %s engine: %s - all grab ids in use", 
+				              "Grab train - train: %s engine: %s - all grab-ids in use", 
 				              train, engine);
 				return -2;
 			}
 			increment_next_grab_id();
 		}
 	}
-	// Assign grab id, set track output to master, set engine instance
+	// Assign grab-id, set track output to master, set engine instance
 	const int grab_id = next_grab_id;
 	increment_next_grab_id(); // increment for next "grab" action
 	grabbed_trains[grab_id].name = g_string_new(train);
@@ -751,7 +751,7 @@ bool release_train(int grab_id) {
 		grabbed_trains[grab_id].is_valid = false;
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
 		syslog_server(LOG_NOTICE, 
-		              "Release train - grab id: %d train: %s - released", 
+		              "Release train - grab-id: %d train: %s - released", 
 		              grab_id, grabbed_trains[grab_id].name->str);
 		g_string_free(grabbed_trains[grab_id].name, true);
 		grabbed_trains[grab_id].name = NULL;
@@ -776,14 +776,14 @@ char *train_id_from_grab_id(int grab_id) {
 	if (grabbed_trains[grab_id].name == NULL) {
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_ERR, 
-		              "Train id from grab id - train with id %d marked valid but name is NULL", 
+		              "Train id from grab-id - train with id %d marked valid but name is NULL", 
 		              grab_id);
 		return NULL;
 	}
 	char *train_id = strdup(grabbed_trains[grab_id].name->str);
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	if (train_id == NULL) {
-		syslog_server(LOG_ERR, "Train id from grab id - unable to allocate memory for train_id");
+		syslog_server(LOG_ERR, "Train id from grab-id - unable to allocate memory for train_id");
 	}
 	return train_id;
 }
@@ -896,7 +896,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Release train - grab id: %d - invalid session-id: %s", 
+			              "Request: Release train - grab-id: %d - invalid session-id: %s", 
 			              grab_id, data_session_id);
 			return OCS_PROCESSED;
 		}
@@ -905,12 +905,12 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
-			syslog_server(LOG_ERR, "Request: Release train - grab id: %d - invalid grab-id", grab_id);
+			syslog_server(LOG_ERR, "Request: Release train - grab-id: %d - invalid grab-id", grab_id);
 			return OCS_PROCESSED;
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Release train - grab id: %d train: %s - start", 
+		              "Request: Release train - grab-id: %d train: %s - start", 
 		              grab_id, train_id);
 		
 		// Set train speed to 0
@@ -932,7 +932,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		if (!release_train(grab_id)) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id or train already released");
 			syslog_server(LOG_ERR, 
-			              "Request: Release train - grab id: %d train: %s - "
+			              "Request: Release train - grab-id: %d train: %s - "
 			              "invalid grab-id or train already released - abort", 
 			              grab_id, train_id);
 		} else {

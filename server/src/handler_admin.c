@@ -175,19 +175,19 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 		// Necessary when restarting the server because libbidib closes syslog on exit
 		openlog("swtbahn", 0, LOG_LOCAL0);
 		session_id = time(NULL);
-		syslog_server(LOG_NOTICE, "Request: Startup server - session id: %ld - start", session_id);
+		syslog_server(LOG_NOTICE, "Request: Startup server - session-id: %ld - start", session_id);
 		
 		if (startup_server()) {
 			pthread_mutex_unlock(&start_stop_mutex);
 			send_common_feedback(res, HTTP_OK, "");
 			syslog_server(LOG_NOTICE, 
-			              "Request: Startup server - session id: %ld - finish", 
+			              "Request: Startup server - session-id: %ld - finish", 
 			              session_id);
 		} else {
 			pthread_mutex_unlock(&start_stop_mutex);
 			send_common_feedback(res, HTTP_INTERNAL_ERROR, "unable to start the server");
 			syslog_server(LOG_ERR, 
-			              "Request: Startup server - session id: %ld - "
+			              "Request: Startup server - session-id: %ld - "
 			              "unable to start the server - abort", 
 			              session_id);
 		}
