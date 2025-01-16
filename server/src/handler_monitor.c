@@ -206,7 +206,6 @@ static GString *get_train_state_json_given_statequery(const char *train_id,
 
 o_con_status handler_get_train_state(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	///NOTE: uses POST instead of GET to allow parameter passing via POST dict/data
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
@@ -353,7 +352,6 @@ static GString *get_train_peripherals_json(const char *train_id) {
 
 o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	///NOTE: uses POST instead of GET to allow parameter passing via POST dict/data
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
 		if (data_train == NULL) {
@@ -762,8 +760,6 @@ static GString *get_point_details_json(const char *point_id) {
 
 o_con_status handler_get_point_details(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	///TODO: register URL this handler should handle in server setup
-	///NOTE: uses POST instead of GET to allow parameter passing via POST dict/data
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
 		if (data_point == NULL) {
@@ -786,6 +782,12 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Get point details");
 	}
+}
+
+o_con_status handler_get_signal_details(void *_, onion_request *req, onion_response *res) {
+	syslog_server(LOG_ERR, "Request: Get signal details - not implemented yet!");
+	///TODO: Implement
+	return OCS_NOT_IMPLEMENTED;
 }
 
 /**
@@ -927,6 +929,8 @@ static GString *get_segments_json() {
 o_con_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
+		/// TODO: Change to only have occupied-by if actually needed!
+		///       Also change spec!
 		GString *g_segments = get_segments_json();
 		send_some_gstring_and_free(res, HTTP_OK, g_segments);
 		syslog_server(LOG_INFO, "Request: Get segments - done");

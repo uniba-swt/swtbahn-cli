@@ -200,6 +200,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/track-outputs", handler_get_track_outputs);
 	onion_url_add(urls, "monitor/points", handler_get_points);
 	onion_url_add(urls, "monitor/signals", handler_get_signals);
+	onion_url_add(urls, "monitor/point-details", handler_get_point_details);
+	onion_url_add(urls, "monitor/signal-details", handler_get_signal_details);
 	onion_url_add(urls, "monitor/point-aspects", handler_get_point_aspects);
 	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects);
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
