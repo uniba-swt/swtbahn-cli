@@ -175,7 +175,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "driver/grab-train", handler_grab_train);
 	onion_url_add(urls, "driver/release-train", handler_release_train);
 	onion_url_add(urls, "driver/request-route", handler_request_route);
-	onion_url_add(urls, "driver/request-route-id", handler_request_route_id);
+	/// NOTE: Changed path from request-route-id to request-route-by-id
+	onion_url_add(urls, "driver/request-route-by-id", handler_request_route_by_id);
 	onion_url_add(urls, "driver/direction", handler_driving_direction);
 	onion_url_add(urls, "driver/drive-route", handler_drive_route);
 	onion_url_add(urls, "driver/set-dcc-train-speed", handler_set_dcc_train_speed);
@@ -209,7 +210,8 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);
 	onion_url_add(urls, "monitor/debug", handler_get_debug_info);
-	onion_url_add(urls, "monitor/debug_extra", handler_get_debug_info_extra);
+	/// NOTE: Changed path from debug_extra to debug-extra
+	onion_url_add(urls, "monitor/debug-extra", handler_get_debug_info_extra);
 	
 	load_cached_verifier_url();
 	

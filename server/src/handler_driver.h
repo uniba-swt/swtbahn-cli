@@ -73,7 +73,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 
 o_con_status handler_request_route(void *_, onion_request *req, onion_response *res);
 
-o_con_status handler_request_route_id(void *_, onion_request *req, onion_response *res);
+o_con_status handler_request_route_by_id(void *_, onion_request *req, onion_response *res);
 
 o_con_status handler_driving_direction(void *_, onion_request *req, onion_response *res);
 

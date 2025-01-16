@@ -919,7 +919,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		
+		///TODO: Consider adding a timeout after which the train is directly set to stop via bidib.
 		// Wait until the train has stopped moving
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
 		while (train_state_query.data.set_speed_step != 0) {
@@ -936,7 +936,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 			              "invalid grab-id or train already released - abort", 
 			              grab_id, train_id);
 		} else {
-			send_common_feedback(res, HTTP_OK, "released train");
+			send_common_feedback(res, HTTP_OK, "");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Release train - grab-id: %d train: %s - finish", 
 			              grab_id, train_id);
@@ -1053,9 +1053,7 @@ o_con_status handler_request_route(void *_, onion_request *req, onion_response *
 	}
 }
 
-///TODO: Discuss - maybe this should be called "request_route_by_id", to distinguish it from 
-// just getting a route id of/for something (similar to a monitor endpoint).
-o_con_status handler_request_route_id(void *_, onion_request *req, onion_response *res) {
+o_con_status handler_request_route_by_id(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_session_id = onion_request_get_post(req, "session-id");
@@ -1065,14 +1063,18 @@ o_con_status handler_request_route_id(void *_, onion_request *req, onion_respons
 		const int grab_id = params_check_grab_id(data_grab_id, TRAIN_ENGINE_INSTANCE_COUNT_MAX);
 		const char *route_id = params_check_route_id(data_route_id);
 		
-		if (strcmp(route_id, "") == 0) {
+		if (data_route_id == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter route-id");
+			syslog_server(LOG_ERR, "Request: Request route by id - missing parameter route-id");
+			return OCS_PROCESSED;
+		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
-			syslog_server(LOG_ERR, "Request: Request train route id - invalid route-id");
+			syslog_server(LOG_ERR, "Request: Request route by id - invalid route-id");
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Request train route id - route: %s - invalid session-id", 
+			              "Request: Request route by id - route: %s - invalid session-id", 
 			              route_id);
 			return OCS_PROCESSED;
 		}
@@ -1082,19 +1084,19 @@ o_con_status handler_request_route_id(void *_, onion_request *req, onion_respons
 		if (train_id == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Request train route id - route: %s - invalid grab-id", 
+			              "Request: Request route by id - route: %s - invalid grab-id", 
 			              route_id);
 			return OCS_PROCESSED;
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Request train route id - route: %s train: %s - start",
+		              "Request: Request route by id - route: %s train: %s - start",
 		              route_id, train_id);
 		
 		// Grant the route ID using an internal algorithm
 		const char *result = grant_route_id(train_id, route_id);
 		if (strcmp(result, "granted") == 0) {
-			send_common_feedback(res, HTTP_OK, result);
+			send_common_feedback(res, HTTP_OK, "");
 		} else if (strcmp(result, "not_grantable") == 0) {
 			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
 			                     "Route not available or has conflicts with granted route(s)");
@@ -1106,12 +1108,12 @@ o_con_status handler_request_route_id(void *_, onion_request *req, onion_respons
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Request train route id - route: %s train: %s - finish",
+		              "Request: Request route by id - route: %s train: %s - finish",
 		              route_id, train_id);
 		free(train_id);
 		return OCS_PROCESSED;
 	} else {
-		return handle_req_run_or_method_fail(res, running, "Request train route id");
+		return handle_req_run_or_method_fail(res, running, "Request route by id");
 	}
 }
 
@@ -1131,9 +1133,14 @@ o_con_status handler_driving_direction(void *_, onion_request *req, onion_respon
 		const char *data_train = onion_request_get_post(req, "train");
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
+		
 		if (data_train == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter train");
 			syslog_server(LOG_ERR, "Request: Driving direction - missing parameter train");
+			return OCS_PROCESSED;
+		} else if (data_route_id == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter route-id");
+			syslog_server(LOG_ERR, "Request: Driving direction - missing parameter route-id");
 			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
@@ -1171,7 +1178,15 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 		const char *route_id = params_check_route_id(data_route_id);
 		const char *mode = params_check_mode(data_mode);
 		
-		if (client_session_id != session_id) {
+		if (data_route_id == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter route-id");
+			syslog_server(LOG_ERR, "Request: Drive route - missing parameter route-id");
+			return OCS_PROCESSED;
+		} else if (data_mode == NULL) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter mode");
+			syslog_server(LOG_ERR, "Request: Drive route - missing parameter mode");
+			return OCS_PROCESSED;
+		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
 			syslog_server(LOG_ERR, "Request: Drive route - invalid session-id");
 			return OCS_PROCESSED;

@@ -661,8 +661,8 @@ o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response
 				              "name or no more interlocker instances can be loaded - abort", 
 				              data_interlocker);
 			} else {
-				send_common_feedback(res, HTTP_OK, selected_interlocker_name->str);
 				pthread_mutex_unlock(&interlocker_mutex);
+				send_common_feedback(res, HTTP_OK, "");
 				syslog_server(LOG_NOTICE, 
 				              "Request: Set interlocker - interlocker: %s - finish",
 				              data_interlocker);
