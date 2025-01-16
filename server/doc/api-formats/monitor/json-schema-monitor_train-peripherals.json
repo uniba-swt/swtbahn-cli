@@ -25,9 +25,15 @@
           }
         }
       }
+    }, 
+    "msg": {
+      "type": "string",
+      "description": "rejection/error message",
+      "minLength": 1
     }
   },
-  "required": [
-    "train-peripherals"
+  "oneOf": [
+    {"required": ["train-peripherals"]},
+    {"required": ["msg"]}
   ]
 }

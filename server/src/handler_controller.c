@@ -481,22 +481,24 @@ o_con_status handler_release_route(void *_, onion_request *req, onion_response *
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
-		if (data_route_id == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter route-id");
-			syslog_server(LOG_ERR, "Request: Release route - missing parameter route-id");
+		
+		if (handle_param_miss_check(res, "Release route", "route-id", data_route_id)) {
+			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
 			syslog_server(LOG_ERR, "Request: Release route - invalid route-id");
-		} else {
-			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - start", route_id);
-			bool release_success = release_route(route_id);
-			if (release_success) {
-				send_common_feedback(res, HTTP_OK, "");
-			} else {
-				send_common_feedback(res, HTTP_BAD_REQUEST, 
-				                     "invalid route-id, route does not exist or is not granted");
-			}
+			return OCS_PROCESSED;
+		}
+		
+		syslog_server(LOG_NOTICE, "Request: Release route - route: %s - start", route_id);
+		bool release_success = release_route(route_id);
+		if (release_success) {
+			send_common_feedback(res, HTTP_OK, "");
 			syslog_server(LOG_NOTICE, "Request: Release route - route: %s - finish", route_id);
+		} else {
+			send_common_feedback(res, HTTP_BAD_REQUEST, 
+			                     "invalid route-id, route does not exist or is not granted");
+			syslog_server(LOG_ERR, "Request: Release route - route: %s - abort", route_id);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -509,29 +511,27 @@ o_con_status handler_set_point(void *_, onion_request *req, onion_response *res)
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
 		const char *data_state = onion_request_get_post(req, "state");
-		if (data_point == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter point");
-			syslog_server(LOG_ERR, "Request: Set point - missing parameter point");
-		} else if (data_state == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter state");
-			syslog_server(LOG_ERR, "Request: Set point - missing parameter state");
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Set point - point: %s state: %s - start",
+		
+		if (handle_param_miss_check(res, "Set point", "point", data_point)
+			|| handle_param_miss_check(res, "Set point", "state", data_state)) {
+			return OCS_PROCESSED;
+		}
+		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Set point - point: %s state: %s - start",
+		              data_point, data_state);
+		if (bidib_switch_point(data_point, data_state)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
+			syslog_server(LOG_ERR, 
+			              "Request: Set point - point: %s state: %s - "
+			              "invalid parameter values - abort",
 			              data_point, data_state);
-			if (bidib_switch_point(data_point, data_state)) {
-				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
-				syslog_server(LOG_ERR, 
-				              "Request: Set point - point: %s state: %s - "
-				              "invalid parameter values - abort",
-				              data_point, data_state);
-			} else {
-				bidib_flush();
-				send_common_feedback(res, HTTP_OK, "");
-				syslog_server(LOG_NOTICE, 
-				              "Request: Set point - point: %s state: %s - finish",
-				              data_point, data_state);
-			}
+		} else {
+			bidib_flush();
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set point - point: %s state: %s - finish",
+			              data_point, data_state);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -544,29 +544,27 @@ o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_signal = onion_request_get_post(req, "signal");
 		const char *data_state = onion_request_get_post(req, "state");
-		if (data_signal == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter signal");
-			syslog_server(LOG_ERR, "Request: Set signal - missing parameter signal");
-		} else if (data_state == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter state");
-			syslog_server(LOG_ERR, "Request: Set signal - missing parameter state");
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Set signal - signal: %s state: %s - start",
+		
+		if (handle_param_miss_check(res, "Set signal", "signal", data_signal)
+			|| handle_param_miss_check(res, "Set signal", "state", data_state)) {
+			return OCS_PROCESSED;
+		}
+		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Set signal - signal: %s state: %s - start",
+		              data_signal, data_state);
+		if (bidib_set_signal(data_signal, data_state)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
+			syslog_server(LOG_ERR, 
+			              "Request: Set signal - signal: %s state: %s - "
+			              "invalid parameter values - abort", 
 			              data_signal, data_state);
-			if (bidib_set_signal(data_signal, data_state)) {
-				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
-				syslog_server(LOG_ERR, 
-				              "Request: Set signal - signal: %s state: %s - "
-				              "invalid parameter values - abort", 
-				              data_signal, data_state);
-			} else {
-				bidib_flush();
-				send_common_feedback(res, HTTP_OK, "");
-				syslog_server(LOG_NOTICE, 
-				              "Request: Set signal - signal: %s state: %s - finish",
-				              data_signal, data_state);
-			}
+		} else {
+			bidib_flush();
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set signal - signal: %s state: %s - finish",
+			              data_signal, data_state);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -579,29 +577,27 @@ o_con_status handler_set_peripheral(void *_, onion_request *req, onion_response 
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_peripheral = onion_request_get_post(req, "peripheral");
 		const char *data_state = onion_request_get_post(req, "state");
-		if (data_peripheral == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter peripheral");
-			syslog_server(LOG_ERR, "Request: Set peripheral - missing parameter peripheral");
-		} else if (data_state == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter state");
-			syslog_server(LOG_ERR, "Request: Set peripheral - missing parameter state");
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Set peripheral - peripheral: %s state: %s - start",
+		
+		if (handle_param_miss_check(res, "Set peripheral", "peripheral", data_peripheral)
+			|| handle_param_miss_check(res, "Set peripheral", "state", data_state)) {
+			return OCS_PROCESSED;
+		}
+		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Set peripheral - peripheral: %s state: %s - start",
+		              data_peripheral, data_state);
+		if (bidib_set_peripheral(data_peripheral, data_state)) {
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
+			syslog_server(LOG_ERR, 
+			              "Request: Set peripheral - peripheral: %s state: %s - "
+			              "invalid parameter values - abort", 
 			              data_peripheral, data_state);
-			if (bidib_set_peripheral(data_peripheral, data_state)) {
-				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
-				syslog_server(LOG_ERR, 
-				              "Request: Set peripheral - peripheral: %s state: %s - "
-				              "invalid parameter values - abort", 
-				              data_peripheral, data_state);
-			} else {
-				bidib_flush();
-				send_common_feedback(res, HTTP_OK, "");
-				syslog_server(LOG_NOTICE, 
-				              "Request: Set peripheral - peripheral: %s state: %s - finish", 
-				              data_peripheral, data_state);
-			}
+		} else {
+			bidib_flush();
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set peripheral - peripheral: %s state: %s - finish", 
+			              data_peripheral, data_state);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -636,37 +632,37 @@ o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
-		if (data_interlocker == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter interlocker");
-			syslog_server(LOG_ERR, "Request: Set interlocker - missing parameter interlocker");
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Set interlocker - interlocker: %s - start",
+		
+		if (handle_param_miss_check(res, "Set interlocker", "interlocker", data_interlocker)) {
+			return OCS_PROCESSED;
+		}
+		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Set interlocker - interlocker: %s - start",
+		              data_interlocker);
+		pthread_mutex_lock(&interlocker_mutex);
+		if (selected_interlocker_instance != -1) {
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
+			                     "another interlocker instance is already set");
+			syslog_server(LOG_ERR, 
+			              "Request: Set interlocker - interlocker: %s - another "
+			              "interlocker instance is already set - abort", 
 			              data_interlocker);
-			pthread_mutex_lock(&interlocker_mutex);
-			if (selected_interlocker_instance != -1) {
-				pthread_mutex_unlock(&interlocker_mutex);
-				send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
-				                     "another interlocker instance is already set");
-				syslog_server(LOG_ERR, 
-				              "Request: Set interlocker - interlocker: %s - another "
-				              "interlocker instance is already set - abort", 
-				              data_interlocker);
-			} else if (set_interlocker(data_interlocker) == -1) {
-				pthread_mutex_unlock(&interlocker_mutex);
-				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker name "
-				                     "or no more interlocker instances can be loaded");
-				syslog_server(LOG_ERR, 
-				              "Request: Set interlocker - interlocker: %s - invalid interlocker "
-				              "name or no more interlocker instances can be loaded - abort", 
-				              data_interlocker);
-			} else {
-				pthread_mutex_unlock(&interlocker_mutex);
-				send_common_feedback(res, HTTP_OK, "");
-				syslog_server(LOG_NOTICE, 
-				              "Request: Set interlocker - interlocker: %s - finish",
-				              data_interlocker);
-			}
+		} else if (set_interlocker(data_interlocker) == -1) {
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker name "
+			                     "or no more interlocker instances can be loaded");
+			syslog_server(LOG_ERR, 
+			              "Request: Set interlocker - interlocker: %s - invalid interlocker "
+			              "name or no more interlocker instances can be loaded - abort", 
+			              data_interlocker);
+		} else {
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set interlocker - interlocker: %s - finish",
+			              data_interlocker);
 		}
 		return OCS_PROCESSED;
 	} else {
@@ -678,38 +674,37 @@ o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_respon
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_interlocker = onion_request_get_post(req, "interlocker");
-		if (data_interlocker == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter interlocker");
-			syslog_server(LOG_ERR, "Request: Unset interlocker - missing parameter interlocker");
-		} else {
-			syslog_server(LOG_NOTICE, 
-			              "Request: Unset interlocker - interlocker: %s - start",
+		
+		if (handle_param_miss_check(res, "Unset interlocker", "interlocker", data_interlocker)) {
+			return OCS_PROCESSED;
+		}
+		
+		syslog_server(LOG_NOTICE, 
+		              "Request: Unset interlocker - interlocker: %s - start",
+		              data_interlocker);
+		pthread_mutex_lock(&interlocker_mutex);
+		if (selected_interlocker_instance == -1) {
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_common_feedback(res, HTTP_BAD_REQUEST, 
+			                     "no interlocker instance is set that can be unset");
+			syslog_server(LOG_ERR, 
+			              "Request: Unset interlocker - interlocker: %s - "
+			              "no interlocker instance to unset - abort", 
 			              data_interlocker);
-			
-			pthread_mutex_lock(&interlocker_mutex);
-			if (selected_interlocker_instance == -1) {
-				pthread_mutex_unlock(&interlocker_mutex);
-				send_common_feedback(res, HTTP_BAD_REQUEST, 
-				                     "no interlocker instance is set that can be unset");
-				syslog_server(LOG_ERR, 
-				              "Request: Unset interlocker - interlocker: %s - "
-				              "no interlocker instance to unset - abort", 
-				              data_interlocker);
-			} else if (unset_interlocker(data_interlocker) != -1) {
-				pthread_mutex_unlock(&interlocker_mutex);
-				send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker name (currently "
-				                     "set interlocker doesn't match provided interlocker name)");
-				syslog_server(LOG_ERR, 
-				              "Request: Unset interlocker - interlocker: %s - "
-				              "invalid interlocker name - abort", 
-				              data_interlocker);
-			} else {
-				pthread_mutex_unlock(&interlocker_mutex);
-				send_common_feedback(res, HTTP_OK, "");
-				syslog_server(LOG_NOTICE, 
-				              "Request: Unset interlocker - interlocker: %s - finish",
-				              data_interlocker);
-			}
+		} else if (unset_interlocker(data_interlocker) != -1) {
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker name (currently "
+			                     "set interlocker doesn't match provided interlocker name)");
+			syslog_server(LOG_ERR, 
+			              "Request: Unset interlocker - interlocker: %s - "
+			              "invalid interlocker name - abort", 
+			              data_interlocker);
+		} else {
+			pthread_mutex_unlock(&interlocker_mutex);
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Unset interlocker - interlocker: %s - finish",
+			              data_interlocker);
 		}
 		return OCS_PROCESSED;
 	} else {

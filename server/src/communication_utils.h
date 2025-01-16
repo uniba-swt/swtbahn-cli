@@ -86,6 +86,20 @@ bool handle_param_miss_check(onion_response *res, const char *request_log_name,
  */
 bool send_some_gstring_and_free(onion_response *res, int status_code, GString *gstr);
 
+/**
+ * @brief Constructs a json with a single field, named by field_name, and its string value 
+ * given by field_value
+ * 
+ * @param res the response over which to send. Shall not be NULL.
+ * @param status_code http status code to set for the response to be sent
+ * @param field_name the field identifier
+ * @param field_value the field value
+ * @return true if parameters were valid
+ * @return false otherwise.
+ */
+bool send_single_str_field_feedback(onion_response *res, int status_code, const char* field_name, 
+                                    const char* field_value);
+
 // This does not free the passed string to be sent (in contrast to the gstring version).
 /**
  * @brief Like send_some_gstring_and_free, but with a c-style 0-terminated string,

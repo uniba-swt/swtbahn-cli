@@ -48,16 +48,22 @@
       "items": {
         "type": "string"
       }
+    }, 
+    "msg": {
+      "type": "string",
+      "description": "rejection/error message",
+      "minLength": 1
     }
   },
-  "required": [
-    "id",
-    "grabbed",
-    "orientation",
-    "direction",
-    "speed_step",
-    "detected_kmh_speed",
-    "route_id",
-    "on_track"
+  "oneOf": [
+    {"required": ["id",
+                  "grabbed",
+                  "orientation",
+                  "direction",
+                  "speed_step",
+                  "detected_kmh_speed",
+                  "route_id",
+                  "on_track"]},
+    {"required": ["msg"]}
   ]
 }

@@ -105,6 +105,8 @@ bool is_type_segment(const char *id);
 
 bool is_type_signal(const char *id);
 
+bool is_type_point(const char *id);
+
 int train_state_get_speed(const char *train_id);
 
 bool train_state_set_speed(const char *train_id, int speed);

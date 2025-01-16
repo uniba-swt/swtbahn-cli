@@ -954,6 +954,16 @@ bool is_type_signal(const char *id) {
     return result;
 }
 
+bool is_type_point(const char *id) {
+    if (id == NULL) {
+        return false;
+    }
+    bool result = g_hash_table_contains(config_data.table_points, id);
+
+    syslog_server(LOG_DEBUG, "Is %s a point: %s", id, result ? "true" : "false");
+    return result;
+}
+
 int train_state_get_speed(const char *train_id) {
     if (train_id == NULL) {
         syslog_server(LOG_ERR, "Train state get speed (km/h): invalid (NULL) train_id");

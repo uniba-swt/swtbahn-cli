@@ -26,22 +26,13 @@
  */
 
 #include "communication_utils.h"
-#include "json_response_builder.h"
 
 #include "server.h" // for logging
 
 #include <onion/response.h>
 
 bool send_common_feedback(onion_response *res, int status_code, const char* message) {
-	if (res == NULL) {
-		return false;
-	}
-	onion_response_set_code(res, status_code);
-	if (message != NULL && strlen(message) > 0) {
-		return onion_response_printf(res, "{\n\"msg\":\"%s\"\n}", message) >= 0;
-	} else {
-		return true;
-	}
+	return send_single_str_field_feedback(res, status_code, "msg", message);
 }
 
 bool send_common_feedback_miss_param_helper(onion_response *res, int status_code, const char* param_name) {
@@ -50,13 +41,14 @@ bool send_common_feedback_miss_param_helper(onion_response *res, int status_code
 	}
 	onion_response_set_code(res, status_code);
 	if (param_name != NULL && strlen(param_name) > 0) {
-		return onion_response_printf(res, "{\n\"msg\":\"missing parameter %s\"\n}", param_name) >= 0;
+		return onion_response_printf(res, "{\"msg\":\"missing parameter %s\"}", param_name) >= 0;
 	} else {
 		return true;
 	}
 }
 
-
+/// NOTE: This function / helper might better fit into a general util class for handlers,
+///       but we don't have that.
 bool handle_param_miss_check(onion_response *res, const char *request_log_name, 
                              const char *param_name, const char *param_value) {
 	if (param_value != NULL) {
@@ -87,6 +79,20 @@ bool send_some_gstring_and_free(onion_response *res, int status_code, GString *g
 	g_string_free(gstr, true);
 	gstr = NULL;
 	return ret;
+}
+
+bool send_single_str_field_feedback(onion_response *res, int status_code, const char* field_name, 
+                                    const char* field_value) {
+	if (res == NULL) {
+		return false;
+	}
+	onion_response_set_code(res, status_code);
+	if (field_name != NULL && strlen(field_name) > 0 
+		&& field_value != NULL && strlen(field_value) > 0) {
+		return onion_response_printf(res, "{\"%s\":\"%s\"}", field_name, field_value) >= 0;
+	} else {
+		return true;
+	}
 }
 
 bool send_some_cstring(onion_response *res, int status_code, const char *cstr) {

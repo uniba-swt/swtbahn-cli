@@ -208,16 +208,15 @@ o_con_status handler_get_train_state(void *_, onion_request *req, onion_response
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
-		if (data_train == NULL) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get train state - missing parameter train");
+		
+		if (handle_param_miss_check(res, "Get train state", "train", data_train)) {
 			return OCS_PROCESSED;
 		}
 		
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		if (!train_state_query.known) {
 			bidib_free_train_state_query(train_state_query);
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_set_code(res, HTTP_NOT_FOUND);
 			syslog_server(LOG_WARNING, 
 			              "Request: Get train state - train: %s - unknown train/train state", 
 			              data_train);
@@ -354,9 +353,8 @@ o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_re
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
-		if (data_train == NULL) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get train peripherals - missing parameter train");
+		
+		if (handle_param_miss_check(res, "Get train peripherals", "train", data_train)) {
 			return OCS_PROCESSED;
 		}
 		
@@ -762,9 +760,11 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_point = onion_request_get_post(req, "point");
-		if (data_point == NULL) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get point details - missing parameter point");
+		
+		if (handle_param_miss_check(res, "Get point details", "point", data_point)) {
+			return OCS_PROCESSED;
+		} else if (!is_type_point(data_point)) {
+			onion_response_set_code(res, HTTP_NOT_FOUND);
 			return OCS_PROCESSED;
 		}
 		
@@ -827,11 +827,13 @@ static o_con_status get_acc_aspects_common(onion_request *req, onion_response *r
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *acc_type_name = point ? "point" : "signal";
 		const char *data_acc = onion_request_get_post(req, acc_type_name);
-		if (data_acc == NULL) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: %s - missing %s parameter", l_name, acc_type_name);
+		
+		if (handle_param_miss_check(res, l_name, acc_type_name, data_acc)) {
 			return OCS_PROCESSED;
-		}
+		} else if ((point && !is_type_point(data_acc)) || (!point && !is_type_signal(data_acc))) {
+			onion_response_set_code(res, HTTP_NOT_FOUND);
+			return OCS_PROCESSED;
+		} 
 		
 		GString *g_aspects = get_accessory_aspects_json(data_acc, point);
 		if (g_aspects != NULL) {
@@ -1004,7 +1006,7 @@ o_con_status handler_get_reversers(void *_, onion_request *req, onion_response *
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		if (!reversers_state_update()) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
 			return OCS_PROCESSED;
 		}
@@ -1110,10 +1112,8 @@ o_con_status handler_get_verification_url(void *_, onion_request *req, onion_res
     build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		const char *verif_url = get_verifier_url();
-		onion_response_set_code(res, HTTP_OK);
-		onion_response_printf(res, 
-		                      "{\n\"verification-url\": \"%s\"\n}", 
-		                      verif_url == NULL ? "null" : verif_url);
+		send_single_str_field_feedback(res, HTTP_OK, "verification-url", 
+		                               verif_url == NULL ? "null" : verif_url);
 		syslog_server(LOG_INFO, "Request: Get verification url - done");
 		return OCS_PROCESSED;
 	} else {
@@ -1283,9 +1283,11 @@ o_con_status handler_get_route(void *_, onion_request *req, onion_response *res)
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
 		
-		if (route_id == NULL || strcmp(route_id, "") == 0 || get_route(route_id) == NULL) {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
-			syslog_server(LOG_ERR, "Request: Get route - invalid or missing route-id");
+		if (handle_param_miss_check(res, "Get route", "route-id", data_route_id)) {
+			return OCS_PROCESSED;
+		} else if (strcmp(route_id, "") == 0 || get_route(route_id) == NULL) {
+			onion_response_set_code(res, HTTP_NOT_FOUND);
+			syslog_server(LOG_ERR, "Request: Get route - unknown route-id");
 			return OCS_PROCESSED;
 		}
 		

@@ -14,9 +14,15 @@
         "minLength": 1,
         "uniqueItems": true
       }
+    }, 
+    "msg": {
+      "type": "string",
+      "description": "rejection/error message",
+      "minLength": 1
     }
   },
-  "required": [
-    "aspects"
+  "oneOf": [
+    {"required": ["aspects"]},
+    {"required": ["msg"]}
   ]
 }

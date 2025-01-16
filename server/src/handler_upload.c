@@ -147,12 +147,13 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
-		if (filename == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter file");
-			syslog_server(LOG_ERR, "Request: Upload engine - missing parameter file");
+		
+		if (handle_param_miss_check(res, "Upload engine", "file(name)", filename)) {
+			return OCS_PROCESSED;
 		} else if (temp_filepath == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "engine file is invalid");
-			syslog_server(LOG_ERR, "Request: Upload engine - engine file is invalid");
+			// Either something went wrong with the fs(?), or the file was not attached at all.
+			send_common_feedback(res, HTTP_BAD_REQUEST, "engine file is invalid or missing");
+			syslog_server(LOG_ERR, "Request: Upload engine - engine file is invalid or missing");
 			return OCS_PROCESSED;
 		}
 		
@@ -242,10 +243,8 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "engine-name");
-		if (name == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter engine-name");
-			syslog_server(LOG_ERR, 
-			              "Request: Remove engine - missing parameter engine-name");
+		
+		if (handle_param_miss_check(res, "Remove engine", "engine-name", name)) {
 			return OCS_PROCESSED;
 		} else if (plugin_is_unremovable(name)) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "engine to remove is unremovable");
@@ -333,15 +332,17 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
-		if (filename == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter file");
-			syslog_server(LOG_ERR, "Request: Upload interlocker - missing parameter file");
+		
+		if (handle_param_miss_check(res, "Upload interlocker", "file(name)", filename)) {
 			return OCS_PROCESSED;
 		} else if (temp_filepath == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker file is invalid");
-			syslog_server(LOG_ERR, "Request: Upload interlocker - interlocker file is invalid");
+			// Either something went wrong with the fs(?), or the file was not attached at all.
+			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker file is invalid or missing");
+			syslog_server(LOG_ERR, 
+			              "Request: Upload interlocker - interlocker file is invalid or missing");
 			return OCS_PROCESSED;
 		}
+		
 		syslog_server(LOG_NOTICE, 
 		              "Request: Upload interlocker - interlocker file: %s - start", 
 		              filename);
@@ -415,10 +416,8 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *name = onion_request_get_post(req, "interlocker-name");
-		if (name == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter interlocker-name");
-			syslog_server(LOG_ERR, 
-			              "Request: Remove interlocker - missing parameter interlocker-name");
+		
+		if (handle_param_miss_check(res, "Remove interlocker", "interlocker-name", name)) {
 			return OCS_PROCESSED;
 		} else if (plugin_is_unremovable(name)) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker to remove is unremovable");
@@ -427,6 +426,7 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 			              name);
 			return OCS_PROCESSED;
 		}
+		
 		syslog_server(LOG_NOTICE, "Request: Remove interlocker - interlocker: %s - start", name);
 		
 		pthread_mutex_lock(&dyn_containers_mutex);

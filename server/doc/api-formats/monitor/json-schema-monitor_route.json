@@ -85,21 +85,29 @@
       "type": "string",
       "minLength": 0,
       "$comment": "Contains name of the train if the route is currently granted, otherwise empty."
+    }, 
+    "msg": {
+      "type": "string",
+      "description": "rejection/error message",
+      "minLength": 1
     }
   },
-  "required": [
-    "id",
-    "source_signal",
-    "destination_signal",
-    "orientation",
-    "length",
-    "path",
-    "sections",
-    "signals",
-    "points",
-    "conflicting_route_ids",
-    "granted_conflicting_route_ids",
-    "clear",
-    "granted_to_train"
+  "oneOf": [
+    {"required": [
+      "id",
+      "source_signal",
+      "destination_signal",
+      "orientation",
+      "length",
+      "path",
+      "sections",
+      "signals",
+      "points",
+      "conflicting_route_ids",
+      "granted_conflicting_route_ids",
+      "clear",
+      "granted_to_train"
+    ]},
+    {"required": ["msg"]}
   ]
 }
