@@ -48,6 +48,32 @@
 bool send_common_feedback(onion_response *res, int status_code, const char* message);
 
 /**
+ * @brief Constructs the common-feedback json with field prefilled for a missing parameter msg, 
+ * and sends it via the response res. 
+ * 
+ * @param res the response over which to send. Shall not be NULL, otherwise no sending takes place.
+ * @param status_code http status code to set for the response to be sent
+ * @param param_name name of the missing parameter
+ * @return true if parameters were valid
+ * @return false if parameters were invalid or an internal error occurred (nothing will be sent)
+ */
+bool send_common_feedback_miss_param_helper(onion_response *res, int status_code, const char* param_name);
+
+/**
+ * @brief Checks if a parameter is missing by way of checking if param_value is NULL.
+ * If it is NULL, sends common response with parameter missing message, and logs to syslog
+ * 
+ * @param res the response over which to send if the parameter is missing.
+ * @param request_log_name the request calling this check, used for logging
+ * @param param_name name of the parameter being checked
+ * @param param_value value of the parameter
+ * @return true if the parameter (value) is missing/NULL
+ * @return false otherwise.
+ */
+bool handle_param_miss_check(onion_response *res, const char *request_log_name, 
+                             const char *param_name, const char *param_value);
+
+/**
  * @brief Sends the content of gstr via the response res. Then free's the GString,
  * i.e., this is a transfer of ownership.
  * 

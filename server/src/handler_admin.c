@@ -222,9 +222,8 @@ o_con_status handler_set_track_output(void *_, onion_request *req, onion_respons
 		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
 		const long int state = strtol(data_state, &end, 10);
-		if (data_state == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter state");
-			syslog_server(LOG_ERR, "Request: Set track output - missing parameter state");
+		if (handle_param_miss_check(res, "Set track output", "state", data_state)) {
+			;
 		} else if ((state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid state");
 			syslog_server(LOG_ERR, "Request: Set track output - invalid state");
@@ -245,28 +244,26 @@ o_con_status handler_set_verification_option(void *_, onion_request *req, onion_
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_option = onion_request_get_post(req, "verification-option");
-		if (data_verification_option == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter verification-option");
-			syslog_server(LOG_ERR, 
-			              "Request: Set verification option - missing parameter verification-option");
-			return OCS_PROCESSED;
+		if (handle_param_miss_check(res, "Set verification option", "verification-option", 
+		                            data_verification_option)) {
+			;
 		} else if (!params_check_is_bool_string(data_verification_option)) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification-option");
 			syslog_server(LOG_ERR, 
 			              "Request: Set verification option - invalid verification-option");
-			return OCS_PROCESSED;
-		}
-		if (strcmp("true", data_verification_option) == 0 
-			|| strcmp("True", data_verification_option) == 0 
-			|| strcmp("TRUE", data_verification_option) == 0) {
-			verification_enabled = true;
 		} else {
-			verification_enabled = false;
+			if (strcmp("true", data_verification_option) == 0 
+				|| strcmp("True", data_verification_option) == 0 
+				|| strcmp("TRUE", data_verification_option) == 0) {
+				verification_enabled = true;
+			} else {
+				verification_enabled = false;
+			}
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set verification option - new state: %s - done", 
+			              verification_enabled ? "enabled" : "disabled");
 		}
-		send_common_feedback(res, HTTP_OK, "");
-		syslog_server(LOG_NOTICE, 
-		              "Request: Set verification option - new state: %s - done", 
-		              verification_enabled ? "enabled" : "disabled");
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Set verification option");
@@ -277,17 +274,16 @@ o_con_status handler_set_verification_url(void *_, onion_request *req, onion_res
 	build_response_header(res);
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_POST) {
 		const char *data_verification_url = onion_request_get_post(req, "verification-url");
-		if (data_verification_url == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter verification-url");
-			syslog_server(LOG_ERR, 
-			              "Request: Set verification URL - missing parameter verification-url");
-			return OCS_PROCESSED;
+		if (handle_param_miss_check(res, "Set verification URL", "verification-url", 
+		                            data_verification_url)) {
+			;
+		} else {
+			set_verifier_url(data_verification_url);
+			send_common_feedback(res, HTTP_OK, "");
+			syslog_server(LOG_NOTICE, 
+			              "Request: Set verification URL - new URL: %s - done", 
+			              data_verification_url);
 		}
-		set_verifier_url(data_verification_url);
-		send_common_feedback(res, HTTP_OK, "");
-		syslog_server(LOG_NOTICE, 
-		              "Request: Set verification URL - new URL: %s - done", 
-		              data_verification_url);
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Set verification URL");
@@ -298,9 +294,7 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_train = onion_request_get_post(req, "train");
-		if (data_train == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter train");
-			syslog_server(LOG_ERR, "Request: Admin release train - missing parameter train");
+		if (handle_param_miss_check(res, "Admin release train", "train", data_train)) {
 			return OCS_PROCESSED;
 		}
 		const int grab_id = train_get_grab_id(data_train);
@@ -350,10 +344,10 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 		const char *data_speed = onion_request_get_post(req, "speed");
 		const char *data_track_output = onion_request_get_post(req, "track-output");
 		const int speed = params_check_speed(data_speed);
-		
-		if (data_train == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter train");
-			syslog_server(LOG_ERR, "Request: Admin set dcc train speed - missing parameter train");
+		const char *l_name = "Admin set dcc train speed";
+		if (handle_param_miss_check(res, l_name, "train", data_train)
+			|| handle_param_miss_check(res, l_name, "speed", data_speed)
+			|| handle_param_miss_check(res, l_name, "track-output", data_track_output)) {
 			return OCS_PROCESSED;
 		} else if (speed == 999) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "bad speed");
@@ -361,14 +355,7 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 			              "Request: Admin set dcc train speed - train: %s speed: %d - bad speed",
 			              data_train, speed);
 			return OCS_PROCESSED;
-		} else if (data_track_output == NULL) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "missing parameter track-output");
-			syslog_server(LOG_ERR, 
-			              "Request: Admin set dcc train speed - "
-			              "train: %s speed: %d - missing parameter track-output", 
-			              data_train, speed);
-			return OCS_PROCESSED;
-		}
+		} 
 		
 		syslog_server(LOG_NOTICE, 
 		              "Request: Admin set dcc train speed - train: %s speed: %d - start", 

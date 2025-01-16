@@ -44,6 +44,34 @@ bool send_common_feedback(onion_response *res, int status_code, const char* mess
 	}
 }
 
+bool send_common_feedback_miss_param_helper(onion_response *res, int status_code, const char* param_name) {
+	if (res == NULL) {
+		return false;
+	}
+	onion_response_set_code(res, status_code);
+	if (param_name != NULL && strlen(param_name) > 0) {
+		return onion_response_printf(res, "{\n\"msg\":\"missing parameter %s\"\n}", param_name) >= 0;
+	} else {
+		return true;
+	}
+}
+
+
+bool handle_param_miss_check(onion_response *res, const char *request_log_name, 
+                             const char *param_name, const char *param_value) {
+	if (param_value != NULL) {
+		return false;
+	}
+	if (send_common_feedback_miss_param_helper(res, HTTP_BAD_REQUEST, param_name)) {
+		syslog_server(LOG_ERR, "Request: %s - missing parameter %s", request_log_name, param_name);
+	} else {
+		syslog_server(LOG_ERR, 
+		              "Request: %s - missing parameter %s - but sending msg to client failed", 
+		              request_log_name, param_name);
+	}
+	return true;
+}
+
 bool send_some_gstring_and_free(onion_response *res, int status_code, GString *gstr) {
 	if (res == NULL) {
 		if (gstr != NULL) {
