@@ -807,7 +807,6 @@ function initialise() {
 
 	const platform = getPlatformName();
 
-
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
 
@@ -860,13 +859,19 @@ function initialise() {
 		startGameLogic();
 	});
 
+	// TODO: This will not work here. The server will only return the platform name once
+	//       `startup` has been called on it. However, this script-game initialization part
+	//       may run before startup has occured -> platform name will not be available at this
+	//       point in time. We will have to come up with some async try-and-retry logic, where
+	//       this client will try to get the platform name again and again until it succeeds.
 	// Set the possible destinations for the SWTbahn platform.
 	namedMapDes = "allPossibleDestinations_" + platform;
-        strDes = "allPossibleDestinations =" + namedMapDes;
-        eval (strDes);
-        namedMapSignal = "signalFlagMap_" + platform;
-        strSignal = "signalFlagMap =" + namedMapSignal;                  
-        eval (strSignal);
+	strDes = "allPossibleDestinations =" + namedMapDes;
+	eval(strDes);
+	// Set the signal flag map for the SWTbahn platform.
+	namedMapSignal = "signalFlagMap_" + platform;
+	strSignal = "signalFlagMap =" + namedMapSignal;                  
+	eval(strSignal);
 
 	disableAllDestinationButtons();
 	
