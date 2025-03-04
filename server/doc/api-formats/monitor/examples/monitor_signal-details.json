@@ -1,0 +1,6 @@
+{
+	"id": "signal19",
+	"aspects": ["aspect_shunt", "aspect_caution", "aspect_go", "aspect_stop"],
+	"type": "exit",
+	"state": "aspect_go"
+}

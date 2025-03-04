@@ -56,7 +56,6 @@ o_con_status handler_get_points(void *_, onion_request *req, onion_response *res
 
 o_con_status handler_get_signals(void *_, onion_request *req, onion_response *res);
 
-///TODO: Add an equivalent "signal-details" endpoint
 o_con_status handler_get_point_details(void *_, onion_request *req, onion_response *res);
 
 o_con_status handler_get_signal_details(void *_, onion_request *req, onion_response *res);
