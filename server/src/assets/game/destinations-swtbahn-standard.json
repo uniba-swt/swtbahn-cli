@@ -93,8 +93,8 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg21"
     },
     "signal17": {
-      "route-id": 110,
-      "orientation": "anticlockwise",
+      "route-id": 81,
+      "orientation": "clockwise",
       "block": "platform1",
       "segment": "seg37"
     },
@@ -165,7 +165,7 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg31"
     },
     "signal7": {
-      "route-id": 79,
+      "route-id": 80,
       "orientation": "clockwise",
       "block": "block3",
       "segment": "seg12"
@@ -173,26 +173,26 @@ const allPossibleDestinations_swtbahn_standard = {
   },
   "block3": {
     "signal6": {
-      "route-id": 11,
+      "route-id": 12,
       "orientation": "anticlockwise",
       "block": "block2",
       "segment": "seg8"
     },
     "signal5": {
-      "route-id": 9,
+      "route-id": 10,
       "orientation": "anticlockwise",
       "block": "block6",
       "segment": "seg21"
     },
     "signal17": {
-      "route-id": 17,
-      "orientation": "anticlockwise",
+      "route-id": 121,
+      "orientation": "clockwise",
       "block": "platform1",
       "segment": "seg37"
     },
     "signal19": {
-      "route-id": 0,
-      "orientation": "anticlockwise",
+      "route-id": 115,
+      "orientation": "clockwise",
       "block": "platform2",
       "segment": "seg40"
     },
@@ -215,7 +215,7 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg21"
     },
     "signal11": {
-      "route-id": 19,
+      "route-id": 21,
       "orientation": "anticlockwise",
       "block": "block5",
       "segment": "seg28"
@@ -357,14 +357,14 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg21"
     },
     "signal17": {
-      "route-id": 210,
-      "orientation": "anticlockwise",
+      "route-id": 39,
+      "orientation": "clockwise",
       "block": "platform1",
       "segment": "seg37"
     },
     "signal19": {
-      "route-id": 197,
-      "orientation": "anticlockwise",
+      "route-id": 26,
+      "orientation": "clockwise",
       "block": "platform2",
       "segment": "seg40"
     },
@@ -437,8 +437,8 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg8"
     },
     "signal17": {
-      "route-id": 95,
-      "orientation": "anticlockwise",
+      "route-id": 242,
+      "orientation": "clockwise",
       "block": "platform1",
       "segment": "seg37"
     },
@@ -517,8 +517,8 @@ const allPossibleDestinations_swtbahn_standard = {
   },
   "block7": {
     "signal17": {
-      "route-id": 136,
-      "orientation": "anticlockwise",
+      "route-id": 260,
+      "orientation": "clockwise",
       "block": "platform1",
       "segment": "seg37"
     },
@@ -646,7 +646,7 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg31"
     },
     "signal7": {
-      "route-id": 149,
+      "route-id": 150,
       "orientation": "anticlockwise",
       "block": "block3",
       "segment": "seg12"
@@ -738,7 +738,7 @@ const allPossibleDestinations_swtbahn_standard = {
       "segment": "seg31"
     },
     "signal7": {
-      "route-id": 179,
+      "route-id": 183,
       "orientation": "anticlockwise",
       "block": "block3",
       "segment": "seg12"

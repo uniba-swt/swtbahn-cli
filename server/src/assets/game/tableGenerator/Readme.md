@@ -2,7 +2,7 @@
 
 These python scripts generate the game configuration json files for the swtbahn game client, which are required for the client's signal-to-symbol mappings (which symbol is related to which signal id) and the route suggestion mechanics (which routes are available depending on where the train is located). These game configuration files are generated for every model railway platform for which a signal-to-symbol mapping csv file is provided in the flagMappings directory and for which the required configuration files are available (for details, see below).
 
-The scripts will automatically find the shortest possible route from a valid starting (source) signal to any destination signal which is listed in the signal-to-flag mapping csv (for the model railway platform) and directly reachable (from the starting signal without passing other non-distant signals). The routes found are grouped based on the block on which the respective source signal is located, and they are stored in JSON format, in one file per model railway platform.    
+The scripts will automatically find the shortest possible route from a valid starting (source) signal to any destination signal which is listed in the signal-to-flag mapping csv (for the model railway platform). The routes found are grouped based on the block on which the respective source signal is located, and they are stored in JSON format, in one file per model railway platform.    
 There is an option to block specific routes from being considered for the generated game configuration files. See below for more details.
 
 
@@ -21,6 +21,7 @@ To generate game configuration files, first you need to define - for each model 
 * The format of the CSV file shall be as follows: One line per definition of a signal-to-symbol mapping. A line has the format `<signal-id-as-integer>,<symbol code>`. The signal ID is to be provided as just the number at the end of the usual signal ID. As an example, the signal we would usually call `signal5` is just `5` in the CSV file. The format for symbol codes is explained further down in this document.
 * All signals which should be considered as possible destinations shall have exactly one signal-to-symbol mapping. 
 * Every signal ID shall occur at most once in a CSV file. If a two mappings for the same signal ID are defined in one file, the behavior is undefined.
+* The game client user interface tries to display the possible next destinations (as symbols) ordered in the same way that they appear in the CSV.
 
 #### Example:  
 As described above, for the SWTbahn Standard the filename would be `swtbahn-standard.csv`, due to how its configuration files folder is named.   
