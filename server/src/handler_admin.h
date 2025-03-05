@@ -30,9 +30,7 @@
 
 #include <onion/onion.h>
 
-#include <onion/types.h>
-
-void stop_bidib(void);
+void shutdown_server(void);
 
 onion_connection_status handler_startup(void *_, onion_request *req,
                                         onion_response *res);

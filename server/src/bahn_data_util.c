@@ -563,13 +563,16 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
             t_interlocking_route *route = (t_interlocking_route *) obj;
             route->train = strdup(value);
             if (value != NULL && route->train == NULL) {
-                syslog_server(LOG_ERR, "config set scalar string value: unable to allocate memory for route->train");
+                syslog_server(LOG_ERR, 
+                              "config set scalar string value: unable to allocate memory for route->train");
             }
             result = true;
         }
     }
 
-    syslog_server(LOG_DEBUG, "Set scalar string: %s %s.%s = %s => %s", type, id, prop_name, value, result ? "true" : "false");
+    syslog_server(LOG_DEBUG, 
+                  "Set scalar string: %s %s.%s = %s => %s", 
+                  type, id, prop_name, value, result ? "true" : "false");
     return result;
 }
 

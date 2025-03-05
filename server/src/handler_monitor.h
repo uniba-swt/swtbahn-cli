@@ -28,7 +28,7 @@
 #ifndef HANDLER_MONITOR_H
 #define HANDLER_MONITOR_H
 
-#include <onion/types.h>
+#include <onion/onion.h>
 #include "dyn_containers_interface.h"
 #include "dyn_containers.h"
 

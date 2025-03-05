@@ -25,19 +25,18 @@
  *
  */
 
-#include <onion/onion.h>
 #include <onion/shortcuts.h>
 #include <onion/log.h>
 #include <onion/low.h>
-#include <signal.h>
 #include <bidib/bidib.h>
+#include <glib.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include <glib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "handler_monitor.h"
 #include "handler_admin.h"
@@ -63,37 +62,37 @@ void syslog_server(int priority, const char *format, ...) {
 	vsnprintf(string, 1024, format, arg);
 	
 	syslog(priority, "server: %s", string);
+	va_end(arg);
 }
 
 void build_response_header(onion_response *res) {
-	onion_response_set_header(res, "Access-Control-Allow-Origin", 
-	                               "*");
+	onion_response_set_header(res, "Access-Control-Allow-Origin",  "*");
 	onion_response_set_header(res, "Access-Control-Allow-Headers", 
 	                               "Authorization, Origin, X-Requested-With, Content-Type, Accept");
 	onion_response_set_header(res, "Access-Control-Allow-Methods", 
 	                               "POST, GET, PUT, DELETE, OPTIONS");
 }
 
-static onion_connection_status handler_assets(void *_, onion_request *req,
-                                              onion_response *res) {
+static onion_connection_status handler_assets(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	onion_response_set_header(res, "Cache-Control", "max-age=43200");
 	
 	const char local_path[] = "../src/assets/";
 	char *global_path = realpath(local_path, NULL);
 	if (!global_path) {
-		syslog_server(LOG_ERR, "Onion: Cannot calculate the global path of the given directory (%s)",
+		syslog_server(LOG_ERR, 
+		              "Onion - Cannot calculate the global path of the given directory (%s)",
 		              local_path);
-		ONION_ERROR("Cannot calculate the global path of the given directory (%s)",
-		            local_path);
+		ONION_ERROR("Cannot calculate the global path of the given directory (%s)", local_path);
 		return OCS_NOT_IMPLEMENTED;
 	}
 	
 	struct stat st;
 	if (stat(global_path, &st) != 0) {
-		syslog_server(LOG_ERR, "Onion: Cannot access to the exported directory/file (%s)", 
+		syslog_server(LOG_ERR, 
+		              "Onion - Cannot access the exported directory/file (%s)", 
 		              global_path);
-		ONION_ERROR("Cannot access to the exported directory/file (%s)", global_path);
+		ONION_ERROR("Cannot access the exported directory/file (%s)", global_path);
 		onion_low_free(global_path);
 		return OCS_NOT_IMPLEMENTED;
 	}
@@ -180,19 +179,16 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "driver/direction", handler_driving_direction);
 	onion_url_add(urls, "driver/drive-route", handler_drive_route);
 	onion_url_add(urls, "driver/set-dcc-train-speed", handler_set_dcc_train_speed);
-	onion_url_add(urls, "driver/set-calibrated-train-speed",
-	              handler_set_calibrated_train_speed);
-	onion_url_add(urls, "driver/set-train-emergency-stop",
-	              handler_set_train_emergency_stop);
-	onion_url_add(urls, "driver/set-train-peripheral",
-	              handler_set_train_peripheral);
+	onion_url_add(urls, "driver/set-calibrated-train-speed", handler_set_calibrated_train_speed);
+	onion_url_add(urls, "driver/set-train-emergency-stop", handler_set_train_emergency_stop);
+	onion_url_add(urls, "driver/set-train-peripheral", handler_set_train_peripheral);
 
 	// --- upload functions ---
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
-	onion_url_add(urls, "upload/refresh-engines", handler_refresh_engines);
+	onion_url_add(urls, "upload/refresh-engines", handler_get_engines);
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
 	onion_url_add(urls, "upload/interlocker", handler_upload_interlocker);
-	onion_url_add(urls, "upload/refresh-interlockers", handler_refresh_interlockers);
+	onion_url_add(urls, "upload/refresh-interlockers", handler_get_interlockers);
 	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
 
 	// --- monitor functions ---
@@ -219,7 +215,7 @@ int main(int argc, char **argv) {
 	onion_listen(o);
 	onion_free(o);
 	if (running) {
-		stop_bidib();
+		shutdown_server();
 	}
 	cache_verifier_url();
 	free_verifier_url();
