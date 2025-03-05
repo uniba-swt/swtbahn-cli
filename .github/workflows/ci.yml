@@ -22,11 +22,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install glib
-      run: sudo apt-get install -y --no-install-recommends libglib2.0-dev
+    - name: Install glib, cmocka
+      run: sudo apt-get install -y --no-install-recommends libglib2.0-dev libyaml-dev libcmocka-dev
     
-    - name: Install cmocka
-      run: sudo apt-get install -y --no-install-recommends libyaml-dev libcmocka-dev
+    - name: Install gcrypt
+      run: sudo apt-get install -y --no-install-recommends libgcrypt20-dev
 
     - name: Build libbidib
       run: git clone --depth 1 https://github.com/uniba-swt/libbidib.git; cd libbidib; mkdir bin; cd bin; cmake ..; make -j; sudo make -j install
