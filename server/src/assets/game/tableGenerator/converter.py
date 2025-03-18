@@ -167,7 +167,7 @@ def processConfiguration(config: str):
 
     # Persist the identified routes grouped by block and destination signal as a JSON file.
     with open("../destinations-{}.json".format(config), "w") as destFile: 
-        destFile.write("const allPossibleDestinations_{} = ".format(config.replace("-", "_")))
+        destFile.write("const allPossibleDestinations_{} = ".format(config.replace("-", "")))
         destFile.write(json.dumps(collectedRoutesPerBlock, indent=2))
         destFile.write(";")
     return True

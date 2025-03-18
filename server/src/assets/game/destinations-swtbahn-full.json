@@ -1,4 +1,4 @@
-const allPossibleDestinations_swtbahn_full = {
+const allPossibleDestinations_swtbahnfull = {
   "block1": {
     "signal20": {
       "route-id": 71,

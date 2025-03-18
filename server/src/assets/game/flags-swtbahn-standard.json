@@ -1,4 +1,4 @@
-const signalFlagMap_swtbahn_standard = {
+const signalFlagMap_swtbahnstandard = {
   "signal19": "flagThemeGreen flagFilled flagZero",
   "signal17": "flagThemeGreen flagFilled flagOne",
   "signal5": "flagThemeGreen flagFilled flagTwo",
