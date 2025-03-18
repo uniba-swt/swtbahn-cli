@@ -20,17 +20,19 @@ def getConfigurationsWithMatchingSignalFlagCSV() -> list[str]:
     global pathToConfig, signalFlagCSVFileDirectory
     # Load the list of available CSV files with signal-symbol/flag map definitions
     signalFlagCSVFolderItemList = os.scandir(signalFlagCSVFileDirectory)
-    flagMappingFileNames = []
-    for entry in signalFlagCSVFolderItemList:
-        if entry.is_file() and entry.name[-4:] == ".csv":
-            flagMappingFileNames.append(entry.name[:-4])
+    #flagMappingFileNames = []
+    #for entry in signalFlagCSVFolderItemList:
+    #    if entry.is_file() and entry.name[-4:] == ".csv":
+    #        flagMappingFileNames.append(entry.name[:-4])
+    flagMappingFileNames = [entry.name[:-4] for entry in signalFlagCSVFolderItemList if entry.is_file() and entry.name[-4:] == ".csv"]
     # Load list of configuration folders and search for matching (name-based) CSV files
     configFolderItemList = os.scandir(pathToConfig)
     folderList = [entry.name for entry in configFolderItemList if entry.is_dir()]
-    configNamesWithCSVList = []
-    for configuration in folderList: 
-        if configuration in flagMappingFileNames:
-            configNamesWithCSVList.append(configuration)
+    #configNamesWithCSVList = []
+    #for configuration in folderList: 
+    #    if configuration in flagMappingFileNames:
+    #        configNamesWithCSVList.append(configuration)
+    configNamesWithCSVList = [configuration for configuration in folderList if configuration in flagMappingFileNames]
     return configNamesWithCSVList
 
 
@@ -50,6 +52,7 @@ def getSignalIDStrsWithDefinedMapping(signalFlagCSVFilepath: str, extrasConfig) 
                 for comp in extrasConfig["compositions"]:
                     if signal == comp["id"]:
                         signal += "a"
+                        break
             signalIDList.append(signal)
     return signalIDList
 
@@ -73,7 +76,7 @@ def getInterlockingAndExtrasConfigFileContent(config: str) -> any:
     Throws an exception if the config files are not found.
     """
     global pathToConfig, interlockingTableFileName, extrasConfigFileName
-    # Det. filepaths for config files and load them
+    # Determine filepaths for config files, then load the config file content
     interlockingTableFile = "{}/{}/{}".format(pathToConfig, config, interlockingTableFileName)
     extrasConfigFile = "{}/{}/{}".format(pathToConfig, config, extrasConfigFileName)
     if not os.path.exists(interlockingTableFile) or not os.path.exists(extrasConfigFile):
