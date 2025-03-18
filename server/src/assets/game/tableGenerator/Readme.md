@@ -65,8 +65,7 @@ The second part of the code defines the number of dots of the dice face. Current
 Some examples for valid symbol codes: `sw1`, `b5`, `rw0`, `b2`, `g3`, `s4`.
 
 ### Examples
-TODO update examples - these do not match how the symbols look in the actual client.
-### `b5`:  
-![](docs/b5.png)  
-### `rw5`:  
-![](docs/rw5.png)  
+#### `g3`:  
+![](docs/g3.png)  
+#### `bw5`:  
+![](docs/bw5.png)  
