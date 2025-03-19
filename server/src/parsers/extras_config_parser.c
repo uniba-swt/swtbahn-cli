@@ -58,7 +58,7 @@ typedef enum {
     PERIPHERAL_TYPE_ASPECTS
 } e_extras_sequence_level;
 
-char *tb_module_name = NULL;
+char *module_name = NULL;
 GHashTable *tb_blocks;
 GHashTable *tb_reversers;
 GHashTable *tb_crossings;
@@ -515,7 +515,7 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
 
     switch (extras_mapping) {
         case MODULE_NAME_DEF:
-            tb_module_name = strdup(cur_scalar);
+            module_name = strdup(cur_scalar);
             break;
         case BLOCK:
             if (str_equal(last_scalar, "id")) {
@@ -601,7 +601,7 @@ void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data) {
     extras_sequence = EXTRAS_SEQ_NONE;
     
     parse_yaml_content(parser, extras_yaml_sequence_start, extras_yaml_sequence_end, extras_yaml_mapping_start, extras_yaml_mapping_end, extras_yaml_scalar);
-    data->module_name = tb_module_name;
+    data->module_name = module_name;
     data->table_blocks = tb_blocks;
     data->table_reversers = tb_reversers;
     data->table_crossings = tb_crossings;
