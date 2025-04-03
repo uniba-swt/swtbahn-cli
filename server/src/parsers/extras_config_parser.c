@@ -30,7 +30,6 @@
 
 typedef enum {
     EXTRAS_ROOT,
-    MODULE_NAME_DEF,
     BLOCK,
     REVERSER,
     CROSSING,
@@ -41,7 +40,6 @@ typedef enum {
 
 typedef enum {
     EXTRAS_SEQ_NONE,
-    MODULE_NAME,
     BLOCKS,
     BLOCK_MAIN_SEGMENTS,
     BLOCK_SIGNALS,
@@ -270,9 +268,7 @@ void extras_yaml_sequence_start(char *scalar) {
     log_debug("extras_yaml_sequence_start: %s", scalar);
     switch (extras_mapping) {
         case EXTRAS_ROOT:
-            if (str_equal(scalar, "module-name")) {
-                extras_sequence = MODULE_NAME;
-            } else if (str_equal(scalar, "blocks") || str_equal(scalar, "platforms")) {
+            if (str_equal(scalar, "blocks") || str_equal(scalar, "platforms")) {
                 extras_sequence = BLOCKS;
                 if (tb_blocks == NULL) {
                     tb_blocks = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_block);
@@ -334,7 +330,6 @@ void extras_yaml_sequence_end(char *scalar) {
     log_debug("extras_yaml_sequence_end: %s", scalar);
     // decrease sequence level
     switch (extras_sequence) {
-        case MODULE_NAME:
         case BLOCKS:
         case REVERSERS:
         case CROSSINGS:
@@ -363,9 +358,6 @@ void extras_yaml_sequence_end(char *scalar) {
 void extras_yaml_mapping_start(char *scalar) {
     log_debug("extras_yaml_mapping_start: %s", scalar);
     switch (extras_sequence) {
-        case MODULE_NAME:
-            extras_mapping = MODULE_NAME_DEF;
-            break;
         case BLOCKS:
             extras_mapping = BLOCK;
             cur_block = malloc(sizeof(t_config_block));
@@ -446,11 +438,7 @@ void extras_yaml_mapping_end(char *scalar) {
     log_debug("extras_yaml_mapping_end: %s", scalar);
 
     // insert mapping to hash table
-    // case for MODULE_NAME_DEF is only logging, as module name is not part of a hash table
     switch (extras_mapping) {
-        case MODULE_NAME_DEF:
-            log_debug("extras_yaml_mapping_end: module-name parsed: %s", module_name);
-            break;
         case BLOCK:
             log_debug("extras_yaml_mapping_end: insert block: %s", cur_block->id);
             g_hash_table_insert(tb_blocks, strdup(cur_block->id), cur_block);
@@ -481,7 +469,6 @@ void extras_yaml_mapping_end(char *scalar) {
 
     // decrease mapping level
     switch (extras_mapping) {
-        case MODULE_NAME_DEF:
         case BLOCK:
         case REVERSER:
         case CROSSING:
@@ -519,8 +506,11 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
     }
 
     switch (extras_mapping) {
-        case MODULE_NAME_DEF:
-            module_name = strdup(cur_scalar);
+        case EXTRAS_ROOT:
+            if (str_equal(last_scalar, "module-name") && extras_sequence == EXTRAS_SEQ_NONE) {
+                module_name = strdup(cur_scalar);
+                log_debug("extras_yaml_scalar: module-name parsed: %s", module_name);
+            }
             break;
         case BLOCK:
             if (str_equal(last_scalar, "id")) {
