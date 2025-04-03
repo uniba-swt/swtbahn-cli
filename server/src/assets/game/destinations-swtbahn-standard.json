@@ -1,232 +1,753 @@
-const allPossibleDestinationsSwtbahnStandard = {
-	'buffer': {
-		"signal6": {
-			"route-id": 57,
-			"orientation": "anticlockwise",
-			"block": "block2",
-			"segment": "seg8"
-		}
-	},
-	'block1': {
-		"signal1": {
-			"route-id": 44,
-			"orientation": "clockwise",
-			"block": "buffer",
-			"segment": "seg1"
-		},
-		"signal7": {
-			"route-id": 47,
-			"orientation": "clockwise",
-			"block": "block3",
-			"segment": "seg12"
-		},
-		"signal6": {
-			"route-id": 57,
-			"orientation": "anticlockwise",
-			"block": "block2",
-			"segment": "seg8"
-		}
-	},
-	'block2': {
-		"signal2": {
-			"route-id": 77,
-			"orientation": "clockwise",
-			"block": "block1",
-			"segment": "seg4"
-		},
-		"signal9": {
-			"route-id": 75,
-			"orientation": "clockwise",
-			"block": "block5",
-			"segment": "seg28"
-		},
-		"signal10": {
-			"route-id": 78,
-			"orientation": "clockwise",
-			"block": "block4",
-			"segment": "seg16"
-		},
-		"signal8": {
-			"route-id": 104,
-			"orientation": "anticlockwise",
-			"block": "block3",
-			"segment": "seg12"
-		},
-		"signal11": {
-			"route-id": 111,
-			"orientation": "anticlockwise",
-			"block": "block5",
-			"segment": "seg28"
-		},
-		"signal14": {
-			"route-id": 114,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		},
-		"signal15": {
-			"route-id": 108,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		}
-	},
-	'block3': {
-		"signal4": {
-			"route-id": 120,
-			"orientation": "clockwise",
-			"block": "block2",
-			"segment": "seg8"
-		},
-		"signal3": {
-			"route-id": 6,
-			"orientation": "anticlockwise",
-			"block": "block1",
-			"segment": "seg4"
-		},
-		"signal12": {
-			"route-id": 23,
-			"orientation": "anticlockwise",
-			"block": "block4",
-			"segment": "seg16"
-		}
-	},
-	'block4': {
-		"signal7": {
-			"route-id": 70,
-			"orientation": "clockwise",
-			"block": "block3",
-			"segment": "seg12"
-		},
-		"signal6": {
-			"route-id": 221,
-			"orientation": "anticlockwise",
-			"block": "block2",
-			"segment": "seg8"
-		}
-	},
-	'block5': {
-		"signal4": {
-			"route-id": 33,
-			"orientation": "clockwise",
-			"block": "block2",
-			"segment": "seg8"
-		},
-		"signal13": {
-			"route-id": 40,
-			"orientation": "clockwise",
-			"block": "block6",
-			"segment": "seg21"
-		},
-		"signal17": {
-			"route-id": 39,
-			"orientation": "clockwise",
-			"block": "platform1",
-			"segment": "seg37"
-		},
-		"signal19": {
-			"route-id": 26,
-			"orientation": "clockwise",
-			"block": "platform2",
-			"segment": "seg40"
-		},		
-		"signal5": {
-			"route-id": 203,
-			"orientation": "anticlockwise",
-			"block": "block6",
-			"segment": "seg21"
-		},
-		"signal6": {
-			"route-id": 204,
-			"orientation": "anticlockwise",
-			"block": "block2",
-			"segment": "seg8"
-		}
-	},
-	'block6': {
-		"signal9": {
-			"route-id": 229,
-			"orientation": "clockwise",
-			"block": "block5",
-			"segment": "seg28"
-		},
-		"signal11": {
-			"route-id": 96,
-			"orientation": "anticlockwise",
-			"block": "block5",
-			"segment": "seg28"
-		},
-		"signal14": {
-			"route-id": 100,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		},
-		"signal15": {
-			"route-id": 94,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		}
-	},
-	'block7': {
-		"signal17": {
-			"route-id": 260,
-			"orientation": "clockwise",
-			"block": "platform1",
-			"segment": "seg37"
-		},
-		"signal19": {
-			"route-id": 243,
-			"orientation": "clockwise",
-			"block": "platform2",
-			"segment": "seg40"
-		},
-		"signal4": {
-			"route-id": 255,
-			"orientation": "clockwise",
-			"block": "block2",
-			"segment": "seg8"
-		},
-		"signal13": {
-			"route-id": 261,
-			"orientation": "clockwise",
-			"block": "block6",
-			"segment": "seg21"
-		}
-	},
-	'platform1': {
-		"signal11": {
-			"route-id": 152,
-			"orientation": "anticlockwise",
-			"block": "block5",
-			"segment": "seg28"
-		},
-		"signal15": {
-			"route-id": 151,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		}
-	},
-	'platform2': {
-		"signal11": {
-			"route-id": 187,
-			"orientation": "anticlockwise",
-			"block": "block5",
-			"segment": "seg28"
-		},
-		"signal14": {
-			"route-id": 193,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		},
-		"signal15": {
-			"route-id": 185,
-			"orientation": "anticlockwise",
-			"block": "block7",
-			"segment": "seg31"
-		}
-	}
+const allPossibleDestinations_swtbahnstandard = {
+  "block1": {
+    "signal19": {
+      "route-id": 53,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 60,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal5": {
+      "route-id": 56,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal6": {
+      "route-id": 57,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal11": {
+      "route-id": 61,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal12": {
+      "route-id": 63,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal13": {
+      "route-id": 50,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 46,
+      "orientation": "clockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal10": {
+      "route-id": 45,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 43,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 64,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 54,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 59,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 47,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "block2": {
+    "signal19": {
+      "route-id": 102,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 81,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal5": {
+      "route-id": 107,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal11": {
+      "route-id": 111,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal12": {
+      "route-id": 113,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal3": {
+      "route-id": 105,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal13": {
+      "route-id": 82,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal2": {
+      "route-id": 77,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 78,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 75,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 114,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 104,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 108,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 80,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "block3": {
+    "signal19": {
+      "route-id": 115,
+      "orientation": "clockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 121,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal5": {
+      "route-id": 10,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal6": {
+      "route-id": 12,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal11": {
+      "route-id": 21,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal12": {
+      "route-id": 23,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal3": {
+      "route-id": 6,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal13": {
+      "route-id": 123,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 120,
+      "orientation": "clockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 118,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 119,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 116,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 24,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal15": {
+      "route-id": 14,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    }
+  },
+  "block4": {
+    "signal19": {
+      "route-id": 215,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 224,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal5": {
+      "route-id": 220,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal6": {
+      "route-id": 221,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal11": {
+      "route-id": 226,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal3": {
+      "route-id": 218,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal13": {
+      "route-id": 72,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 69,
+      "orientation": "clockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 68,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal9": {
+      "route-id": 66,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 227,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 217,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 222,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 70,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "block5": {
+    "signal19": {
+      "route-id": 26,
+      "orientation": "clockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 39,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal5": {
+      "route-id": 203,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal6": {
+      "route-id": 204,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal12": {
+      "route-id": 211,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal3": {
+      "route-id": 202,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal13": {
+      "route-id": 40,
+      "orientation": "clockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 33,
+      "orientation": "clockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 29,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 32,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal14": {
+      "route-id": 212,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 201,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 206,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 37,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "block6": {
+    "signal19": {
+      "route-id": 85,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 242,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal6": {
+      "route-id": 92,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal11": {
+      "route-id": 96,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal12": {
+      "route-id": 98,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal3": {
+      "route-id": 90,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal4": {
+      "route-id": 236,
+      "orientation": "clockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 232,
+      "orientation": "clockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 234,
+      "orientation": "clockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 229,
+      "orientation": "clockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 100,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 88,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 94,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 239,
+      "orientation": "clockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "block7": {
+    "signal19": {
+      "route-id": 125,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal17": {
+      "route-id": 260,
+      "orientation": "clockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal13": {
+      "route-id": 137,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 132,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 130,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 131,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 127,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal7": {
+      "route-id": 133,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "buffer": {},
+  "platform1": {
+    "signal19": {
+      "route-id": 138,
+      "orientation": "anticlockwise",
+      "block": "platform2",
+      "segment": "seg40"
+    },
+    "signal5": {
+      "route-id": 147,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal6": {
+      "route-id": 148,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal11": {
+      "route-id": 152,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal12": {
+      "route-id": 153,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal3": {
+      "route-id": 144,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal13": {
+      "route-id": 154,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 146,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 143,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 145,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 140,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 156,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 139,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 151,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 150,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  },
+  "platform2": {
+    "signal17": {
+      "route-id": 186,
+      "orientation": "anticlockwise",
+      "block": "platform1",
+      "segment": "seg37"
+    },
+    "signal5": {
+      "route-id": 177,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal6": {
+      "route-id": 178,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal11": {
+      "route-id": 187,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal12": {
+      "route-id": 188,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal3": {
+      "route-id": 170,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal13": {
+      "route-id": 189,
+      "orientation": "anticlockwise",
+      "block": "block6",
+      "segment": "seg21"
+    },
+    "signal4": {
+      "route-id": 176,
+      "orientation": "anticlockwise",
+      "block": "block2",
+      "segment": "seg8"
+    },
+    "signal2": {
+      "route-id": 169,
+      "orientation": "anticlockwise",
+      "block": "block1",
+      "segment": "seg4"
+    },
+    "signal10": {
+      "route-id": 172,
+      "orientation": "anticlockwise",
+      "block": "block4",
+      "segment": "seg16"
+    },
+    "signal9": {
+      "route-id": 163,
+      "orientation": "anticlockwise",
+      "block": "block5",
+      "segment": "seg28"
+    },
+    "signal14": {
+      "route-id": 193,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal8": {
+      "route-id": 157,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    },
+    "signal15": {
+      "route-id": 185,
+      "orientation": "anticlockwise",
+      "block": "block7",
+      "segment": "seg31"
+    },
+    "signal7": {
+      "route-id": 183,
+      "orientation": "anticlockwise",
+      "block": "block3",
+      "segment": "seg12"
+    }
+  }
 };

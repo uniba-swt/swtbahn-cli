@@ -56,6 +56,7 @@ typedef enum {
     PERIPHERAL_TYPE_ASPECTS
 } e_extras_sequence_level;
 
+char *module_name = NULL;
 GHashTable *tb_blocks;
 GHashTable *tb_reversers;
 GHashTable *tb_crossings;
@@ -74,10 +75,11 @@ e_extras_mapping_level extras_mapping = EXTRAS_ROOT;
 e_extras_sequence_level extras_sequence = EXTRAS_SEQ_NONE;
 
 void free_extras_id_key(void *pointer) {
-    log_debug("free key: %s", (char *) pointer);
-    free(pointer);
+    if (pointer != NULL) {
+        log_debug("free key: %s", (char *) pointer);
+        free(pointer);
+    }
 }
-
 void free_block(void *pointer) {
     t_config_block *block = (t_config_block *) pointer;
     if (block == NULL) {
@@ -268,21 +270,22 @@ void extras_yaml_sequence_start(char *scalar) {
         case EXTRAS_ROOT:
             if (str_equal(scalar, "blocks") || str_equal(scalar, "platforms")) {
                 extras_sequence = BLOCKS;
-                if (tb_blocks == NULL)
+                if (tb_blocks == NULL) {
                     tb_blocks = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_block);
+                }
             } else if (str_equal(scalar, "reversers")) {
                 extras_sequence = REVERSERS;
                 tb_reversers = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_reverser);
             } else if (str_equal(scalar, "crossings")) {
                 extras_sequence = CROSSINGS;
                 tb_crossings = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_crossing);
-            } else if (str_equal(scalar, "signaltypes")) {
+            } else if (str_equal(scalar, "signal-types")) {
                 extras_sequence = SIGNAL_TYPES;
                 tb_signal_types = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_signal_type);
             } else if (str_equal(scalar, "compositions")) {
                 extras_sequence = COMPOSITE_SIGNALS;
                 tb_composite_signals = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_composite_signal);
-            } else if (str_equal(scalar, "peripheraltypes")) {
+            } else if (str_equal(scalar, "peripheral-types")) {
                 extras_sequence = PERIPHERAL_TYPES;
                 tb_peripheral_types = g_hash_table_new_full(g_str_hash, g_str_equal, free_extras_id_key, free_peripheral_type);
             }
@@ -503,6 +506,12 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
     }
 
     switch (extras_mapping) {
+        case EXTRAS_ROOT:
+            if (str_equal(last_scalar, "module-name") && extras_sequence == EXTRAS_SEQ_NONE) {
+                module_name = strdup(cur_scalar);
+                log_debug("extras_yaml_scalar: module-name parsed: %s", module_name);
+            }
+            break;
         case BLOCK:
             if (str_equal(last_scalar, "id")) {
                 cur_block->id = cur_scalar;
@@ -587,6 +596,7 @@ void parse_extras_yaml(yaml_parser_t *parser, t_config_data *data) {
     extras_sequence = EXTRAS_SEQ_NONE;
     
     parse_yaml_content(parser, extras_yaml_sequence_start, extras_yaml_sequence_end, extras_yaml_mapping_start, extras_yaml_mapping_end, extras_yaml_scalar);
+    data->module_name = module_name;
     data->table_blocks = tb_blocks;
     data->table_reversers = tb_reversers;
     data->table_crossings = tb_crossings;

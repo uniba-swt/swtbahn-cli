@@ -1,127 +1,187 @@
 from csv import reader
-import json
-import yaml
+import json, yaml, os
 
-interlockingTableFile = "../../../../../configurations/swtbahn-full/interlocking_table.yml"
-configuratonBahnFile = "../../../../../configurations/swtbahn-full/extras_config.yml"
-blacklistFile = "./blacklist.txt"
-groupingFile = "./flags-swtbahn-full.csv"
-interlockingTable = json.loads(json.dumps(yaml.safe_load(open(interlockingTableFile))))
-configuratonBahn = json.loads(json.dumps(yaml.safe_load(open(configuratonBahnFile))))
+##### GLOBALS #####
+pathToConfig = "../../../../../configurations"
 
-blacklist = []
+interlockingTableFileName = "interlocking_table.yml"
+extrasConfigFileName = "extras_config.yml"
 
-for line in open(blacklistFile):
-    blacklist.append(int(line.strip()))
+blacklistFileDirectory = "./blacklists"
+signalFlagCSVFileDirectory = "./flagMappings"
 
-resultData = {}
+##### FUNCTIONS #####
+def getConfigurationsWithMatchingSignalFlagCSV() -> list[str]:
+    """
+    For every configuration folder in swtbahn-cli/configurations, check if a corresponding
+    signal-to-symbol/flag mapping CSV file exists. Returns a list with names of all folders
+    where this CSV file exists.
+    """
+    global pathToConfig, signalFlagCSVFileDirectory
+    # Load the list of available CSV files with signal-symbol/flag map definitions
+    signalFlagCSVFolderItemList = os.scandir(signalFlagCSVFileDirectory)
+    #flagMappingFileNames = []
+    #for entry in signalFlagCSVFolderItemList:
+    #    if entry.is_file() and entry.name[-4:] == ".csv":
+    #        flagMappingFileNames.append(entry.name[:-4])
+    flagMappingFileNames = [entry.name[:-4] for entry in signalFlagCSVFolderItemList if entry.is_file() and entry.name[-4:] == ".csv"]
+    # Load list of configuration folders and search for matching (name-based) CSV files
+    configFolderItemList = os.scandir(pathToConfig)
+    folderList = [entry.name for entry in configFolderItemList if entry.is_dir()]
+    #configNamesWithCSVList = []
+    #for configuration in folderList: 
+    #    if configuration in flagMappingFileNames:
+    #        configNamesWithCSVList.append(configuration)
+    configNamesWithCSVList = [configuration for configuration in folderList if configuration in flagMappingFileNames]
+    return configNamesWithCSVList
 
-blocktypes = ["blocks", "platforms"]
 
-for blockType in blocktypes:
-    for block in configuratonBahn[blockType]:
-        try:
-            signals = block["signals"]
-        except KeyError:
-#            print("Block {} has no signals".format(block["id"]))
-            signals = []
-        routes = []
-        for signal in signals:
-            destinations = []
-            for route in interlockingTable["interlocking-table"]:
-                if route["source"] == signal:
-                    if route["destination"] not in destinations:
-                        destinations.append(route["destination"])
-            for destination in destinations:
-                routeID = -1
-                for route in interlockingTable["interlocking-table"]:
-                    if route["source"] == signal and route["destination"] == destination:
-                        if routeID == -1:
-                            routeID = route["id"]
-                        else:
-                            if interlockingTable["interlocking-table"][routeID]["id"] in blacklist:
-                                print("Route was overriden because old was blacklisted")
-                            elif interlockingTable["interlocking-table"][route["id"]]["id"] in blacklist:
-                                 print("Route Beibehalten")
-                            elif len(interlockingTable["interlocking-table"][route["id"]]["path"]) < len(interlockingTable["interlocking-table"][routeID]["path"]):
-                                routeID = route["id"]
-
-                print("{} -> {} | {}".format(signal, destination, routeID))
-                if routeID not in blacklist:
-                    routes.append(routeID)
-                else:
-                    print("Route {} wurde ignoriert, weil diese in der Blacklist steht".format(routeID))
-
-        resultData[block["id"]] = {}
-        for route in routes:
-            destination = interlockingTable["interlocking-table"][route]["destination"]
-            routeID = route
-            orientation = interlockingTable["interlocking-table"][route]["orientation"]
-            lastBlock = interlockingTable["interlocking-table"][route]["sections"][-1]["id"]
-            stopSegment = None
-            segments = []
-            isError = False
-
-            for qblock in configuratonBahn["platforms"]:
-                if qblock["id"] == lastBlock:
-                    for segment in qblock["main"]:
-                        segments.append(segment)
-                    break
-            for qblock in configuratonBahn["blocks"]:
-                if qblock["id"] == lastBlock:
-                    for segment in qblock["main"]:
-                        segments.append(segment)
-                    break
-            if len(segments) == 1:
-#                print("Segment: {} at Block {}".format(segments[0], lastBlock))
-                stopSegment = segments[0]
-            elif len(segments) == 2:
-                if segments[0][0:-1] == segments[1][0:-1]:
- #                   print(segments)
-                    stopSegment = segments[0][0:-1]
-#                    print(stopSegment)
-                else:
-                    print("Error Segment {} and Segment {} are not the same. Block {}".format(segments[0], segments[1], block["id"]))
-                    isError = True
-            else:
-                print("Error with BlockID {}".format(block["id"]))
-                isError = True
-            if isError:
-                break
-            resultData[block["id"]][destination] = {}
-            resultData[block["id"]][destination]["route-id"] = routeID
-            resultData[block["id"]][destination]["orientation"] = orientation
-            resultData[block["id"]][destination]["block"] = lastBlock
-            resultData[block["id"]][destination]["segment"] = stopSegment
-
-# Sort
-originalResultData = resultData
-resultData = {}
-for block in originalResultData:
-    destinations = []
-    for destination in originalResultData[block]:
-        destinations.append(destination)
-    destinationsSorted = []
-
-    with open(groupingFile, "r") as csvFile:
+def getSignalIDStrsWithDefinedMapping(signalFlagCSVFilepath: str, extrasConfig) -> list[str]:
+    """
+    Reads the signal-to-symbol/flag CSV file and extracts all signal IDs (represented as strings,
+    in the long format, e.g., `signal8`). If the signal is actually a composite signal, then its
+    ID is appendend an "a" as all composite signals AT THE MOMENT have the "proper" (non-distant)
+    signal ID with an "a". (e.g., signal4 will be signal4a in the returned list)
+    """
+    signalIDList = []
+    with open(signalFlagCSVFilepath, "r") as csvFile:
         csv_reader = reader(csvFile)
         for row in csv_reader:
             signal = "signal" + row[0]
-            if signal in destinations:
-                destinationsSorted.append(signal)
-            signal = signal + "a"
-            if signal in destinations:
-                destinationsSorted.append(signal)
+            if extrasConfig["compositions"] != None:
+                for comp in extrasConfig["compositions"]:
+                    if signal == comp["id"]:
+                        signal += "a"
+                        break
+            signalIDList.append(signal)
+    return signalIDList
 
-    resultData[block] = {}
-    for destination in destinationsSorted:
-        resultData[block][destination] = {}
-        resultData[block][destination]["route-id"] = originalResultData[block][destination]["route-id"]
-        resultData[block][destination]["orientation"] = originalResultData[block][destination]["orientation"]
-        resultData[block][destination]["block"] = originalResultData[block][destination]["block"]
-        resultData[block][destination]["segment"] = originalResultData[block][destination]["segment"]
 
-with open("../destinations-swtbahn-full.json", "w") as file:
-    file.write("const allPossibleDestinationsSwtbahnFull = ")
-    file.write(json.dumps(resultData, indent=2))
-    file.write(";")
+def getBlacklistedRouteIDsForConfig(config: str) -> list[int]:
+    """
+    Get a list of all route IDs blacklisted for this configuration/model railway platform.
+    If no blacklist file for the config is found, an empty list is returned.
+    """
+    global blacklistFileDirectory
+    blacklistedRouteIDs = []
+    if os.path.exists("{}/{}.txt".format(blacklistFileDirectory, config)):
+        for line in open("{}/{}.txt".format(blacklistFileDirectory, config)):
+            blacklistedRouteIDs.append(int(line.strip()))
+    return blacklistedRouteIDs
+
+
+def getInterlockingAndExtrasConfigFileContent(config: str) -> any:
+    """
+    Attempts to load the interlocking table and extras-config configuration files into dicts.
+    Throws an exception if the config files are not found.
+    """
+    global pathToConfig, interlockingTableFileName, extrasConfigFileName
+    # Determine filepaths for config files, then load the config file content
+    interlockingTableFile = "{}/{}/{}".format(pathToConfig, config, interlockingTableFileName)
+    extrasConfigFile = "{}/{}/{}".format(pathToConfig, config, extrasConfigFileName)
+    if not os.path.exists(interlockingTableFile) or not os.path.exists(extrasConfigFile):
+        raise Exception("Error: interlocking table file or extras-config file for " 
+                        + config + " were not found")
+
+    interlockingTable = yaml.safe_load(open(interlockingTableFile))
+    extrasConfig = yaml.safe_load(open(extrasConfigFile))
+    return interlockingTable, extrasConfig
+
+
+def calcWantedRoutesForBlock(block: dict, interlockingTable: dict, signalsWithDefMapping: list[str], 
+                                blacklistedRouteIDs: list[int]) -> dict:
+    """
+    Searches the interlocking table for routes that start from a signal within the specified block.
+    Adds all these routes to a dict in a certain format, but only if the route's destination signal 
+    is in signalsWithDefMapping and where the route-id is not in blacklistedRouteIDs; 
+    if multiple routes from a block to a destination signal exist, only the shortest one is added.
+    """
+    blockDictRet = {}
+    signalsOfCurrBlock = []
+    try:
+        signalsOfCurrBlock = block["signals"]
+    except KeyError:
+        return blockDictRet
+    # Search for valid routes, but we only want the shortest for each destination. 
+    # Thus have an extra dict to keep track of lengths -> easier than to modify json structure.
+    destsToShortestRouteWithLength = {}
+    for route in interlockingTable["interlocking-table"]:
+        # If route starts at current block and destination has a valid mapping...
+        if (route["source"] in signalsOfCurrBlock 
+            and route["destination"] in signalsWithDefMapping 
+            and int(route["id"]) not in blacklistedRouteIDs):
+
+            routeID = int(route["id"])
+            rLen = int(route["length"][:-5]) # length calc here ignores millimeters
+            # If this route is the first to this destination or shorter than the current one...
+            if (route["destination"] not in destsToShortestRouteWithLength.keys() 
+                or destsToShortestRouteWithLength[route["destination"]][2] > rLen):
+
+                destsToShortestRouteWithLength[route["destination"]] = (routeID, route["source"], rLen)
+                blockDictRet[route["destination"]] = {
+                    "route-id"    : routeID,
+                    "orientation" : route["orientation"],
+                    "block"       : route["sections"][-1]["id"],
+                    "segment"     : route["path"][-2]["id"]
+                }
+                # Remove "a" and "b" suffixes from "segment" entry if they exist
+                if route["path"][-2]["id"].endswith("a") or route["path"][-2]["id"].endswith("b"):
+                    blockDictRet[route["destination"]]["segment"] = route["path"][-2]["id"][:-1]
+    return blockDictRet
+
+
+def processConfiguration(config: str):
+    """
+    For a given configuration, loads config files, generates the destinations json and persists it as a file.
+    """
+    # Get the blacklisted route IDs(if any)
+    blacklistedRouteIDs = getBlacklistedRouteIDsForConfig(config)
+    # Get the interlockingTable and extrasConfig
+    try:
+        interlockingTable, extrasConfig = getInterlockingAndExtrasConfigFileContent(config)
+    except Exception as e:
+        print(e)
+        return False
+    # Get the list of signals with valid mappings (signalID appended with 'a' if its a composite signal)
+    signalFlagMapCSVFilepath = "{}/{}.csv".format(signalFlagCSVFileDirectory, config)
+    signalsWithDefMapping = getSignalIDStrsWithDefinedMapping(signalFlagMapCSVFilepath, extrasConfig)
+
+    print("Loaded config files for config " + config + ", now calculating routes")
+
+    collectedRoutesPerBlock = {}
+    # Relevant keys for searching in extrasConfig
+    blocktypes = ["blocks", "platforms"]
+    # For blocks of all kinds, get the routes to possible destinations.
+    for blockType in blocktypes:
+        for block in extrasConfig[blockType]:
+            # Initialize block dict, then calculate routes
+            collectedRoutesPerBlock[block["id"]] = {}
+            blockDict = calcWantedRoutesForBlock(block, interlockingTable, 
+                                                 signalsWithDefMapping, blacklistedRouteIDs)
+            # Now insert the routes into the "main" dict in the order that they appear in the 
+            # symbol/flag mappings csv file. The order in the CSV file is the same as the order 
+            # in signalsWithDefMapping, so we use that as the reference.
+            for sig in signalsWithDefMapping:
+                if sig in blockDict:
+                    collectedRoutesPerBlock[block["id"]][sig] = blockDict[sig]
+
+    # Persist the identified routes grouped by block and destination signal as a JSON file.
+    with open("../destinations-{}.json".format(config), "w") as destFile: 
+        destFile.write("const allPossibleDestinations_{} = ".format(config.replace("-", "")))
+        destFile.write(json.dumps(collectedRoutesPerBlock, indent=2))
+        destFile.write(";")
+    return True
+
+
+def startGen():
+    configs = getConfigurationsWithMatchingSignalFlagCSV()
+    for c in configs:
+        print("Run processConfiguration for config " + c)
+        if processConfiguration(c):
+            print("Finished processConfiguration for config " + c + " successfully!")
+        else:
+            print("processConfiguration for config " + c + " did not succeed!")
+
+
+##### START #####
+startGen()
