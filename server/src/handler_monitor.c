@@ -49,7 +49,7 @@ onion_connection_status handler_get_platform_name(void *_, onion_request *req, o
 	if (running && (onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		const char *platform_module_name = config_get_module_name();
 		onion_response_printf(res, "%s", platform_module_name);
-		syslog_server(LOG_INFO, "Request: Get platform name - done");
+		syslog_server(LOG_INFO, "Request: Get platform name (%s) - done", platform_module_name);
 		return OCS_PROCESSED;
 	} else {
 		syslog_server(LOG_ERR, 

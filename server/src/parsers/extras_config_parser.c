@@ -362,8 +362,9 @@ void extras_yaml_sequence_end(char *scalar) {
 
 void extras_yaml_mapping_start(char *scalar) {
     log_debug("extras_yaml_mapping_start: %s", scalar);
-    // no case for MODULE_NAME as that does not need to be added to any hash table
     switch (extras_sequence) {
+        case MODULE_NAME:
+            extras_mapping = MODULE_NAME_DEF;
         case BLOCKS:
             extras_mapping = BLOCK;
             cur_block = malloc(sizeof(t_config_block));
