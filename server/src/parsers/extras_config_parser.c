@@ -365,6 +365,7 @@ void extras_yaml_mapping_start(char *scalar) {
     switch (extras_sequence) {
         case MODULE_NAME:
             extras_mapping = MODULE_NAME_DEF;
+            break;
         case BLOCKS:
             extras_mapping = BLOCK;
             cur_block = malloc(sizeof(t_config_block));
@@ -445,8 +446,11 @@ void extras_yaml_mapping_end(char *scalar) {
     log_debug("extras_yaml_mapping_end: %s", scalar);
 
     // insert mapping to hash table
-    // no case for MODULE_NAME_DEF as that does not need to be added to any hash table
+    // case for MODULE_NAME_DEF is only logging, as module name is not part of a hash table
     switch (extras_mapping) {
+        case MODULE_NAME_DEF:
+            log_debug("extras_yaml_mapping_end: module-name parsed: %s", module_name);
+            break;
         case BLOCK:
             log_debug("extras_yaml_mapping_end: insert block: %s", cur_block->id);
             g_hash_table_insert(tb_blocks, strdup(cur_block->id), cur_block);
