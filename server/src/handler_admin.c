@@ -179,7 +179,7 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 		
 		if (startup_server()) {
 			pthread_mutex_unlock(&start_stop_mutex);
-			send_common_feedback(res, HTTP_OK, "");
+			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Startup server - session-id: %ld - finish", 
 			              session_id);
@@ -193,7 +193,16 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 		}
 		return OCS_PROCESSED;
 	} else {
-		o_con_status ret = handle_req_run_or_method_fail(res, running, "Startup server");
+		// Cannot use the usual handler for this case, as startup requires server NOT to be running.
+		o_con_status ret = OCS_PROCESSED;
+		if (running) {
+			syslog_server(LOG_WARNING, "Request: Startup server - system already running");
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "server already running");
+		} else {
+			syslog_server(LOG_WARNING, "Request: Startup server - wrong request type");
+			onion_response_set_code(res, HTTP_METHOD_NOT_ALLOWED);
+			ret = OCS_NOT_IMPLEMENTED;
+		}
 		pthread_mutex_unlock(&start_stop_mutex);
 		return ret;
 	}
@@ -206,7 +215,7 @@ o_con_status handler_shutdown(void *_, onion_request *req, onion_response *res) 
 		syslog_server(LOG_NOTICE, "Request: Shutdown server - start");
 		shutdown_server();
 		pthread_mutex_unlock(&start_stop_mutex);
-		send_common_feedback(res, HTTP_OK, "");
+		onion_response_set_code(res, HTTP_OK);
 		// Can't log "finished" here since bidib closes the syslog when stopping
 		return OCS_PROCESSED;
 	} else {
@@ -231,7 +240,7 @@ o_con_status handler_set_track_output(void *_, onion_request *req, onion_respons
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - start", state);
 			bidib_set_track_output_state_all(state);
 			bidib_flush();
-			send_common_feedback(res, HTTP_OK, "");
+			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - finish", state);
 		}
 		return OCS_PROCESSED;
@@ -259,7 +268,7 @@ o_con_status handler_set_verification_option(void *_, onion_request *req, onion_
 			} else {
 				verification_enabled = false;
 			}
-			send_common_feedback(res, HTTP_OK, "");
+			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set verification option - new state: %s - done", 
 			              verification_enabled ? "enabled" : "disabled");
@@ -279,7 +288,7 @@ o_con_status handler_set_verification_url(void *_, onion_request *req, onion_res
 			;
 		} else {
 			set_verifier_url(data_verification_url);
-			send_common_feedback(res, HTTP_OK, "");
+			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set verification URL - new URL: %s - done", 
 			              data_verification_url);
@@ -327,7 +336,7 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 		//  easily avoid such a race condition being possible - have to release the mutex whilst
 		//  waiting for the train to stop; thus someone else could do smth with it in the meantime)
 		release_train(grab_id);
-		send_common_feedback(res, HTTP_OK, "");
+		onion_response_set_code(res, HTTP_OK);
 		syslog_server(LOG_NOTICE, 
 		              "Request: Admin release train - train: %s - finish",
 		              data_train);
@@ -375,7 +384,7 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 			              data_train, speed);
 		} else {
 			bidib_flush();
-			send_common_feedback(res, HTTP_OK, "");
+			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 
 			              data_train, speed);
