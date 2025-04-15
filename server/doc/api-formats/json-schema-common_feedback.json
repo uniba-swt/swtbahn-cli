@@ -7,10 +7,8 @@
   "properties": {
     "msg": {
       "type": "string",
-      "minLength": 0
+      "minLength": 1,
+      "$comment": "msg is not required to always be present, but if it is, its value shall not be empty."
     }
-  },
-  "required": [
-    "msg"
-  ]
+  }
 }

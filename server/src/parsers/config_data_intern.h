@@ -32,6 +32,7 @@
 #include <stdbool.h>
 
 typedef struct {
+    char *module_name;
     GHashTable *table_segments;
     GHashTable *table_signals;
     GHashTable *table_points;

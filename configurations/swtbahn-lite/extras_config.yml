@@ -1,4 +1,5 @@
-# Block layout configuration: SWTbahnLite
+# Module Name and Block layout configuration: SWTbahnLite
+module-name: SWTbahnLite
 blocks:
   - id: block1
     length: 71.20cm
@@ -95,7 +96,7 @@ platforms:
       - signal12
 reversers:
 crossings:
-signaltypes:
+signal-types:
   - id: entry
     aspects:
       - aspect_caution
@@ -128,7 +129,7 @@ signaltypes:
       - high
       - low
 compositions:
-peripheraltypes:
+peripheral-types:
   - id: onebit
     aspects:
       - high

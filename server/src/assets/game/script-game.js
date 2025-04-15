@@ -11,8 +11,41 @@ var isEasyMode = false;      // User interface verbosity.
 const numberOfDestinationsMax = 12;           // Maximum destinations to display
 const destinationNamePrefix = "destination";  // HTML element ID prefix of the destination buttons
 
-var allPossibleDestinations = null;           // Platform specific lookup table for destinations
-var signalFlagMap = null;                     // Platform specific lookup table for signal flags
+// Initialisation of Lookup tables
+var allPossibleDestinations = null;  // Global Access variable for destination lookup table
+var signalFlagMap = null; // Global access variable for signal flag mapping
+
+// Tries to determine the name of the SWTbahn Platform which is being used by querying the server.
+// If the server does not reply with the platform name, retry after some delay.
+// If the server does reply with the platform name, tries to load the destinations and the flags 
+// mapped for the respective platform. If this fails, does not perform a retry.
+function tryLoadDestinationsAndFlagMap() {
+	// Try to get the platform name from the server, retry every 2 seconds on failure.
+	let retryDelay = 2000;
+	fetch(serverAddress + '/monitor/platform-name',)
+		.then(response => {
+			if (response.status !== 200) {
+				console.log("Getting platform name failed: Retrying in %d ms", retryDelay);
+				setTimeout(() => tryLoadDestinationsAndFlagMap(), retryDelay);
+			} else {
+				// response.text() gives a promise<String>, not immediately a string, therefore pass
+				// it to the next then block via return. 
+				return response.text();
+			}
+		})
+		.then(responseText => {
+			// Check if the previous then block actually returned something (i.e., if server 
+			// responded with a reply with code 200)
+			if (responseText !== undefined) {
+				console.log("Platform name received from server:", responseText);
+				platform = responseText.toLowerCase();
+				// Set the possible destinations and signal flag map for the SWTbahn platform.
+				allPossibleDestinations = eval("allPossibleDestinations_" + platform);
+				signalFlagMap = eval("signalFlagMap_" + platform);
+			}
+		})
+		.catch(error => console.error("tryLoadDestinationsAndFlagMap (get platform name) err:", error));
+}
 
 // Returns the destinations possible from a given block
 function getDestinations(blockId) {
@@ -747,6 +780,7 @@ class Driver {
 }
 
 
+
 /*************************************************************
  * UI update for client initialisation and game start and end
  * (train grab and release)
@@ -803,6 +837,10 @@ function initialise() {
 		null                                      // trainId
 	);
 
+	// This will try repeatedly to determine the name of the SWTbahn Platform which is being used,
+	// once that is found it will load the destinations and the flag mapping.
+	tryLoadDestinationsAndFlagMap();
+
 	// Hide the chosen train.
 	$('#chosenTrain').hide();
 
@@ -855,14 +893,9 @@ function initialise() {
 		startGameLogic();
 	});
 
-	// Set the possible destinations for the SWTbahn platform.
-	allPossibleDestinations = allPossibleDestinationsSwtbahnFull;
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnStandard;
-//	allPossibleDestinations = allPossibleDestinationsSwtbahnUltraloop;
+
 	disableAllDestinationButtons();
 
-	// Set the signal to flag mapping.
-	signalFlagMap = signalFlagMapSwtbahnFull;
 
 	// Initialise the click handler of each destination button.
 	for (let i = 0; i < numberOfDestinationsMax; i++) {
@@ -892,7 +925,7 @@ function initialise() {
 				if (speedButton.val() == '0') {
 					setModal(modalMessages.drivingContinue);
 				}
-				
+
 				// The page cannot be refreshed without ill consequences.
 				// The train might not stop sensibly on the main segment of the destination
 				$(window).bind("beforeunload", pageRefreshWarning);

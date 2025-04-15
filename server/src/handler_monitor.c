@@ -77,6 +77,21 @@ static void free_g_strarray_and_contents(GArray *g_strarray) {
 	g_strarray = NULL;
 }
 
+o_con_status handler_get_platform_name(void *_, onion_request *req, onion_response *res) {
+	build_response_header(res);
+	// "platform name" is a synonym for "module-name" (def. in extras-config.yml).
+	// module name is only loaded when parsing config, which is done at startup.
+	// -> when system is not running, name is not available yet.
+	if (running && (onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
+		const char *platform_module_name = config_get_module_name();
+		onion_response_printf(res, "{\"platform-name\": \"%s\"}", platform_module_name);
+		syslog_server(LOG_INFO, "Request: Get platform name (%s) - done", platform_module_name);
+		return OCS_PROCESSED;
+	} else {
+		return handle_req_run_or_method_fail(res, running, "");
+	}
+}
+
 /**
  * @brief Get information on trains. 
  * The returned string is formatted to comply with the json-schema:
@@ -1099,7 +1114,7 @@ o_con_status handler_get_verification_option(void *_, onion_request *req, onion_
 	if ((onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
 		onion_response_set_code(res, HTTP_OK);
 		onion_response_printf(res, 
-		                      "{\n\"verification-enabled\": %s\n}", 
+		                      "{\"verification-enabled\": %s }", 
 		                      verification_enabled ? "true" : "false");
 		syslog_server(LOG_INFO, "Request: Get verification option - done");
 		return OCS_PROCESSED;

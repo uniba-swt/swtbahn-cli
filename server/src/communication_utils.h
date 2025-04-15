@@ -87,8 +87,9 @@ bool handle_param_miss_check(onion_response *res, const char *request_log_name,
 bool send_some_gstring_and_free(onion_response *res, int status_code, GString *gstr);
 
 /**
- * @brief Constructs a json with a single field, named by field_name, and its string value 
- * given by field_value
+ * @brief Constructs and sends a json with a single field, named by field_name, and its string value 
+ * given by field_value. Sets passed status code before sending anything.
+ * Note: if the field value is empty, nothing will be sent (only the status code will be set).
  * 
  * @param res the response over which to send. Shall not be NULL.
  * @param status_code http status code to set for the response to be sent

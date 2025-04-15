@@ -38,6 +38,8 @@ extern t_dyn_containers_interface *dyn_containers_interface;
 extern long long dyn_containers_reaction_counter__global_0_0;
 extern long long dyn_containers_actuate_reaction_counter;
 
+o_con_status handler_get_platform_name(void *_, onion_request *req, onion_response *res);
+
 o_con_status handler_get_trains(void *_, onion_request *req, onion_response *res);
 
 o_con_status handler_get_train_state(void *_, onion_request *req, onion_response *res);

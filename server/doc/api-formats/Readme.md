@@ -7,4 +7,4 @@
 
 
 - The above has to be updated after the switch to json-schema (as of 2024-11-04)
-- difficulty: Especially for Admin endpoints, often they don't have any meaningful return instead of "OK" or "Success", which can sufficiently be expressed with the HTTP status code. If on the json-schema of "common feedback" we specify `required: [msg]`, is that a problem? I.e., does an empty reply violate the schema? Probably yes?
+- Note: Especially for Admin endpoints, often they don't have any meaningful return instead of "OK" or "Success", which can sufficiently be expressed with the HTTP status code. In an error case, we do want to send some error message though. Therefore, the common-feedback schema they use does not have `required: [msg]`, so that we can omit the message if there's nothing meaningful to say. However, in an error case we really want a message to be there, and a missing error message would currently slip through the json schema validation.

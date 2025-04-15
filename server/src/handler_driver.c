@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "handler_driver.h"
@@ -127,6 +128,21 @@ bool train_grabbed(const char *train) {
 	}
 	pthread_mutex_unlock(&grabbed_trains_mutex);
 	return grabbed;
+}
+
+struct timespec get_delta_timespec_(const struct timespec *time_a, const struct timespec *time_b) {
+	if (time_a != NULL && time_b != NULL) {
+		long delta_nanos = time_b->tv_nsec - time_a->tv_nsec;
+		long delta_seconds = time_b->tv_sec - time_a->tv_sec;
+		if (time_b->tv_nsec < time_a->tv_nsec) {
+			delta_nanos += 1000000000;
+			delta_seconds--;
+		}
+		struct timespec diff = {.tv_sec = delta_seconds, .tv_nsec = delta_nanos};
+		return diff;
+	}
+	struct timespec empty_diff = {.tv_sec = 0, .tv_nsec = 0};
+	return empty_diff;
 }
 
 static bool train_position_is_at(const char *train_id, const char *segment) {
@@ -663,22 +679,32 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	                         && drive_route_params_valid(train_id, route)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
+
+	// Logging timestamp before trying to acquire the mutex for grabbed trains, 
+	// such that we can roughly measure the time it takes to acquire the mutex
+	struct timespec tva, tvb;
+	clock_gettime(CLOCK_MONOTONIC, &tva);
+	syslog_server(LOG_INFO, 
+	              "Drive route - route: %s train: %s - end of route (%s) reached detected at %d.%.9ld", 
+	              route->id, train_id, dest_segment, tva.tv_sec, tva.tv_nsec);
 	
 	// Driving stops
 	if (train_get_grab_id(train_id) == grab_id) {
 		pthread_mutex_lock(&grabbed_trains_mutex);
+		clock_gettime(CLOCK_MONOTONIC, &tvb);
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_NOTICE, 
-		              "Drive route - route: %s train: %s - stopping train", 
+		              "Drive route - route: %s train: %s - driving stops (commanded at %d.%.9ld)", 
 		              route_id, train_id);
 	} else {
 		bidib_set_train_speed(train_id, 0, "master");
+		clock_gettime(CLOCK_MONOTONIC, &tvb);
 		bidib_flush();
 		syslog_server(LOG_WARNING, 
-		              "Drive route - route: %s train: %s - stopping train directly via bidib, "
-		              "train was released during route driving!", 
-		              route_id, train_id);
+		              "Drive route - route: %s train: %s - driving stops (commanded at %d.%.9ld) "
+		              "directly via bidib, train was released during route driving!", 
+		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec);
 	}
 	
 	// Release the route

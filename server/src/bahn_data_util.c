@@ -36,6 +36,7 @@
 #include "handler_driver.h"
 
 typedef enum {
+    TYPE_MODULE_NAME,
     TYPE_ROUTE,
     TYPE_SEGMENT,
     TYPE_REVERSER,
@@ -110,7 +111,9 @@ static void add_cache_str(char *state) {
 }
 
 static e_config_type get_config_type(const char *type) {
-    if (string_equals(type, "route")) {
+    if (string_equals(type, "modulename")) {
+        return TYPE_MODULE_NAME;
+    } else if (string_equals(type, "route")) {
         return TYPE_ROUTE;
     } else if (string_equals(type, "segment")) {
         return TYPE_SEGMENT;
@@ -142,6 +145,8 @@ static e_config_type get_config_type(const char *type) {
 static void *get_object(e_config_type config_type, const char *id) {
     GHashTable *tb = NULL;
     switch (config_type) {
+        case TYPE_MODULE_NAME:
+            return config_get_module_name();
         case TYPE_ROUTE:
             return get_route(id);
         case TYPE_SEGMENT:
@@ -598,8 +603,9 @@ bool config_set_scalar_string_value(const char *type, const char *id, const char
                     syslog_server(LOG_ERR, 
                                   "config set scalar string value: "
                                   "unable to allocate memory for route->train");
+                } else {
+                    result = true;
                 }
-                result = true;
             }
         }
     }
@@ -929,8 +935,6 @@ bool is_segment_occupied(const char *id) {
     } else {
         syslog_server(LOG_WARNING, "Is segment occupied: unknown segment %s", id);
     }
-
-    syslog_server(LOG_DEBUG, "Is segment occupied: %s => %s", id, result ? "true" : "false");
     return result;
 }
 
@@ -940,7 +944,6 @@ bool is_type_segment(const char *id) {
     }
     bool result = g_hash_table_contains(config_data.table_segments, id);
 
-    syslog_server(LOG_DEBUG, "Is %s a segment: %s", id, result ? "true" : "false");
     return result;
 }
 
@@ -950,7 +953,6 @@ bool is_type_signal(const char *id) {
     }
     bool result = g_hash_table_contains(config_data.table_signals, id);
 
-    syslog_server(LOG_DEBUG, "Is %s a signal: %s", id, result ? "true" : "false");
     return result;
 }
 
@@ -1064,6 +1066,14 @@ char *config_get_block_id_of_segment(const char *seg_id) {
         }
     }
     return "";
+}
+
+char *config_get_module_name() {
+	if (config_data.module_name == NULL) {
+        return "";
+    } else {
+        return config_data.module_name;
+    }
 }
 
 void log_bool(bool value) {

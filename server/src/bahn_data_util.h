@@ -115,6 +115,8 @@ char *config_get_point_position(const char *route_id, const char *point_id);
 
 char *config_get_block_id_of_segment(const char *seg_id);
 
+char *config_get_module_name();
+
 void log_bool(bool value);
 
 void log_int(int value);
