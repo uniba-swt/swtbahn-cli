@@ -594,27 +594,6 @@
                     }
                 }
             },
-            "param_train_speed_trackoutput": {
-                "title": "param_train_speed_trackoutput",
-                "type": "object",
-                "properties": {
-                    "train": {
-                        "description": "string with name of the train",
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    "speed": {
-                        "description": "string with speed to set the train to [-126,126]",
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    "track-output": {
-                        "description": "the name of the track output node (usually master)",
-                        "type": "string",
-                        "minLength": 1
-                    }
-                }
-            },
             "param_train": {
                 "title": "param_train",
                 "type": "object",
@@ -736,6 +715,290 @@
                 "properties": {
                     "interlocker": {
                         "description": "the ID of the interlocker that is currently set",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_train_engine": {
+                "title": "param_train_engine",
+                "type": "object",
+                "properties": {
+                    "train": {
+                        "description": "string with name of a train",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "engine": {
+                        "description": "string with name of a (train) engine",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_session-id_grab-id": {
+                "title": "param_session-id_grab-id",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "reply_grab-train": {
+                "title": "reply_grab-train",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "type": "integer",
+                        "description": "identifier for the current server session",
+                        "minimum": 1
+                    },
+                    "grab-id": {
+                        "type": "integer",
+                        "description": "identifier for this grabbing/ownership of a train",
+                        "minimum": 0
+                    }
+                }
+            },
+            "param_session-id_grab-id_source_destination": {
+                "title": "param_session-id_grab-id_source_destination",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "source": {
+                        "description": "name of the source signal",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "destination": {
+                        "description": "name of the destination signal",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "reply_request-route": {
+                "title": "reply_request-route",
+                "type": "object",
+                "properties": {
+                    "granted-route-id": {
+                        "description": "ID of the granted route",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_session-id_grab-id_route-id": {
+                "title": "param_session-id_grab-id_route-id",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "route-id": {
+                        "description": "ID of the route",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_train_route-id": {
+                "title": "param_train_route-id",
+                "type": "object",
+                "properties": {
+                    "train": {
+                        "description": "string with name of a train",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "route-id": {
+                        "description": "string with ID of the route that shall be considered for driving direction",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "reply_direction": {
+                "title": "reply_direction",
+                "type": "object",
+                "properties": {
+                    "direction": {
+                        "type": "string",
+                        "pattern": "^(forwards|backwards)$",
+                        "description": "direction of train considering its location and route to be driven"
+                    }
+                }
+            },
+            "param_session-id_grab-id_route-id_mode": {
+                "title": "param_session-id_grab-id_route-id_mode",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "route-id": {
+                        "description": "ID of the route",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "mode": {
+                        "type": "string",
+                        "pattern": "^(manual|automatic)$",
+                        "description": "driving mode for the route, either manual or automatic"
+                    }
+                }
+            },
+            "param_session-id_grab-id_speed_track-output": {
+                "title": "param_session-id_grab-id_speed_track-output",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "speed": {
+                        "description": "string with speed to set the train to [-126,126]",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "track-output": {
+                        "description": "the name of the track output node (usually master)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_train_speed_track-output": {
+                "title": "param_train_speed_track-output",
+                "type": "object",
+                "properties": {
+                    "train": {
+                        "description": "string with name of the train",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "speed": {
+                        "description": "string with speed to set the train to [-126,126]",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "track-output": {
+                        "description": "the name of the track output node (usually master)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_session-id_grab-id_speed_track-output__for-calibrated-speed": {
+                "title": "param_session-id_grab-id_speed_track-output__for-calibrated-speed",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "speed": {
+                        "description": "string with speed to set the train to, [-9,9], depending on the calibration levels configured for the grabbed train",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "track-output": {
+                        "description": "the name of the track output node (usually master)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_session-id_grab-id_track-output": {
+                "title": "param_session-id_grab-id_track-output",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "track-output": {
+                        "description": "the name of the track output node (usually master)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_session-id_grab-id_peripheral_state_track-output": {
+                "title": "param_session-id_grab-id_peripheral_state_track-output",
+                "type": "object",
+                "properties": {
+                    "session-id": {
+                        "description": "session-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grab-id": {
+                        "description": "grab-id",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "peripheral": {
+                        "description": "ID of the train peripheral",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "state": {
+                        "description": "desired peripheral state",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "track-output": {
+                        "description": "the name of the track output node (usually master)",
                         "type": "string",
                         "minLength": 1
                     }
