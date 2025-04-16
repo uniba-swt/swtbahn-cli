@@ -1,0 +1,361 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SWTbahn",
+        "version": "1.0.0",
+        "contact": {},
+        "license": {
+            "name": "GPL-3.0"
+        },
+        "description": "SWTbahn server offering an API for interacting with an SWTbahn model railway."
+    },
+    "paths": {
+        "/admin/startup": {
+            "post": {
+                "summary": "Startup the SWTbahn",
+                "description": "Attempts to start up the SWTbahn to get it running; i.e., initialize connection to hardware, parse config files, and so on.",
+                "parameters": [],
+                "operationId": "admin-startup",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "SWTbahn is already running",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "SWTbahn unable to startup due to internal error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/admin/shutdown": {
+            "post": {
+                "summary": "Shutdown the SWTbahn",
+                "description": "Attempts to shut down the SWTbahn (if it is running); i.e., close connection to hardware, stop running internal threads, and so on.",
+                "parameters": [],
+                "operationId": "admin-shutdown",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": []
+            }
+        },
+        "/admin/set-track-output": {
+            "post": {
+                "summary": "Set the track output state",
+                "description": "Set the track output state for all track outputs",
+                "parameters": [],
+                "operationId": "admin-set-track-output",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_state_string"
+                            }
+                        }
+                    },
+                    "description": "the state that all track outputs shall be set to"
+                },
+                "security": []
+            }
+        },
+        "/admin/set-verification-option": {
+            "post": {
+                "summary": "Set the verification option",
+                "description": "Set the verification option to true or false, i.e., enable or disable the verification of train engines when they are uploaded. Note that verification will only work if a verification url to the swtbahn-verifier (or equivalent) server has been set.",
+                "parameters": [],
+                "operationId": "admin-set-verification-option",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_verification-option_string"
+                            }
+                        }
+                    },
+                    "description": "the new value of the verification option (true or false)"
+                },
+                "security": []
+            }
+        },
+        "/admin/set-verification-url": {
+            "post": {
+                "summary": "Set the verification url",
+                "description": "Set the verification url, i.e., the path for the websocket connection to the verification server for train engines.",
+                "parameters": [],
+                "operationId": "admin-set-verification-url",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_verification-url_string"
+                            }
+                        }
+                    },
+                    "description": "the new value of the verification url (should start with ws://)"
+                },
+                "security": []
+            }
+        },
+        "/admin/release-train": {
+            "post": {
+                "summary": "Release a train",
+                "description": "Force-release a train that is currently grabbed by someone.",
+                "parameters": [],
+                "operationId": "admin-release-train",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid train, or train not currently grabbed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_train_string"
+                            }
+                        }
+                    },
+                    "description": "the train that shall be released"
+                },
+                "security": []
+            }
+        },
+        "/admin/set-dcc-train-speed": {
+            "post": {
+                "summary": "Set the dcc speed of a train",
+                "description": "Set the dcc speed of a train, i.e., the speed has to be provided as a whole number in the range [-126, 126]",
+                "parameters": [],
+                "operationId": "admin-set-dcc-train-speed",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid train, invalid speed, or invalid track output",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_train_speed_trackoutput"
+                            }
+                        }
+                    },
+                    "description": "the train whose speed shall be set, the speed, and the track output"
+                },
+                "security": []
+            }
+        }
+    },
+    "security": [],
+    "servers": [],
+    "components": {
+        "links": {},
+        "callbacks": {},
+        "schemas": {
+            "common_feedback": {
+                "title": "common_feedback",
+                "description": "simple object with feedback message",
+                "type": "object",
+                "properties": {
+                    "msg": {
+                        "type": "string",
+                        "minLength": 1,
+                        "$comment": "msg is not required to always be present, but if it is, its value shall not be empty."
+                    }
+                }
+            },
+            "param_state_string": {
+                "title": "param_state_string",
+                "type": "object",
+                "properties": {
+                    "state": {
+                        "description": "state string",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_verification-option_string": {
+                "title": "param_verification-option_string",
+                "type": "object",
+                "properties": {
+                    "verification-option": {
+                        "description": "verification option value string (value should be true or false)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_verification-url_string": {
+                "title": "param_verification-url_string",
+                "type": "object",
+                "properties": {
+                    "verification-url": {
+                        "description": "verification url string",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_train_string": {
+                "title": "param_train_string",
+                "type": "object",
+                "properties": {
+                    "train": {
+                        "description": "string with name of the train",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_train_speed_trackoutput": {
+                "title": "param_train_speed_trackoutput",
+                "type": "object",
+                "properties": {
+                    "train": {
+                        "description": "string with name of the train",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "speed": {
+                        "description": "string with speed to set the train to [-126,126]",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "track-output": {
+                        "description": "the name of the track output node (usually master)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            }
+        }
+    }
+}
