@@ -2,22 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "controller_get-interlocker.schema.json",
   "title": "get-interlocker",
-  "description": "get interlocker result. Interlocker if request successfull, otherwise error message",
+  "description": "get interlocker result",
   "type": "object",
   "properties": {
     "interlocker": {
       "description": "the name of the interlocker that is currently set",
       "type": "string",
       "minLength": 1
-    }, 
-    "msg": {
-      "type": "string",
-      "description": "error message",
-      "minLength": 1
     }
-  },
-  "oneOf": [
-    {"required": ["interlocker"]},
-    {"required": ["msg"]}
-  ]
+  }
 }

@@ -611,15 +611,15 @@ o_con_status handler_get_interlocker(void *_, onion_request *req, onion_response
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		pthread_mutex_lock(&interlocker_mutex);
 		if (selected_interlocker_instance != -1 && selected_interlocker_name != NULL) {
-			GString *g_resstr = g_string_new("{\n\"interlocker\": \"");
-			g_string_append_printf(g_resstr, "%s\"\n}", 
+			GString *g_resstr = g_string_new("{\"interlocker\": \"");
+			g_string_append_printf(g_resstr, "%s\"}", 
 			                       selected_interlocker_name->str);
 			pthread_mutex_unlock(&interlocker_mutex);
 			send_some_gstring_and_free(res, HTTP_OK, g_resstr);
 			syslog_server(LOG_INFO, "Request: Get interlocker - done");
 		} else {
 			pthread_mutex_unlock(&interlocker_mutex);
-			send_common_feedback(res, HTTP_BAD_REQUEST, "No interlocker is currently selected");
+			send_common_feedback(res, HTTP_NOT_FOUND, "No interlocker is currently selected");
 			syslog_server(LOG_ERR, "Request: Get interlocker - none selected");
 		}
 		return OCS_PROCESSED;
@@ -685,7 +685,7 @@ o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_respon
 		pthread_mutex_lock(&interlocker_mutex);
 		if (selected_interlocker_instance == -1) {
 			pthread_mutex_unlock(&interlocker_mutex);
-			send_common_feedback(res, HTTP_BAD_REQUEST, 
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
 			                     "no interlocker instance is set that can be unset");
 			syslog_server(LOG_ERR, 
 			              "Request: Unset interlocker - interlocker: %s - "
@@ -693,8 +693,8 @@ o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_respon
 			              data_interlocker);
 		} else if (unset_interlocker(data_interlocker) != -1) {
 			pthread_mutex_unlock(&interlocker_mutex);
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid interlocker name (currently "
-			                     "set interlocker doesn't match provided interlocker name)");
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "invalid interlocker name (curr"
+			                     "ently set interlocker doesn't match provided interlocker name)");
 			syslog_server(LOG_ERR, 
 			              "Request: Unset interlocker - interlocker: %s - "
 			              "invalid interlocker name - abort", 

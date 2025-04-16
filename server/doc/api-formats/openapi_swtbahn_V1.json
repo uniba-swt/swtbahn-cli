@@ -271,6 +271,309 @@
                 },
                 "security": []
             }
+        },
+        "/controller/release-route": {
+            "post": {
+                "summary": "releases a route",
+                "description": "releases a route that is currently granted to a train",
+                "parameters": [],
+                "operationId": "controller-release-route",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_route-id"
+                            }
+                        }
+                    },
+                    "description": "route which shall be released."
+                },
+                "security": []
+            }
+        },
+        "/controller/set-point": {
+            "post": {
+                "summary": "set the state/aspect of a point",
+                "description": "",
+                "parameters": [],
+                "operationId": "controller-set-point",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_point_state"
+                            }
+                        }
+                    },
+                    "description": "point whose state shall be set, and state to set."
+                },
+                "security": []
+            }
+        },
+        "/controller/set-signal": {
+            "post": {
+                "summary": "set the state/aspect of a signal",
+                "description": "",
+                "parameters": [],
+                "operationId": "controller-set-signal",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_signal_state"
+                            }
+                        }
+                    },
+                    "description": "signal whose state shall be set, and state to set."
+                },
+                "security": []
+            }
+        },
+        "/controller/set-peripheral": {
+            "post": {
+                "summary": "set the state/aspect of a peripheral",
+                "description": "",
+                "parameters": [],
+                "operationId": "controller-set-peripheral",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_peripheral_state"
+                            }
+                        }
+                    },
+                    "description": "peripheral whose state shall be set, and state to set."
+                },
+                "security": []
+            }
+        },
+        "/controller/set-interlocker": {
+            "post": {
+                "summary": "set the interlocker to be used by the SWTbahn",
+                "description": "",
+                "parameters": [],
+                "operationId": "controller-set-interlocker",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter or no more free interlocker instances available",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Another interlocker is already set",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_interlocker"
+                            }
+                        }
+                    },
+                    "description": "ID of the interlocker to be used by the SWTbahn."
+                },
+                "security": []
+            }
+        },
+        "/controller/unset-interlocker": {
+            "post": {
+                "summary": "unset the interlocker currently used by the SWTbahn",
+                "description": "",
+                "parameters": [],
+                "operationId": "controller-unset-interlocker",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "no interlocker currently set, or currently set interlocker has a different name",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_interlocker"
+                            }
+                        }
+                    },
+                    "description": "ID of the interlocker currently used by the SWTbahn that shall be unset."
+                },
+                "security": []
+            }
+        },
+        "/controller/get-interlocker": {
+            "get": {
+                "summary": "get the ID of the interlocker currently used by the SWTbahn",
+                "description": "",
+                "parameters": [],
+                "operationId": "controller-get-interlocker",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_get-interlocker"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "no interlocker currently set",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": []
+            }
         }
     },
     "security": [],
@@ -291,50 +594,6 @@
                     }
                 }
             },
-            "param_state_string": {
-                "title": "param_state_string",
-                "type": "object",
-                "properties": {
-                    "state": {
-                        "description": "state string",
-                        "type": "string",
-                        "minLength": 1
-                    }
-                }
-            },
-            "param_verification-option_string": {
-                "title": "param_verification-option_string",
-                "type": "object",
-                "properties": {
-                    "verification-option": {
-                        "description": "verification option value string (value should be true or false)",
-                        "type": "string",
-                        "minLength": 1
-                    }
-                }
-            },
-            "param_verification-url_string": {
-                "title": "param_verification-url_string",
-                "type": "object",
-                "properties": {
-                    "verification-url": {
-                        "description": "verification url string",
-                        "type": "string",
-                        "minLength": 1
-                    }
-                }
-            },
-            "param_train_string": {
-                "title": "param_train_string",
-                "type": "object",
-                "properties": {
-                    "train": {
-                        "description": "string with name of the train",
-                        "type": "string",
-                        "minLength": 1
-                    }
-                }
-            },
             "param_train_speed_trackoutput": {
                 "title": "param_train_speed_trackoutput",
                 "type": "object",
@@ -351,6 +610,132 @@
                     },
                     "track-output": {
                         "description": "the name of the track output node (usually master)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_train": {
+                "title": "param_train",
+                "type": "object",
+                "properties": {
+                    "train": {
+                        "description": "string with name of the train",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_verification-url": {
+                "title": "param_verification-url",
+                "type": "object",
+                "properties": {
+                    "verification-url": {
+                        "description": "verification url string",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_verification-option": {
+                "title": "param_verification-option",
+                "type": "object",
+                "properties": {
+                    "verification-option": {
+                        "description": "verification option value string (value should be true or false)",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_state": {
+                "title": "param_state",
+                "type": "object",
+                "properties": {
+                    "state": {
+                        "description": "state string",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_route-id": {
+                "title": "param_route-id",
+                "type": "object",
+                "properties": {
+                    "route-id": {
+                        "description": "string with ID of a route, which is usually a whole number",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_point_state": {
+                "title": "param_point_state",
+                "type": "object",
+                "properties": {
+                    "point": {
+                        "description": "ID of a point",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "state": {
+                        "description": "desired point state",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_signal_state": {
+                "title": "param_signal_state",
+                "type": "object",
+                "properties": {
+                    "signal": {
+                        "description": "ID of a signal",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "state": {
+                        "description": "desired signal state",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_peripheral_state": {
+                "title": "param_peripheral_state",
+                "type": "object",
+                "properties": {
+                    "peripheral": {
+                        "description": "ID of a peripheral",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "state": {
+                        "description": "desired peripheral state",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_interlocker": {
+                "title": "param_interlocker",
+                "type": "object",
+                "properties": {
+                    "interlocker": {
+                        "description": "string with ID of an interlocker",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "reply_get-interlocker": {
+                "title": "reply_get-interlocker",
+                "description": "interlocker",
+                "type": "object",
+                "properties": {
+                    "interlocker": {
+                        "description": "the ID of the interlocker that is currently set",
                         "type": "string",
                         "minLength": 1
                     }
