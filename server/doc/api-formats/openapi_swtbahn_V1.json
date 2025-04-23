@@ -13,7 +13,7 @@
         "/admin/startup": {
             "post": {
                 "summary": "Startup the SWTbahn",
-                "description": "Attempts to start up the SWTbahn to get it running; i.e., initialize connection to hardware, parse config files, and so on.",
+                "description": "Attempts to start up the SWTbahn to get it running; i.e., initialize connection to hardware, parse config files, and so on. This starts the server session if successful.",
                 "parameters": [],
                 "operationId": "admin-startup",
                 "responses": {
@@ -50,7 +50,7 @@
         "/admin/shutdown": {
             "post": {
                 "summary": "Shutdown the SWTbahn",
-                "description": "Attempts to shut down the SWTbahn (if it is running); i.e., close connection to hardware, stop running internal threads, and so on.",
+                "description": "Attempts to shut down the SWTbahn (if it is running); i.e., close connection to hardware, stop running internal threads, and so on. This stops the current server session if successful.",
                 "parameters": [],
                 "operationId": "admin-shutdown",
                 "responses": {
@@ -234,7 +234,7 @@
         "/admin/set-dcc-train-speed": {
             "post": {
                 "summary": "Set the dcc speed of a train",
-                "description": "Set the dcc speed of a train, i.e., the speed has to be provided as a whole number in the range [-126, 126]",
+                "description": "Set the dcc speed of a train. This is set directly via bidib, i.e., it does not use the train engine dynamic container. Note that this may lead to inconsistencies/the train changing its speed to something else after this command due to a change in the output of the train engine dynamic container.",
                 "parameters": [],
                 "operationId": "admin-set-dcc-train-speed",
                 "responses": {
@@ -267,7 +267,7 @@
                             }
                         }
                     },
-                    "description": "the train whose speed shall be set, the speed, and the track output"
+                    "description": "the train whose speed shall be set, the speed in the range [-126, 126] , and the track output (usually 'master')."
                 },
                 "security": []
             }
@@ -275,7 +275,7 @@
         "/controller/release-route": {
             "post": {
                 "summary": "releases a route",
-                "description": "releases a route that is currently granted to a train",
+                "description": "releases the specified route that is currently granted to a train",
                 "parameters": [],
                 "operationId": "controller-release-route",
                 "responses": {
@@ -572,7 +572,536 @@
                         "description": "SWTbahn not running"
                     }
                 },
-                "security": []
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/driver/grab-train": {
+            "post": {
+                "summary": "grab a train",
+                "description": "Grab a train (to take temporary ownership). If successful, a grab-id (that identifies this temporary ownership) and a session-id (server session ID to detect server restarts which invalidate train ownerships) are returned. The ownership lasts until it is released (by an admin or by the driver), or until the server session ends.",
+                "parameters": [],
+                "operationId": "driver-grab-train",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_grab-train"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown train or invalid train state",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Train already grabbed or max. no of grabbed trains reached",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_train_engine"
+                            }
+                        }
+                    },
+                    "description": "A train engine ID has to be specified along with the ID of the train to grab.\nThe train engine determines how the train reacts to speed and direction requests/commands sent via the appropriate API endpoint.\nThe normal train engine is called 'libtrain_engine_default (unremovable)'."
+                }
+            }
+        },
+        "/driver/release-train": {
+            "post": {
+                "summary": "release a train",
+                "description": "Release a train that was grabbed with a specific grab-id in the current server session.",
+                "parameters": [],
+                "operationId": "driver-release-train",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Train is not currently grabbed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id"
+                            }
+                        }
+                    },
+                    "description": "The grab-id has to be specified which identifies the train ownership that is to be released.\nThe session-id has to be specified to make sure this train ownership was granted in the same server session."
+                }
+            }
+        },
+        "/driver/request-route": {
+            "post": {
+                "summary": "request a route",
+                "description": "Request a route from a source signal to a destination signal, to be driven with the grabbed train. If successful, a route is granted and its ID is returned.",
+                "parameters": [],
+                "operationId": "driver-request-route",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_request-route"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s), or other reason for no route being granted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Route to be granted is in conflict with other granted route or in conflict with state of the track",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_source_destination"
+                            }
+                        }
+                    },
+                    "description": "The grab-id has to be specified which identifies the train ownership, i.e., the train with which the route is to be driven.\nThe session-id has to be specified to make sure the train ownership was granted in the same server session.\nThe source (destination) signal is the start (end) of the desired route. In case of composite signals (two signals on one post/mast), usually the specific ID of the non-distant signal has to be provided."
+                }
+            }
+        },
+        "/driver/request-route-by-id": {
+            "post": {
+                "summary": "request a route by its ID",
+                "description": "Request the route with a specific route-id, to be driven with the grabbed train. If successful, the route with the specified ID is granted.",
+                "parameters": [],
+                "operationId": "driver-request-route-by-id",
+                "responses": {
+                    "200": {
+                        "description": "Success (route is granted)"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s), or other reason for no route being granted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Route to be granted is in conflict with other granted route or in conflict with state of the track, or route is already granted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_route-id"
+                            }
+                        }
+                    },
+                    "description": "The grab-id has to be specified which identifies the train ownership, i.e., the train with which the route is to be driven.\nThe session-id has to be specified to make sure the train ownership was granted in the same server session.\nThe route-id identifies which route is being requested."
+                }
+            }
+        },
+        "/driver/direction": {
+            "post": {
+                "summary": "get the direction for driving a route",
+                "description": "Get the direction that the specified train would need to drive (forwards or backwards) to drive along the specified route.",
+                "parameters": [],
+                "operationId": "driver-direction",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_direction"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_train_route-id"
+                            }
+                        }
+                    },
+                    "description": "The train for which the direction is to be determined and the route-id of the route for which the driving direction is to be determined."
+                }
+            }
+        },
+        "/driver/drive-route": {
+            "post": {
+                "summary": "drive a route",
+                "description": "Drive the specified route with the grabbed train, either in manual mode (speed controlled by driver via separate set-speed commands) or in automatic mode (train is driven automatically along the route).\nNote that this request is blocking until the route is released (either manually through appropriate command or automatically when end of the route is reached), or an internal error occurs.\nThis only works if the route is currently granted to the grabbed train.",
+                "parameters": [],
+                "operationId": "driver-drive-route",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_route-id_mode"
+                            }
+                        }
+                    },
+                    "description": "The session-id of the current server session. \nThe grab-id that identifies the ownership of the train with which the route is driven.\nThe route-id that identifies the route to drive.\nThe mode that specifies whether driving is manual or automatic."
+                }
+            }
+        },
+        "/driver/set-dcc-train-speed": {
+            "post": {
+                "summary": "set the dcc speed of a train",
+                "description": "Set the requested speed (and thus also direction) of the grabbed train to a valid dcc speed. The speed request is passed to the train engine dynamic container.",
+                "parameters": [],
+                "operationId": "driver-set-dcc-train-speed",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_speed_track-output"
+                            }
+                        }
+                    },
+                    "description": "The session-id of the current server session. \nThe grab-id that identifies the ownership of the train whose speed is to be set.\nThe dcc speed to set.\nThe track output for which the train shall be set to the given speed (usually 'master')."
+                }
+            }
+        },
+        "/driver/set-calibrated-train-speed": {
+            "post": {
+                "summary": "set the speed of a train to a calibrated level",
+                "description": "Sets the speed of the grabbed train to a calibrated level (levels defined in config files)(and thus also direction). In contrast to driver-set-dcc-train-speed, this bypasses the train engine dynamic container, i.e., the speed is set directly via bidib. Note that this may lead to inconsistencies/the train changing its speed to something else after this command due to a change in the output of the train engine dynamic container.",
+                "parameters": [],
+                "operationId": "driver-set-calibrated-train-speed",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_speed_track-output__for-calibrated-speed"
+                            }
+                        }
+                    },
+                    "description": "The session-id of the current server session. \nThe grab-id that identifies the ownership of the train whose speed is to be set.\nThe calibrated speed level to set.\nThe track output for which the train shall be set to the given speed (usually 'master')."
+                }
+            }
+        },
+        "/driver/set-train-emergency-stop": {
+            "post": {
+                "summary": "set a train to emergency stop",
+                "description": "Emergency stops the grabbed train. This bypasses the train engine dynamic container, i.e., the emergency stop is set directly via bidib. Note that this may lead to inconsistencies/the train starting to drive again after the emergency stop due to a change in the output of the train engine dynamic container.",
+                "parameters": [],
+                "operationId": "driver-set-train-emergency-stop",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_track-output"
+                            }
+                        }
+                    },
+                    "description": "The session-id of the current server session. \nThe grab-id that identifies the ownership of the train which is to be stopped.\nThe track output for which the train shall be stopped (usually 'master')."
+                }
+            }
+        },
+        "/driver/set-train-peripheral": {
+            "post": {
+                "summary": "set the state of a train peripheral",
+                "description": "Set the state of the peripheral of the grabbed train",
+                "parameters": [],
+                "operationId": "driver-set-train-peripheral",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_session-id_grab-id_peripheral_state_track-output"
+                            }
+                        }
+                    },
+                    "description": "The session-id of the current server session. \nThe grab-id that identifies the ownership of the train whose peripheral is to be set.\nThe peripheral whose state to set.\nThe state to set the peripheral to (string with '0' or '1' for on or off respectively).\nThe track output for which the train's peripheral shall be set (usually 'master')."
+                }
             }
         }
     },
@@ -993,7 +1522,7 @@
                         "minLength": 1
                     },
                     "state": {
-                        "description": "desired peripheral state",
+                        "description": "desired peripheral state (either 0 (off) or 1 (on))",
                         "type": "string",
                         "minLength": 1
                     },
