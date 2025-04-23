@@ -55,11 +55,22 @@ void release_all_interlockers(void);
 bool load_default_interlocker_instance();
 
 /**
+ * Checks if there exists at least one route that is currently granted
+ * and conflicts with the route specified via route_id.
+ * Shall only be called with interlocker_mutex locked.
+ * 
+ * @param route_id id of route for which conflicts shall be checked
+ * @return true if at least one conflict with a granted route exists and route_id is a valid route
+ * @return false otherwise
+ */
+bool get_route_has_granted_conflicts(const char *route_id);
+
+/**
  * Finds conflicting routes that have been granted.
  * Shall only be called with interlocker_mutex locked.
  * The caller is responsible for freeing the returned array and its contents.
  * 
- * @param route_id id of route for which conflicts should be checked
+ * @param route_id id of route for which conflicts shall be checked
  * @param include_conflict_train_info whether the train to which a conflicting route is granted
  * shall be added for each element
  * @return GArray of granted route conflicts, described by strings. 

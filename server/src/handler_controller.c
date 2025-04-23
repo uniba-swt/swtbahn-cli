@@ -153,6 +153,47 @@ void release_all_interlockers(void) {
 	pthread_mutex_unlock(&interlocker_mutex);
 }
 
+/**
+ * Check if a sectional interlocker is in use. 
+ * Shall only be called with interlocker_mutex locked.
+ * 
+ * @return true if the currently used interlocker name contains "sectional", i.e., 
+ * a sectional interlocker is in use.
+ * @return false otherwise
+ */
+static bool is_sectional_interlocker_in_use() {
+	return selected_interlocker_name != NULL 
+	       && (g_strrstr(selected_interlocker_name->str, "sectional") != NULL);
+}
+
+bool get_route_has_granted_conflicts(const char *route_id) {
+	if (route_id == NULL) {
+		return false;
+	}
+	// When a sectional interlocker is in use, use the sectional checker to check for conflicts.
+	const bool sectional_in_use = is_sectional_interlocker_in_use();
+	
+	// Amount of conflicting routes can't be larger than overall amount of routes known.
+	const unsigned int route_count = interlocking_table_get_size();
+	char *conflict_routes[route_count];
+	const int conflict_routes_len = 
+			config_get_array_string_value("route", route_id, "conflicts", conflict_routes);
+	
+	for (int i = 0; i < conflict_routes_len; i++) {
+		const t_interlocking_route *conflict_route = get_route(conflict_routes[i]);
+		if (conflict_route != NULL && conflict_route->train != NULL) {
+			if (sectional_in_use && is_route_conflict_safe_sectional(conflict_routes[i], route_id)) {
+				// If a sectional checker is in use and it says that this conflict is 
+				// actually "safe", skip this conflict.
+				continue;
+			} else {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_train_info) {
 	if (route_id == NULL) {
 		return NULL;
@@ -161,7 +202,7 @@ GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_
 	
 	// When a sectional interlocker is in use, use the sectional checker to
 	// check for route availability.
-	bool sectional_in_use = (g_strrstr(selected_interlocker_name->str, "sectional") != NULL);
+	const bool sectional_in_use = is_sectional_interlocker_in_use();
 	
 	// For the route with id=route_id, get all conflicting routes and add them to the
 	// GArray that will be returned if they are granted.
@@ -318,34 +359,20 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 	if (route == NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_ERR, "Grant route id - unknown route id %s", route_id);
-		return "not_grantable";
-	}
-	GArray *granted_conflicts = get_granted_route_conflicts(route_id, false);
-	if (granted_conflicts == NULL) {
+		return "not_known";
+	} else if (route->train != NULL) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
-		              "Grant route id - route: %s train: %s - search for conflicting routes failed",
+		              "Grant route id - route: %s train: %s - route already granted",
 		              route_id, train_id);
-		return "not_grantable";
-	}
-	const bool hasGrantedConflicts = (granted_conflicts->len > 0);
-	for (int i = 0; i < granted_conflicts->len; ++i) {
-		if (g_array_index(granted_conflicts, char *, i) != NULL) {
-			free(g_array_index(granted_conflicts, char *, i));
-		}
-	}
-	g_array_free(granted_conflicts, true);
-	if (route->train != NULL || hasGrantedConflicts) {
+		return "already_granted";
+	} else if (get_route_has_granted_conflicts(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
-		              "Grant route id - route: %s train: %s - route already granted "
-		              "or conflicting routes are in use",
+		              "Grant route id - route: %s train: %s - conflicting routes are in use",
 		              route_id, train_id);
 		return "not_grantable";
-	}
-	
-	// Check whether the route is physically available
-	if (!get_route_is_clear(route_id)) {
+	} else if (!get_route_is_clear(route_id)) {
 		pthread_mutex_unlock(&interlocker_mutex);
 		syslog_server(LOG_WARNING, 
 		              "Grant route id - route: %s train: %s - route is not clear",
@@ -367,7 +394,7 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		              "Grant route id - route: %s train: %s - "
 		              "unable to allocate memory for route->train",
 		              route_id, train_id);
-		return "not_grantable";
+		return "internal_error";
 	}
 	
 	// Set the points to their required positions

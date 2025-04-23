@@ -915,8 +915,11 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		
-		///TODO: Consider adding a timeout after which the train is directly set to stop via bidib.
 		// Wait until the train has stopped moving
+		///NOTE: There is a potential race condition with set-dcc-speed:
+		///      If release is requested and a non-zero speed is set just barely after/during that, 
+		///      the effective speed will not become 0 (which we wait for in the loop below).
+		///TODO: Consider adding a timeout after which the train is directly set to stop via bidib.
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
@@ -926,10 +929,10 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		bidib_free_train_state_query(train_state_query);
 		
 		if (!release_train(grab_id)) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id or train already released");
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "train is not currently grabbed");
 			syslog_server(LOG_ERR, 
 			              "Request: Release train - grab-id: %d train: %s - "
-			              "invalid grab-id or train already released - abort", 
+			              "train is not currently grabbed - abort", 
 			              grab_id, train_id);
 		} else {
 			onion_response_set_code(res, HTTP_OK);
@@ -1059,12 +1062,20 @@ o_con_status handler_request_route_by_id(void *_, onion_request *req, onion_resp
 		// No extra syslog as grant_route_id logs extensively
 		if (strcmp(result, "granted") == 0) {
 			onion_response_set_code(res, HTTP_OK);
+		} else if (strcmp(result, "not_known") == 0) {
+			send_common_feedback(res, HTTP_NOT_FOUND, "Route is not known");
+		} else if (strcmp(result, "already_granted") == 0) {
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
+			                     "Route is already granted to another train");
 		} else if (strcmp(result, "not_grantable") == 0) {
 			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
 			                     "Route not available or has conflicts with granted route(s)");
 		} else if (strcmp(result, "not_clear") == 0) {
 			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, 
 			                     "Route has occupied tracks or source signal is not stop");
+		} else if (strcmp(result, "internal_error") == 0) {
+			send_common_feedback(res, HTTP_INTERNAL_ERROR, 
+			                     "Route granting failed due to internal error");
 		} else {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "Route could not be granted");
 		}
@@ -1105,16 +1116,25 @@ o_con_status handler_driving_direction(void *_, onion_request *req, onion_respon
 			return OCS_PROCESSED;
 		}
 		
-		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - start", data_train);
+		syslog_server(LOG_INFO, 
+		              "Request: Driving direction - train: %s route: %s - start", 
+		              data_train, route_id);
 		pthread_mutex_lock(&interlocker_mutex);
 		const t_interlocking_route *route = get_route(route_id);
-		if (is_forward_driving(route, data_train)) {
-			send_some_cstring(res, HTTP_OK, "{\n\"direction\": \"forwards\"\n}");
+		if (route == NULL) {
+			send_common_feedback(res, HTTP_NOT_FOUND, "no route with given route-id known");
+			syslog_server(LOG_INFO, 
+			              "Request: Driving direction - train: %s route: %s - unknown route", 
+			              data_train, route_id);
+		} else if (is_forward_driving(route, data_train)) {
+			send_some_cstring(res, HTTP_OK, "{\"direction\": \"forwards\"}");
 		} else {
-			send_some_cstring(res, HTTP_OK, "{\n\"direction\": \"backwards\"\n}");
+			send_some_cstring(res, HTTP_OK, "{\"direction\": \"backwards\"}");
 		}
 		pthread_mutex_unlock(&interlocker_mutex);
-		syslog_server(LOG_INFO, "Request: Driving direction - train: %s - finish", data_train);
+		syslog_server(LOG_INFO, 
+		              "Request: Driving direction - train: %s route: %s - finish", 
+		              data_train, route_id);
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Driving direction");
@@ -1171,7 +1191,9 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 			              "Request: Drive route - route: %s train: %s drive mode: %s - finish", 
 			              route_id, train_id, mode);
 		} else {
-			send_common_feedback(res, HTTP_INTERNAL_ERROR, "Route driving aborted");
+			send_common_feedback(res, HTTP_BAD_REQUEST, 
+			                     "Route driving failed; please ensure that the route is granted "
+			                     "to the train corresponding to the grab-id");
 			syslog_server(LOG_ERR, 
 			              "Request: Drive route - route: %s train: %s drive mode: %s - "
 			              "driving failed - abort", 
@@ -1222,7 +1244,9 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 		} else if (strlen(data_track_output) > 32) {
 			// strlen check here as the value is copied to grabbed_trains[grab_id].track_output,
 			// which has a length of 32.
-			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid track output");
+			send_common_feedback(res, HTTP_BAD_REQUEST, 
+			                     "invalid track output (currently no track output longer than "
+			                     "32 chars, incl. nul terminator, is supported for this endpoint)");
 			syslog_server(LOG_ERR, 
 			              "Request: Set dcc train speed - train: %s speed: %d - invalid track output",
 			              grabbed_trains[grab_id].name->str, speed);
@@ -1402,7 +1426,7 @@ o_con_status handler_set_train_peripheral(void *_, onion_request *req, onion_res
 		}
 		
 		syslog_server(LOG_NOTICE, 
-		              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x - start", 
+		              "Request: Set train peripheral - train: %s peripheral: %s state: %d - start", 
 		              grabbed_trains[grab_id].name->str, data_peripheral, state);
 		if (bidib_set_train_peripheral(grabbed_trains[grab_id].name->str,
 		                               data_peripheral, state,
@@ -1410,13 +1434,13 @@ o_con_status handler_set_train_peripheral(void *_, onion_request *req, onion_res
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
 			syslog_server(LOG_ERR, 
 			              "Request: Set train peripheral - train: %s "
-			              "peripheral: %s state: 0x%02x - invalid parameter values - abort",
+			              "peripheral: %s state: %d - invalid parameter values - abort",
 			              grabbed_trains[grab_id].name->str, data_peripheral, state);
 		} else {
 			bidib_flush();
 			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
-			              "Request: Set train peripheral - train: %s peripheral: %s state: 0x%02x"
+			              "Request: Set train peripheral - train: %s peripheral: %s state: %d"
 			              " - finish",
 			              grabbed_trains[grab_id].name->str, data_peripheral, state);
 		}
