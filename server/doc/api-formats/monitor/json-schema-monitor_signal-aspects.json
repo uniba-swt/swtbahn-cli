@@ -9,10 +9,10 @@
       "type": "array",
       "minItems": 0,
       "$comment": "currently allows answers with no aspects in the list, can occur if specified signal is unknown",
+      "uniqueItems": true,
       "items": {
         "type": "string",
-        "minLength": 1,
-        "uniqueItems": true
+        "minLength": 1
       }
     }, 
     "msg": {

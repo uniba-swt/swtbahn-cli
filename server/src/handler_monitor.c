@@ -801,7 +801,7 @@ o_con_status handler_get_point_details(void *_, onion_request *req, onion_respon
 
 o_con_status handler_get_signal_details(void *_, onion_request *req, onion_response *res) {
 	syslog_server(LOG_ERR, "Request: Get signal details - not implemented yet!");
-	///TODO: Implement
+	///TODO: Implement and add to API documentation
 	return OCS_NOT_IMPLEMENTED;
 }
 
@@ -912,27 +912,28 @@ static GString *get_segments_json() {
 			g_string_append_c(g_segments, ',');
 		}
 		added_segments++;
+		const bool segment_is_occupied = seg_state_query.known && seg_state_query.data.occupied;
+		
 		append_start_of_obj(g_segments, true);
-		append_field_str_value(g_segments, "id", seg_query.ids[i], true);
+		append_field_str_value(g_segments, "id", seg_query.ids[i], segment_is_occupied);
 		
-		append_field_start_of_list(g_segments, "occupied-by");
-		for (size_t j = 0; j < seg_state_query.data.dcc_address_cnt; j++) {
-			t_bidib_id_query id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
+		if (segment_is_occupied) {	
+			append_field_start_of_list(g_segments, "occupied-by");
+			for (size_t j = 0; j < seg_state_query.data.dcc_address_cnt; j++) {
+				t_bidib_id_query id_query = bidib_get_train_id(seg_state_query.data.dcc_addresses[j]);
+				g_string_append_printf(g_segments, "%s\"%s\"", 
+				                       j != 0 ? ", " : "", 
+				                       id_query.known ? id_query.id : "unknown");
+				                       bidib_free_id_query(id_query);
+			}
+			// In case we know the segment is occupied, but no addresses are present, the 
+			// loop above won't add "unknown", so deal with this case separately
+			if (seg_state_query.data.dcc_address_cnt == 0) {
+				g_string_append_printf(g_segments, "\"unknown\"");
+			}
 			
-			g_string_append_printf(g_segments, "%s\"%s\"", 
-			                       j != 0 ? ", " : "", 
-			                       id_query.known ? id_query.id : "unknown");
-			bidib_free_id_query(id_query);
+			append_end_of_list(g_segments, false, false);
 		}
-		// In case we know the segment is occupied, but no addresses are known, the 
-		// loop above won't add "unknown", so deal with this case separately
-		if (seg_state_query.known 
-				&& seg_state_query.data.occupied 
-				&& seg_state_query.data.dcc_addresses == 0) {
-			g_string_append_printf(g_segments, "\"unknown\"");
-		}
-		
-		append_end_of_list(g_segments, false, false);
 		append_end_of_obj(g_segments, false);
 		
 		bidib_free_segment_state_query(seg_state_query);
@@ -946,8 +947,6 @@ static GString *get_segments_json() {
 o_con_status handler_get_segments(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
-		/// TODO: Change to only have occupied-by if actually needed!
-		///       Also change spec!
 		GString *g_segments = get_segments_json();
 		send_some_gstring_and_free(res, HTTP_OK, g_segments);
 		syslog_server(LOG_INFO, "Request: Get segments - done");
@@ -1021,6 +1020,7 @@ o_con_status handler_get_reversers(void *_, onion_request *req, onion_response *
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		if (!reversers_state_update()) {
+			///TODO: reply with common feedback to differentiate error from the one below
 			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
 			return OCS_PROCESSED;
@@ -1167,9 +1167,10 @@ static GString* get_granted_routes_json() {
 			if (route_id != NULL) {
 				t_interlocking_route *route = get_route(route_id);
 				if (route != NULL && route->train != NULL) {
-					if (routes_added++ > 0) {
+					if (routes_added > 0) {
 						g_string_append_c(g_granted_routes, ',');
 					}
+					routes_added++;
 					append_start_of_obj(g_granted_routes, true);
 					append_field_str_value(g_granted_routes, "id", route->id, true);
 					append_field_str_value(g_granted_routes, "train", route->train, false);
@@ -1219,7 +1220,7 @@ o_con_status handler_get_granted_routes(void *_, onion_request *req, onion_respo
  * Returns NULL on failure to allocate the string.
  */
 static GString* get_route_json(const char *route_id) {
-	///TODO: Think about a possible endpoint with less details; e.g., no length, 
+	///NOTE: Think about a possible endpoint with less details; e.g., no length, 
 	///      no conflicting-route-ids, no sections; to reduce bandwidth load where those fields
 	///      are not needed by the client anyway.
 	///      Also, this does not return info on the required position of points, is that not needed
@@ -1254,8 +1255,7 @@ static GString* get_route_json(const char *route_id) {
 	append_field_strlist_value_from_garray_strs(g_route, "sections", route->sections, true);
 	append_field_strlist_value_from_garray_strs(g_route, "signals", route->signals, true);
 	
-	// if g_point_ids is null, nothing will be appended -> document that in the json-schema and log.
-	// (same for g_conflicts down below). 
+	// if g_point_ids is null, nothing will be appended. (same for g_conflicts down below).
 	GArray *g_point_ids = garray_points_to_garray_str_ids(route->points);
 	append_field_strlist_value_from_garray_strs(g_route, "points", g_point_ids, true);
 	if (g_point_ids == NULL) {
@@ -1293,7 +1293,6 @@ static GString* get_route_json(const char *route_id) {
 
 o_con_status handler_get_route(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
-	///NOTE: uses POST instead of GET to allow parameter passing via POST dict/data
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);

@@ -1118,8 +1118,7 @@
                 "properties": {
                     "msg": {
                         "type": "string",
-                        "minLength": 1,
-                        "$comment": "msg is not required to always be present, but if it is, its value shall not be empty."
+                        "minLength": 1
                     }
                 }
             },
@@ -1128,7 +1127,7 @@
                 "type": "object",
                 "properties": {
                     "train": {
-                        "description": "string with name of the train",
+                        "description": "name of the train",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1139,7 +1138,7 @@
                 "type": "object",
                 "properties": {
                     "verification-url": {
-                        "description": "verification url string",
+                        "description": "verification server url incl. port",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1150,9 +1149,10 @@
                 "type": "object",
                 "properties": {
                     "verification-option": {
-                        "description": "verification option value string (value should be true or false)",
+                        "description": "verification option value string (value should be 'true' or 'false')",
                         "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "pattern": "^(true|false)$"
                     }
                 }
             },
@@ -1161,7 +1161,7 @@
                 "type": "object",
                 "properties": {
                     "state": {
-                        "description": "state string",
+                        "description": "state",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1172,7 +1172,7 @@
                 "type": "object",
                 "properties": {
                     "route-id": {
-                        "description": "string with ID of a route, which is usually a whole number",
+                        "description": "ID of the route",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1231,7 +1231,7 @@
                 "type": "object",
                 "properties": {
                     "interlocker": {
-                        "description": "string with ID of an interlocker",
+                        "description": "ID of an interlocker",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1254,12 +1254,12 @@
                 "type": "object",
                 "properties": {
                     "train": {
-                        "description": "string with name of a train",
+                        "description": "name of a train",
                         "type": "string",
                         "minLength": 1
                     },
                     "engine": {
-                        "description": "string with name of a (train) engine",
+                        "description": "name of a (train) engine",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1360,12 +1360,12 @@
                 "type": "object",
                 "properties": {
                     "train": {
-                        "description": "string with name of a train",
+                        "description": "name of a train",
                         "type": "string",
                         "minLength": 1
                     },
                     "route-id": {
-                        "description": "string with ID of the route that shall be considered for driving direction",
+                        "description": "ID of the route that shall be considered for driving direction",
                         "type": "string",
                         "minLength": 1
                     }
@@ -1423,7 +1423,7 @@
                         "minLength": 1
                     },
                     "speed": {
-                        "description": "string with speed to set the train to [-126,126]",
+                        "description": "speed to set the train to, in range [-126,126]",
                         "type": "string",
                         "minLength": 1
                     },
@@ -1439,12 +1439,12 @@
                 "type": "object",
                 "properties": {
                     "train": {
-                        "description": "string with name of the train",
+                        "description": "name of a train",
                         "type": "string",
                         "minLength": 1
                     },
                     "speed": {
-                        "description": "string with speed to set the train to [-126,126]",
+                        "description": "speed to set the train to, in range [-126,126]",
                         "type": "string",
                         "minLength": 1
                     },
@@ -1470,7 +1470,7 @@
                         "minLength": 1
                     },
                     "speed": {
-                        "description": "string with speed to set the train to, [-9,9], depending on the calibration levels configured for the grabbed train",
+                        "description": "speed to set the train to, in range [-9,9], depending on the calibration levels configured for the grabbed train",
                         "type": "string",
                         "minLength": 1
                     },
@@ -1530,6 +1530,592 @@
                         "description": "the name of the track output node (usually master)",
                         "type": "string",
                         "minLength": 1
+                    }
+                }
+            },
+            "param_signal": {
+                "title": "param_signal",
+                "type": "object",
+                "properties": {
+                    "signal": {
+                        "description": "ID of a signal",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_point": {
+                "title": "param_point",
+                "type": "object",
+                "properties": {
+                    "point": {
+                        "description": "ID of a point",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "reply_route": {
+                "title": "reply_route",
+                "description": "Info on a specific route",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "ID of the route",
+                        "minLength": 1
+                    },
+                    "source_signal": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "destination_signal": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "orientation": {
+                        "type": "string",
+                        "pattern": "^(anticlockwise|clockwise)$"
+                    },
+                    "length": {
+                        "type": "number",
+                        "description": "length, usually in centimeters (depends on config)"
+                    },
+                    "path": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": false,
+                        "description": "path of the route, in order of intended traversal, including signals that are passed",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "sections": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "signals": {
+                        "type": "array",
+                        "minItems": 2,
+                        "description": "Includes at least source and destination signals, plus any passed non-distant signals",
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "points": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "conflicting_route_ids": {
+                        "type": "array",
+                        "minItems": 0,
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "granted_conflicting_route_ids": {
+                        "type": "array",
+                        "minItems": 0,
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "clear": {
+                        "type": "boolean"
+                    },
+                    "granted_to_train": {
+                        "type": "string",
+                        "minLength": 0,
+                        "description": "Contains name of the train if the route is currently granted, otherwise empty"
+                    }
+                }
+            },
+            "reply_granted-routes": {
+                "title": "reply_granted-routes",
+                "description": "List of granted routes, each entry has the route ID and name of train which the route is granted to",
+                "type": "object",
+                "properties": {
+                    "granted-routes": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "train": {
+                                    "type": "string",
+                                    "minLength": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_verification-url": {
+                "title": "reply_verification-url",
+                "description": "Verification Server URL",
+                "type": "object",
+                "properties": {
+                    "verification-url": {
+                        "type": "string",
+                        "minLength": 0
+                    }
+                }
+            },
+            "reply_verification-option": {
+                "title": "reply_verification-option",
+                "description": "State of verification option, i.e., whether it is enabled or disabled",
+                "type": "object",
+                "properties": {
+                    "verification-enabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "reply_peripherals": {
+                "title": "reply_peripherals",
+                "description": "List of peripherals, with their identifier and info on their state id and state value",
+                "type": "object",
+                "properties": {
+                    "peripherals": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "state-id": {
+                                    "type": "string",
+                                    "minLength": 0
+                                },
+                                "state-value": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_reversers": {
+                "title": "reply_reversers",
+                "description": "List of reversers of the platform with their state",
+                "type": "object",
+                "properties": {
+                    "reversers": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "pattern": "^(on|off|unknown)$"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_segments": {
+                "title": "reply_segments",
+                "description": "List of segments, with info on occupancy per segment if it is occupied",
+                "type": "object",
+                "properties": {
+                    "segments": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "required": [
+                                "id"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "occupied-by": {
+                                    "description": "list of occupiers (names of train(s) or 'unknown' if occupier is not identifiable)",
+                                    "type": "array",
+                                    "minItems": 1,
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_point-details": {
+                "title": "reply_point-details",
+                "description": "Detailed information on a point",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "aspects": {
+                        "type": "array",
+                        "minItems": 0,
+                        "$comment": "currently allows answers with no aspects in the list, can occur if low-level querying of aspects fails",
+                        "description": "list of aspects, i.e., states, that this point can be set to",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "state": {
+                        "type": "string",
+                        "minLength": 0,
+                        "$comment": "not sure if we may have an empty state in some non-erronous circumstance"
+                    },
+                    "segment": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "occupied": {
+                        "type": "boolean"
+                    },
+                    "target_state_reached": {
+                        "type": "boolean",
+                        "$comment": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
+                    }
+                },
+                "required": [
+                    "id",
+                    "aspects",
+                    "state",
+                    "segment",
+                    "occupied"
+                ]
+            },
+            "reply_signals": {
+                "title": "reply_signals",
+                "description": "List of signals, consisting of the signal ID and its state",
+                "type": "object",
+                "properties": {
+                    "signals": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_points": {
+                "title": "reply_points",
+                "description": "List of points, consisting of the point ID, its state, and the target_state_reached status if available",
+                "type": "object",
+                "properties": {
+                    "points": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "required": [
+                                "id",
+                                "state"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "minLength": 0
+                                },
+                                "target_state_reached": {
+                                    "type": "boolean",
+                                    "$comment": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_track-outputs": {
+                "title": "reply_track-outputs",
+                "description": "List of track outputs with their identifier and their state",
+                "type": "object",
+                "properties": {
+                    "track-outputs": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_interlockers": {
+                "title": "reply_interlockers",
+                "description": "List of interlocker identifiers",
+                "type": "object",
+                "properties": {
+                    "interlockers": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    }
+                }
+            },
+            "reply_engines": {
+                "title": "reply_engines",
+                "description": "List of train engine identifiers (i.e., those of available train behaviour models, not physical trains)",
+                "type": "object",
+                "properties": {
+                    "engines": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    }
+                }
+            },
+            "reply_train-peripherals": {
+                "title": "reply_train-peripherals",
+                "description": "List of peripherals of a train with their state",
+                "type": "object",
+                "properties": {
+                    "train-peripherals": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "pattern": "^(on|off|unknown)$"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_train-states": {
+                "title": "reply_train-states",
+                "description": "List of train states",
+                "type": "object",
+                "train-states": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 0,
+                    "items": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "grabbed": {
+                                "type": "boolean"
+                            },
+                            "orientation": {
+                                "type": "string",
+                                "pattern": "^(left|right)$"
+                            },
+                            "direction": {
+                                "type": "string",
+                                "pattern": "^(forwards|backwards)$"
+                            },
+                            "speed_step": {
+                                "type": "number"
+                            },
+                            "detected_kmh_speed": {
+                                "type": "number",
+                                "$comment": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
+                            },
+                            "route_id": {
+                                "type": "string",
+                                "$comment": "empty string or not present if no route is granted to this train. Otherwise route id.",
+                                "minLength": 0
+                            },
+                            "on_track": {
+                                "type": "boolean"
+                            },
+                            "occupied_segments": {
+                                "type": "array",
+                                "$comment": "occupied_segments is only included if on_track is true.",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "occupied_blocks": {
+                                "type": "array",
+                                "$comment": "occupied_blocks is only included if on_track is true.",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_train-state": {
+                "title": "reply_train-state",
+                "description": "state of a train",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "grabbed": {
+                        "type": "boolean"
+                    },
+                    "orientation": {
+                        "type": "string",
+                        "pattern": "^(left|right)$"
+                    },
+                    "direction": {
+                        "type": "string",
+                        "pattern": "^(forwards|backwards)$"
+                    },
+                    "speed_step": {
+                        "type": "number"
+                    },
+                    "detected_kmh_speed": {
+                        "type": "number",
+                        "$comment": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
+                    },
+                    "route_id": {
+                        "type": "string",
+                        "$comment": "empty string or not present if no route is granted to this train. Otherwise route id.",
+                        "minLength": 0
+                    },
+                    "on_track": {
+                        "type": "boolean"
+                    },
+                    "occupied_segments": {
+                        "type": "array",
+                        "$comment": "occupied_segments is only included if on_track is true.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "occupied_blocks": {
+                        "type": "array",
+                        "$comment": "occupied_blocks is only included if on_track is true.",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "grabbed",
+                    "orientation",
+                    "direction",
+                    "speed_step",
+                    "on_track"
+                ]
+            },
+            "reply_trains": {
+                "title": "reply_trains",
+                "description": "List of trains, each entry has train ID, grabbed status and on_track status",
+                "type": "object",
+                "properties": {
+                    "trains": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "grabbed": {
+                                    "type": "boolean"
+                                },
+                                "on_track": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "reply_platform-name": {
+                "title": "reply_platform-name",
+                "type": "object",
+                "properties": {
+                    "platform-name": {
+                        "type": "string",
+                        "description": "name of the SWTbahn (platform) which is being operated",
+                        "minLength": 1
+                    }
+                }
+            },
+            "reply_accessory-aspects": {
+                "title": "reply_accessory-aspects",
+                "description": "List of aspects (i.e., states) that a specific accessory (e.g., point, signal) can be set to",
+                "type": "object",
+                "properties": {
+                    "aspects": {
+                        "type": "array",
+                        "minItems": 0,
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
                     }
                 }
             }
