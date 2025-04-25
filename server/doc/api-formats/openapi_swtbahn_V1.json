@@ -1103,6 +1103,778 @@
                     "description": "The session-id of the current server session. \nThe grab-id that identifies the ownership of the train whose peripheral is to be set.\nThe peripheral whose state to set.\nThe state to set the peripheral to (string with '0' or '1' for on or off respectively).\nThe track output for which the train's peripheral shall be set (usually 'master')."
                 }
             }
+        },
+        "/monitor/platform-name": {
+            "get": {
+                "summary": "get the name of the SWTbahn (platform) currently being operated",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-platform-name",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_platform-name"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/trains": {
+            "get": {
+                "summary": "get info of trains",
+                "description": "Gets information (ID, grab status, on-track status) of trains, for all trains defined in the configuration files of the SWTbahn platform being operated",
+                "parameters": [],
+                "operationId": "monitor-trains",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_trains"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/train-state": {
+            "post": {
+                "summary": "get info on state of specific train",
+                "description": "Gets information on state of a specific train",
+                "parameters": [],
+                "operationId": "monitor-train-state",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_train-state"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown train"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_train"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the train to get info on its state"
+                }
+            }
+        },
+        "/monitor/train-states": {
+            "get": {
+                "summary": "get info on state of all trains",
+                "description": "Gets information on state of all trains",
+                "parameters": [],
+                "operationId": "monitor-train-states",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_train-states"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/train-peripherals": {
+            "post": {
+                "summary": "get info on peripherals of a specific train",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-train-peripherals",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_train-peripherals"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown train"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_train"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the train whose peripherals to get info on"
+                }
+            }
+        },
+        "/monitor/engines": {
+            "get": {
+                "summary": "get names of available train engines (behavior models)",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-engines",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_engines"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/interlockers": {
+            "get": {
+                "summary": "get names of available interlockers",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-interlockers",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_interlockers"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/track-outputs": {
+            "get": {
+                "summary": "get names of available track ouputs",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-track-outputs",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_track-outputs"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/points": {
+            "get": {
+                "summary": "get info on points",
+                "description": "Get information (ID, state, and optionally whether the current target state is reached) on all points",
+                "parameters": [],
+                "operationId": "monitor-points",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_points"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/signals": {
+            "get": {
+                "summary": "get info on signals",
+                "description": "Get information (ID, state) on all signals",
+                "parameters": [],
+                "operationId": "monitor-signals",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_signals"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/point-details": {
+            "post": {
+                "summary": "get detailed info on a specific point",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-point-details",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_point-details"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown point"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_point"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the point"
+                }
+            }
+        },
+        "/monitor/signal-details": {
+            "post": {
+                "summary": "get detailed info on a specific signal - NOT YET IMPLEMENTED",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-signal-details",
+                "responses": {
+                    "501": {
+                        "description": "NOT YET IMPLEMENTED"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_signal"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the signal"
+                }
+            }
+        },
+        "/monitor/point-aspects": {
+            "post": {
+                "summary": "get info on aspects (states) a specific point supports",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-point-aspects",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_accessory-aspects"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown point"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_point"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the point"
+                }
+            }
+        },
+        "/monitor/signal-aspects": {
+            "post": {
+                "summary": "get info on aspects (states) a specific signal supports",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-signal-aspects",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_accessory-aspects"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown signal"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_signal"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the signal"
+                }
+            }
+        },
+        "/monitor/segments": {
+            "get": {
+                "summary": "get info on segments",
+                "description": "Get info on segments (ID, and, if occupied, who/what is occupying them)",
+                "parameters": [],
+                "operationId": "monitor-segments",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_segments"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/reversers": {
+            "get": {
+                "summary": "get info on reversers",
+                "description": "Get info on reversers (ID, state)",
+                "parameters": [],
+                "operationId": "monitor-reversers",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_reversers"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message or unable to get reverser state update"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/peripherals": {
+            "get": {
+                "summary": "get info on peripherals",
+                "description": "Get info on peripherals (ID, state ID, state value)",
+                "parameters": [],
+                "operationId": "monitor-peripherals",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_peripherals"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/verification-option": {
+            "get": {
+                "summary": "get the current verification option setting",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-verification-option",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_verification-option"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/verification-url": {
+            "get": {
+                "summary": "get the current verification url",
+                "description": "",
+                "parameters": [],
+                "operationId": "monitor-verification-url",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_verification-url"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/granted-routes": {
+            "get": {
+                "summary": "get info on granted routes",
+                "description": "Get info on granted routes, with ID of route and the train (ID) they are granted to",
+                "parameters": [],
+                "operationId": "monitor-granted-routes",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_granted-routes"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {}
+            }
+        },
+        "/monitor/route": {
+            "post": {
+                "summary": "get info on a specific route",
+                "description": "Get (detailed) info on a specific route, including conflicting route IDs etc.; reply can be quite big",
+                "parameters": [],
+                "operationId": "monitor-route",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_route"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown route"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server unable to build reply message or other internal error"
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_route-id"
+                            }
+                        }
+                    },
+                    "description": "The name/ID of the route"
+                }
+            }
         }
     },
     "security": [],

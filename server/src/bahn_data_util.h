@@ -111,6 +111,8 @@ int train_state_get_speed(const char *train_id);
 
 bool train_state_set_speed(const char *train_id, int speed);
 
+bool train_known(const char *train_id);
+
 char *config_get_point_position(const char *route_id, const char *point_id);
 
 char *config_get_block_id_of_segment(const char *seg_id);

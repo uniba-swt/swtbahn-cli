@@ -1007,6 +1007,11 @@ bool train_state_set_speed(const char *train_id, int speed) {
     return result;
 }
 
+bool train_known(const char *train_id) {
+	// Shorthand/alias for checking if a train with a certain ID is defined in the config
+    return train_id != NULL && g_hash_table_contains(config_data.table_trains, train_id);
+}
+
 char *config_get_point_position(const char *route_id, const char *point_id) {
     if (route_id == NULL || point_id == NULL) {
         syslog_server(LOG_ERR, "Get route point position: invalid (NULL) parameters");

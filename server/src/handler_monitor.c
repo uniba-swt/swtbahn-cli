@@ -137,7 +137,7 @@ o_con_status handler_get_trains(void *_, onion_request *req, onion_response *res
 		GString *g_trains = get_trains_json();
 		if (g_trains != NULL) {
 			send_some_gstring_and_free(res, HTTP_OK, g_trains);
-			syslog_server(LOG_INFO, "Request: Get available trains - done");
+			syslog_server(LOG_INFO, "Request: Get trains - done");
 		} else {
 			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, "Request: Get trains - unable to build reply message");
@@ -370,6 +370,12 @@ o_con_status handler_get_train_peripherals(void *_, onion_request *req, onion_re
 		const char *data_train = onion_request_get_post(req, "train");
 		
 		if (handle_param_miss_check(res, "Get train peripherals", "train", data_train)) {
+			return OCS_PROCESSED;
+		} else if (!train_known(data_train)) {
+			onion_response_set_code(res, HTTP_NOT_FOUND);
+			syslog_server(LOG_WARNING, 
+			              "Request: Get train peripherals - train: %s - unknown train", 
+			              data_train);
 			return OCS_PROCESSED;
 		}
 		
@@ -924,14 +930,13 @@ static GString *get_segments_json() {
 				g_string_append_printf(g_segments, "%s\"%s\"", 
 				                       j != 0 ? ", " : "", 
 				                       id_query.known ? id_query.id : "unknown");
-				                       bidib_free_id_query(id_query);
+				bidib_free_id_query(id_query);
 			}
 			// In case we know the segment is occupied, but no addresses are present, the 
 			// loop above won't add "unknown", so deal with this case separately
 			if (seg_state_query.data.dcc_address_cnt == 0) {
 				g_string_append_printf(g_segments, "\"unknown\"");
 			}
-			
 			append_end_of_list(g_segments, false, false);
 		}
 		append_end_of_obj(g_segments, false);
@@ -948,8 +953,14 @@ o_con_status handler_get_segments(void *_, onion_request *req, onion_response *r
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		GString *g_segments = get_segments_json();
-		send_some_gstring_and_free(res, HTTP_OK, g_segments);
-		syslog_server(LOG_INFO, "Request: Get segments - done");
+		if (g_segments != NULL) {
+			send_some_gstring_and_free(res, HTTP_OK, g_segments);
+			syslog_server(LOG_INFO, "Request: Get segments - done");
+		} else {
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
+			syslog_server(LOG_ERR, 
+			              "Request: Get segments - unable to build reply message");
+		}
 		return OCS_PROCESSED;
 	} else {
 		return handle_req_run_or_method_fail(res, running, "Get segments");
@@ -1020,7 +1031,6 @@ o_con_status handler_get_reversers(void *_, onion_request *req, onion_response *
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		if (!reversers_state_update()) {
-			///TODO: reply with common feedback to differentiate error from the one below
 			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, "Request: Get reversers - unable to request state update");
 			return OCS_PROCESSED;
@@ -1311,7 +1321,7 @@ o_con_status handler_get_route(void *_, onion_request *req, onion_response *res)
 			send_some_gstring_and_free(res, HTTP_OK, g_route);
 			syslog_server(LOG_INFO, "Request: Get route - route: %s - finished", route_id);
 		} else {
-			onion_response_set_code(res, HTTP_BAD_REQUEST);
+			onion_response_set_code(res, HTTP_INTERNAL_ERROR);
 			syslog_server(LOG_ERR, 
 			              "Request: Get route - route: %s - invalid route-id or internal error", 
 			              route_id);
