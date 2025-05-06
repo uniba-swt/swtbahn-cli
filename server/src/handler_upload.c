@@ -272,7 +272,7 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 		const int engine_slot = dyn_containers_get_engine_slot(name);
 		if (engine_slot < 0) {
 			pthread_mutex_unlock(&dyn_containers_mutex);
-			send_common_feedback(res, HTTP_NOT_FOUND, "Engine could not be found");
+			send_common_feedback(res, HTTP_NOT_FOUND, "engine could not be found");
 			syslog_server(LOG_WARNING, 
 			              "Request: Remove engine - engine: %s - engine could not be found - abort", 
 			              name);
@@ -282,7 +282,7 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 		const bool engine_freed_successfully = dyn_containers_free_engine(engine_slot);
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		if (!engine_freed_successfully) {
-			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "Engine still in use");
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "engine still in use");
 			syslog_server(LOG_WARNING, 
 			              "Request: Remove engine - engine: %s - engine is still in use - abort", 
 			              name);
@@ -345,7 +345,7 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
 		
-		if (handle_param_miss_check(res, "Upload interlocker", "file(name)", filename)) {
+		if (handle_param_miss_check(res, "Upload interlocker", "file", filename)) {
 			return OCS_PROCESSED;
 		} else if (temp_filepath == NULL) {
 			// Either something went wrong with the fs(?), or the file was not attached at all.
@@ -360,7 +360,7 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		              filename);
 		
 		if (interlocker_file_exists(filename)) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "interlocker file already exists");
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "interlocker file already exists");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload interlocker - interlocker file: %s - "
 			              "file already exists - abort", 

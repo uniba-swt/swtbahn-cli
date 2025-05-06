@@ -1937,6 +1937,192 @@
                     "description": "The .sctx file containing the train engine."
                 }
             }
+        },
+        "/upload/remove-engine": {
+            "post": {
+                "summary": "remove a train engine (behavior) model",
+                "description": "Remove a train engine (behavior) model from those that are available on the server. Note that the default engines which are not uploaded by users are not removable.",
+                "parameters": [],
+                "operationId": "upload-remove-engine",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter, or engine is unremovable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Engine to remove not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Engine is still being used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_engine-name"
+                            }
+                        }
+                    },
+                    "description": "The name of the train engine to remove."
+                }
+            }
+        },
+        "/upload/interlocker": {
+            "post": {
+                "summary": "upload an interlocker",
+                "description": "Upload a interlocker in form of a .bahn (BahnDSL) file.",
+                "parameters": [],
+                "operationId": "upload-interlocker",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_engine__for-upload"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Interlocker with same name exists or no interlocker (container) slot is available",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Interlocker could not be compiled to a shared library",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_file"
+                            }
+                        }
+                    },
+                    "description": "The .bahn file containing the interlocker."
+                }
+            }
+        },
+        "/upload/remove-interlocker": {
+            "post": {
+                "summary": "remove an interlocker",
+                "description": "Remove an interlocker from those that are available on the server. Note that the default interlockers which are not uploaded by users are not removable.",
+                "parameters": [],
+                "operationId": "upload-remove-interlocker",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter, or interlocker is unremovable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Interlocker to remove not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Interlocker is still being used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_interlocker-name"
+                            }
+                        }
+                    },
+                    "description": "The name of the interlocker to remove."
+                }
+            }
         }
     },
     "security": [],
@@ -3024,6 +3210,28 @@
                 "required": [
                     "msg"
                 ]
+            },
+            "param_engine-name": {
+                "title": "param_engine-name",
+                "type": "object",
+                "properties": {
+                    "engine-name": {
+                        "description": "name of a (train) engine",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "param_interlocker-name": {
+                "title": "param_interlocker-name",
+                "type": "object",
+                "properties": {
+                    "interlocker-name": {
+                        "description": "name of an interlocker",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
             }
         }
     }
