@@ -35,6 +35,7 @@ typedef struct {
 	bool started;
 	bool finished;
 	bool success;
+	bool message_is_json_str;
 	GString* file_path;
 	GString* message;
 } ws_verif_data;
@@ -197,6 +198,7 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 			              "engine does not satisfy all its properties");
 			ws_data_ptr->message  = g_string_new("");
 			g_string_append_printf(ws_data_ptr->message,"%s", ws_msg->data.ptr);
+			ws_data_ptr->message_is_json_str = true;
 		}
 		ws_data_ptr->success = false;
 		ws_data_ptr->finished = true;
@@ -303,7 +305,7 @@ void websocket_verification_callback(struct mg_connection *ws_connection,
 
 verif_result verify_engine_model(const char* f_filepath) {
 	struct mg_mgr event_manager;
-	ws_verif_data ws_verif_data = {false, false, false, g_string_new(f_filepath), NULL};
+	ws_verif_data ws_verif_data = {false, false, false, false, g_string_new(f_filepath), NULL};
 	
 	if (verifier_url == NULL) {
 		syslog_server(LOG_ERR, 
@@ -311,6 +313,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 		              "no verifier URL has been set, abort");
 		verif_result result_data;
 		result_data.success = false;
+		result_data.message_is_json_str = false;
 		result_data.message = g_string_new("No verifier server URL has been set, "
 		                                   "thus no verification was possible");
 		return result_data;
@@ -353,6 +356,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 	mg_mgr_free(&event_manager);
 	verif_result result_data;
 	result_data.success = ws_verif_data.success;
+	result_data.message_is_json_str = ws_verif_data.message_is_json_str;
 	result_data.message = ws_verif_data.message;
 	
 	// Free string allocated for filepath of model file

@@ -145,10 +145,14 @@ static bool plugin_is_unremovable(const char name[]) {
 o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
+		// The client has to attach the file via form data. They do NOT have to 
+		// also send the filename on its own as a string - this is just how onion 
+		// allows us to get the filename of an attached file, even though it looks
+		// like the client has to provide both a file and the filename.
 		const char *filename = onion_request_get_post(req, "file");
 		const char *temp_filepath = onion_request_get_file(req, "file");
 		
-		if (handle_param_miss_check(res, "Upload engine", "file(name)", filename)) {
+		if (handle_param_miss_check(res, "Upload engine", "file", filename)) {
 			return OCS_PROCESSED;
 		} else if (temp_filepath == NULL) {
 			// Either something went wrong with the fs(?), or the file was not attached at all.
@@ -160,7 +164,7 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - start", filename);
 		
  		if (engine_file_exists(filename)) {
-			send_common_feedback(res, HTTP_BAD_REQUEST, "engine file already exists");
+			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "engine file already exists");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload engine - engine file: %s - "
 			              "engine file already exists - abort", 
@@ -186,9 +190,17 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 				// Stop upload if verification did not succeed
 				syslog_server(LOG_NOTICE, "Request: Upload Engine - engine verification failed - abort");
 				remove_engine_files(libname);
-				if (engine_verif_result.message != NULL) {
+				// If the reply message (from the verification server) is NOT in json format,
+				// send it via common_feedback; if it IS in JSON format, send it directly.
+				// -> the OpenAPI spec conformance thus relies on the verification server
+				//    adhering to the spec, which is fragile, but all other options would be
+				//    quite complicated.
+				// If there's no message, reason for verification failure is unknown.
+				if (engine_verif_result.message != NULL && !engine_verif_result.message_is_json_str) {
 					send_common_feedback(res, HTTP_BAD_REQUEST, engine_verif_result.message->str);
 					g_string_free(engine_verif_result.message, true);
+				} else if (engine_verif_result.message != NULL && engine_verif_result.message_is_json_str) {
+					send_some_gstring_and_free(res, HTTP_BAD_REQUEST, engine_verif_result.message);
 				} else {
 					send_common_feedback(res, HTTP_BAD_REQUEST, 
 					                     "verification failed due to unknown reason");
@@ -231,7 +243,7 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		snprintf(filepath, sizeof(filepath), "%s/%s", engine_dir, libname);
 		dyn_containers_set_engine(engine_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
-		send_common_feedback(res, HTTP_OK, "");
+		onion_response_set_code(res, HTTP_OK);
 		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - finish", filename);
 		return OCS_PROCESSED;
 	} else {
@@ -282,7 +294,7 @@ o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *
 			              "Request: Remove engine - engine: %s - files could not be removed", 
 			              name);
 		}
-		send_common_feedback(res, HTTP_OK, "");
+		onion_response_set_code(res, HTTP_OK);
 		syslog_server(LOG_NOTICE, "Request: Remove engine - engine: %s - finish", name);
 		return OCS_PROCESSED;
 	} else {
@@ -402,7 +414,7 @@ o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_respo
 		snprintf(filepath, sizeof(filepath), "%s/%s", interlocker_dir, libname);
 		dyn_containers_set_interlocker(interlocker_slot, filepath);
 		pthread_mutex_unlock(&dyn_containers_mutex);
-		send_common_feedback(res, HTTP_OK, "");
+		onion_response_set_code(res, HTTP_OK);
 		syslog_server(LOG_NOTICE, 
 		              "Request: Upload interlocker - interlocker file: %s - finish",
 		              filename);
@@ -458,7 +470,7 @@ o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_respo
 			              "files could not be removed", 
 			              name);
 		}
-		send_common_feedback(res, HTTP_OK, "");
+		onion_response_set_code(res, HTTP_OK);
 		syslog_server(LOG_NOTICE, 
 		              "Request: Remove interlocker - interlocker: %s - finish",
 		              name);

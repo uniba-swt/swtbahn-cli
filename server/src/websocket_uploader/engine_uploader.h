@@ -33,6 +33,7 @@
 
 typedef struct {
    bool success;
+   bool message_is_json_str;
    GString* message;
 } verif_result;
 

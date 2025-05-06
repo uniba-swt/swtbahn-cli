@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "upload_engine.schema.json",
+  "title": "engine",
+  "description": "Result of uploading an engine",
+  "type": "object",
+  "properties": {
+    "msg": {
+      "type": "string",
+      "description": "(error) message",
+      "minLength": 1
+    },
+    "status": {
+      "type": "boolean",
+      "description": "true if all properties of the engine model hold, false otherwise"
+    },
+    "verifiedproperties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "object",
+            "properties": {
+              "formula": {
+                "type": "string",
+                "description": "formula of the property"
+              },
+              "name": {
+                "type": "string",
+                "description": "name of the property"
+              },
+              "type": {
+                "type": "string",
+                "description": "type of the property (ltl or invariant)"
+              }
+            }
+          },
+          "resultcode": {
+            "type": "string",
+            "pattern": "^(proven|disproven|unknown)$",
+            "description": "result of verification of this property"
+          },
+          "verificationlog": {
+            "type": "string",
+            "description": "Base64 encoded String. If decoded, this will give the verification log from nuXmv, including counterexamples at the end if possible. The string might also be compressed with zlib (uncompress after initial base64 decode), but default is uncompressed."
+          },
+          "verificationmessage": {
+            "type": "string",
+            "description": "textual description of verification verdict for this property"
+          }
+        }
+      }
+    }
+  },
+  "required": ["msg"]
+}

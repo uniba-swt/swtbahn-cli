@@ -1,9 +1,9 @@
 For the upload endpoints:
-- upload/engine
 - upload/remove-engine
 - upload/interlocker
 - upload/remove-interlocker
 
 See common_feedback.json.
 
-There are no other endpoints.
+For the upload endpoint(s):
+- upload/engine -> See OpenAPI WIP (slightly advanced feedback with result of verification if that was enabled) and json-schema-upload-engine.json

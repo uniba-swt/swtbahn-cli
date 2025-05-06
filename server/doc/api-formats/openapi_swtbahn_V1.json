@@ -1875,6 +1875,68 @@
                     "description": "The name/ID of the route"
                 }
             }
+        },
+        "/upload/engine": {
+            "post": {
+                "summary": "upload a train engine (behavior) model",
+                "description": "Upload a train engine behavior model in form of an .sctx (SCCharts) file.",
+                "parameters": [],
+                "operationId": "upload-engine",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Invalid or missing parameter, or verification of train engine failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reply_engine__for-upload"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "409": {
+                        "description": "Engine with same name exists or no engine (container) slot is available",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Engine could not be compiled to a shared library",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "SWTbahn not running"
+                    }
+                },
+                "security": [],
+                "callbacks": {},
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/param_file"
+                            }
+                        }
+                    },
+                    "description": "The .sctx file containing the train engine."
+                }
+            }
         }
     },
     "security": [],
@@ -2890,6 +2952,78 @@
                         }
                     }
                 }
+            },
+            "param_file": {
+                "title": "param_file",
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "description": "file. Attach via your request libraries form data, try with default format/encoding",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                }
+            },
+            "reply_engine__for-upload": {
+                "title": "reply_engine__for-upload",
+                "description": "Result info of uploading an engine",
+                "type": "object",
+                "properties": {
+                    "msg": {
+                        "type": "string",
+                        "description": "(error) message",
+                        "minLength": 1
+                    },
+                    "status": {
+                        "type": "boolean",
+                        "description": "true if all properties of the engine model hold, false otherwise"
+                    },
+                    "__MESSAGE_TYPE__": {
+                        "type": "string",
+                        "description": "this can safely be ignored"
+                    },
+                    "verifiedproperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "property": {
+                                    "type": "object",
+                                    "properties": {
+                                        "formula": {
+                                            "type": "string",
+                                            "description": "formula of the property"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "description": "name of the property"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "description": "type of the property (ltl or invariant)"
+                                        }
+                                    }
+                                },
+                                "resultcode": {
+                                    "type": "string",
+                                    "pattern": "^(proven|disproven|unknown)$",
+                                    "description": "result of verification of this property"
+                                },
+                                "verificationlog": {
+                                    "type": "string",
+                                    "description": "Base64 encoded String. If decoded, this will give the verification log from nuXmv, including counterexamples at the end if possible. The string might also be compressed with zlib (uncompress after initial base64 decode), but default is uncompressed."
+                                },
+                                "verificationmessage": {
+                                    "type": "string",
+                                    "description": "Textual description of verification verdict for this property"
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "msg"
+                ]
             }
         }
     }

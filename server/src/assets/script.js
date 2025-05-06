@@ -564,7 +564,7 @@ $(document).ready(
 					console.log("Upload Failed");
 					try {
 						var resJson = JSON.parse(responseData.responseText.toString(), null, 2);
-						var msg = "Server Message: " + resJson["message"];
+						var msg = "Server Message: " + resJson["msg"];
 						msg += "\nList of Properties:"
 						resJson["verifiedproperties"].forEach(element => {
 							msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
