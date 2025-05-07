@@ -99,7 +99,7 @@
                     "content": {
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/param_state_string"
+                                "$ref": "#/components/schemas/param_state"
                             }
                         }
                     },
@@ -140,7 +140,7 @@
                     "content": {
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/param_verification-option_string"
+                                "$ref": "#/components/schemas/param_verification-option"
                             }
                         }
                     },
@@ -181,7 +181,7 @@
                     "content": {
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/param_verification-url_string"
+                                "$ref": "#/components/schemas/param_verification-url"
                             }
                         }
                     },
@@ -222,7 +222,7 @@
                     "content": {
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/param_train_string"
+                                "$ref": "#/components/schemas/param_train"
                             }
                         }
                     },
@@ -263,7 +263,7 @@
                     "content": {
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/param_train_speed_trackoutput"
+                                "$ref": "#/components/schemas/param_train_speed_track-output"
                             }
                         }
                     },
@@ -2804,16 +2804,14 @@
                     "aspects": {
                         "type": "array",
                         "minItems": 0,
-                        "$comment": "currently allows answers with no aspects in the list, can occur if low-level querying of aspects fails",
-                        "description": "list of aspects, i.e., states, that this point can be set to",
+                        "description": "list of aspects, i.e., states, that this point can be set to. currently allows answers with no aspects in the list, can occur if low-level querying of aspects fails",
                         "items": {
                             "type": "string"
                         }
                     },
                     "state": {
                         "type": "string",
-                        "minLength": 0,
-                        "$comment": "not sure if we may have an empty state in some non-erronous circumstance"
+                        "minLength": 0
                     },
                     "segment": {
                         "type": "string",
@@ -2824,7 +2822,7 @@
                     },
                     "target_state_reached": {
                         "type": "boolean",
-                        "$comment": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
+                        "description": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
                     }
                 },
                 "required": [
@@ -2884,7 +2882,7 @@
                                 },
                                 "target_state_reached": {
                                     "type": "boolean",
-                                    "$comment": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
+                                    "description": "This is optional, as DCC-accessories (so possibly points) don't provide this info. True if execution state is reached or reached_verified, otherwise false."
                                 }
                             }
                         }
@@ -2969,64 +2967,6 @@
                     }
                 }
             },
-            "reply_train-states": {
-                "title": "reply_train-states",
-                "description": "List of train states",
-                "type": "object",
-                "train-states": {
-                    "type": "array",
-                    "uniqueItems": true,
-                    "minItems": 0,
-                    "items": {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "minLength": 1
-                            },
-                            "grabbed": {
-                                "type": "boolean"
-                            },
-                            "orientation": {
-                                "type": "string",
-                                "pattern": "^(left|right)$"
-                            },
-                            "direction": {
-                                "type": "string",
-                                "pattern": "^(forwards|backwards)$"
-                            },
-                            "speed_step": {
-                                "type": "number"
-                            },
-                            "detected_kmh_speed": {
-                                "type": "number",
-                                "$comment": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
-                            },
-                            "route_id": {
-                                "type": "string",
-                                "$comment": "empty string or not present if no route is granted to this train. Otherwise route id.",
-                                "minLength": 0
-                            },
-                            "on_track": {
-                                "type": "boolean"
-                            },
-                            "occupied_segments": {
-                                "type": "array",
-                                "$comment": "occupied_segments is only included if on_track is true.",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "occupied_blocks": {
-                                "type": "array",
-                                "$comment": "occupied_blocks is only included if on_track is true.",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "reply_train-state": {
                 "title": "reply_train-state",
                 "description": "state of a train",
@@ -3052,11 +2992,11 @@
                     },
                     "detected_kmh_speed": {
                         "type": "number",
-                        "$comment": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
+                        "description": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
                     },
                     "route_id": {
                         "type": "string",
-                        "$comment": "empty string or not present if no route is granted to this train. Otherwise route id.",
+                        "description": "empty string or not present if no route is granted to this train. Otherwise route id.",
                         "minLength": 0
                     },
                     "on_track": {
@@ -3064,14 +3004,14 @@
                     },
                     "occupied_segments": {
                         "type": "array",
-                        "$comment": "occupied_segments is only included if on_track is true.",
+                        "description": "occupied_segments is only included if on_track is true.",
                         "items": {
                             "type": "string"
                         }
                     },
                     "occupied_blocks": {
                         "type": "array",
-                        "$comment": "occupied_blocks is only included if on_track is true.",
+                        "description": "occupied_blocks is only included if on_track is true.",
                         "items": {
                             "type": "string"
                         }
@@ -3230,6 +3170,66 @@
                         "description": "name of an interlocker",
                         "type": "string",
                         "minLength": 1
+                    }
+                }
+            },
+            "reply_train-states": {
+                "title": "reply_train-states",
+                "description": "List of train states",
+                "type": "object",
+                "properties": {
+                    "train-states": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 0,
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "grabbed": {
+                                    "type": "boolean"
+                                },
+                                "orientation": {
+                                    "type": "string",
+                                    "pattern": "^(left|right)$"
+                                },
+                                "direction": {
+                                    "type": "string",
+                                    "pattern": "^(forwards|backwards)$"
+                                },
+                                "speed_step": {
+                                    "type": "number"
+                                },
+                                "detected_kmh_speed": {
+                                    "type": "number",
+                                    "description": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
+                                },
+                                "route_id": {
+                                    "type": "string",
+                                    "description": "empty string or not present if no route is granted to this train. Otherwise route id.",
+                                    "minLength": 0
+                                },
+                                "on_track": {
+                                    "type": "boolean"
+                                },
+                                "occupied_segments": {
+                                    "type": "array",
+                                    "description": "occupied_segments is only included if on_track is true.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "occupied_blocks": {
+                                    "type": "array",
+                                    "description": "occupied_blocks is only included if on_track is true.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
