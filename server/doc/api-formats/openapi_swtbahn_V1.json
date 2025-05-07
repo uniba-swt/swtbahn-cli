@@ -3183,52 +3183,7 @@
                         "uniqueItems": true,
                         "minItems": 0,
                         "items": {
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "minLength": 1
-                                },
-                                "grabbed": {
-                                    "type": "boolean"
-                                },
-                                "orientation": {
-                                    "type": "string",
-                                    "pattern": "^(left|right)$"
-                                },
-                                "direction": {
-                                    "type": "string",
-                                    "pattern": "^(forwards|backwards)$"
-                                },
-                                "speed_step": {
-                                    "type": "number"
-                                },
-                                "detected_kmh_speed": {
-                                    "type": "number",
-                                    "description": "Some trains don't report their km/h speed; in that case the value is 0 or this field is not present"
-                                },
-                                "route_id": {
-                                    "type": "string",
-                                    "description": "empty string or not present if no route is granted to this train. Otherwise route id.",
-                                    "minLength": 0
-                                },
-                                "on_track": {
-                                    "type": "boolean"
-                                },
-                                "occupied_segments": {
-                                    "type": "array",
-                                    "description": "occupied_segments is only included if on_track is true.",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                },
-                                "occupied_blocks": {
-                                    "type": "array",
-                                    "description": "occupied_blocks is only included if on_track is true.",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
+                            "$ref": "#/components/schemas/reply_train-state"
                         }
                     }
                 }
