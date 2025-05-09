@@ -130,9 +130,6 @@
                     },
                     "405": {
                         "description": "Method not allowed"
-                    },
-                    "503": {
-                        "description": "SWTbahn not running"
                     }
                 },
                 "requestBody": {
@@ -171,9 +168,6 @@
                     },
                     "405": {
                         "description": "Method not allowed"
-                    },
-                    "503": {
-                        "description": "SWTbahn not running"
                     }
                 },
                 "requestBody": {
