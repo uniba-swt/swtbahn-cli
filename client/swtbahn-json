@@ -44,8 +44,6 @@ session_id = 0
 grab_id = 0
 server = ""
 
-
-
 # -----------------------
 # --- config handling ---
 # -----------------------
@@ -104,7 +102,22 @@ def parse_config():
     except Exception as e:
         return True
 
+# -----------------------
+# --- logging helpers ---
+# -----------------------
 
+def log_common_feedback_err_msg(response_text:str, internal_err=False):
+    response_json: dict = json.loads(response_text)
+    if (internal_err):
+        click.echo("Internal error, server msg: " + response_json.get("msg", ""), err=True)
+    else:
+        click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
+
+def log_not_running_or_unknown_err(status_code:int):
+    if (status_code == requests.codes.service_unavailable):
+        click.echo("System is not running.", err=True)
+    else:
+        click.echo(f"Unknown error, reply status code: {status_code}", err=True)
 
 # ------------------------------
 # --- command line interface ---
@@ -119,12 +132,13 @@ def cli():
     pass
 
 
-@click.command(help="Configure hostname and port")
+@click.command(help="Configure hostname, port, and track output")
 @click.argument('hostname', required=True)
 @click.argument('port', type=click.IntRange(0, 65535), required=True)
 @click.argument('default_track_output', default="master")
 def config(hostname, port, default_track_output):
     create_config(hostname, port, default_track_output)
+
 
 @click.command(help="Reset your train ownership (grab and session id). "
                "Do NOT do this if you still have proper control over the train!")
@@ -135,7 +149,7 @@ def reset_grab_and_session_id():
         requests.post(server + "/driver/release-train",
                       data = {'session-id': session_id, 'grab-id': grab_id})
         # Reset the session_id and grab_id
-        create_config(hostname, port, default_track_output, False)
+        update_session_and_grab_id(0, -1)
     except Exception as e:
         click.echo("reset_grab_and_session_id failed. Error: " + e, err=True)
 
@@ -157,14 +171,14 @@ def startup():
             response = requests.post(server + "/admin/startup")
             if (response.status_code == requests.codes.ok):
                 click.echo("System has started up.")
-            elif response.status_code == requests.codes.conflict:
+            elif (response.status_code == requests.codes.conflict):
                 click.echo("System already running!")
-            elif response.status_code == requests.codes.internal_server_error:
+            elif (response.status_code == requests.codes.internal_server_error):
                 response_json: dict = json.loads(response.text)
                 click.echo("Startup failed due to internal error: " + response_json.get("msg", ""), 
                            err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -180,10 +194,8 @@ def shutdown():
             if (response.status_code == requests.codes.ok):
                 click.echo("System has been stopped.")
                 update_session_and_grab_id(0, -1)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -205,14 +217,11 @@ def set_track_output(state):
             response = requests.post(server + "/admin/set-track-output",
                                      data = {'state': mapping.get(state)})
             if (response.status_code == requests.codes.ok):
-                click.echo("Track output state set to " + state)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Track output state set to {state}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -227,14 +236,11 @@ def set_verification_option(verification_option):
             response = requests.post(server + "/admin/set-verification-option",
                                      data = {'verification-option': verification_option})
             if (response.status_code == requests.codes.ok):
-                click.echo("Verification option set to " + verification_option)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Verification option set to {verification_option}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -249,12 +255,11 @@ def set_verification_url(verification_url):
             response = requests.post(server + "/admin/set-verification-url",
                                      data = {'verification-url': verification_url})
             if (response.status_code == requests.codes.ok):
-                click.echo("Verification url set to " + verification_url)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
+                click.echo(f"Verification url set to {verification_url}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -268,14 +273,11 @@ def admin_release(train):
         try:
             response = requests.post(server + "/admin/release-train", data = {'train': train})
             if (response.status_code == requests.codes.ok):
-                click.echo("Released grabbed train " + train)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Released grabbed train {train}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -296,16 +298,14 @@ def admin_set_dcc_speed(train, backwards, speed, track_output):
             track_output = default_track_output
         try:
             response = requests.post(server + "/admin/set-dcc-train-speed",
-                    data = {'train': train, 'speed': speed, 'track-output': default_track_output})
+                                     data = {'train': train, 'speed': speed, 
+                                             'track-output': default_track_output})
             if (response.status_code == requests.codes.ok):
-                click.echo("DCC speed of " + train + " set to " + str(speed))
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"DCC speed of {train} set to {speed}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -327,14 +327,11 @@ def release_route(route_id):
             response = requests.post(server + "/controller/release-route",
                                      data = {'route-id': route_id})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Route " + str(route_id) + " released.")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
+                click.echo(f"Route {route_id} released.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -351,14 +348,11 @@ def set_point(point, state):
             response = requests.post(server + "/controller/set-point", 
                                      data = {'point': point, 'state': state})
             if (response.status_code == requests.codes.ok):
-                click.echo("Point " + point + " set to " + state)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Point {point} set to {state}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -375,14 +369,11 @@ def set_signal(signal, state):
             response = requests.post(server + "/controller/set-signal", 
                                      data = {'signal': signal, 'state': state})
             if (response.status_code == requests.codes.ok):
-                click.echo("Signal " + signal + " set to " + state)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Signal {signal} set to {state}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -399,14 +390,11 @@ def set_peripheral(peripheral, state):
             response = requests.post(server + "/controller/set-peripheral", 
                                      data = {'peripheral': peripheral, 'state': state})
             if (response.status_code == requests.codes.ok):
-                click.echo("Peripheral " + peripheral + " set to " + state)
-            elif response.status_code == requests.codes.bad_request:
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Peripheral {peripheral} set to {state}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -422,10 +410,10 @@ def get_interlocker():
             if (response.status_code == requests.codes.ok):
                 response_json: dict = json.loads(response.text)
                 click.echo("Interlocker in use: " + response_json.get("interlocker", None))
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+            elif (response.status_code == requests.codes.not_found):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -441,15 +429,12 @@ def set_interlocker(interlocker):
             response = requests.post(server + "/controller/set-interlocker", 
                                      data = {'interlocker': interlocker})
             if (response.status_code == requests.codes.ok):
-                click.echo("Interlocker set to " + interlocker)
+                click.echo(f"Interlocker set to {interlocker}.")
             elif (response.status_code == requests.codes.bad_request or 
                     response.status_code == requests.codes.conflict):
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -465,21 +450,18 @@ def unset_interlocker(interlocker):
             response = requests.post(server + "/controller/unset-interlocker", 
                                      data = {'interlocker': interlocker})
             if (response.status_code == requests.codes.ok):
-                click.echo("Interlocker " + interlocker + " has been unset.")
+                click.echo(f"Interlocker {interlocker} has been unset.")
             elif (response.status_code == requests.codes.bad_request or 
                     response.status_code == requests.codes.conflict):
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
 @click.command(help="Upload an interlocker")
-@click.argument('filepath', type=click.Path(exists=True), help="Absolute path to an BahnDSL (*.bahn) file")
+@click.argument('filepath', type=click.Path(exists=True))
 def upload_interlocker(filepath):
     if (parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
@@ -492,14 +474,11 @@ def upload_interlocker(filepath):
                 click.echo("Interlocker has been uploaded.")
             elif (response.status_code == requests.codes.bad_request or 
                     response.status_code == requests.codes.conflict):
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif response.status_code == requests.codes.internal_server_error:
-                click.echo("Internal error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                log_common_feedback_err_msg(response.text, internal_err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -515,16 +494,13 @@ def delete_interlocker(interlocker_name):
             response = requests.post(server + "/upload/remove-interlocker",
                                      data = {'interlocker-name': interlocker_name})
             if (response.status_code == requests.codes.ok):
-                click.echo("Interlocker " + interlocker_name + " deleted.")
+                click.echo(f"Interlocker {interlocker_name} deleted.")
             elif (response.status_code == requests.codes.bad_request or 
                     response.status_code == requests.codes.not_found or
                     response.status_code == requests.codes.conflict):
-                response_json: dict = json.loads(response.text)
-                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -550,33 +526,28 @@ def grab(train, engine):
                 response = requests.post(server + "/driver/grab-train",
                                          data = {'train': train, 'engine': engine})
                 if (response.status_code == requests.codes.ok):
-                    ids = response.text.split(",")
-                    update_session_and_grab_id(int(ids[0]), int(ids[1]))
-                    click.echo("Grabbed train " + train + "\n")
-                elif (response.status_code == requests.codes.service_unavailable):
-                    click.echo("System is not running.", err=True)
+                    response_json: dict = json.loads(response.text)
+                    update_session_and_grab_id(response_json["session-id"], response_json["grab-id"])
+                    click.echo("Grabbed train " + train)
+                    click.echo(f"   Debug information: session-id ({response_json["session-id"]})")
+                    click.echo(f"   Debug information: grab-id ({response_json["grab-id"]})")
+                elif (response.status_code == requests.codes.bad_request or 
+                        response.status_code == requests.codes.not_found or
+                        response.status_code == requests.codes.conflict):
+                    log_common_feedback_err_msg(response.text)
+                elif (response.status_code == requests.codes.internal_server_error):
+                    log_common_feedback_err_msg(response.text, internal_err=True)
                 else:
-                    click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                    log_not_running_or_unknown_err(response.status_code)
             except requests.exceptions.RequestException as e:
                 click.echo(e, err=True)
         else:
             click.echo("You already have a train grabbed! "
-                       "Release it before grabbing a new train. "
+                       "Release it before grabbing a new train.\n"
                        "If your grab-id or session-id is not valid, i.e., if you do not actually "
-                       "have control over a train, then please re-run the "
-                       , err=True)
-            return
-
-
-def process_id_feedback(feedback, success_message):
-    if (feedback == "invalid session id"):
-        update_session_and_grab_id(0, -1)
-        click.echo("Session id has become invalid\n", err=True)
-    elif (feedback == "invalid grab id"):
-        update_session_and_grab_id(0, -1)
-        click.echo("Grab id was invalid\n", err=True)
-    else:
-        click.echo(success_message)
+                       "have control over a train, then please re-run the " 
+                       "reset_grab_and_session_id command.",
+                       err=True)
 
 
 @click.command(help="Release your train")
@@ -589,14 +560,15 @@ def release():
     else:
         try:
             response = requests.post(server + "/driver/release-train",
-                    data = {'session-id': session_id, 'grab-id': grab_id})
+                                     data = {'session-id': session_id, 'grab-id': grab_id})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Released grabbed train\n")
+                click.echo("Released grabbed train.")
                 update_session_and_grab_id(0, -1)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+            elif (response.status_code == requests.codes.bad_request or 
+                    response.status_code == requests.codes.conflict):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -613,20 +585,22 @@ def request_route(source, destination):
     else:
         try:
             response = requests.post(server + "/driver/request-route",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'source': source, 'destination': destination})
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'source': source, 'destination': destination})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Route " + response.text + 
-                        " from " + source + " to " + destination + " has been granted\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                route_id = response_json["granted-route-id"]
+                click.echo(f"Route {route_id} from {source} to {destination} has been granted.")
+            elif (response.status_code == requests.codes.bad_request or 
+                    response.status_code == requests.codes.conflict):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
-@click.command(help="Request a specific route ID for your train ")
+@click.command(help="Request a specific route by its ID for your train")
 @click.argument('route-id')
 def request_route_id(route_id):
     global session_id, grab_id, server
@@ -636,15 +610,18 @@ def request_route_id(route_id):
         click.echo("No train grabbed!")
     else:
         try:
-            response = requests.post(server + "/driver/request-route-id",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'route-id': route_id})
+            response = requests.post(server + "/driver/request-route-by-id",
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'route-id': route_id})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Route " + route_id + " has been granted\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Route {route_id} has been granted.")
+            elif (response.status_code == requests.codes.bad_request or 
+                    response.status_code == requests.codes.conflict):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                log_common_feedback_err_msg(response.text, internal_err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -659,20 +636,22 @@ def direction(train, route_id):
     else:
         try:
             response = requests.post(server + "/driver/direction",
-                    data = {'session-id': session_id, 'train': train,
-                        'route-id': route_id})
+                                     data = {'session-id': session_id, 'train': train,
+                                             'route-id': route_id})
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(f"Direction: {response_json["direction"]}.")
+            elif (response.status_code == requests.codes.bad_request or 
+                    response.status_code == requests.codes.not_found):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
 @click.command(help="Drive along a granted route in automatic or manual mode")
-@click.argument('mode')
+@click.argument('mode', type=click.Choice(['manual', 'automatic']))
 @click.argument('route-id')
 def drive_route(mode, route_id):
     global session_id, grab_id, server
@@ -680,27 +659,28 @@ def drive_route(mode, route_id):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
+    elif ((not mode == "manual") and (not mode == "automatic")):
+        click.echo("Incorrect mode! Mode shall be either manual or automatic.")
     else:
         try:
             response = requests.post(server + "/driver/drive-route",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'mode': mode, 'route-id': route_id})
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'mode': mode, 'route-id': route_id})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Driving along route " + route_id + 
-                        " completed\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(f"Driving route {route_id} completed, server msg: {response_json.get("msg", "")}")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
 @click.command(help="Set the dcc speed step of your train")
-@click.option('--backwards', '-b', help="The rear end of the train moves forward",
-        is_flag=True)
-@click.option('--track_output', '-t', help="Use another track output than the "
-        "default one", default="")
+@click.option('--backwards', '-b', help="The rear end of the train moves forward", is_flag=True)
+@click.option('--track_output', '-t', help="Use another track output than the default one",
+              default="")
 @click.argument('speed', type=click.IntRange(0, 126))
 def set_dcc_speed(backwards, speed, track_output):
     global session_id, grab_id, server, default_track_output
@@ -715,24 +695,22 @@ def set_dcc_speed(backwards, speed, track_output):
             track_output = default_track_output
         try:
             response = requests.post(server + "/driver/set-dcc-train-speed",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'speed': speed, 'track-output': track_output})
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'speed': speed, 'track-output': track_output})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "DCC train speed set to " +
-                        str(speed) + "\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"DCC train speed set to {speed} on track-output {track_output}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
 @click.command(help="Set the calibrated speed step of your train")
-@click.option('--backwards', '-b', help="The rear end of the train moves forward",
-        is_flag=True)
-@click.option('--track_output', '-t', help="Use another track output than the "
-        "default one", default="")
+@click.option('--backwards', '-b', help="The rear end of the train moves forward", is_flag=True)
+@click.option('--track_output', '-t', help="Use another track output than the default one", 
+              default="")
 @click.argument('speed', type=click.IntRange(0, 9))
 def set_calibrated_speed(backwards, speed, track_output):
     global session_id, grab_id, server, default_track_output
@@ -747,22 +725,21 @@ def set_calibrated_speed(backwards, speed, track_output):
             track_output = default_track_output
         try:
             response = requests.post(server + "/driver/set-calibrated-train-speed",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'speed': speed, 'track-output': track_output})
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'speed': speed, 'track-output': track_output})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Calibrated train speed set "
-                        "to " + str(speed) + "\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Calibrated train speed set to {speed} on track-output {track_output}.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
 @click.command(help="Emergency stop your train")
-@click.option('--track_output', '-t', help="Use another track output than the "
-        "default one", default="")
+@click.option('--track_output', '-t', help="Use another track output than the default one", 
+              default="")
 def emergency_stop(track_output):
     global session_id, grab_id, server, default_track_output
     if (parse_config()):
@@ -774,21 +751,21 @@ def emergency_stop(track_output):
             track_output = default_track_output
         try:
             response = requests.post(server + "/driver/set-train-emergency-stop",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'track-output': track_output})
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'track-output': track_output})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Train emergency stopped\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo("Train emergency stopped.")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
 @click.command(help="Set a peripheral of your train")
-@click.option('--track_output', '-t', help="Use another track output than the "
-        "default one", default="")
+@click.option('--track_output', '-t', help="Use another track output than the default one",
+              default="")
 @click.argument('peripheral')
 @click.argument('state', type=click.Choice(['off', 'on']))
 def set_train_peripheral(peripheral, state, track_output):
@@ -806,21 +783,20 @@ def set_train_peripheral(peripheral, state, track_output):
                     'on': 1,
             }
             response = requests.post(server + "/driver/set-train-peripheral",
-                    data = {'session-id': session_id, 'grab-id': grab_id,
-                        'peripheral': peripheral, 'state': mapping.get(state),
-                        'track-output': track_output})
+                                     data = {'session-id': session_id, 'grab-id': grab_id,
+                                             'peripheral': peripheral, 'state': mapping.get(state),
+                                             'track-output': track_output})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Train peripheral "
-                        + peripheral + " set to " + state + "\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Train peripheral {peripheral} set to {state}")
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
-@click.command(help="Upload a train engine. Absolute path to an SCCharts (*.sctx) file")
+@click.command(help="Upload a train engine")
 @click.argument('filepath', type=click.Path(exists=True))
 def upload_engine(filepath):
     if (parse_config()):
@@ -829,13 +805,24 @@ def upload_engine(filepath):
         global server
         try:
             response = requests.post(server + "/upload/engine",
-                    files = {'file': open(filepath, 'r')})
+                                     files = {'file': open(filepath, 'r')})
             if (response.status_code == requests.codes.ok):
-                process_id_feedback(response.text, "Train engine uploaded\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo("Train engine uploaded.")
+            elif (response.status_code == requests.codes.bad_request):
+                response_json: dict = json.loads(response.text)
+                click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
+                # If the verification failed, the feedback can be quite long.
+                if (response_json.get("status", True) == False):
+                    # easiest for now to directly print the whole verifiedproperties object
+                    click.echo("Verification of at least one property failed. " 
+                               "Now printing info on all properties:")
+                    click.echo(json.dumps(response_json["verifiedproperties"], indent=4, default=str))
+            elif (response.status_code == requests.codes.conflict):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                log_common_feedback_err_msg(response.text, internal_err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -849,13 +836,15 @@ def delete_engine(engine_name):
         global server
         try:
             response = requests.post(server + "/upload/remove-engine",
-                    data = {'engine-name': engine_name})
+                                     data = {'engine-name': engine_name})
             if (response.status_code == requests.codes.ok):
-                click.echo("Train engine " + engine_name + " deleted\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                click.echo(f"Train engine {engine_name} deleted.")
+            elif (response.status_code == requests.codes.bad_request or 
+                    response.status_code == requests.codes.not_found or
+                    response.status_code == requests.codes.conflict):
+                log_common_feedback_err_msg(response.text)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -875,13 +864,13 @@ def get_platform_name():
         try:
             response = requests.get(server + "/monitor/platform-name")
             if (response.status_code == requests.codes.ok):
-                click.echo("Platform name: " + response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(f"Platform name: {response_json["platform-name"]}")
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
+
 
 @click.command(help="Get a list of trains")
 def get_trains():
@@ -890,16 +879,15 @@ def get_trains():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/trains")
+            response = requests.get(server + "/monitor/trains")
             if (response.status_code == requests.codes.ok):
                 if (response.text == ""):
-                    click.echo("No trains available")
+                    click.echo("No trains available.")
                 else:
-                    click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                    response_json: dict = json.loads(response.text)
+                    click.echo(json.dumps(response_json, indent=4, default=str))
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -913,13 +901,37 @@ def get_train_state(train):
         global server
         try:
             response = requests.post(server + "/monitor/train-state",
-                    data = {'train': train})
+                                     data = {'train': train})
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.not_found):
+                click.echo(f"Error, train {train} was not found.", err=True)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get the state of all trains")
+def get_trains_states():
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command.", err=True)
+    else:
+        global server
+        try:
+            response = requests.get(server + "/monitor/train-states")
+            if (response.status_code == requests.codes.ok):
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
+            else:
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -933,13 +945,16 @@ def get_train_peripherals(train):
         global server
         try:
             response = requests.post(server + "/monitor/train-peripherals",
-                    data = {'train': train})
+                                     data = {'train': train})
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -951,13 +966,14 @@ def get_engine_list():
     else:
         global server
         try:
-            response = requests.post(server + "/upload/refresh-engines")
+            response = requests.get(server + "/monitor/engines")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text.replace(",", "\n"))
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -968,31 +984,33 @@ def get_interlocker_list():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/interlockers")
+            response = requests.get(server + "/monitor/interlockers")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text.replace(",", "\n"))
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
 
-@click.command(help="Get a list of track outputs")
+@click.command(help="Get a list of track outputs with their state")
 def get_track_outputs():
     if (parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/track-outputs")
+            response = requests.get(server + "/monitor/track-outputs")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1004,13 +1022,14 @@ def get_points():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/points")
+            response = requests.get(server + "/monitor/points")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1022,13 +1041,58 @@ def get_signals():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/signals")
+            response = requests.get(server + "/monitor/signals")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get detailed information on a point")
+@click.argument('point')
+def get_point_details(point):
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command.", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/point-details", data = {'point': point})
+            if (response.status_code == requests.codes.ok):
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
+            else:
+                log_not_running_or_unknown_err(response.status_code)
+        except requests.exceptions.RequestException as e:
+            click.echo(e, err=True)
+
+
+@click.command(help="Get detailed information on a signal")
+@click.argument('signal')
+def get_signal_details(signal):
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command.", err=True)
+    else:
+        global server
+        try:
+            response = requests.post(server + "/monitor/signal-details", data = {'signal': signal})
+            if (response.status_code == requests.codes.ok):
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
+            else:
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1041,14 +1105,16 @@ def get_point_aspects(point):
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/point-aspects",
-                    data = {'point': point})
+            response = requests.post(server + "/monitor/point-aspects", data = {'point': point})
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1061,14 +1127,16 @@ def get_signal_aspects(signal):
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/signal-aspects",
-                    data = {'signal': signal})
+            response = requests.post(server + "/monitor/signal-aspects", data = {'signal': signal})
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1080,13 +1148,14 @@ def get_segments():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/segments")
+            response = requests.get(server + "/monitor/segments")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1098,13 +1167,15 @@ def get_reversers():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/reversers")
+            response = requests.get(server + "/monitor/reversers")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message " 
+                           "or unable to get reverser state update.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1116,17 +1187,18 @@ def get_peripherals():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/peripherals")
+            response = requests.get(server + "/monitor/peripherals")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
-@click.command(help="Get whether plugins will be verified upon upload")
+@click.command(help="Get whether train engines will be verified upon upload")
 def get_verification_option():
     if(parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
@@ -1135,11 +1207,10 @@ def get_verification_option():
         try:
             response = requests.get(server + "/monitor/verification-option")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text + "\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1152,11 +1223,10 @@ def get_verification_url():
         try:
             response = requests.get(server + "/monitor/verification-url")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text + "\n")
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1167,13 +1237,14 @@ def get_granted_routes():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/granted-routes")
+            response = requests.get(server + "/monitor/granted-routes")
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1186,14 +1257,18 @@ def get_route(route_id):
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/route",
-                    data = {'route-id': route_id})
+            response = requests.post(server + "/monitor/route", data = {'route-id': route_id})
             if (response.status_code == requests.codes.ok):
-                click.echo(response.text)
-            elif (response.status_code == requests.codes.service_unavailable):
-                click.echo("System is not running.", err=True)
+                response_json: dict = json.loads(response.text)
+                click.echo(json.dumps(response_json, indent=4, default=str))
+            elif (response.status_code == requests.codes.bad_request):
+                log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.not_found):
+                click.echo(f"Route with ID {route_id} was not found.", err=True)
+            elif (response.status_code == requests.codes.internal_server_error):
+                click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
-                click.echo("Unknown error, reply status code: " + str(response.status_code), err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1273,12 +1348,14 @@ driver.add_command(delete_engine)
 monitor.add_command(get_platform_name)
 monitor.add_command(get_trains)
 monitor.add_command(get_train_state)
+monitor.add_command(get_trains_states)
 monitor.add_command(get_train_peripherals)
 monitor.add_command(get_engine_list)
 monitor.add_command(get_interlocker_list)
 monitor.add_command(get_track_outputs)
 monitor.add_command(get_points)
 monitor.add_command(get_signals)
+monitor.add_command(get_point_details)
 monitor.add_command(get_point_aspects)
 monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
