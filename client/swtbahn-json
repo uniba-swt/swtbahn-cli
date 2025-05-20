@@ -174,9 +174,7 @@ def startup():
             elif (response.status_code == requests.codes.conflict):
                 click.echo("System already running!")
             elif (response.status_code == requests.codes.internal_server_error):
-                response_json: dict = json.loads(response.text)
-                click.echo("Startup failed due to internal error: " + response_json.get("msg", ""), 
-                           err=True)
+                log_common_feedback_err_msg(response.text, internal_err=True)
             else:
                 click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
@@ -225,6 +223,7 @@ def set_track_output(state):
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+
 @click.command(help="Set whether plugins will be verified upon upload")
 @click.argument('verification-option', type=click.Choice(['true', 'false']))
 def set_verification_option(verification_option):
@@ -244,6 +243,7 @@ def set_verification_option(verification_option):
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+
 @click.command(help="Set the url of the verification server to use for verification on upload")
 @click.argument('verification-url', type=click.STRING)
 def set_verification_url(verification_url):
@@ -262,6 +262,7 @@ def set_verification_url(verification_url):
                 click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
+
 
 @click.command(name="release", help="Release a train")
 @click.argument('train')
@@ -977,6 +978,7 @@ def get_engine_list():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+
 @click.command(help="Get a list of interlockers")
 def get_interlocker_list():
     if (parse_config()):
@@ -1198,6 +1200,7 @@ def get_peripherals():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+
 @click.command(help="Get whether train engines will be verified upon upload")
 def get_verification_option():
     if(parse_config()):
@@ -1214,6 +1217,7 @@ def get_verification_option():
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
+
 @click.command(help="Get the url to the verification server")
 def get_verification_url():
     if(parse_config()):
@@ -1229,6 +1233,7 @@ def get_verification_url():
                 click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
+
 
 @click.command(help="Get a list of granted routes")
 def get_granted_routes():
@@ -1287,6 +1292,7 @@ def get_debug_info():
                 click.echo("System not running.", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
+
 
 @click.command(help="Get extra debug information")
 def get_debug_info_extra():
@@ -1356,6 +1362,7 @@ monitor.add_command(get_track_outputs)
 monitor.add_command(get_points)
 monitor.add_command(get_signals)
 monitor.add_command(get_point_details)
+monitor.add_command(get_signal_details)
 monitor.add_command(get_point_aspects)
 monitor.add_command(get_signal_aspects)
 monitor.add_command(get_segments)
