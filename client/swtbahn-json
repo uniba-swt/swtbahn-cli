@@ -143,15 +143,18 @@ def config(hostname, port, default_track_output):
 @click.command(help="Reset your train ownership (grab and session id). "
                "Do NOT do this if you still have proper control over the train!")
 def reset_grab_and_session_id():
-    global server, session_id, grab_id, hostname, port, default_track_output
-    try:
-        # to be safe, try to release the train with the current grab id before resetting it
-        requests.post(server + "/driver/release-train",
-                      data = {'session-id': session_id, 'grab-id': grab_id})
-        # Reset the session_id and grab_id
-        update_session_and_grab_id(0, -1)
-    except Exception as e:
-        click.echo("reset_grab_and_session_id failed. Error: " + e, err=True)
+    if (parse_config()):
+        click.echo("Corrupt config, please run the config command.", err=True)
+    else:
+        global server, session_id, grab_id
+        try:
+            # to be safe, try to release the train with the current grab id before resetting it
+            requests.post(server + "/driver/release-train",
+                          data = {'session-id': session_id, 'grab-id': grab_id})
+            # Reset the session_id and grab_id
+            update_session_and_grab_id(0, -1)
+        except Exception as e:
+            click.echo(f"reset_grab_and_session_id failed. Error: {e}", err=True)
 
 
 # --- admin ---
@@ -1113,6 +1116,8 @@ def get_point_aspects(point):
                 click.echo(json.dumps(response_json, indent=4, default=str))
             elif (response.status_code == requests.codes.bad_request):
                 log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.not_found):
+                click.echo(f"Error, point {point} was not found.")
             elif (response.status_code == requests.codes.internal_server_error):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
@@ -1135,6 +1140,8 @@ def get_signal_aspects(signal):
                 click.echo(json.dumps(response_json, indent=4, default=str))
             elif (response.status_code == requests.codes.bad_request):
                 log_common_feedback_err_msg(response.text)
+            elif (response.status_code == requests.codes.not_found):
+                click.echo(f"Error, signal {signal} was not found.")
             elif (response.status_code == requests.codes.internal_server_error):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
@@ -1285,11 +1292,11 @@ def get_debug_info():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/debug")
+            response = requests.get(server + "/monitor/debug")
             if (response.status_code == requests.codes.ok):
                 click.echo(response.text)
             else:
-                click.echo("System not running.", err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
@@ -1301,11 +1308,11 @@ def get_debug_info_extra():
     else:
         global server
         try:
-            response = requests.post(server + "/monitor/debug_extra")
+            response = requests.get(server + "/monitor/debug-extra")
             if (response.status_code == requests.codes.ok):
                 click.echo(response.text)
             else:
-                click.echo("System not running.", err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
