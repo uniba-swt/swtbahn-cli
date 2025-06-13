@@ -20,31 +20,27 @@ var signalFlagMap = null; // Global access variable for signal flag mapping
 // If the server does reply with the platform name, tries to load the destinations and the flags 
 // mapped for the respective platform. If this fails, does not perform a retry.
 function tryLoadDestinationsAndFlagMap() {
-	// Try to get the platform name from the server, retry every 2 seconds on failure.
 	let retryDelay = 2000;
-	fetch(serverAddress + '/monitor/platform-name',)
+	fetch(serverAddress + '/monitor/platform-name')
 		.then(response => {
 			if (response.status !== 200) {
 				console.log("Getting platform name failed: Retrying in %d ms", retryDelay);
 				setTimeout(() => tryLoadDestinationsAndFlagMap(), retryDelay);
 			} else {
-				// response.text() gives a promise<String>, not immediately a string, therefore pass
-				// it to the next then block via return. 
-				return response.text();
+				return response.json();
 			}
 		})
-		.then(responseText => {
-			// Check if the previous then block actually returned something (i.e., if server 
-			// responded with a reply with code 200)
-			if (responseText !== undefined) {
-				console.log("Platform name received from server:", responseText);
-				platform = responseText.toLowerCase();
-				// Set the possible destinations and signal flag map for the SWTbahn platform.
+		.then(data => {
+			if (data !== undefined && data["platform-name"]) {
+				console.log("Platform name received from server:", data["platform-name"]);
+				platform = data["platform-name"].toLowerCase();
 				allPossibleDestinations = eval("allPossibleDestinations_" + platform);
 				signalFlagMap = eval("signalFlagMap_" + platform);
 			}
 		})
-		.catch(error => console.error("tryLoadDestinationsAndFlagMap (get platform name) err:", error));
+		.catch(error => {
+			console.error("tryLoadDestinationsAndFlagMap (get platform name) err:", error);
+		});
 }
 
 // Returns the destinations possible from a given block
@@ -141,29 +137,39 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 		data: {
 			'route-id': routeId,
 		},
-		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
-			const isNotConflicting = responseData.includes("granted conflicting route ids: none");
-			const isRouteClear = responseData.includes("route clear: yes");
-			const isNotGranted = responseData.includes("granted train: none");
+		dataType: 'json',
+		success: (data, textStatus, jqXHR) => {
+			// Fehlerobjekt erkannt
+			if ('msg' in data) {
+				console.warn("Route API returned message:", data.msg);
+				unavailable();
+				return;
+			}
 
-			const isAvailable = isNotConflicting && isRouteClear && isNotGranted;
+			const noConflicts = Array.isArray(data.granted_conflicting_route_ids) &&
+								data.granted_conflicting_route_ids.length === 0;
+			const isClear = data.clear === true;
+			const isNotGranted = data.granted_to_train === "";
+
+			const isAvailable = noConflicts && isClear && isNotGranted;
+
 			if (isAvailable) {
 				available();
 			} else {
 				unavailable();
 			}
 		},
-		error: (responseData, textStatus, errorThrown) => {
-			setResponseDanger('#serverResponse', 
+		error: (xhr, textStatus, errorThrown) => {
+			setResponseDanger(
+				'#serverResponse',
 				'😢 There was a problem checking the destinations', 
 				'😢 Es ist ein Problem beim Überprüfen der Ziele aufgetreten',
 				'Sorry'
 			);
 		}
 	});
-
 }
+
 
 
 /**************************************************
@@ -410,10 +416,19 @@ class Driver {
 			data: {
 				'train': this.trainId
 			},
-			dataType: 'text',
-			success: (responseData, textStatus, jqXHR) => {
-				const regexMatch = /on block: (.*?) /g.exec(responseData);
-				this.currentBlock =  regexMatch[1];
+			dataType: 'json',
+			success: (data, textStatus, jqXHR) => {
+				if ('msg' in data) {
+					setResponseDanger('#serverResponse', 
+						'😢 Could not find your train', 
+						'😢 Dein Zug konnte nicht gefunden werden',
+						''
+					);
+					return;
+				}
+				if (data.on_track && Array.isArray(data.occupied_blocks) && data.occupied_blocks.length > 0) {
+					this.currentBlock = data.occupied_blocks[0];
+				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				setResponseDanger('#serverResponse', 
@@ -432,16 +447,19 @@ class Driver {
 			url: serverAddress + '/monitor/train-state',
 			crossDomain: true,
 			data: { 'train': trainId },
-			dataType: 'text',
-			success: (responseData, textStatus, jqXHR) => {
-				if (responseData.includes("grabbed: no") && !responseData.includes("on segment: no")) {
+			dataType: 'json',
+			success: (data, textStatus, jqXHR) => {
+				if ('msg' in data) {
+					error();
+					return;
+				}
+				if (data.grabbed === false && data.on_track === true) {
 					success();
 				} else {
 					error();
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				// Do nothing
 			}
 		});
 	}
@@ -509,11 +527,19 @@ class Driver {
 				'train': this.trainId,
 				'engine': this.trainEngine
 			},
-			dataType: 'text',
-			success: (responseData, textStatus, jqXHR) => {
-				const responseDataSplit = responseData.split(',');
-				this.sessionId = responseDataSplit[0];
-				this.grabId = responseDataSplit[1];
+			dataType: 'json',
+			success: (data, textStatus, jqXHR) => {
+				if ('msg' in data) {
+					setResponseDanger('#serverResponse', 
+						'😢 There was a problem starting your train', 
+						'😢 Es ist ein Problem beim starten deines Zuges aufgetreten',
+						''
+					);
+					return;
+				}
+
+				this.sessionId = data['session-id'];
+				this.grabId = data['grab-id'];
 
 				setResponseSuccess('#serverResponse', '😁 Your train is ready', '😁 Dein Zug ist bereit', '');
 			},
@@ -527,6 +553,7 @@ class Driver {
 		});
 	}
 
+
 	// Server request for the train's physical driving direction of its granted route
 	updateDrivingDirectionPromise() {
 		return $.ajax({
@@ -537,9 +564,14 @@ class Driver {
 				'train': this.trainId,
 				'route-id': this.routeDetails["route-id"]
 			},
-			dataType: 'text',
-			success: (responseData, textStatus, jqXHR) => {
-				this.drivingIsForwards = responseData.includes("forwards");
+			dataType: 'json',
+			success: (data, textStatus, jqXHR) => {
+				if ('msg' in data) {
+					setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
+					return;
+				}
+
+				this.drivingIsForwards = data.direction === "forwards";
 			},
 			error: (responseData, textStatus, errorThrown) => {
 				setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
@@ -547,8 +579,10 @@ class Driver {
 		});
 	}
 
+
 	// Server request to set the train's speed
-	setTrainSpeedPromise(speed) {
+	// TODO: Specification missing
+	setTrainSpeedPromise(speed) { 
 		return $.ajax({
 			type: 'POST',
 			url: serverAddress + '/driver/set-dcc-train-speed',
@@ -582,30 +616,33 @@ class Driver {
 				data: {
 					'train': this.trainId
 				},
-				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					const matches = /on segment: (.*?) -/g.exec(responseData); // Get all Segment IDS as String
-					const segmentIDs = matches[1];
-					const segments = segmentIDs.split(", "); // Splits them into Array
+				dataType: 'json',
+				success: (data, textStatus, jqXHR) => {
+					// Get all Segment IDS as String
+					if ('msg' in data || !data.on_track || !Array.isArray(data.occupied_segments)) {
+						return;
+					}
+
+					const segmentIDs = data.occupied_segments;
+					const segments = segmentIDs.map(s => s.replace(/(a|b)$/, ''));
 
 					// Show the destination reached button when the train is only on the
 					// main segment of the destination
 					// Take into account that a main segment could be split into a/b segments
 					for (let index in segments) {
-						segments[index] = segments[index].replace(/(a|b)$/, '');
-						///TODO: Investigate the point of this check.
+						//TODO: Investigate the point of this check.
 						// reads as if we return if the train occupies a segment
 						// that is not part of the route.
 						if (segments[index] != this.routeDetails['segment']) {
 							return;
 						}
 					}
-					///NOTE: Only checks the first segment that the train occupies ->
+					//NOTE: Only checks the first segment that the train occupies ->
 					// older segments the train has physically already left will still be
 					// contained and perhaps lead to the "is destination reached" staying
 					// false until they are officially left (delay of ~1 - 1.5s). 
 					// This could be a problem for short main segments!
-					if(segments[0] == this.routeDetails['segment']) {
+					if (segments[0] == this.routeDetails['segment']) {
 						this.clearDestinationReachedInterval();
 						this.isDestinationReached = true;
 						$('#endGameButton').show();
@@ -618,12 +655,13 @@ class Driver {
 			});
 		}, destinationReachedTimeout);
 	}
-	
+
 	disableDestinationReached() {
 		this.isDestinationReached = false;
 	}
 
 	// Server request to release the train
+	// TODO: missing api spec
 	releaseTrainPromise() {
 		return $.ajax({
 			type: 'POST',
@@ -659,11 +697,18 @@ class Driver {
 				'grab-id': this.grabId,
 				'route-id': routeDetails['route-id']
 			},
-			dataType: 'text',
-			success: (responseData, textStatus, jqXHR) => {
+			dataType: 'json',
+			success: (data, textStatus, jqXHR) => {
+				if ('msg' in data) {
+					this.routeDetails = null;
+					setResponseDanger('#serverResponse', "This route is not available", "Diese Route ist zurzeit leider nicht verfügbar", 'Sorry');
+					return;
+				}
+
 				this.routeDetails = routeDetails;
-				setResponseSuccess('#serverResponse', 
-					'🥳 Start driving your train to your chosen destination', 
+				setResponseSuccess(
+					'#serverResponse',
+					'🥳 Start driving your train to your chosen destination',
 					'🥳 Fahr deinen Zug zum ausgewählten Ziel',
 					''
 				);
@@ -675,7 +720,9 @@ class Driver {
 		});
 	}
 
+
 	// Server request to manually drive the granted route
+	// TODO: missing API Spec
 	driveRoutePromise() {
 		return $.ajax({
 			type: 'POST',
@@ -715,6 +762,7 @@ class Driver {
 	}
 
 	// Server request to release the granted route
+	// TODO: missing API spec
 	releaseRoutePromise() {
 		if (!this.hasRouteGranted) {
 			return;
@@ -978,6 +1026,7 @@ function pageRefreshWarning(event) {
 // During page unload (refresh or close) behaviour
 // Only synchronouse statements will be executed by this handler!
 // Promises will not be executed!
+// TODO: missing API Spec
 $(window).on("unload", (event) => {
 	console.log("Unloading");
 	if (driver.hasRouteGranted) {
