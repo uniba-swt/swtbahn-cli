@@ -327,6 +327,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Unknown Point",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
                     "405": {
                         "description": "Method not allowed"
                     },
@@ -360,6 +370,16 @@
                     },
                     "400": {
                         "description": "Invalid or missing parameter(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown signal",
                         "content": {
                             "application/json": {
                                 "schema": {

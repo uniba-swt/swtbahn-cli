@@ -542,6 +542,9 @@ o_con_status handler_set_point(void *_, onion_request *req, onion_response *res)
 		if (handle_param_miss_check(res, "Set point", "point", data_point)
 			|| handle_param_miss_check(res, "Set point", "state", data_state)) {
 			return OCS_PROCESSED;
+		} else if (!is_type_point(data_point)) {
+			send_common_feedback(res, HTTP_NOT_FOUND, "unknown point");
+			return OCS_PROCESSED;
 		}
 		
 		syslog_server(LOG_NOTICE, 
@@ -574,6 +577,9 @@ o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res
 		
 		if (handle_param_miss_check(res, "Set signal", "signal", data_signal)
 			|| handle_param_miss_check(res, "Set signal", "state", data_state)) {
+			return OCS_PROCESSED;
+		} else if (!is_type_signal(data_signal)) {
+			send_common_feedback(res, HTTP_NOT_FOUND, "unknown signal");
 			return OCS_PROCESSED;
 		}
 		
