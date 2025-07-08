@@ -228,14 +228,18 @@ o_con_status handler_shutdown(void *_, onion_request *req, onion_response *res) 
 o_con_status handler_set_track_output(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
-		char *end;
 		const char *data_state = onion_request_get_post(req, "state");
-		const long int state = strtol(data_state, &end, 10);
+		
 		if (handle_param_miss_check(res, "Set track output", "state", data_state)) {
-			;
-		} else if ((state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
+			return OCS_PROCESSED;
+		}
+		char *end;
+		const long int state = strtol(data_state, &end, 10);
+		
+		if ((state == LONG_MAX || state == LONG_MIN) || *end != '\0') {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid state");
-			syslog_server(LOG_ERR, "Request: Set track output - invalid state");
+			// log the original input (data_state) for debugging
+			syslog_server(LOG_ERR, "Request: Set track output - invalid state (%s)", data_state);
 		} else {
 			syslog_server(LOG_NOTICE, "Request: Set track output - state: 0x%02x - start", state);
 			bidib_set_track_output_state_all(state);
@@ -259,7 +263,8 @@ o_con_status handler_set_verification_option(void *_, onion_request *req, onion_
 		} else if (!params_check_is_bool_string(data_verification_option)) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid verification-option");
 			syslog_server(LOG_ERR, 
-			              "Request: Set verification option - invalid verification-option");
+			              "Request: Set verification option - invalid verification-option (%s)",
+			              data_verification_option);
 		} else {
 			if (strcmp("true", data_verification_option) == 0 
 				|| strcmp("True", data_verification_option) == 0 
@@ -361,8 +366,8 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 		} else if (speed == 999) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "bad speed");
 			syslog_server(LOG_ERR, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - bad speed",
-			              data_train, speed);
+			              "Request: Admin set dcc train speed - train: %s speed: %d - bad speed (%s)",
+			              data_train, speed, data_speed);
 			return OCS_PROCESSED;
 		} 
 		

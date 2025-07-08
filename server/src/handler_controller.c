@@ -513,7 +513,8 @@ o_con_status handler_release_route(void *_, onion_request *req, onion_response *
 			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
-			syslog_server(LOG_ERR, "Request: Release route - invalid route-id");
+			// log the original input (data_route_id), not the parsed (route_id), for debugging
+			syslog_server(LOG_ERR, "Request: Release route - invalid route-id (%s)", data_route_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -544,7 +545,7 @@ o_con_status handler_set_point(void *_, onion_request *req, onion_response *res)
 			return OCS_PROCESSED;
 		} else if (!is_type_point(data_point)) {
 			send_common_feedback(res, HTTP_NOT_FOUND, "unknown point");
-			syslog_server(LOG_ERR, "Request: Set point - unknown point %s", data_point);
+			syslog_server(LOG_ERR, "Request: Set point - unknown point (%s)", data_point);
 			return OCS_PROCESSED;
 		}
 		
@@ -581,7 +582,7 @@ o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res
 			return OCS_PROCESSED;
 		} else if (!is_type_signal(data_signal)) {
 			send_common_feedback(res, HTTP_NOT_FOUND, "unknown signal");
-			syslog_server(LOG_ERR, "Request: Set point - unknown signal %s", data_signal);
+			syslog_server(LOG_ERR, "Request: Set point - unknown signal (%s)", data_signal);
 			return OCS_PROCESSED;
 		}
 		
@@ -641,7 +642,6 @@ o_con_status handler_set_peripheral(void *_, onion_request *req, onion_response 
 }
 
 o_con_status handler_get_interlocker(void *_, onion_request *req, onion_response *res) {
-	///TODO: Changed to GET, adjust clients!
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_GET)) {
 		pthread_mutex_lock(&interlocker_mutex);

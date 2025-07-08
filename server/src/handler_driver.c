@@ -996,8 +996,8 @@ o_con_status handler_request_route(void *_, onion_request *req, onion_response *
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Request route - from: %s to: %s - invalid session-id", 
-			              data_source_name, data_destination_name);
+			              "Request: Request route - from: %s to: %s - invalid session-id (%s)", 
+			              data_source_name, data_destination_name, data_session_id);
 			return OCS_PROCESSED;
 		}
 		// If grab_id is valid, train_id will be, too.
@@ -1005,8 +1005,8 @@ o_con_status handler_request_route(void *_, onion_request *req, onion_response *
 		if (train_id == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Request route - from: %s to: %s - invalid grab-id",
-			              data_source_name, data_destination_name);
+			              "Request: Request route - from: %s to: %s - invalid grab-id (%s)",
+			              data_source_name, data_destination_name, data_grab_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1034,13 +1034,15 @@ o_con_status handler_request_route_by_id(void *_, onion_request *req, onion_resp
 			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
-			syslog_server(LOG_ERR, "Request: Request route by id - invalid route-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Request route by id - invalid route-id (%s)", 
+			              data_route_id);
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Request route by id - route: %s - invalid session-id", 
-			              route_id);
+			              "Request: Request route by id - route: %s - invalid session-id (%s)", 
+			              route_id, data_session_id);
 			return OCS_PROCESSED;
 		}
 		// If grab_id is valid, train_id will be, too.
@@ -1048,8 +1050,8 @@ o_con_status handler_request_route_by_id(void *_, onion_request *req, onion_resp
 		if (train_id == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Request route by id - route: %s - invalid grab-id", 
-			              route_id);
+			              "Request: Request route by id - route: %s - invalid grab-id (%s)", 
+			              route_id, data_grab_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1111,8 +1113,8 @@ o_con_status handler_driving_direction(void *_, onion_request *req, onion_respon
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
 			syslog_server(LOG_ERR, 
-			              "Request: Driving direction - train: %s - invalid route-id", 
-			              data_train);
+			              "Request: Driving direction - train: %s - invalid route-id (%s)", 
+			              data_train, data_route_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1160,15 +1162,15 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
-			syslog_server(LOG_ERR, "Request: Drive route - invalid session-id");
+			syslog_server(LOG_ERR, "Request: Drive route - invalid session-id (%s)", data_session_id);
 			return OCS_PROCESSED;
 		} else if (strcmp(mode, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid driving mode");
-			syslog_server(LOG_ERR, "Request: Drive route - invalid driving mode");
+			syslog_server(LOG_ERR, "Request: Drive route - invalid driving mode (%s)", data_mode);
 			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid route-id");
-			syslog_server(LOG_ERR, "Request: Drive route - invalid route-id");
+			syslog_server(LOG_ERR, "Request: Drive route - invalid route-id (%s)", data_route_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1176,7 +1178,9 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 		char *train_id = train_id_from_grab_id(grab_id);
 		if (train_id == NULL) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
-			syslog_server(LOG_ERR, "Request: Drive route - route: %s - invalid grab-id", route_id);
+			syslog_server(LOG_ERR, 
+			              "Request: Drive route - route: %s - invalid grab-id (%s)", 
+			              route_id, data_grab_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1224,7 +1228,9 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
-			syslog_server(LOG_ERR, "Request: Set dcc train speed - invalid session-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set dcc train speed - invalid session-id (%s)", 
+			              data_session_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1232,13 +1238,15 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
-			syslog_server(LOG_ERR, "Request: Set dcc train speed - invalid grab-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set dcc train speed - invalid grab-id (%s)", 
+			              data_grab_id);
 			return OCS_PROCESSED;
 		} else if (speed == 999) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "bad speed");
 			syslog_server(LOG_ERR, 
-			              "Request: Set dcc train speed - train: %s speed: %d - bad speed", 
-			              grabbed_trains[grab_id].name->str, speed);
+			              "Request: Set dcc train speed - train: %s speed: %d - bad speed (%s)",
+			              grabbed_trains[grab_id].name->str, speed, data_speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
 		} else if (strlen(data_track_output) > 32) {
@@ -1248,8 +1256,9 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 			                     "invalid track output (currently no track output longer than "
 			                     "32 chars, incl. nul terminator, is supported for this endpoint)");
 			syslog_server(LOG_ERR, 
-			              "Request: Set dcc train speed - train: %s speed: %d - invalid track output",
-			              grabbed_trains[grab_id].name->str, speed);
+			              "Request: Set dcc train speed - train: %s speed: %d - "
+			              "invalid track output (%s)",
+			              grabbed_trains[grab_id].name->str, speed, data_track_output);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
 		}
@@ -1291,7 +1300,9 @@ o_con_status handler_set_calibrated_train_speed(void *_, onion_request *req, oni
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
-			syslog_server(LOG_ERR, "Request: Set calibrated train speed - invalid session-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set calibrated train speed - invalid session-id (%s)", 
+			              data_session_id);
 			return OCS_PROCESSED;
 		} 
 		
@@ -1299,13 +1310,15 @@ o_con_status handler_set_calibrated_train_speed(void *_, onion_request *req, oni
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
-			syslog_server(LOG_ERR, "Request: Set calibrated train speed - invalid grab-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set calibrated train speed - invalid grab-id (%s)", 
+			              data_grab_id);
 			return OCS_PROCESSED;
 		} else if (speed == 999) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "bad speed");
 			syslog_server(LOG_ERR, 
-			              "Request: Set calibrated train speed - train: %s speed: %d - bad speed", 
-			              grabbed_trains[grab_id].name->str, speed);
+			              "Request: Set calibrated train speed - train: %s speed: %d - bad speed (%s)", 
+			              grabbed_trains[grab_id].name->str, speed, data_speed);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
 		}
@@ -1350,7 +1363,9 @@ o_con_status handler_set_train_emergency_stop(void *_, onion_request *req, onion
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
-			syslog_server(LOG_ERR, "Request: Set train emergency stop - invalid session-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set train emergency stop - invalid session-id (%s)", 
+			              data_session_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1358,7 +1373,9 @@ o_con_status handler_set_train_emergency_stop(void *_, onion_request *req, onion
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
-			syslog_server(LOG_ERR, "Request: Set train emergency stop - invalid grab-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set train emergency stop - invalid grab-id (%s)", 
+			              data_grab_id);
 			return OCS_PROCESSED;
 		}
 		
@@ -1406,7 +1423,9 @@ o_con_status handler_set_train_peripheral(void *_, onion_request *req, onion_res
 			return OCS_PROCESSED;
 		} else if (client_session_id != session_id) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid session-id");
-			syslog_server(LOG_ERR, "Request: Set train peripheral - invalid session-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set train peripheral - invalid session-id (%s)", 
+			              data_session_id);
 			return OCS_PROCESSED;
 		} 
 		
@@ -1414,13 +1433,15 @@ o_con_status handler_set_train_peripheral(void *_, onion_request *req, onion_res
 		if (grab_id == -1 || !grabbed_trains[grab_id].is_valid) {
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid grab-id");
-			syslog_server(LOG_ERR, "Request: Set train peripheral - invalid grab-id");
+			syslog_server(LOG_ERR, 
+			              "Request: Set train peripheral - invalid grab-id (%s)", 
+			              data_grab_id);
 			return OCS_PROCESSED;
 		} else if (state == -1) {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid state");
 			syslog_server(LOG_ERR, 
-			              "Request: Set train peripheral - train: %s - invalid state", 
-			              grabbed_trains[grab_id].name->str);
+			              "Request: Set train peripheral - train: %s - invalid state (%s)", 
+			              grabbed_trains[grab_id].name->str, data_state);
 			pthread_mutex_unlock(&grabbed_trains_mutex);
 			return OCS_PROCESSED;
 		}
