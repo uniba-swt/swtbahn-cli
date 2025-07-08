@@ -544,6 +544,7 @@ o_con_status handler_set_point(void *_, onion_request *req, onion_response *res)
 			return OCS_PROCESSED;
 		} else if (!is_type_point(data_point)) {
 			send_common_feedback(res, HTTP_NOT_FOUND, "unknown point");
+			syslog_server(LOG_ERR, "Request: Set point - unknown point %s", data_point);
 			return OCS_PROCESSED;
 		}
 		
@@ -580,6 +581,7 @@ o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res
 			return OCS_PROCESSED;
 		} else if (!is_type_signal(data_signal)) {
 			send_common_feedback(res, HTTP_NOT_FOUND, "unknown signal");
+			syslog_server(LOG_ERR, "Request: Set point - unknown signal %s", data_signal);
 			return OCS_PROCESSED;
 		}
 		
