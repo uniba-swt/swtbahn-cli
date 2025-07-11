@@ -12,9 +12,9 @@ function updateTrainIsForwards() {
 		type: 'POST',
 		url: '/monitor/train-state',
 		crossDomain: true,
-		data: { 'train': trainId },
+		data: $.param({ 'train': trainId }),
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (responseData) {
 			trainIsForwards = responseData.includes('direction: forwards');
 		}
 	});
@@ -22,61 +22,48 @@ function updateTrainIsForwards() {
 
 function updateTrainGrabbedState() {
 	return $.ajax({
-		type: 'POST',
+		type: 'GET',
 		url: '/monitor/trains',
 		crossDomain: true,
-		data: null,
 		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
+		success: function (responseData) {
 			const trains = responseData.split(/\r?\n|\r|\n/g);
 			trains.forEach((train) => {
 				const trainId = train.match(/^\w+_\w+/g)[0];
 				const isGrabbed = train.includes('yes');
-				
 				if (isGrabbed) {
 					$(`#releaseTrainButton_${trainId}`).show();
 				} else {
 					$(`#releaseTrainButton_${trainId}`).hide();
 				}
 			});
-		},
-		error: (responseData, textStatus, errorThrown) => {
-			// Do nothing
 		}
 	});
 }
 
 function updateGrantedRoutes(htmlElement) {
 	return $.ajax({
-		type: 'POST',
+		type: 'GET',
 		url: '/monitor/granted-routes',
 		crossDomain: true,
-		data: null,
 		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
+		success: function (responseData) {
 			htmlElement.empty();
-			
 			if (responseData.includes('No granted routes')) {
 				htmlElement.html('<li>No granted routes</li>');
 				return;
-			}			
-			
+			}
 			const routes = responseData.split(/\r?\n|\r|\n/g);
 			routes.forEach((route) => {
 				const routeId = route.match(/\d+/g)[0];
 				const trainId = route.match(/\w+_\w+$/g)[0];
-				
 				const routeText = `route ${routeId} granted to ${trainId}`;
 				const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
 				htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
 			});
-			
 			$('.grantedRoute').click(function (event) {
 				adminReleaseRoute(event.currentTarget.value);
 			});
-		},
-		error: (responseData, textStatus, errorThrown) => {
-			// Do nothing
 		}
 	});
 }
@@ -86,6 +73,7 @@ function adminReleaseRoute(routeId) {
 	$('#routeId').val(routeId);
 	$('#releaseRouteButton').click();
 }
+
 
 
 $(document).ready(
