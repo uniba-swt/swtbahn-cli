@@ -111,7 +111,7 @@ function updatePossibleDestinations(blockId) {
 		}
 
 		Object.keys(routes).forEach((destinationSignal, choice) => {
-			const route = { };
+			const route = {};
 			route[destinationSignal] = routes[destinationSignal];
 
 			const [_destinationSignal, routeDetails] = unpackRoute(route);
@@ -131,7 +131,7 @@ function updatePossibleDestinations(blockId) {
 // route is available
 function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 	return $.ajax({
-		type: 'POST',
+		type: 'GET',
 		url: serverAddress + '/monitor/route',
 		crossDomain: true,
 		data: {
@@ -139,7 +139,6 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 		},
 		dataType: 'json',
 		success: (data, textStatus, jqXHR) => {
-			// Fehlerobjekt erkannt
 			if ('msg' in data) {
 				console.warn("Route API returned message:", data.msg);
 				unavailable();
@@ -147,7 +146,7 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 			}
 
 			const noConflicts = Array.isArray(data.granted_conflicting_route_ids) &&
-								data.granted_conflicting_route_ids.length === 0;
+				data.granted_conflicting_route_ids.length === 0;
 			const isClear = data.clear === true;
 			const isNotGranted = data.granted_to_train === "";
 
@@ -162,7 +161,7 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 		error: (xhr, textStatus, errorThrown) => {
 			setResponseDanger(
 				'#serverResponse',
-				'😢 There was a problem checking the destinations', 
+				'😢 There was a problem checking the destinations',
 				'😢 Es ist ein Problem beim Überprüfen der Ziele aufgetreten',
 				'Sorry'
 			);
@@ -240,7 +239,7 @@ function speak(text) {
 }
 
 function setResponseDanger(responseId, messageEn, messageDe, messageSpeak) {
-	setResponse(responseId, messageEn, messageDe, function() {
+	setResponse(responseId, messageEn, messageDe, function () {
 		$(responseId).parent().addClass('alert-danger');
 		$(responseId).parent().addClass('alert-danger-blink');
 		$(responseId).parent().removeClass('alert-success');
@@ -250,7 +249,7 @@ function setResponseDanger(responseId, messageEn, messageDe, messageSpeak) {
 }
 
 function setResponseSuccess(responseId, messageEn, messageDe, messageSpeak) {
-	setResponse(responseId, messageEn, messageDe, function() {
+	setResponse(responseId, messageEn, messageDe, function () {
 		$(responseId).parent().removeClass('alert-danger');
 		$(responseId).parent().removeClass('alert-danger-blink');
 		$(responseId).parent().addClass('alert-success');
@@ -315,7 +314,7 @@ function setModal(message) {
 	$('#serverModalTitle').text(title);
 	$('#serverModalBody').html(body);
 	$('#serverModalButton').text(button);
-	
+
 	let modalElement = document.getElementById('serverModal');
 	let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 	modal.show();
@@ -324,7 +323,7 @@ function setModal(message) {
 function setModalDanger(message, messageSpeak) {
 	setModal(message);
 	$('#serverModal .modal-content').addClass('modal-danger');
-	
+
 	speak(messageSpeak);
 }
 
@@ -410,7 +409,7 @@ class Driver {
 	// Server request for the train's current block
 	updateCurrentBlockPromise() {
 		return $.ajax({
-			type: 'POST',
+			type: 'GET',
 			url: serverAddress + '/monitor/train-state',
 			crossDomain: true,
 			data: {
@@ -419,8 +418,8 @@ class Driver {
 			dataType: 'json',
 			success: (data, textStatus, jqXHR) => {
 				if ('msg' in data) {
-					setResponseDanger('#serverResponse', 
-						'😢 Could not find your train', 
+					setResponseDanger('#serverResponse',
+						'😢 Could not find your train',
 						'😢 Dein Zug konnte nicht gefunden werden',
 						''
 					);
@@ -431,8 +430,8 @@ class Driver {
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 
-					'😢 Could not find your train', 
+				setResponseDanger('#serverResponse',
+					'😢 Could not find your train',
 					'😢 Dein Zug konnte nicht gefunden werden',
 					''
 				);
@@ -440,10 +439,11 @@ class Driver {
 		});
 	}
 
+
 	// Server request for a train's status and then execute the callback handlers
 	trainIsAvailablePromise(trainId, success, error) {
 		return $.ajax({
-			type: 'POST',
+			type: 'GET',
 			url: serverAddress + '/monitor/train-state',
 			crossDomain: true,
 			data: { 'train': trainId },
@@ -464,10 +464,11 @@ class Driver {
 		});
 	}
 
+
 	// Update the styling of the train selection buttons based on the train availabilities
 	updateTrainAvailability() {
 		$('.selectTrainButton').prop("disabled", true);
-		
+
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
 			console.log("Checking available trains ... ");
@@ -477,12 +478,12 @@ class Driver {
 				let trainId = obj.id;
 				this.trainIsAvailablePromise(
 					trainId,
-					() => { 
+					() => {
 						$(obj).prop("disabled", false);
 						$(obj).removeClass("btn-danger");
 						$(obj).addClass("btn-primary");
 						$($(obj).parent(".card-body").parent(".card")).removeClass("unavailableTrain");
-						
+
 						function setVisibility(isShow) {
 							if (isShow) {
 								return "";
@@ -490,12 +491,12 @@ class Driver {
 								return "style='display: none;'";
 							}
 						}
-						$(obj).children().each(function() {
+						$(obj).children().each(function () {
 							switch ($(this).attr('lang')) {
 								case "de": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Klicke um den Zug zu fahren</span><span class='normal' ${setVisibility(!isEasyMode)}>Zug fahren</span>`);
-								           break;
+									break;
 								case "en": $(this).html(`<span class='easy' ${setVisibility(isEasyMode)}>Click to drive this train</span><span class='normal' ${setVisibility(!isEasyMode)}>Drive this train</span>`);
-								           break;
+									break;
 							}
 						});
 					},
@@ -504,8 +505,8 @@ class Driver {
 						$(obj).removeClass("btn-primary");
 						$(obj).addClass("btn-danger");
 						$($(obj).parent(".card-body").parent(".card")).addClass("unavailableTrain");
-						$(obj).children().each(function() {
-							switch($(this).attr('lang')){
+						$(obj).children().each(function () {
+							switch ($(this).attr('lang')) {
 								case "de": $(this).text("Nicht verfügbar"); break;
 								case "en": $(this).text("Unavailable"); break;
 							}
@@ -530,8 +531,8 @@ class Driver {
 			dataType: 'json',
 			success: (data, textStatus, jqXHR) => {
 				if ('msg' in data) {
-					setResponseDanger('#serverResponse', 
-						'😢 There was a problem starting your train', 
+					setResponseDanger('#serverResponse',
+						'😢 There was a problem starting your train',
 						'😢 Es ist ein Problem beim starten deines Zuges aufgetreten',
 						''
 					);
@@ -544,8 +545,8 @@ class Driver {
 				setResponseSuccess('#serverResponse', '😁 Your train is ready', '😁 Dein Zug ist bereit', '');
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 
-					'😢 There was a problem starting your train', 
+				setResponseDanger('#serverResponse',
+					'😢 There was a problem starting your train',
 					'😢 Es ist ein Problem beim starten deines Zuges aufgetreten',
 					''
 				);
@@ -554,10 +555,11 @@ class Driver {
 	}
 
 
+
 	// Server request for the train's physical driving direction of its granted route
 	updateDrivingDirectionPromise() {
 		return $.ajax({
-			type: 'POST',
+			type: 'GET',
 			url: serverAddress + '/driver/direction',
 			crossDomain: true,
 			data: {
@@ -580,9 +582,9 @@ class Driver {
 	}
 
 
+
 	// Server request to set the train's speed
-	// TODO: Specification missing
-	setTrainSpeedPromise(speed) { 
+	setTrainSpeedPromise(speed) {
 		return $.ajax({
 			type: 'POST',
 			url: serverAddress + '/driver/set-dcc-train-speed',
@@ -593,10 +595,10 @@ class Driver {
 				'speed': this.drivingIsForwards ? speed : "-" + speed,
 				'track-output': this.trackOutput
 			},
-			dataType: 'text',
+			dataType: 'json',
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 
-					'😢 There was a problem setting the speed of your train', 
+				setResponseDanger('#serverResponse',
+					'😢 There was a problem setting the speed of your train',
 					'😢 Es ist ein Problem beim Einstellen der Geschwindigkeit deines Zuges aufgetreten',
 					''
 				);
@@ -604,13 +606,14 @@ class Driver {
 		});
 	}
 
+
 	// Server request for the train's current segment and then determine
 	// whether to show the destination reached button
 	enableDestinationReachedPromise() {
 		const destinationReachedTimeout = 100;
 		this.destinationReachedInterval = setInterval(() => {
 			return $.ajax({
-				type: 'POST',
+				type: 'GET',
 				url: serverAddress + '/monitor/train-state',
 				crossDomain: true,
 				data: {
@@ -618,7 +621,6 @@ class Driver {
 				},
 				dataType: 'json',
 				success: (data, textStatus, jqXHR) => {
-					// Get all Segment IDS as String
 					if ('msg' in data || !data.on_track || !Array.isArray(data.occupied_segments)) {
 						return;
 					}
@@ -626,29 +628,15 @@ class Driver {
 					const segmentIDs = data.occupied_segments;
 					const segments = segmentIDs.map(s => s.replace(/(a|b)$/, ''));
 
-					// Show the destination reached button when the train is only on the
-					// main segment of the destination
-					// Take into account that a main segment could be split into a/b segments
 					for (let index in segments) {
-						//TODO: Investigate the point of this check.
-						// reads as if we return if the train occupies a segment
-						// that is not part of the route.
 						if (segments[index] != this.routeDetails['segment']) {
 							return;
 						}
 					}
-					//NOTE: Only checks the first segment that the train occupies ->
-					// older segments the train has physically already left will still be
-					// contained and perhaps lead to the "is destination reached" staying
-					// false until they are officially left (delay of ~1 - 1.5s). 
-					// This could be a problem for short main segments!
 					if (segments[0] == this.routeDetails['segment']) {
 						this.clearDestinationReachedInterval();
 						this.isDestinationReached = true;
 						$('#endGameButton').show();
-
-						// The page can be refreshed without ill consequences.
-						// The train will stop sensibly on the main segment of the destination
 						$(window).unbind('beforeunload', pageRefreshWarning);
 					}
 				}
@@ -656,12 +644,12 @@ class Driver {
 		}, destinationReachedTimeout);
 	}
 
+
 	disableDestinationReached() {
 		this.isDestinationReached = false;
 	}
 
 	// Server request to release the train
-	// TODO: missing api spec
 	releaseTrainPromise() {
 		return $.ajax({
 			type: 'POST',
@@ -671,20 +659,21 @@ class Driver {
 				'session-id': this.sessionId,
 				'grab-id': this.grabId
 			},
-			dataType: 'text',
+			dataType: 'json',
 			success: (responseData, textStatus, jqXHR) => {
 				this.reset();
 				this.trainId = null;
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 
-					'🤔 There was a problem ending your turn', 
+				setResponseDanger('#serverResponse',
+					'🤔 There was a problem ending your turn',
 					'🤔 Es ist ein Problem beim Beenden deiner Runde aufgetreten',
 					''
 				);
 			}
 		});
 	}
+
 
 	// Server request for a specific route ID
 	requestRouteIdPromise(routeDetails) {
@@ -721,8 +710,8 @@ class Driver {
 	}
 
 
+
 	// Server request to manually drive the granted route
-	// TODO: missing API Spec
 	driveRoutePromise() {
 		return $.ajax({
 			type: 'POST',
@@ -734,16 +723,14 @@ class Driver {
 				'route-id': this.routeDetails["route-id"],
 				'mode': 'manual'
 			},
-			dataType: 'text',
+			dataType: 'json',
 			success: (responseData, textStatus, jqXHR) => {
 				if (!this.hasValidTrainSession) {
-					// Ignore, driver has ended their trip
 				} else if (!this.hasRouteGranted) {
 					setModalSuccess(modalMessages.drivingSuccess, 'Juhuu!!');
 				} else {
 					this.routeDetails = null;
-					
-					// Copy the driving infringement message and fill in the destination flag
+
 					const destinationClass = $('#destination').attr('class');
 					let drivingInfringement = JSON.parse(JSON.stringify(modalMessages.drivingInfringement));
 					drivingInfringement['body']['de'] = drivingInfringement['body']['de'].replace('${destination}', destinationClass);
@@ -752,8 +739,8 @@ class Driver {
 				}
 			},
 			error: (responseData, textStatus, errorThrown) => {
-				setResponseDanger('#serverResponse', 
-					'😢 Route to your chosen destination is unavailable', 
+				setResponseDanger('#serverResponse',
+					'😢 Route to your chosen destination is unavailable',
 					'😢 Die Route zu deinem ausgewählten Ziel ist aktuell nicht verfügbar',
 					'Sorry'
 				);
@@ -761,13 +748,13 @@ class Driver {
 		});
 	}
 
+
 	// Server request to release the granted route
-	// TODO: missing API spec
 	releaseRoutePromise() {
 		if (!this.hasRouteGranted) {
 			return;
 		}
-		
+
 		const routeId = this.routeDetails["route-id"];
 		this.routeDetails = null;
 
@@ -776,9 +763,11 @@ class Driver {
 			url: serverAddress + '/controller/release-route',
 			crossDomain: true,
 			data: { 'route-id': routeId },
-			dataType: 'text'
+			dataType: 'json'
 		});
 	}
+
+
 
 	// Manage the business logic of manually driving a granted route
 	async driveToPromise(route) {
@@ -786,17 +775,17 @@ class Driver {
 			setResponseDanger('#serverResponse', '😢 Could not find your train', '😢 Dein Zug konnte nicht gefunden werden', '');
 			return;
 		}
-		
+
 		const lock = await Mutex.lock();
-		
+
 		if (this.hasRouteGranted) {
 			Mutex.unlock(lock);
 			return;
 		}
 
 		const [destinationSignal, routeDetails] = unpackRoute(route);
-        console.log(routeDetails);
-        
+		console.log(routeDetails);
+
 		this.requestRouteIdPromise(routeDetails)                       // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
 			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
@@ -907,7 +896,7 @@ function initialise() {
 	language = 'de';
 	$('span:lang(de):not(span span)').show();
 	$('span:lang(en):not(span span)').hide();
-	
+
 	// Handle language selection.
 	$('#changeLang').click(function () {
 		language = (language == 'en') ? 'de' : 'en';
@@ -919,7 +908,7 @@ function initialise() {
 	isEasyMode = false;
 	$('.normal').show();
 	$('.easy').hide();
-	
+
 	// Handle the verbosity selection.
 	$('#changeTips').click(function (event) {
 		isEasyMode = !isEasyMode
