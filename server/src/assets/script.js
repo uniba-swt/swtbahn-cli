@@ -28,7 +28,7 @@ function updateTrainGrabbedState() {
 		dataType: 'json',
 		success: function (responseData) {
 			responseData.trains.forEach((train) => {
-				const trainId = train.train;
+				const trainId = train.id;
 				const isGrabbed = train.grabbed;
 				if (isGrabbed) {
 					$(`#releaseTrainButton_${trainId}`).show();
@@ -49,7 +49,7 @@ function adminReleaseRoute(routeId) {
 	$('#releaseRouteButton').click();
 }
 
-function updateGrantedRoutes(htmlElement) {
+function updateGrantedRoutes(htmlElement) { //TODO: to be tested if responseData.granted-routes works or responseData["granted-routes"]
 	return $.ajax({
 		type: 'GET',
 		url: '/monitor/granted-routes',
@@ -57,12 +57,12 @@ function updateGrantedRoutes(htmlElement) {
 		dataType: 'json',
 		success: function (responseData) {
 			htmlElement.empty();
-			if (!responseData.routes || responseData.routes.length === 0) {
+			if (!responseData.granted-routes || responseData.granted-routes.length === 0) {
 				htmlElement.html('<li>No granted routes</li>');
 				return;
 			}
-			responseData.routes.forEach((route) => {
-				const routeId = route['route-id'];
+			responseData.granted-routes.forEach((route) => {
+				const routeId = route['id'];
 				const trainId = route.train;
 				const routeText = `route ${routeId} granted to ${trainId}`;
 				const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
@@ -86,7 +86,7 @@ $(document).ready(
 			$('#pingResponse').text('Waiting');
 			$.ajax({
 				type: 'GET',
-				url: '/monitor/platform-name',
+				url: '/',
 				crossDomain: true,
 				dataType: 'json',
 				success: function (responseData, textStatus, jqXHR) {
@@ -119,7 +119,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#startupShutdownResponse').parent().removeClass('alert-success');
 					$('#startupShutdownResponse').parent().addClass('alert-danger');
-					$('#startupShutdownResponse').text('System already running!');
+					$('#startupShutdownResponse').text(getErrorMessage(responseData));
 				}
 			});
 		});
@@ -173,7 +173,7 @@ $(document).ready(
 					},
 					error: function (responseData, textStatus, errorThrown) {
 						$('#grabTrainResponse')
-							.text('System not running or train not available!');
+							.text(getErrorMessage(responseData));
 						$('#grabTrainResponse').parent().addClass('alert-danger');
 						$('#grabTrainResponse').parent().removeClass('alert-success');
 					}
@@ -205,7 +205,7 @@ $(document).ready(
 					error: function (responseData, textStatus, errorThrown) {
 						$('#grabTrainResponse').parent().addClass('alert-danger');
 						$('#grabTrainResponse').parent().removeClass('alert-success');
-						$('#grabTrainResponse').text('System not running or train still moving!');
+						$('#grabTrainResponse').text(getErrorMessage(responseData));
 					}
 				});
 			} else {
@@ -288,10 +288,12 @@ $(document).ready(
 						$('#driveTrainResponse').parent().addClass('alert-success');
 						lastSetSpeed = speed;
 					},
-					error: function (responseData, textStatus, errorThrown) {
+					error: function (responseData, textStatus, errorThrown) { //TODO: Code 405 and 503 doesnt have any msg
+						var statusCode = responseData.status;
 						$('#driveTrainResponse')
-							.text('System not running or invalid track output!');
-						$('#driveTrainResponse').parent().addClass('alert-danger');
+							.text(getErrorMessage(responseData));
+						
+							$('#driveTrainResponse').parent().addClass('alert-danger');
 						$('#driveTrainResponse').parent().removeClass('alert-success');
 					}
 				});
@@ -310,7 +312,7 @@ $(document).ready(
 			$('#dccSpeed').val(enteredSpeed);
 		});
 
-		$('#requestRouteButton').click(function () {
+		$('#requestRouteButton').click(function () { //TODO: cleanup function
 			$('#routeResponse').text('Waiting');
 			source = $('#signalIdFrom').val();
 			destination = $('#signalIdTo').val();
@@ -340,7 +342,7 @@ $(document).ready(
 								$('#routeId').val(responseData['granted-route-id']);
 							},
 							error: function (responseData, textStatus, errorThrown) {
-								$('#routeResponse').text(responseData.responseText);
+								$('#routeResponse').text(getErrorMessage(responseData));
 								$('#routeResponse').parent().removeClass('alert-success');
 								$('#routeResponse').parent().addClass('alert-danger');
 							}
@@ -462,7 +464,7 @@ $(document).ready(
 						$('#routeId').val("None");
 					},
 					error: function (responseData, textStatus, errorThrown) {
-						$('#routeResponse').text('Route could not be driven!');
+						$('#routeResponse').text(getErrorMessage(responseData));
 						$('#routeResponse').parent().removeClass('alert-success');
 						$('#routeResponse').parent().addClass('alert-danger');
 					}
@@ -509,7 +511,7 @@ $(document).ready(
 
 
 		// Custom Engines
-		$('#uploadEngineButton').click(function () {
+		$('#uploadEngineButton').click(function () { //TODO: change to json
 			$('#uploadResponse').text('Waiting');
 			var files = $('#selectUploadFile').prop('files');
 			if (files.length != 1) {
@@ -626,11 +628,9 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
 					$('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveEngineResponse').text(responseData.responseText);
+					$('#refreshRemoveEngineResponse').text(getErrorMessage(responseData, {400: "Invalid or missing parameter, or engine is unremovable"}));
 				}
 			});
-
-
 		});
 
 
@@ -648,8 +648,11 @@ $(document).ready(
 				},
 				dataType: 'json',
 				success: (responseData, textStatus, jqXHR) => {
+					// Do nothing
 				},
 				error: (responseData, textStatus, errorThrown) => {
+					// Do nothing
+					console.log("func(adminSetTrainSpeed) failed: {} - {}".format(responseData.status, getErrorMessage(responseData)))
 				}
 			});
 		}
@@ -719,7 +722,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#routeResponse').parent().removeClass('alert-success');
 					$('#routeResponse').parent().addClass('alert-danger');
-					$('#routeResponse').text('System not running or invalid track output!');
+					$('#routeResponse').text(getErrorMessage(responseData));
 				}
 			});
 
@@ -739,7 +742,7 @@ $(document).ready(
 					$('#setPointResponse').parent().addClass('alert-success');
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
+					$('#setPointResponse').text(getErrorMessage(responseData));
 					$('#setPointResponse').parent().removeClass('alert-success');
 					$('#setPointResponse').parent().addClass('alert-danger');
 				}
@@ -782,7 +785,7 @@ $(document).ready(
 					$('#setSignalResponse').parent().addClass('alert-success');
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
+					$('#setSignalResponse').text(getErrorMessage(responseData));
 					$('#setSignalResponse').parent().removeClass('alert-success');
 					$('#setSignalResponse').parent().addClass('alert-danger');
 				}
@@ -842,7 +845,7 @@ $(document).ready(
 					$('#setPeripheralResponse').parent().addClass('alert-success');
 				},
 				error: function (responseData, textStatus, errorThrown) {
-					$('#setPeripheralResponse').text('System not running or invalid aspect!');
+					$('#setPeripheralResponse').text(getErrorMessage(responseData));
 					$('#setPeripheralResponse').parent().removeClass('alert-success');
 					$('#setPeripheralResponse').parent().addClass('alert-danger');
 				}
@@ -883,7 +886,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#uploadResponse').parent().removeClass('alert-success');
 					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#uploadResponse').text(responseData.responseText);
+					$('#uploadResponse').text(getErrorMessage(responseData));
 				}
 			});
 		});
@@ -948,7 +951,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text(responseData.responseText);
+					$('#refreshRemoveInterlockerResponse').text(getErrorMessage(responseData));
 				}
 			});
 		});
@@ -976,7 +979,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text('Unable to set interlocker');
+					$('#refreshRemoveInterlockerResponse').text(getErrorMessage(responseData));
 				}
 			});
 		});
@@ -1004,7 +1007,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
 					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text('Unable to unset interlocker');
+					$('#refreshRemoveInterlockerResponse').text(getErrorMessage(responseData));
 				}
 			});
 		});
@@ -1019,6 +1022,29 @@ $(document).ready(
 			$('#uploadResponse').parent().removeClass('alert-danger');
 			$('#uploadResponse').parent().addClass('alert-success');
 		});
+	
+	//#*# Helperfunctions
+
+	function getErrorMessage(responseData, customCodes = {}) {
+		if (responseData.msg) {
+			return responseData.msg;
+		}
+
+		// Check if customCodes contains the status code
+		if (customCodes.hasOwnProperty(responseData.status)) {
+			return customCodes[responseData.status];
+		}
+
+		// Fallback to default messages
+		switch (responseData.status) {
+			case 405:
+				return "Method not allowed";
+			case 503:
+				return "SWTbahn not running";
+			default:
+				return "{} - Fehlernachricht nicht definiert".format(responseData.status);
+		}
+	}
 
 	}
 );
