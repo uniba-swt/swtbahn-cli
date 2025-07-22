@@ -1,4 +1,5 @@
-# Block layout configuration: SWTbahnUltraloop
+# Module Name and Block layout configuration: SWTbahnUltraloop
+module-name: SWTbahnUltraloop
 blocks:
   - id: block1
     length: 0.00cm
@@ -46,10 +47,11 @@ blocks:
     is_reversed: false
     direction: bidirectional
 platforms:
+reversers:
 crossings:
   - id: crossing1
     segment: seg32
-signaltypes:
+signal-types:
   - id: entry
     aspects:
       - aspect_caution
@@ -82,7 +84,7 @@ signaltypes:
       - high
       - low
 compositions:
-peripheraltypes:
+peripheral-types:
   - id: onebit
     aspects:
       - high

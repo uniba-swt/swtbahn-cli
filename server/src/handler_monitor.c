@@ -41,6 +41,23 @@
 #include "bahn_data_util.h"
 #include "websocket_uploader/engine_uploader.h"
 
+onion_connection_status handler_get_platform_name(void *_, onion_request *req, onion_response *res) {
+	build_response_header(res);
+	// "platform name" is a synonym for "module-name" (def. in extras-config.yml).
+	// module name is only loaded when parsing config, which is done at startup.
+	// -> when system is not running, name is not available yet, thus return error.
+	if (running && (onion_request_get_flags(req) & OR_METHODS) == OR_GET) {
+		const char *platform_module_name = config_get_module_name();
+		onion_response_printf(res, "%s", platform_module_name);
+		syslog_server(LOG_INFO, "Request: Get platform name (%s) - done", platform_module_name);
+		return OCS_PROCESSED;
+	} else {
+		syslog_server(LOG_ERR, 
+		              "Request: Get platform name - system not running or wrong request type");
+		return OCS_NOT_IMPLEMENTED;
+	}
+}
+
 onion_connection_status handler_get_trains(void *_, onion_request *req, onion_response *res) {
 	build_response_header(res);
 	if (running && ((onion_request_get_flags(req) & OR_METHODS) == OR_POST)) {
@@ -93,7 +110,7 @@ onion_connection_status handler_get_train_state(void *_, onion_request *req, oni
 				}
 			}
 			bidib_free_train_position_query(train_position_query);
-		
+			
 			GString *ret_string = g_string_new("");
 			g_string_append_printf(ret_string, "grabbed: %s - on segment: %s - on block: %s"
 			                       " - orientation: %s"
