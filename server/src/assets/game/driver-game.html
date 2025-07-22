@@ -66,7 +66,7 @@
 </svg>
 
 <body>
-	<div class="bahn-header wide-largerfont">
+	<div class="bahn-header fontSizeScale">
 		<img id="bahn-logo" src="../swtbahn-logo.png">
 		<button id="endGameButton" type="button" class="btn btn-outline-primary">
 			<span lang="de">Beenden</span>
@@ -83,9 +83,6 @@
 				<span lang="en">🇬🇧</span>
 			</button>
 		</div>
-	</div>
-	<div class="row">
-		<img id="chosenTrain" class="col pt-2 img-fluid" src=""></img>
 	</div>
 	<hr />
 
@@ -274,15 +271,134 @@
 		</div>
 	</div>
 
+	<!-- This encapsulates elements that are only relevant if a train has been grabbed -->	
+	<div id="trainGrabbedComponentsContainer">
+		<div id="chosenTrainImgContainer">
+			<img id="chosenTrain" class="img-fluid" src=""></img>
+		</div>
 
-	<div class="m-4"></div>
+		<div class="controlContainer">
+			<form id="destinationsForm">
+				<label class="fontSizeScale col-form-label-lg me-md-5">
+					<b>
+						<span lang="de">
+							<span class='easy'>Klicke auf das Symbol, zu dem du fahren möchtest:</span>
+							<span class='normal'>Mögliche Ziele:</span>
+						</span>
+						<span lang="en">
+							<span class='easy'>Click the symbol you wish to drive to:</span>
+							<span class='normal'>Possible destinations:</span>
+						</span>
+					</b>
+				</label>
+				<div class="input-group row">
+					<div id="possibleDestinations" class="col">
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination0" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination1" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination2" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination3" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination4" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination5" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination6" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination7" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination8" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination9" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination10" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+						<svg class="flag" viewBox="0 0 100 100">
+							<use id="destination11" href="#flagDef" class="flagThemeBlank" value=""></use>
+						</svg>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<div class="controlContainer">
+			<form id="drivingForm">
+				<div class="row">
+					<label class="fontSizeScale col-auto col-form-label-lg"><b>
+							<span lang="de">Fahrzeit:</span>
+							<span lang="en">Driving Time:</span>
+					</b></label>
+					<label class="fontSizeScale col-auto col-form-label-lg">
+						<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
+					</label>
+				</div>
+				<div id="chosenDestination" class="row">
+					<label class="fontSizeScale col-auto col-form-label-lg"><b>
+							<span lang="de">Ziel:</span>
+							<span lang="en">Destination:</span>
+					</b></label>
+					<svg class="flag currentDestination" viewBox="0 0 100 100">
+						<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
+					</svg>
+				</div>
+				<label class="fontSizeScale col-form-label-lg">
+					<span lang="en"><span class="easy">Please drive your train to the destination and then
+							stop</span></span>
+					<span lang="de"><span class="easy">Bitte fahren Sie Ihren Zug zum Ziel und halten Sie kurz vor dem Ziel
+							an</span></span>
+					</span>
+				</label>
+				<label class="fontSizeScale col-auto col-form-label-lg"><b>
+						<span lang="de">Geschwindigkeitssteuerung:</span>
+						<span lang="en">Speed control:</span>
+				</b></label>
+				<div class="input-group row">
+					<div class="col">
+						<div class="btn-group" role="group">
+							<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
+								<span lang="de">Stop</span>
+								<span lang="en">Stop</span>
+							</button>
+							<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">
+								<span lang="de">Langsam</span>
+								<span lang="en">Slow</span>
+							</button>
+							<button id="normal" type="button" class="btn btn-secondary btn-lg" value="40">
+								<span lang="de">Normal</span>
+								<span lang="en">Normal</span>
+							</button>
+							<button id="fast" type="button" class="btn btn-success btn-lg" value="60">
+								<span lang="de">Schnell</span>
+								<span lang="en">Fast</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Server Alert Stuff, relevant both for driving/destination and train selection view -->
 
 	<div id="serverAlertBox">
 		<div id="serverAlert" class="alert" role="alert">
 			<span id="serverResponse"></span>
 		</div>
 	</div>
-
+	
 	<div id="serverModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -296,126 +412,7 @@
 			</div>
 		</div>
 	</div>
-
-	<form id="destinationsForm">
-		<label class="col-form-label-lg me-md-5">
-			<b>
-				<span lang="de">
-					<span class='easy'>Klicke auf das Symbol, zu dem du fahren möchtest:</span>
-					<span class='normal'>Mögliche Ziele:</span>
-				</span>
-				<span lang="en">
-					<span class='easy'>Click the symbol you wish to drive to:</span>
-					<span class='normal'>Possible destinations:</span>
-				</span>
-			</b>
-		</label>
-		<div class="input-group row">
-			<div id="possibleDestinations" class="col">
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination0" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination1" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination2" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination3" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-
-				<div class="m-4"></div>
-
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination4" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination5" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination6" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination7" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<div class="m-4"></div>
-
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination8" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination9" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination10" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-				<svg class="flag" viewBox="0 0 100 100">
-					<use id="destination11" href="#flagDef" class="flagThemeBlank" value=""></use>
-				</svg>
-			</div>
-		</div>
-	</form>
-
-	<form id="drivingForm">
-		<div class="row">
-			<label class="col-auto col-form-label-lg"><b>
-					<span lang="de">Fahrzeit:</span>
-					<span lang="en">Driving Time:</span>
-				</b></label>
-			<label class="col-auto col-form-label-lg">
-				<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
-			</label>
-		</div>
-
-		<div class="m-3"></div>
-
-		<div id="chosenDestination" class="row">
-			<label class="col-auto col-form-label-lg"><b>
-					<span lang="de">Ziel:</span>
-					<span lang="en">Destination:</span>
-				</b></label>
-			<svg class="flag" viewBox="0 0 100 100">
-				<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
-			</svg>
-			<label class="col-form-label-lg">
-				<span lang="en"><span class="easy">Please drive your train to the destination and then
-						stop</span></span>
-				<span lang="de"><span class="easy">Bitte fahren Sie Ihren Zug zum Ziel und halten Sie kurz vor dem Ziel
-						an</span></span>
-				</span>
-		</div>
-
-		<div class="m-3"></div>
-
-		<label class="col-auto col-form-label-lg"><b>
-				<span lang="de">Geschwindigkeitssteuerung:</span>
-				<span lang="en">Speed control:</span>
-			</b></label>
-		<div class="input-group row">
-			<div class="col">
-				<div class="btn-group" role="group">
-					<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
-						<span lang="de">Stop</span>
-						<span lang="en">Stop</span>
-					</button>
-					<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">
-						<span lang="de">Langsam</span>
-						<span lang="en">Slow</span>
-					</button>
-					<button id="normal" type="button" class="btn btn-secondary btn-lg" value="40">
-						<span lang="de">Normal</span>
-						<span lang="en">Normal</span>
-					</button>
-					<button id="fast" type="button" class="btn btn-success btn-lg" value="60">
-						<span lang="de">Schnell</span>
-						<span lang="en">Fast</span>
-					</button>
-				</div>
-			</div>
-		</div>
-	</form>
-
+	
 </body>
 
 </html>
