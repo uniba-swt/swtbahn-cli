@@ -1,9 +1,13 @@
 body {
   font-family: UB Scala Sans, sans-serif;
   margin: 0 20px;
-  font-size: calc(.75em + 1.25vw);
 }
 
+.fontSizeScale {
+  font-size: calc(.75em + 1.15vw) !important;
+}
+
+/* ==================== Page Header Element Styling ==================== */
 #bahn-logo {
   max-width: 35%;
   width: auto;
@@ -20,10 +24,6 @@ body {
   font-size: inherit !important;
 }
 
-.fontSizeScale {
-  font-size: calc(.75em + 1.15vw) !important;
-}
-
 .bahn-header {
   margin-left: 10%;
   margin-right: 10%;
@@ -34,35 +34,24 @@ body {
   max-height: 10vh;
 }
 
-@media (max-width: 500px) {
-  .wide-largerfont {
-    font-size: normal !important;
-  }
-}
 
-@media (min-width: 500px) and (max-width: 700px) {
-  .wide-largerfont {
-    font-size: larger !important;
-  }
-}
 
-@media (min-width: 700px) {
-  .wide-largerfont {
-    font-size: x-large !important;
-  }
-}
-
-/* Train Selection page styling*/
+/* ==================== Train Selection page styling ==================== */
 
 #trainSelection {
   display: flex;
-  /* flex direction is part of the screen orientation sensitive media queries */
   justify-content: center;
   align-items: center;
   height: 100%;
+  /* flex direction is part of the screen orientation sensitive media queries */
   
   margin-left: auto;
   margin-right: auto;
+}
+
+.unavailableTrain {
+  opacity: 0.6;
+  background-color: MistyRose;
 }
 
 @media (orientation: landscape) {
@@ -94,23 +83,33 @@ body {
   }
 }
 
-.unavailableTrain {
-  opacity: 0.6;
-  background-color: MistyRose;
+
+
+/* ==================== Driving/Destination Elements Styling ==================== */
+
+#trainGrabbedComponentsContainer {
+  display: flex;
+  align-items: flex-start;
 }
 
+/* Hide the SVG template for the destination flags */
+#svgDef {
+  height: 0px;
+  width: 0px;
+}
 
-/* For the Driving/Destination selection view */
+#possibleDestinations svg.flag {
+  cursor: pointer;
+}
 
 @media (orientation: landscape) {
   #trainGrabbedComponentsContainer {
-    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: flex-start;
   }
   
   #chosenTrainImgContainer {
+    /* The rules below are required to make the img cropping work */
     width: 48%;
     margin-right: -3%;
     vertical-align: middle;
@@ -126,11 +125,14 @@ body {
   }
   
   .controlContainer {
+    /* Allows a control container to appear on the right hand side, 
+       i.e., fit next to the image of the train. */
     width: 55%;
   }
   
   .currentDestination {
-    /* SVG with flag of current destination needs to appear somewhat differently */
+    /* SVG with flag of current destination needs to appear somewhat differently 
+       in landscape view to appear appropriately sized. */
     max-width: 18% !important;
     margin-bottom: 0% !important;
   }
@@ -151,10 +153,8 @@ body {
 
 @media (orientation: portrait) {
   #trainGrabbedComponentsContainer {
-    display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    align-items: flex-start;
   }
   
   #chosenTrainImgContainer {
@@ -170,18 +170,8 @@ body {
 }
 
 
-/* Hide the SVG template for the destination flags */
-#svgDef {
-  height: 0px;
-  width: 0px;
-}
 
-#possibleDestinations svg.flag {
-  cursor: pointer;
-}
-
-
-/* Other/General */
+/* ==================== Other/General Styling ==================== */
 
 #serverAlertBox {
   min-height: 100px;
