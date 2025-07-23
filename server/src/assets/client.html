@@ -8,15 +8,17 @@
 	<script src="./dependencies/jquery.min.js"></script>
 
 	<link rel="stylesheet" href="style.css"/>
+	<link rel="stylesheet" href="style_client.css"/>
 	
 	<script src="script.js"></script>
 	<script src="script-verificationtoggle.js"></script>
 
 	<title>SWTbahn Client</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
-<body style="margin: 20px">
-
+<body>
 	<div class="row">
 		<div class="col-sm-6">
 			<div id="swtLogo"></div>
@@ -26,343 +28,566 @@
 		</div>
 	</div>
 	<hr />
+	<div class="row row-cols-1 row-cols-lg-2 g-4">
+		<div class="col">
+			<div class="card stdCardPadMarg">
+				<h4 class="card-title">Server Interaction & Track Configuration</h4>
+				<div class="d-flex justify-content-between">
+					<button id="pingButton" class="btn btn-outline-primary halfWJustifyHelper">Ping the SWTbahn Server</button>
+					<div class="alert alert-info halfWJustifyHelper btnPaddingReplicate">
+						<span id="pingResponse" class="alignedSpanForLine"></span>
+					</div>
+				</div>
+				<div class="d-flex justify-content-between">
+					<button id=startupButton class="btn btn-primary thirdWJustifyHelper">Startup</button>
+					<button id=shutdownButton class="btn btn-danger thirdWJustifyHelper">Shutdown</button>
+					<div  class="alert alert-info thirdWJustifyHelper btnPaddingReplicate">
+						<span id="startupShutdownResponse" class="alignedSpanForLine"></span>
+					</div>
+				</div>
+				<hr />
+				<div class="input-group">
+					<span class="input-group-text col-2" for="trackOutput">Track Output</span>
+					<input id="trackOutput" type="text" class="form-control" style="max-width: 30%;" value="master" />
+					<button id="configButton" class="btn btn-primary">Set</button>
+					<span id="configResponse" class="alignedSpanForLine"></span>
+				</div>
+			</div>
+			<div class="card stdCardPadMarg">
+				<h4 class="card-title">Train Driver</h4>
+				
+				<div class="input-group mb-1">
+					<span class="input-group-text col-2" for="grabTrainId">Train</span>
+					<select class="form-select" id="grabTrainId">
+						<option>cargo_db</option>
+						<option>cargo_bayern</option>
+						<option>cargo_green</option>
+						<option>cargo_g1000bb</option>
+						<option>perso_sbb</option>
+						<option>regional_odeg</option>
+						<option>regional_brengdirect</option>
+					</select>
+				</div>
 
-	<h1>Configuration</h1>
+				<div class="input-group mb-1">
+					<span class="input-group-text col-2" for="grabEngine">Engine</span>
+					<select class="form-select" id="grabEngine">
+						<option>libtrain_engine_default (unremovable)</option>
+						<option>libtrain_engine_linear (unremovable)</option>
+					</select>
+				</div>
+				<br />
 
-	<label>Track Output:</label>
-	<input type="text" id=trackOutput value="master" />
-	<button id=configButton>Configure</button>
-	<span id=configResponse></span>
-	<br />
-	<br />
-
-	<button id=pingButton>Ping SWTbahn Server</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=pingResponse></span>
-	</div>
-	<br />
-
-	<button id=startupButton>Startup</button>
-	<button id=shutdownButton>Shutdown</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=startupShutdownResponse></span>
-	</div>
-	<br />
-	<br />
-
-	<span id=sessionGrabId>Session ID: 0, Grab ID: -1</span>
-	<br />
-	<br />
-
-
-	<h1>Train Driver</h1>
-
-	<label>Train:</label>
-	<select id=grabTrainId>
-		<option>cargo_db</option>
-		<option>cargo_bayern</option>
-		<option>cargo_green</option>
-		<option>regional_odeg</option>
-		<option>regional_brengdirect</option>
-	</select>
-	<label>Engine:</label>
-	<select id=grabEngine>
-		<option>libtrain_engine_default (unremovable)</option>
-		<option>libtrain_engine_linear (unremovable)</option>
-	</select>
-	<button id=grabTrainButton>Grab</button>
-	<button id=releaseTrainButton>Release</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=grabTrainResponse></span>
-	</div>
-	<br />
-
-	<label>DCC Speed:</label>
-	<input type="text" id=dccSpeed value="10" />
-	<button id=swapDirection>Swap Direction</button>
-	<button id=driveTrainButton>Drive</button>
-	<button id=stopTrainButton>Stop</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=driveTrainResponse></span>
-	</div>
-	<br />
-
-	<label>Route:</label>
-	<input type="text" id=signalIdFrom value="signal" />
-	<label>to</label>
-	<input type="text" id=signalIdTo value="signal" />
-	<button id=requestRouteButton>Request</button>
-	<button id=automaticDriveRouteButton>Automatic Drive Route</button>
-	<button id=manualDriveRouteButton>Manual Drive Route</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=routeResponse></span>
-	</div>
-	<br />
-	<br />
-	
-	<label>Grabbed statuses:</label>
-	<ul>
-		<li>
-			cargo_db 
-			<input type="text" id=dccSpeed_cargo_db /> 
-			<button id=driveTrainButton_cargo_db>Drive</button> 
-			<button id=releaseTrainButton_cargo_db>Release</button>
-		</li>
-		<li>
-			cargo_green 
-			<input type="text" id=dccSpeed_cargo_green /> 
-			<button id=driveTrainButton_cargo_green>Drive</button> 
-			<button id=releaseTrainButton_cargo_green>Release</button>
-		<li>
-			cargo_bayern 
-			<input type="text" id=dccSpeed_cargo_bayern /> 
-			<button id=driveTrainButton_cargo_bayern>Drive</button> 
-			<button id=releaseTrainButton_cargo_bayern>Release</button>
-		</li>
-		<li>
-			regional_odeg 
-			<input type="text" id=dccSpeed_regional_odeg /> 
-			<button id=driveTrainButton_regional_odeg>Drive</button> 
-			<button id=releaseTrainButton_regional_odeg>Release</button>
-		</li>
-		<li>
-			regional_brengdirect
-			<input type="text" id=dccSpeed_regional_brengdirec t/> 
-			<button id=driveTrainButton_regional_brengdirect>Drive</button> 
-			<button id=releaseTrainButton_regional_brengdirect>Release</button>
-		</li>
-	</ul>
-	
-	<br />
-		
-
-	<h1>Controller</h1>
-
-	<label>Release Route:</label>
-	<input type="text" id=routeId value="None" />
-	<button id=releaseRouteButton>Release</button>
-	<br />
-
-	<label>Point:</label>
-	<select id=pointId>
-		<option>point1</option>
-		<option>point2</option>
-		<option>point3</option>
-		<option>point4</option>
-		<option>point5</option>
-		<option>point6</option>
-		<option>point7</option>
-		<option>point8</option>
-		<option>point9</option>
-		<option>point10</option>
-		<option>point11</option>
-		<option>point12</option>
-		<option>point13</option>
-		<option>point14</option>
-		<option>point15</option>
-		<option>point16</option>
-		<option>point17</option>
-		<option>point18a</option>
-		<option>point18b</option>
-		<option>point19</option>
-		<option>point20</option>
-		<option>point21</option>
-		<option>point22</option>
-		<option>point23</option>
-		<option>point24</option>
-		<option>point25</option>
-		<option>point26</option>
-		<option>point27</option>
-		<option>point28</option>
-		<option>point29</option>
-	</select>
-	<label>Position:</label>
-	<select id=pointPosition>
-		<option>normal</option>
-		<option>reverse</option>
-	</select>
-	<button id=setPointButton>Set</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=setPointResponse></span>
-	</div>
-	<br />
-
-	<label>Signal:</label>
-	<select id=signalId>
-		<option>signal1</option>
-		<option>signal2</option>
-		<option>signal3</option>
-		<option>signal4</option>
-		<option>signal4a</option>
-		<option>signal4b</option>
-		<option>signal5</option>
-		<option>signal6</option>
-		<option>signal7</option>
-		<option>signal7a</option>
-		<option>signal7b</option>
-		<option>signal8</option>
-		<option>signal9</option>
-		<option>signal10</option>
-		<option>signal11</option>
-		<option>signal12</option>
-		<option>signal13</option>
-		<option>signal14</option>
-		<option>signal15</option>
-		<option>signal16</option>
-		<option>signal17</option>
-		<option>signal18</option>
-		<option>signal18a</option>
-		<option>signal18b</option>
-		<option>signal19</option>
-		<option>signal20</option>
-		<option>signal21</option>
-		<option>signal22</option>
-		<option>signal22a</option>
-		<option>signal22b</option>
-		<option>signal23</option>
-		<option>signal24</option>
-		<option>signal25</option>
-		<option>signal26</option>
-		<option>signal27</option>
-		<option>signal28</option>
-		<option>signal29</option>
-		<option>signal30</option>
-		<option>signal31</option>
-		<option>signal32</option>
-		<option>signal33</option>
-		<option>signal34</option>
-		<option>signal35</option>
-		<option>signal35a</option>
-		<option>signal35b</option>
-		<option>signal36</option>
-		<option>signal37</option>
-		<option>signal38</option>
-		<option>signal39</option>
-		<option>signal40</option>
-		<option>signal41</option>
-		<option>signal42</option>
-		<option>signal43</option>
-		<option>signal44</option>
-		<option>signal45</option>
-		<option>signal46</option>
-		<option>signal46a</option>
-		<option>signal46b</option>
-		<option>signal47</option>
-		<option>signal48</option>
-		<option>signal48a</option>
-		<option>signal48b</option>
-		<option>signal49</option>
-		<option>signal50</option>
-		<option>signal50a</option>
-		<option>signal50b</option>
-		<option>signal51</option>
-		<option>signal52</option>
-		<option>signal53</option>
-		<option>signal53a</option>
-		<option>signal53b</option>
-		<option>platformlight1</option>
-		<option>platformlight2</option>
-		<option>platformlight4a</option>
-		<option>platformlight4b</option>
-		<option>platformlights</option>
-	</select>
-	<label>Aspect:</label>
-	<select id=signalAspect>
-		<option>aspect_stop</option>
-		<option>aspect_go</option>
-		<option>aspect_caution</option>
-		<option>aspect_shunt</option>
-	</select>
-	<button id=setSignalButton>Set</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=setSignalResponse></span>
-	</div>
-	<br />
-	
-	<label>Peripheral:</label>
-	<input id=peripheralId>
-	<label>Aspect:</label>
-	<input id=peripheralState>
-	<button id=setPeripheralStateButton>Set</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=setPeripheralResponse></span>
-	</div>
-	<br />
-	<br />
-	
-	<label>Granted routes:</label>
-	<ul id=grantedRoutes></ul>
-	
-	<br />
-
-
-	<h1>Custom Engines and Interlockers</h1>
-	
-	<label>SCCharts (*.sctx) or Bahn (*.bahn) File:</label>
-	<input type="file" id=selectUploadFile accept=".sctx,.bahn" />
-	<br />
-	<button id=uploadEngineButton>Upload SCCharts</button>
-	<button id="uploadInterlockerButton">Upload Bahn</button>	 
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=uploadResponse></span>
-	</div>
-	<br />
-	<br/>
-	
-	<label>Available Engines:</label>
-	<select id=availableEngines>
-		<option>libtrain_engine_default (unremovable)</option>
-		<option>libtrain_engine_linear (unremovable)</option>
-	</select>
-	<button id=refreshEnginesButton>Refresh</button>
-	<button id=removeEngineButton>Remove</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=refreshRemoveEngineResponse></span>
-	</div>
-	<br />
-
-	<label>Available Interlockers:</label>
-	<select id="availableInterlockers">
-		<option>libinterlocker_default (unremovable)</option>
-		<option>libinterlocker_simple_sectional (unremovable)</option>
-	</select>
-	<button id="unsetInterlockerButton">Unset</button>
-	<button id="setInterlockerButton">Set</button>
-	<button id="refreshInterlockersButton">Refresh</button>
-	<button id="removeInterlockerButton">Remove</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id="refreshRemoveInterlockerResponse"></span>
-	</div>
-	<br />
-	
-	<label>Interlocker in use:</label>
-	<span id="interlockerInUse">libinterlocker_default (unremovable)</span>
-	<br />
-	
-	<br />
-	
-	
-	<h1>Verification</h1>
-	
-	<label style="line-height: 2em">Verification for Train Engines:</label>
-	<input id="verificationToggle" type="checkbox" />
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=verificationSettingResponse></span>
-	</div>
-	<br />
-
-	<label>Verification Server URL:</label>
-	<input type="url" id=verificationServerUrlInput />
-	<button id="setVerificationServerUrlButton">Set</button>
-	<div class="alert" style="padding: 4px; display: inline;">
-		<span id=setVerificationServerUrlResponse></span>
-	</div>
-	<br />
-	
-	<label>Current Verification Server URL:</label>
-	<span id="verificationUrlInUse"></span>
-	<br />
-	
+				<div class="d-flex justify-content-between mb-2">
+					<button id="grabTrainButton" type="button" class="btn btn-outline-primary w-25">Grab</button>
+					<button id="releaseTrainButton" type="button" class="btn btn-outline-primary w-25">Release</button>
+					<span id="sessionGrabId" class="input-group-text">Session ID: 0, Grab ID: -1</span>
+				</div>
+				<div class="alert alert-info btnPaddingReplicate" role="alert">
+					<span id="grabTrainResponse" class="alignedSpanForLine"></span>
+				</div>
+				<!--<div class="mb-2">
+					<span id="sessionGrabId" class="input-group-text">Session ID: 0, Grab ID: -1</span>
+				</div>-->
+				<div class="input-group mb-2">
+					<span class="input-group-text">DCC Speed</span>
+					<input id="dccSpeed" type="number" class="form-control"  min="0" max="126" value="0" />
+					<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
+					<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
+				</div>
+				<div class="d-flex justify-content-between mb-2">
+					<button id="driveTrainButton" type="button" class="btn btn-outline-primary w-25" >Drive</button>
+					<button id="stopTrainButton" type="button" class="btn btn-outline-danger w-25" >Stop</button>
+					<button id="swapDirection" type="button" class="btn btn-outline-info w-25" >Swap Direction</button>
+				</div>
+				<div class="alert alert-info btnPaddingReplicate" role="alert">
+					<span id="driveTrainResponse" class="alignedSpanForLine"></span>
+				</div>
+				
+				<div class="d-flex justify-content-between mb-2">
+					<div class="input-group">
+						<span class="input-group-text col-4">From</span>
+						<select class="form-select" id="signalIdFrom">
+							<option>signal1</option>
+							<option>signal2</option>
+							<option>signal3</option>
+							<option>signal4a</option>
+							<option>signal5</option>
+							<option>signal6</option>
+							<option>signal7a</option>
+							<option>signal8</option>
+							<option>signal9</option>
+							<option>signal10</option>
+							<option>signal11</option>
+							<option>signal12</option>
+							<option>signal13</option>
+							<option>signal14</option>
+							<option>signal15</option>
+							<option>signal16</option>
+							<option>signal17</option>
+							<option>signal18a</option>
+							<option>signal19</option>
+							<option>signal20</option>
+							<option>signal21</option>
+							<option>signal22a</option>
+							<option>signal23</option>
+							<option>signal24</option>
+							<option>signal25</option>
+							<option>signal26</option>
+							<option>signal27</option>
+							<option>signal28</option>
+							<option>signal29</option>
+							<option>signal30</option>
+							<option>signal31</option>
+							<option>signal32</option>
+							<option>signal33</option>
+							<option>signal34</option>
+							<option>signal35a</option>
+							<option>signal36</option>
+							<option>signal37</option>
+							<option>signal38</option>
+							<option>signal39</option>
+							<option>signal40</option>
+							<option>signal41</option>
+							<option>signal42</option>
+							<option>signal43</option>
+							<option>signal44</option>
+							<option>signal45</option>
+							<option>signal46a</option>
+							<option>signal47</option>
+							<option>signal48a</option>
+							<option>signal49</option>
+							<option>signal50a</option>
+							<option>signal51</option>
+							<option>signal52</option>
+							<option>signal53a</option>
+						</select>
+					</div>
+					
+					<div class="input-group">
+						<span class="input-group-text col-3">To</span>
+						<select class="form-select" id="signalIdTo">
+							<option>signal1</option>
+							<option>signal2</option>
+							<option>signal3</option>
+							<option>signal4a</option>
+							<option>signal5</option>
+							<option>signal6</option>
+							<option>signal7a</option>
+							<option>signal8</option>
+							<option>signal9</option>
+							<option>signal10</option>
+							<option>signal11</option>
+							<option>signal12</option>
+							<option>signal13</option>
+							<option>signal14</option>
+							<option>signal15</option>
+							<option>signal16</option>
+							<option>signal17</option>
+							<option>signal18a</option>
+							<option>signal19</option>
+							<option>signal20</option>
+							<option>signal21</option>
+							<option>signal22a</option>
+							<option>signal23</option>
+							<option>signal24</option>
+							<option>signal25</option>
+							<option>signal26</option>
+							<option>signal27</option>
+							<option>signal28</option>
+							<option>signal29</option>
+							<option>signal30</option>
+							<option>signal31</option>
+							<option>signal32</option>
+							<option>signal33</option>
+							<option>signal34</option>
+							<option>signal35a</option>
+							<option>signal36</option>
+							<option>signal37</option>
+							<option>signal38</option>
+							<option>signal39</option>
+							<option>signal40</option>
+							<option>signal41</option>
+							<option>signal42</option>
+							<option>signal43</option>
+							<option>signal44</option>
+							<option>signal45</option>
+							<option>signal46a</option>
+							<option>signal47</option>
+							<option>signal48a</option>
+							<option>signal49</option>
+							<option>signal50a</option>
+							<option>signal51</option>
+							<option>signal52</option>
+							<option>signal53a</option>
+						</select>
+					</div>
+					
+					<div class="input-group">
+						<span class="input-group-text col-5">Route ID</span>
+						<input type="text" class="form-control" id="routeId" readonly value="None" />
+					</div>
+				</div>
+				
+				<div class="d-flex justify-content-between mb-2">
+					<button id="requestRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+						Request
+					</button>
+					<button id="releaseRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+						Release
+					</button>
+				</div>
+			
+				<div class="d-flex justify-content-between mb-2">
+					<button id="automaticDriveRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+						Automatic Drive Route
+					</button>
+					<button id="manualDriveRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+						Manual Drive Route
+					</button>
+				</div>
+				<div class="alert alert-info btnPaddingReplicate" role="alert">
+					<span id="routeResponse" class="alignedSpanForLine"></span>
+				</div>
+				
+			</div>
+			<div class="card stdCardPadMarg">
+				<h4 class="card-title">Train Status Overview/Admin Control</h4>
+				<label>Grabbed statuses:</label>
+				<ul>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_db</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_cargo_db">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_cargo_db" /> 
+								<button id="driveTrainButton_cargo_db" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_cargo_db" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_bayern</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_cargo_bayern">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_cargo_bayern" /> 
+								<button id="driveTrainButton_cargo_bayern" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_cargo_bayern" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_green</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_cargo_green">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_cargo_green" /> 
+								<button id="driveTrainButton_cargo_green" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_cargo_green" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_g1000bb</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_cargo_g1000bb">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_cargo_g1000bb" /> 
+								<button id="driveTrainButton_cargo_g1000bb" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_cargo_g1000bb" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">perso_sbb</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_perso_sbb">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_perso_sbb" /> 
+								<button id="driveTrainButton_perso_sbb" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_perso_sbb" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">regional_odeg</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_regional_odeg">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_regional_odeg" /> 
+								<button id="driveTrainButton_regional_odeg" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_regional_odeg" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex justify-content-between">
+							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">regional_brengdirect</label>
+							<div style="width: 50%; line-height: 1.5;" class="col">
+								<label class="btnPaddingReplicate" for="dccSpeed_regional_brengdirect">Speed: </label>
+								<input type="number" min="-126" max="126" id="dccSpeed_regional_brengdirect" /> 
+								<button id="driveTrainButton_regional_brengdirect" type="button" class="btn btn-outline-primary smallerBtn">
+									Set Speed
+								</button> 
+								<button id="releaseTrainButton_regional_brengdirect" type="button" class="btn btn-outline-primary smallerBtn">
+									Release
+								</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col">
+			<div class="card stdCardPadMarg">
+				<h4 class="card-title">Controller/Stellwerk</h4>
+				<div class="input-group mb-2">
+					<label class="input-group-text col-2">Release Route:</label>
+					<input type="text" id="routeId" class="form-control" value="None" />
+					<button id="releaseRouteButton" class="btn btn-outline-primary">Release</button>
+				</div>
+				<!-- TODO: Release route response alert? -->
+				<div class="input-group mb-2">
+					<label class="input-group-text col-2">Point:</label>
+					<select id="pointId" class="form-select">
+						<option>point1</option>
+						<option>point2</option>
+						<option>point3</option>
+						<option>point4</option>
+						<option>point5</option>
+						<option>point6</option>
+						<option>point7</option>
+						<option>point8</option>
+						<option>point9</option>
+						<option>point10</option>
+						<option>point11</option>
+						<option>point12</option>
+						<option>point13</option>
+						<option>point14</option>
+						<option>point15</option>
+						<option>point16</option>
+						<option>point17</option>
+						<option>point18a</option>
+						<option>point18b</option>
+						<option>point19</option>
+						<option>point20</option>
+						<option>point21</option>
+						<option>point22</option>
+						<option>point23</option>
+						<option>point24</option>
+						<option>point25</option>
+						<option>point26</option>
+						<option>point27</option>
+						<option>point28</option>
+						<option>point29</option>
+					</select>
+					<label class="input-group-text col-2">Position:</label>
+					<select id="pointPosition" class="form-select">
+						<option>normal</option>
+						<option>reverse</option>
+					</select>
+					<button id="setPointButton" class="btn btn-outline-primary">Set</button>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="setPointResponse" class="alignedSpanForLine"></span>
+				</div>
+				<div class="input-group mb-2">
+					<label class="input-group-text col-2">Signal:</label>
+					<select id="signalId" class="form-select">
+						<option>signal1</option>
+						<option>signal2</option>
+						<option>signal3</option>
+						<option>signal4</option>
+						<option>signal4a</option>
+						<option>signal4b</option>
+						<option>signal5</option>
+						<option>signal6</option>
+						<option>signal7</option>
+						<option>signal7a</option>
+						<option>signal7b</option>
+						<option>signal8</option>
+						<option>signal9</option>
+						<option>signal10</option>
+						<option>signal11</option>
+						<option>signal12</option>
+						<option>signal13</option>
+						<option>signal14</option>
+						<option>signal15</option>
+						<option>signal16</option>
+						<option>signal17</option>
+						<option>signal18</option>
+						<option>signal18a</option>
+						<option>signal18b</option>
+						<option>signal19</option>
+						<option>signal20</option>
+						<option>signal21</option>
+						<option>signal22</option>
+						<option>signal22a</option>
+						<option>signal22b</option>
+						<option>signal23</option>
+						<option>signal24</option>
+						<option>signal25</option>
+						<option>signal26</option>
+						<option>signal27</option>
+						<option>signal28</option>
+						<option>signal29</option>
+						<option>signal30</option>
+						<option>signal31</option>
+						<option>signal32</option>
+						<option>signal33</option>
+						<option>signal34</option>
+						<option>signal35</option>
+						<option>signal35a</option>
+						<option>signal35b</option>
+						<option>signal36</option>
+						<option>signal37</option>
+						<option>signal38</option>
+						<option>signal39</option>
+						<option>signal40</option>
+						<option>signal41</option>
+						<option>signal42</option>
+						<option>signal43</option>
+						<option>signal44</option>
+						<option>signal45</option>
+						<option>signal46</option>
+						<option>signal46a</option>
+						<option>signal46b</option>
+						<option>signal47</option>
+						<option>signal48</option>
+						<option>signal48a</option>
+						<option>signal48b</option>
+						<option>signal49</option>
+						<option>signal50</option>
+						<option>signal50a</option>
+						<option>signal50b</option>
+						<option>signal51</option>
+						<option>signal52</option>
+						<option>signal53</option>
+						<option>signal53a</option>
+						<option>signal53b</option>
+						<option>platformlight1</option>
+						<option>platformlight2</option>
+						<option>platformlight4a</option>
+						<option>platformlight4b</option>
+						<option>platformlights</option>
+					</select>
+					<label class="input-group-text col-2">Aspect:</label>
+					<select id="signalAspect" class="form-select">
+						<option>aspect_stop</option>
+						<option>aspect_go</option>
+						<option>aspect_caution</option>
+						<option>aspect_shunt</option>
+					</select>
+					<button id="setSignalButton" class="btn btn-outline-primary">Set</button>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="setSignalResponse" class="alignedSpanForLine"></span>
+				</div>
+				
+				<div class="input-group mb-2">
+					<label class="input-group-text">Peripheral:</label>
+					<input id="peripheralId" class="form-control">
+					<label class="input-group-text">Aspect:</label>
+					<input id="peripheralState" class="form-control">
+					<button id="setPeripheralStateButton" class="btn btn-outline-primary">Set</button>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="setPeripheralResponse" class="alignedSpanForLine"></span>
+				</div>
+				<label>Granted routes:</label>
+				<ul id=grantedRoutes></ul>
+			</div>
+			<div class="card stdCardPadMarg">
+				<h4 class="card-title">Custom Engines and Interlockers</h4>
+				<div class="input-group mb-2">
+					<label class="input-group-text">SCCharts (*.sctx) or Bahn (*.bahn) File:</label>
+					<input type="file" id="selectUploadFile" class="form-control" accept=".sctx,.bahn" />
+					<button id="uploadEngineButton" class="btn btn-outline-primary">Upload SCCharts</button>
+					<button id="uploadInterlockerButton" class="btn btn-outline-primary">Upload Bahn</button>	 
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="uploadResponse" class="alignedSpanForLine"></span>
+				</div>
+				<div class="input-group mb-2">
+					<label class="input-group-text">Available Engines:</label>
+					<select id="availableEngines" class="form-select">
+						<option>libtrain_engine_default (unremovable)</option>
+						<option>libtrain_engine_linear (unremovable)</option>
+					</select>
+					<button id="refreshEnginesButton" class="btn btn-outline-primary">Refresh</button>
+					<button id="removeEngineButton" class="btn btn-outline-danger">Remove</button>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="refreshRemoveEngineResponse" class="alignedSpanForLine"></span>
+				</div>
+				
+				<div class="input-group mb-2">
+					<label class="input-group-text">Available Interlockers:</label>
+					<select id="availableInterlockers" class="form-select w-30">
+						<option>libinterlocker_default (unremovable)</option>
+						<option>libinterlocker_simple_sectional (unremovable)</option>
+					</select>
+					<button id="setInterlockerButton" class="btn btn-outline-primary">Set</button>
+					<button id="unsetInterlockerButton" class="btn btn-outline-warning">Unset</button>
+					<button id="refreshInterlockersButton" class="btn btn-outline-primary">Refresh List</button>
+					<button id="removeInterlockerButton" class="btn btn-outline-danger">Remove</button>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="refreshRemoveInterlockerResponse" class="alignedSpanForLine"></span>
+				</div>
+				<div class="input-group mb-2">
+					<label class="input-group-text">Interlocker in use:</label>
+					<span id="interlockerInUse" class="input-group-text">libinterlocker_default (unremovable)</span>
+				</div>
+			</div>
+			<div class="card stdCardPadMarg">
+				<h4 class="card-title">Verification</h4>
+				<div class="form-check mb-2">
+					<input id="verificationToggle" class="form-check-input" type="checkbox" />
+					<label class="form-check-label" for="verificationToggle">Verification for Train Engines</label>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="verificationSettingResponse" class="alignedSpanForLine"></span>
+				</div>
+				<div class="input-group mb-2">
+					<label class="input-group-text">Verification Server URL:</label>
+					<input type="url" class="form-control" id=verificationServerUrlInput />
+					<button id="setVerificationServerUrlButton" class="btn btn-outline-primary">Set</button>
+				</div>
+				<div class="alert btnPaddingReplicate">
+					<span id="setVerificationServerUrlResponse" class="alignedSpanForLine"></span>
+				</div>
+				<div class="input-group mb-2">
+					<label class="input-group-text">Current Verification Server URL:</label>
+					<span id="verificationUrlInUse" class="input-group-text"></span>
+				</div>
+			</div>
+		</div>
 </body>
 
 <script type="text/javascript">

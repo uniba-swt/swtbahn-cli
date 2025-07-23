@@ -252,7 +252,7 @@ $(document).ready(
 			speed = $('#dccSpeed').val();
 			position = speeds.indexOf(speed);
 			if (position > 0) {
-				$('#dccSpeed:text').val(speeds[position - 1]);
+				$('#dccSpeed').val(speeds[position - 1]);
 			}
 		});
 
@@ -260,7 +260,7 @@ $(document).ready(
 			speed = $('#dccSpeed').val();
 			position = speeds.indexOf(speed);
 			if (position < speeds.length - 1) {
-				$('#dccSpeed:text').val(speeds[position + 1]);
+				$('#dccSpeed').val(speeds[position + 1]);
 			}
 		});
 		
@@ -698,6 +698,8 @@ $(document).ready(
 			'cargo_db',
 			'cargo_green',
 			'cargo_bayern',
+			'cargo_g1000bb',
+			'perso_sbb',
 			'regional_odeg',
 			'regional_brengdirect'
 		];
