@@ -38,33 +38,33 @@ function showErrorInElem(elementID, textToShow) {
 	$(elementID).text(textToShow);
 }
 
-function getErrorMessage(responseData, customCodes = {}) {
+function getErrorMessage(jqXHR, customCodes = {}) {
 	try {
-		if (responseData.responseText.length > 0) {
-			respJson = JSON.parse(responseData.responseText);
+		if (jqXHR.responseText.length > 0) {
+			respJson = JSON.parse(jqXHR.responseText);
 			if (respJson.msg) {
 				return respJson.msg;
 			}
 		}
 	} catch (parseError) {
-		console.log("Unable to parse responseData to JSON.");
+		console.log("Unable to parse jqXHR to JSON.");
 	}
 	// Apparently sometimes we have .responseText, sometimes we don't. I don't know why.
 	// 
 
 	// Check if customCodes contains the status code
-	if (customCodes.hasOwnProperty(responseData.status)) {
-		return customCodes[responseData.status];
+	if (customCodes.hasOwnProperty(jqXHR.status)) {
+		return customCodes[jqXHR.status];
 	}
 
 	// Fallback to default messages
-	switch (responseData.status) {
+	switch (jqXHR.status) {
 		case 405:
 			return "Method not allowed";
 		case 503:
 			return "SWTbahn not running";
 		default:
-			return `${responseData.status} - Error message not defined`;
+			return `${jqXHR.status} - Error message not defined`;
 	}
 }
 
@@ -87,8 +87,8 @@ function updateTrainIsForwards() {
 		crossDomain: true,
 		data: { 'train': trainId },
 		dataType: 'text',
-		success: function (responseData) {
-			responseJson = JSON.parse(responseData);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			trainIsForwards = responseJson.direction === 'forwards';
 		}
 	});
@@ -101,8 +101,8 @@ function updateTrainGrabbedState() {
 		url: '/monitor/trains',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData) {
-			responseJson = JSON.parse(responseData);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			responseJson['trains'].forEach((train) => {
 				const trainId = train.id;
 				const isGrabbed = train.grabbed;
@@ -123,8 +123,8 @@ function updateGrantedRoutes(htmlElement) {
 		url: '/monitor/granted-routes',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData) {
-			responseJson = JSON.parse(responseData);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			htmlElement.empty();
 			if (!responseJson['granted-routes'] || responseJson['granted-routes'].length === 0) {
 				htmlElement.html('<li>No granted routes</li>');
@@ -153,10 +153,10 @@ function pingServer () {
 		url: '/',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#pingResponse", "OK");
 		},
-		error: function (responseData, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			showErrorInElem("#pingResponse", "Error");
 		}
 	});
@@ -172,11 +172,11 @@ function startupServer () {
 		crossDomain: true,
 		data: null,
 		dataType: 'text',
-		success: function (responseText, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#startupShutdownResponse", "Success");
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#startupShutdownResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#startupShutdownResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -189,15 +189,15 @@ function shutdownServer () {
 		crossDomain: true,
 		data: null,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#startupShutdownResponse", "Success");
 			// Reset SessionId and GrabId on shutdown
 			sessionId = 0;
 			grabId = -1;
 			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#startupShutdownResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#startupShutdownResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -212,16 +212,16 @@ function grabTrain () {
 		crossDomain: true,
 		data: { 'train': trainId, 'engine': trainEngine },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData.responseText);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			sessionId = responseJson['session-id'];
 			grabId = responseJson['grab-id'];
 			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
 			showInfoInElem("#grabTrainResponse", "Grabbed");
 			updateTrainIsForwards();
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#grabTrainResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#grabTrainResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -234,14 +234,14 @@ function releaseTrain () {
 		crossDomain: true,
 		data: { 'session-id': sessionId, 'grab-id': grabId },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			sessionId = 0;
 			grabId = -1;
 			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
 			showInfoInElem("#grabTrainResponse", "Released");
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#grabTrainResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#grabTrainResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -259,12 +259,12 @@ function setTrainSpeedDCC () {
 			'track-output': trackOutput
 		},
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#driveTrainResponse", 'DCC train speed set to ' + speed);
 			lastSetSpeed = speed;
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#driveTrainResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#driveTrainResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -281,14 +281,14 @@ function requestRoute (source, destination) {
 			'destination': destination
 		},
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData.responseText);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			showInfoInElem("#routeResponse", 
 			               'Route ' + responseJson['granted-route-id'] + ' granted');
 			$('#routeId').val(responseJson['granted-route-id']);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#routeResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -300,11 +300,11 @@ function getInterlockerThenRequestRoute (source, destination) {
 		url: '/controller/get-interlocker',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			requestRoute(source, destination);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#routeResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -321,13 +321,13 @@ function driveRouteIntern (routeId, mode) {
 			'mode': mode
 		},
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData.responseText);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			showInfoInElem("#routeResponse", responseJson['msg']);
 			$('#routeId').val("None");
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#routeResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -360,11 +360,11 @@ function adminSetTrainSpeed (trainId, speed) {
 			'track-output': trackOutput
 		},
 		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
+		success: function (_responseText) {
 			console.log("adminSetTrainSpeed succeeded.");
 		},
-		error: (responseData, textStatus, errorThrown) => {
-			console.log(`adminSetTrainSpeed failed: ${responseData.status} - ${getErrorMessage(responseData)}`);
+		error: function (jqXHR) {
+			console.log(`adminSetTrainSpeed failed: ${jqXHR.status} - ${getErrorMessage(jqXHR)}`);
 		}
 	});
 }
@@ -378,12 +378,12 @@ function adminReleaseTrain (trainId) {
 			'train': trainId
 		},
 		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
+		success: function (_responseText) {
 			console.log("adminReleaseTrain succeeded.");
 		},
-		error: (responseData, textStatus, errorThrown) => {
+		error: function (jqXHR) {
 			console.log("adminReleaseTrain failed.");
-			console.log(`adminReleaseTrain failed: ${responseData.status} - ${getErrorMessage(responseData)}`);
+			console.log(`adminReleaseTrain failed: ${jqXHR.status} - ${getErrorMessage(jqXHR)}`);
 		}
 	});
 }
@@ -397,12 +397,12 @@ function releaseRoute (routeId) {
 		crossDomain: true,
 		data: { 'route-id': routeId },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#routeResponse", 'Route ' + routeId + ' released');
 			$('#routeId').val("None");
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#routeResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -415,11 +415,11 @@ function setPoint (pointId, pointPosition) {
 		crossDomain: true,
 		data: { 'point': pointId, 'state': pointPosition },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#setPointResponse", 'Point ' + pointId + ' set to ' + pointPosition);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#setPointResponse", getErrorMessage(responseData, {404: "Unknown Point"}));
+		error: function (jqXHR) {
+			showErrorInElem("#setPointResponse", getErrorMessage(jqXHR, {404: "Unknown Point"}));
 		}
 	});
 }
@@ -432,13 +432,11 @@ function setSignal (signalId, signalAspect) {
 		crossDomain: true,
 		data: { 'signal': signalId, 'state': signalAspect },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#setSignalResponse", 'Signal ' + signalId + ' set to ' + signalAspect);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			console.log(responseData);
-			console.log(responseData.responseText);
-			showErrorInElem("#setSignalResponse", getErrorMessage(responseData, {404: "Unknown Signal"}));
+		error: function (jqXHR) {
+			showErrorInElem("#setSignalResponse", getErrorMessage(jqXHR, {404: "Unknown Signal"}));
 		}
 	});
 }
@@ -451,12 +449,12 @@ function setPeripheralState (peripheralId, peripheralAspect) {
 		crossDomain: true,
 		data: { 'peripheral': peripheralId, 'state': peripheralAspect },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#setPeripheralResponse", 
 			               'Peripheral ' + peripheralId + ' set to ' + peripheralAspect);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#setPeripheralResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#setPeripheralResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -476,17 +474,17 @@ function uploadEngine (file) {
 		contentType: false,
 		cache: false,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			console.log("Upload Success, refreshing engines");
 			refreshEnginesList();
 			$('#verificationLogDownloadButton').hide();
 			$('#clearVerificationMsgButton').hide();
 			showInfoInElem("#uploadResponse", 'Engine ' + file.name + ' ready for use');
 		},
-		error: function (responseData, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			console.log("Upload Failed");
 			try {
-				var resJson = JSON.parse(responseData.responseText, null, 2);
+				var resJson = JSON.parse(jqXHR.responseText, null, 2);
 				var msg = "Server Message: " + resJson["msg"];
 				msg += "\nList of Properties:"
 				resJson["verifiedproperties"].forEach(element => {
@@ -497,7 +495,7 @@ function uploadEngine (file) {
 				$('#verificationLogDownloadButton').show();
 			} catch (e) {
 				console.log("Unable to parse server's reply in upload-engine failure case: " + e);
-				showErrorInElem("#uploadResponse", getErrorMessage(responseData));
+				showErrorInElem("#uploadResponse", getErrorMessage(jqXHR));
 			}
 			$('#clearVerificationMsgButton').show();
 		}
@@ -511,8 +509,8 @@ function refreshEnginesList() {
 		url: '/monitor/engines',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData.responseText);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			var engineList = responseJson['engines'];
 
 			var selectedGrabEngine = $("#grabEngine");
@@ -528,9 +526,9 @@ function refreshEnginesList() {
 
 			showInfoInElem("#refreshRemoveEngineResponse", "Refreshed list of train engines");
 		},
-		error: function (responseData, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			///TODO: Add a custom code for 500 - Server unable to build reply msg
-			showErrorInElem("#refreshRemoveEngineResponse", getErrorMessage(responseData, {}));
+			showErrorInElem("#refreshRemoveEngineResponse", getErrorMessage(jqXHR, {}));
 		}
 	});
 }
@@ -543,13 +541,13 @@ function removeEngine (engineName) {
 		crossDomain: true,
 		data: { 'engine-name': engineName },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			console.log("Engine removal successful, now auto-updating available engines.");
 			refreshEnginesList();
 			showInfoInElem("#refreshRemoveEngineResponse", 'Engine ' + engineName + ' removed');
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#refreshRemoveEngineResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveEngineResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -567,13 +565,13 @@ function uploadInterlocker(file) {
 		contentType: false,
 		cache: false,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			console.log("Successfuly uploaded interlocker, now refreshing interlocker list.");
 			refreshInterlockersList();
 			showInfoInElem("#uploadResponse", 'Interlocker ' + file.name + ' ready for use');
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#uploadResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#uploadResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -585,10 +583,8 @@ function refreshInterlockersList() {
 		url: '/monitor/interlockers',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			console.log(responseData);
-			console.log(responseData.responseText);
-			responseJson = JSON.parse(responseData.responseText);
+		success: function (responseText) {
+			responseJson = JSON.parse(responseText);
 			var interlockerList = responseJson['interlockers'];
 
 			var selectAvailableInterlockers = $("#availableInterlockers");
@@ -599,9 +595,9 @@ function refreshInterlockersList() {
 
 			showInfoInElem("#refreshRemoveInterlockerResponse", "Refreshed list of interlockers");
 		},
-		error: function (responseData, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			showErrorInElem("#refreshRemoveInterlockerResponse", 
-			                'Unable to refresh list of interlockers: ' + getErrorMessage(responseData));
+			                'Unable to refresh list of interlockers: ' + getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -614,14 +610,14 @@ function removeInterlocker (interlockerName) {
 		crossDomain: true,
 		data: { 'interlocker-name': interlockerName },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			console.log("Removed interlocker success, now refreshing interlocker list");
 			refreshInterlockersList();
 			showInfoInElem("#refreshRemoveInterlockerResponse", 
 							'Interlocker ' + interlockerName + ' removed');
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -634,15 +630,15 @@ function setInterlocker (interlockerName) {
 		crossDomain: true,
 		data: { 'interlocker': interlockerName },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#refreshRemoveInterlockerResponse", 
 			               'Interlocker ' + interlockerName + ' is set');
 			console.log("Set Interlocker Success, now refreshing interlocker list");
 			refreshInterlockersList();
 			showInfoInElem("#interlockerInUse", interlockerName);
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
@@ -655,15 +651,15 @@ function unsetInterlocker (interlockerName) {
 		crossDomain: true,
 		data: { 'interlocker': interlockerName },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (_responseText) {
 			showInfoInElem("#refreshRemoveInterlockerResponse", 
 			               'Interlocker ' + interlockerName + ' is unset');
 			console.log("Unset interlocker success, refreshing interlocker list");
 			refreshInterlockersList();
 			showErrorInElem("#interlockerInUse", "No interlocker is set");
 		},
-		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(responseData));
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
 		}
 	});
 }
