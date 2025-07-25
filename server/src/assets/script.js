@@ -13,9 +13,10 @@ function updateTrainIsForwards() {
 		url: '/monitor/train-state',
 		crossDomain: true,
 		data: { 'train': trainId },
-		dataType: 'json',
+		dataType: 'text',
 		success: function (responseData) {
-			trainIsForwards = responseData.direction === 'forwards';
+			responseJson = JSON.parse(responseData);
+			trainIsForwards = responseJson.direction === 'forwards';
 		}
 	});
 }
@@ -25,7 +26,7 @@ function updateTrainGrabbedState() {
 		type: 'GET',
 		url: '/monitor/trains',
 		crossDomain: true,
-		dataType: 'json',
+		dataType: 'text',
 		success: function (responseData) {
 			responseData.trains.forEach((train) => {
 				const trainId = train.id;
@@ -54,7 +55,7 @@ function updateGrantedRoutes(htmlElement) { //TODO: to be tested if responseData
 		type: 'GET',
 		url: '/monitor/granted-routes',
 		crossDomain: true,
-		dataType: 'json',
+		dataType: 'text',
 		success: function (responseData) {
 			htmlElement.empty();
 			if (!responseData.granted-routes || responseData.granted-routes.length === 0) {
@@ -111,19 +112,16 @@ $(document).ready(
 				crossDomain: true,
 				data: null,
 				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					console.log("Startup - Success. ResponseData:");
-					console.log(responseData);
+				success: function (responseData, textStatus, jqXHR) {
 					$('#startupShutdownResponse').parent().removeClass('alert-danger');
 					$('#startupShutdownResponse').parent().addClass('alert-success');
 					$('#startupShutdownResponse').text('OK');
 				},
-				error: (responseData, textStatus, errorThrown) => {
-					console.log("Startup - Error. ResponseData:");
-					console.log(responseData);
+				error: function (responseData, textStatus, errorThrown) {
+					responseJson = JSON.parse(responseData);
 					$('#startupShutdownResponse').parent().removeClass('alert-success');
 					$('#startupShutdownResponse').parent().addClass('alert-danger');
-					$('#startupShutdownResponse').text(getErrorMessage(responseData));
+					$('#startupShutdownResponse').text(getErrorMessage(responseJson));
 				}
 			});
 		});
@@ -134,7 +132,7 @@ $(document).ready(
 				type: 'POST',
 				url: '/admin/shutdown',
 				crossDomain: true,
-				data: {},
+				data: null,
 				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#startupShutdownResponse').parent().removeClass('alert-danger');
@@ -149,7 +147,7 @@ $(document).ready(
 				error: function (responseData, textStatus, errorThrown) {
 					$('#startupShutdownResponse').parent().removeClass('alert-success');
 					$('#startupShutdownResponse').parent().addClass('alert-danger');
-					$('#startupShutdownResponse').text('System not running!');
+					$('#startupShutdownResponse').text(getErrorMessage(JSON.parse(responseData)));
 				}
 			});
 		});
@@ -164,7 +162,7 @@ $(document).ready(
 					url: '/driver/grab-train',
 					crossDomain: true,
 					data: { 'train': trainId, 'engine': trainEngine },
-					dataType: 'json',
+					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						sessionId = responseData['session-id'];
 						grabId = responseData['grab-id'];
@@ -196,7 +194,7 @@ $(document).ready(
 					url: '/driver/release-train',
 					crossDomain: true,
 					data: { 'session-id': sessionId, 'grab-id': grabId },
-					dataType: 'json',
+					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						sessionId = 0;
 						grabId = -1;
@@ -285,7 +283,7 @@ $(document).ready(
 						'speed': speed,
 						'track-output': trackOutput
 					},
-					dataType: 'json',
+					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$('#driveTrainResponse').text('DCC train speed set to ' + speed);
 						$('#driveTrainResponse').parent().removeClass('alert-danger');
@@ -325,7 +323,7 @@ $(document).ready(
 					type: 'GET',
 					url: '/controller/get-interlocker',
 					crossDomain: true,
-					dataType: 'json',
+					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$.ajax({
 							type: 'POST',
@@ -337,7 +335,7 @@ $(document).ready(
 								'source': source,
 								'destination': destination
 							},
-							dataType: 'json',
+							dataType: 'text',
 							success: function (responseData, textStatus, jqXHR) {
 								$('#routeResponse').text('Route ' + responseData['granted-route-id'] + ' granted');
 								$('#routeResponse').parent().removeClass('alert-danger');
@@ -460,7 +458,7 @@ $(document).ready(
 						'route-id': routeId,
 						'mode': mode
 					},
-					dataType: 'json',
+					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
 						$('#routeResponse').text(responseData.msg);
 						$('#routeResponse').parent().removeClass('alert-danger');
@@ -574,7 +572,7 @@ $(document).ready(
 				type: 'GET',
 				url: '/monitor/engines',
 				crossDomain: true,
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					var engineList = responseData.engines;
 
@@ -622,7 +620,7 @@ $(document).ready(
 				url: '/upload/remove-engine',
 				crossDomain: true,
 				data: { 'engine-name': engineName },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshEnginesList();
 					$('#refreshRemoveEngineResponse').parent().removeClass('alert-danger');
@@ -650,7 +648,7 @@ $(document).ready(
 					'speed': speed,
 					'track-output': trackOutput
 				},
-				dataType: 'json',
+				dataType: 'text',
 				success: (responseData, textStatus, jqXHR) => {
 					// Do nothing
 				},
@@ -670,7 +668,7 @@ $(document).ready(
 				data: {
 					'train': trainId
 				},
-				dataType: 'json',
+				dataType: 'text',
 				success: (responseData, textStatus, jqXHR) => {
 				},
 				error: (responseData, textStatus, errorThrown) => {
@@ -716,7 +714,7 @@ $(document).ready(
 				url: '/controller/release-route',
 				crossDomain: true,
 				data: { 'route-id': routeId },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#routeResponse').parent().removeClass('alert-danger');
 					$('#routeResponse').parent().addClass('alert-success');
@@ -738,7 +736,7 @@ $(document).ready(
 				url: '/controller/set-point',
 				crossDomain: true,
 				data: { 'point': pointId, 'state': pointPosition },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#setPointResponse')
 						.text('Point ' + pointId + ' set to ' + pointPosition);
@@ -781,7 +779,7 @@ $(document).ready(
 				url: '/controller/set-signal',
 				crossDomain: true,
 				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#setSignalResponse')
 						.text('Signal ' + signalId + ' set to ' + signalAspect);
@@ -841,7 +839,7 @@ $(document).ready(
 				url: '/controller/set-peripheral',
 				crossDomain: true,
 				data: { 'peripheral': peripheralId, 'state': peripheralAspect },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#setPeripheralResponse')
 						.text('Peripheral ' + peripheralId + ' set to ' + peripheralAspect);
@@ -879,7 +877,7 @@ $(document).ready(
 				processData: false,
 				contentType: false,
 				cache: false,
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
 					$('#uploadResponse').parent().removeClass('alert-danger');
@@ -900,7 +898,7 @@ $(document).ready(
 				type: 'GET',
 				url: '/monitor/interlockers',
 				crossDomain: true,
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					var interlockerList = responseData.interlockers;
 
@@ -944,7 +942,7 @@ $(document).ready(
 				url: '/upload/remove-interlocker',
 				crossDomain: true,
 				data: { 'interlocker-name': interlockerName },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
@@ -968,7 +966,7 @@ $(document).ready(
 				url: '/controller/set-interlocker',
 				crossDomain: true,
 				data: { 'interlocker': interlockerName },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
@@ -996,7 +994,7 @@ $(document).ready(
 				url: '/controller/unset-interlocker',
 				crossDomain: true,
 				data: { 'interlocker': interlockerName },
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					refreshInterlockersList();
 					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
@@ -1046,7 +1044,7 @@ $(document).ready(
 			case 503:
 				return "SWTbahn not running";
 			default:
-				return `${responseData.status} - Fehlernachricht nicht definiert`;
+				return `${responseData.status} - Error message not defined`;
 		}
 	}
 
