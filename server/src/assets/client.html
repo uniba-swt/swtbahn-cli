@@ -19,6 +19,7 @@
 </head>
 
 <body>
+	<!-- Head of page with Logo (set as background img via css) -->
 	<div class="row">
 		<div class="col-sm-6">
 			<div id="swtLogo"></div>
@@ -28,20 +29,24 @@
 		</div>
 	</div>
 	<hr />
+	<!-- Cards with different control elements in 2 columns -->
 	<div class="row row-cols-1 row-cols-lg-2 g-4">
 		<div class="col">
+			<!-- Card for pinging/starting/stopping the server, and setting the track output -->
 			<div class="card stdCardPadMarg">
 				<h4 class="card-title">Server Interaction & Track Configuration</h4>
 				<div class="d-flex justify-content-between">
-					<button id="pingButton" class="btn btn-outline-primary halfWJustifyHelper">Ping the SWTbahn Server</button>
+					<button id="pingButton" class="btn btn-outline-primary halfWJustifyHelper">
+						Ping the SWTbahn Server
+					</button>
 					<div class="alert alert-info halfWJustifyHelper btnPaddingReplicate">
 						<span id="pingResponse" class="alignedSpanForLine"></span>
 					</div>
 				</div>
 				<div class="d-flex justify-content-between">
-					<button id=startupButton class="btn btn-primary thirdWJustifyHelper">Startup</button>
-					<button id=shutdownButton class="btn btn-danger thirdWJustifyHelper">Shutdown</button>
-					<div  class="alert alert-info thirdWJustifyHelper btnPaddingReplicate">
+					<button id="startupButton" class="btn btn-primary thirdWJustifyHelper">Startup</button>
+					<button id="shutdownButton" class="btn btn-danger thirdWJustifyHelper">Shutdown</button>
+					<div class="alert alert-info thirdWJustifyHelper btnPaddingReplicate">
 						<span id="startupShutdownResponse" class="alignedSpanForLine"></span>
 					</div>
 				</div>
@@ -53,12 +58,13 @@
 					<span id="configResponse" class="alignedSpanForLine"></span>
 				</div>
 			</div>
+
+			<!-- Card for the train driver role functionality -->
 			<div class="card stdCardPadMarg">
 				<h4 class="card-title">Train Driver</h4>
-				
 				<div class="input-group mb-1">
 					<span class="input-group-text col-2" for="grabTrainId">Train</span>
-					<select class="form-select" id="grabTrainId">
+					<select id="grabTrainId" class="form-select">
 						<option>cargo_db</option>
 						<option>cargo_bayern</option>
 						<option>cargo_green</option>
@@ -71,7 +77,7 @@
 
 				<div class="input-group mb-1">
 					<span class="input-group-text col-2" for="grabEngine">Engine</span>
-					<select class="form-select" id="grabEngine">
+					<select id="grabEngine" class="form-select">
 						<option>libtrain_engine_default (unremovable)</option>
 						<option>libtrain_engine_linear (unremovable)</option>
 					</select>
@@ -86,12 +92,9 @@
 				<div class="alert alert-info btnPaddingReplicate" role="alert">
 					<span id="grabTrainResponse" class="alignedSpanForLine"></span>
 				</div>
-				<!--<div class="mb-2">
-					<span id="sessionGrabId" class="input-group-text">Session ID: 0, Grab ID: -1</span>
-				</div>-->
 				<div class="input-group mb-2">
 					<span class="input-group-text">DCC Speed</span>
-					<input id="dccSpeed" type="number" class="form-control"  min="0" max="126" value="0" />
+					<input id="dccSpeed" type="number" class="form-control" min="0" max="126" value="0" />
 					<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
 					<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
 				</div>
@@ -103,11 +106,13 @@
 				<div class="alert alert-info btnPaddingReplicate" role="alert">
 					<span id="driveTrainResponse" class="alignedSpanForLine"></span>
 				</div>
-				
+
+				<!-- For the list of signals to select from, the IDs of distant and composite signals
+				     have been removed, as no route starts or ends from/at them -->
 				<div class="d-flex justify-content-between mb-2">
 					<div class="input-group">
 						<span class="input-group-text col-4">From</span>
-						<select class="form-select" id="signalIdFrom">
+						<select id="signalIdFrom" class="form-select">
 							<option>signal1</option>
 							<option>signal2</option>
 							<option>signal3</option>
@@ -163,10 +168,10 @@
 							<option>signal53a</option>
 						</select>
 					</div>
-					
+
 					<div class="input-group">
 						<span class="input-group-text col-3">To</span>
-						<select class="form-select" id="signalIdTo">
+						<select id="signalIdTo" class="form-select">
 							<option>signal1</option>
 							<option>signal2</option>
 							<option>signal3</option>
@@ -222,13 +227,13 @@
 							<option>signal53a</option>
 						</select>
 					</div>
-					
+
 					<div class="input-group">
 						<span class="input-group-text col-5">Route ID</span>
-						<input type="text" class="form-control" id="routeId" readonly value="None" />
+						<input id="routeId" type="text" class="form-control" readonly value="None" />
 					</div>
 				</div>
-				
+
 				<div class="d-flex justify-content-between mb-2">
 					<button id="requestRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
 						Request
@@ -237,7 +242,7 @@
 						Release
 					</button>
 				</div>
-			
+
 				<div class="d-flex justify-content-between mb-2">
 					<button id="automaticDriveRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
 						Automatic Drive Route
@@ -249,8 +254,10 @@
 				<div class="alert alert-info btnPaddingReplicate" role="alert">
 					<span id="routeResponse" class="alignedSpanForLine"></span>
 				</div>
-				
 			</div>
+
+			<!-- Card for admin overview and control of trains -->
+			<!-- TODO: Improve styling (move to CSS?) and add elements for info on actual grabbed status. -->
 			<div class="card stdCardPadMarg">
 				<h4 class="card-title">Train Status Overview/Admin Control</h4>
 				<label>Grabbed statuses:</label>
@@ -260,7 +267,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_db</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_cargo_db">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_cargo_db" /> 
+								<input id="dccSpeed_cargo_db" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_cargo_db" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -275,7 +282,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_bayern</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_cargo_bayern">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_cargo_bayern" /> 
+								<input id="dccSpeed_cargo_bayern" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_cargo_bayern" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -290,7 +297,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_green</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_cargo_green">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_cargo_green" /> 
+								<input id="dccSpeed_cargo_green" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_cargo_green" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -305,7 +312,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">cargo_g1000bb</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_cargo_g1000bb">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_cargo_g1000bb" /> 
+								<input id="dccSpeed_cargo_g1000bb" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_cargo_g1000bb" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -320,7 +327,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">perso_sbb</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_perso_sbb">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_perso_sbb" /> 
+								<input id="dccSpeed_perso_sbb" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_perso_sbb" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -335,7 +342,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">regional_odeg</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_regional_odeg">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_regional_odeg" /> 
+								<input id="dccSpeed_regional_odeg" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_regional_odeg" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -350,7 +357,7 @@
 							<label style="width: 25%; line-height: 1.5;" class="btnPaddingReplicate">regional_brengdirect</label>
 							<div style="width: 50%; line-height: 1.5;" class="col">
 								<label class="btnPaddingReplicate" for="dccSpeed_regional_brengdirect">Speed: </label>
-								<input type="number" min="-126" max="126" id="dccSpeed_regional_brengdirect" /> 
+								<input id="dccSpeed_regional_brengdirect" type="number" min="-126" max="126" /> 
 								<button id="driveTrainButton_regional_brengdirect" type="button" class="btn btn-outline-primary smallerBtn">
 									Set Speed
 								</button> 
@@ -363,15 +370,17 @@
 				</ul>
 			</div>
 		</div>
+
 		<div class="col">
+			<!-- Card for Controller/Stellwerk role functionality -->
 			<div class="card stdCardPadMarg">
 				<h4 class="card-title">Controller/Stellwerk</h4>
 				<div class="input-group mb-2">
 					<label class="input-group-text col-2">Release Route:</label>
-					<input type="text" id="routeId" class="form-control" value="None" />
+					<input id="routeId" type="text" class="form-control" value="None" />
 					<button id="releaseRouteButton" class="btn btn-outline-primary">Release</button>
 				</div>
-				<!-- TODO: Release route response alert? -->
+				<!-- TODO: Release route response should be shown somehow, need element for that -->
 				<div class="input-group mb-2">
 					<label class="input-group-text col-2">Point:</label>
 					<select id="pointId" class="form-select">
@@ -508,7 +517,6 @@
 				<div class="alert btnPaddingReplicate">
 					<span id="setSignalResponse" class="alignedSpanForLine"></span>
 				</div>
-				
 				<div class="input-group mb-2">
 					<label class="input-group-text">Peripheral:</label>
 					<input id="peripheralId" class="form-control">
@@ -520,13 +528,15 @@
 					<span id="setPeripheralResponse" class="alignedSpanForLine"></span>
 				</div>
 				<label>Granted routes:</label>
-				<ul id=grantedRoutes></ul>
+				<ul id="grantedRoutes"></ul>
 			</div>
+
+			<!-- Card for Upload role (engines and interlocker uploading etc.) -->
 			<div class="card stdCardPadMarg">
 				<h4 class="card-title">Custom Engines and Interlockers</h4>
 				<div class="input-group mb-2">
 					<label class="input-group-text">SCCharts (*.sctx) or Bahn (*.bahn) File:</label>
-					<input type="file" id="selectUploadFile" class="form-control" accept=".sctx,.bahn" />
+					<input id="selectUploadFile" type="file" class="form-control" accept=".sctx,.bahn" />
 					<button id="uploadEngineButton" class="btn btn-outline-primary">Upload SCCharts</button>
 					<button id="uploadInterlockerButton" class="btn btn-outline-primary">Upload Bahn</button>	 
 				</div>
@@ -576,7 +586,7 @@
 				</div>
 				<div class="input-group mb-2">
 					<label class="input-group-text">Verification Server URL:</label>
-					<input type="url" class="form-control" id=verificationServerUrlInput />
+					<input id="verificationServerUrlInput" type="url" class="form-control" />
 					<button id="setVerificationServerUrlButton" class="btn btn-outline-primary">Set</button>
 				</div>
 				<div class="alert btnPaddingReplicate">
@@ -588,6 +598,7 @@
 				</div>
 			</div>
 		</div>
+	</div>
 </body>
 
 <script type="text/javascript">
