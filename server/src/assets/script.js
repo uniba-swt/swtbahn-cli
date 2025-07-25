@@ -652,7 +652,7 @@ $(document).ready(
 				},
 				error: (responseData, textStatus, errorThrown) => {
 					// Do nothing
-					console.log("func(adminSetTrainSpeed) failed: {} - {}".format(responseData.status, getErrorMessage(responseData)))
+					console.log(`func(adminSetTrainSpeed) failed: ${responseData.status} - ${getErrorMessage(responseData)}`);
 				}
 			});
 		}
@@ -1042,7 +1042,7 @@ $(document).ready(
 			case 503:
 				return "SWTbahn not running";
 			default:
-				return "{} - Fehlernachricht nicht definiert".format(responseData.status);
+				return `${responseData.status} - Fehlernachricht nicht definiert`;
 		}
 	}
 
