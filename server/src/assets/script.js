@@ -88,7 +88,7 @@ $(document).ready(
 				type: 'GET',
 				url: '/',
 				crossDomain: true,
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#pingResponse').parent().removeClass('alert-danger');
 					$('#pingResponse').parent().addClass('alert-success');
@@ -109,14 +109,18 @@ $(document).ready(
 				type: 'POST',
 				url: '/admin/startup',
 				crossDomain: true,
-				data: {},
-				dataType: 'json',
-				success: function (responseData, textStatus, jqXHR) {
+				data: null,
+				dataType: 'text',
+				success: (responseData, textStatus, jqXHR) => {
+					console.log("Startup - Success. ResponseData:");
+					console.log(responseData);
 					$('#startupShutdownResponse').parent().removeClass('alert-danger');
 					$('#startupShutdownResponse').parent().addClass('alert-success');
 					$('#startupShutdownResponse').text('OK');
 				},
-				error: function (responseData, textStatus, errorThrown) {
+				error: (responseData, textStatus, errorThrown) => {
+					console.log("Startup - Error. ResponseData:");
+					console.log(responseData);
 					$('#startupShutdownResponse').parent().removeClass('alert-success');
 					$('#startupShutdownResponse').parent().addClass('alert-danger');
 					$('#startupShutdownResponse').text(getErrorMessage(responseData));
@@ -131,7 +135,7 @@ $(document).ready(
 				url: '/admin/shutdown',
 				crossDomain: true,
 				data: {},
-				dataType: 'json',
+				dataType: 'text',
 				success: function (responseData, textStatus, jqXHR) {
 					$('#startupShutdownResponse').parent().removeClass('alert-danger');
 					$('#startupShutdownResponse').parent().addClass('alert-success');
