@@ -164,8 +164,9 @@ $(document).ready(
 					data: { 'train': trainId, 'engine': trainEngine },
 					dataType: 'text',
 					success: function (responseData, textStatus, jqXHR) {
-						sessionId = responseData['session-id'];
-						grabId = responseData['grab-id'];
+						responseJson = JSON.parse(responseData);
+						sessionId = responseJson['session-id'];
+						grabId = responseJson['grab-id'];
 						$('#sessionGrabId')
 							.text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
 						$('#grabTrainResponse').text('Grabbed');
