@@ -39,10 +39,18 @@ function showErrorInElem(elementID, textToShow) {
 }
 
 function getErrorMessage(responseData, customCodes = {}) {
-	respJson = JSON.parse(responseData);
-	if (respJson.msg) {
-		return respJson.msg;
+	try {
+		if (responseData.responseText.length > 0) {
+			respJson = JSON.parse(responseData.responseText);
+			if (respJson.msg) {
+				return respJson.msg;
+			}
+		}
+	} catch (parseError) {
+		console.log("Unable to parse responseData to JSON.");
 	}
+	// Apparently sometimes we have .responseText, sometimes we don't. I don't know why.
+	// 
 
 	// Check if customCodes contains the status code
 	if (customCodes.hasOwnProperty(responseData.status)) {
@@ -118,12 +126,11 @@ function updateGrantedRoutes(htmlElement) {
 		success: function (responseData) {
 			responseJson = JSON.parse(responseData);
 			htmlElement.empty();
-			///TODO: to be tested if responseData.granted-routes works or responseData["granted-routes"]
-			if (!responseJson.granted-routes || responseJson.granted-routes.length === 0) {
+			if (!responseJson['granted-routes'] || responseJson['granted-routes'].length === 0) {
 				htmlElement.html('<li>No granted routes</li>');
 				return;
 			}
-			responseJson.granted-routes.forEach((route) => {
+			responseJson['granted-routes'].forEach((route) => {
 				const routeId = route['id'];
 				const trainId = route.train;
 				const routeText = `route ${routeId} granted to ${trainId}`;
@@ -165,7 +172,7 @@ function startupServer () {
 		crossDomain: true,
 		data: null,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (responseText, textStatus, jqXHR) {
 			showInfoInElem("#startupShutdownResponse", "Success");
 		},
 		error: function (responseData, textStatus, errorThrown) {
@@ -206,7 +213,7 @@ function grabTrain () {
 		data: { 'train': trainId, 'engine': trainEngine },
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData);
+			responseJson = JSON.parse(responseData.responseText);
 			sessionId = responseJson['session-id'];
 			grabId = responseJson['grab-id'];
 			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
@@ -275,7 +282,7 @@ function requestRoute (source, destination) {
 		},
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData);
+			responseJson = JSON.parse(responseData.responseText);
 			showInfoInElem("#routeResponse", 
 			               'Route ' + responseJson['granted-route-id'] + ' granted');
 			$('#routeId').val(responseJson['granted-route-id']);
@@ -315,7 +322,7 @@ function driveRouteIntern (routeId, mode) {
 		},
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData);
+			responseJson = JSON.parse(responseData.responseText);
 			showInfoInElem("#routeResponse", responseJson['msg']);
 			$('#routeId').val("None");
 		},
@@ -412,7 +419,7 @@ function setPoint (pointId, pointPosition) {
 			showInfoInElem("#setPointResponse", 'Point ' + pointId + ' set to ' + pointPosition);
 		},
 		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#setPointResponse", getErrorMessage(responseData));
+			showErrorInElem("#setPointResponse", getErrorMessage(responseData, {404: "Unknown Point"}));
 		}
 	});
 }
@@ -429,7 +436,9 @@ function setSignal (signalId, signalAspect) {
 			showInfoInElem("#setSignalResponse", 'Signal ' + signalId + ' set to ' + signalAspect);
 		},
 		error: function (responseData, textStatus, errorThrown) {
-			showErrorInElem("#setSignalResponse", getErrorMessage(responseData));
+			console.log(responseData);
+			console.log(responseData.responseText);
+			showErrorInElem("#setSignalResponse", getErrorMessage(responseData, {404: "Unknown Signal"}));
 		}
 	});
 }
@@ -477,7 +486,7 @@ function uploadEngine (file) {
 		error: function (responseData, textStatus, errorThrown) {
 			console.log("Upload Failed");
 			try {
-				var resJson = JSON.parse(responseData, null, 2);
+				var resJson = JSON.parse(responseData.responseText, null, 2);
 				var msg = "Server Message: " + resJson["msg"];
 				msg += "\nList of Properties:"
 				resJson["verifiedproperties"].forEach(element => {
@@ -503,7 +512,7 @@ function refreshEnginesList() {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData);
+			responseJson = JSON.parse(responseData.responseText);
 			var engineList = responseJson['engines'];
 
 			var selectedGrabEngine = $("#grabEngine");
@@ -577,7 +586,9 @@ function refreshInterlockersList() {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseData, textStatus, jqXHR) {
-			responseJson = JSON.parse(responseData);
+			console.log(responseData);
+			console.log(responseData.responseText);
+			responseJson = JSON.parse(responseData.responseText);
 			var interlockerList = responseJson['interlockers'];
 
 			var selectAvailableInterlockers = $("#availableInterlockers");

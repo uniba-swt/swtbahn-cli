@@ -21,7 +21,7 @@ libgcrypt, libpthread, libglib-2.0, libyaml,
 * KIELER command line compiler: [kico.jar](https://rtsys.informatik.uni-kiel.de/~kieler/files/nightly/sccharts/cli/)
   * Path to the folder that contains `kico.jar` has to be defined in the environment variable `KIELER_PATH`
 * BahnDSL command line compiler: [bahnc](https://github.com/trinnguyen/bahndsl)
-  * Path to the folder that contains the `bahnc` has to be defined in the environment variable `BAHNDSL_PATH`
+  * Path to the folder that contains the `bahnc` has to be defined in the environment variable `BAHNC_PATH`
 * SCCharts verifier: [SWTbahn Verifier (SWT internal repository)](https://gitlab.rz.uni-bamberg.de/swt/swtbahn-verifier)
 
 #### Command Line Client
