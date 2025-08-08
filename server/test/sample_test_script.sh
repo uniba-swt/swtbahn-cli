@@ -9,28 +9,28 @@ if test -z "$1"; then
 fi
 
 cd ../../client
-./swtbahn config localhost 8080 master
-./swtbahn admin startup
+./swtbahn.py config localhost 8080 master
+./swtbahn.py admin startup
 
 sleep 0.5
-./swtbahn monitor get-debug-info
+./swtbahn.py monitor get-debug-info
 
 while true; do
-	./swtbahn driver grab $train
-	./swtbahn monitor get-debug-info
+	./swtbahn.py driver grab $train
+	./swtbahn.py monitor get-debug-info
 
-#	./swtbahn driver request-route-id $route
-#	./swtbahn monitor get-debug-info
+#	./swtbahn.py driver request-route-id $route
+#	./swtbahn.py monitor get-debug-info
 
-	./swtbahn driver set-dcc-speed 13
-	./swtbahn monitor get-debug-info
+	./swtbahn.py driver set-dcc-speed 13
+	./swtbahn.py monitor get-debug-info
 
-	./swtbahn driver set-dcc-speed 0
-	./swtbahn monitor get-debug-info
+	./swtbahn.py driver set-dcc-speed 0
+	./swtbahn.py monitor get-debug-info
 
-#	./swtbahn controller release-route $route
-#	./swtbahn monitor get-debug-info
+#	./swtbahn.py controller release-route $route
+#	./swtbahn.py monitor get-debug-info
 
-	./swtbahn driver release
-	./swtbahn monitor get-debug-info
+	./swtbahn.py driver release
+	./swtbahn.py monitor get-debug-info
 done
