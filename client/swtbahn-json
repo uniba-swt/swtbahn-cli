@@ -65,7 +65,7 @@ def create_config(hostname, port, default_output, do_test_connection=True):
         click.echo("Connection test:")
         try:
             response = requests.get(server)
-            if (response.status_code != requests.codes.ok):
+            if (response.status_code != 200):
                 click.echo("No SWTbahn server on " + server, err=True)
             else:
                 click.echo("SWTbahn server found on " + server)
@@ -86,7 +86,7 @@ def update_session_and_grab_id(session_id, grab_id):
         click.echo(e, err=True)
 
 
-# Returns False if config is valid, otherwise returns True
+# Returns True if config is valid, otherwise returns False
 def parse_config():
     global config_file, hostname, port, default_track_output, session_id, grab_id, server
     try:
@@ -114,7 +114,7 @@ def log_common_feedback_err_msg(response_text:str, internal_err=False):
         click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
 
 def log_not_running_or_unknown_err(status_code:int):
-    if (status_code == requests.codes.service_unavailable):
+    if (status_code == 503):
         click.echo("System is not running.", err=True)
     else:
         click.echo(f"Unknown error, reply status code: {status_code}", err=True)
@@ -143,7 +143,7 @@ def config(hostname, port, default_track_output):
 @click.command(help="Reset your train ownership (grab and session id). "
                "Do NOT do this if you still have proper control over the train!")
 def reset_grab_and_session_id():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server, session_id, grab_id
@@ -166,17 +166,17 @@ def admin():
 
 @click.command(help="Start up the SWTbahn")
 def startup():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/admin/startup")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo("System has started up.")
-            elif (response.status_code == requests.codes.conflict):
+            elif (response.status_code == 409):
                 click.echo("System already running!")
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 log_common_feedback_err_msg(response.text, internal_err=True)
             else:
                 click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
@@ -186,13 +186,13 @@ def startup():
 
 @click.command(help="Shut down the SWTbahn")
 def shutdown():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/admin/shutdown")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo("System has been stopped.")
                 update_session_and_grab_id(0, -1)
             else:
@@ -204,7 +204,7 @@ def shutdown():
 @click.command(help="Set the power state of all track outputs")
 @click.argument('state', type=click.Choice(['off', 'stop', 'soft_stop', 'go']))
 def set_track_output(state):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
@@ -217,9 +217,9 @@ def set_track_output(state):
             }
             response = requests.post(server + "/admin/set-track-output",
                                      data = {'state': mapping.get(state)})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Track output state set to {state}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -230,16 +230,16 @@ def set_track_output(state):
 @click.command(help="Set whether plugins will be verified upon upload")
 @click.argument('verification-option', type=click.Choice(['true', 'false']))
 def set_verification_option(verification_option):
-    if(parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/admin/set-verification-option",
                                      data = {'verification-option': verification_option})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Verification option set to {verification_option}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -250,16 +250,16 @@ def set_verification_option(verification_option):
 @click.command(help="Set the url of the verification server to use for verification on upload")
 @click.argument('verification-url', type=click.STRING)
 def set_verification_url(verification_url):
-    if(parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/admin/set-verification-url",
                                      data = {'verification-url': verification_url})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Verification url set to {verification_url}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
@@ -270,15 +270,15 @@ def set_verification_url(verification_url):
 @click.command(name="release", help="Release a train")
 @click.argument('train')
 def admin_release(train):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/admin/release-train", data = {'train': train})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Released grabbed train {train}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -292,7 +292,7 @@ def admin_release(train):
 @click.argument('train')
 @click.argument('speed', type=click.IntRange(0, 126))
 def admin_set_dcc_speed(train, backwards, speed, track_output):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server, default_track_output
@@ -304,9 +304,9 @@ def admin_set_dcc_speed(train, backwards, speed, track_output):
             response = requests.post(server + "/admin/set-dcc-train-speed",
                                      data = {'train': train, 'speed': speed, 
                                              'track-output': default_track_output})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"DCC speed of {train} set to {speed}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -324,15 +324,15 @@ def controller():
 @click.command(help="Release a route")
 @click.argument('route-id', type=int)
 def release_route(route_id):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         try:
             response = requests.post(server + "/controller/release-route",
                                      data = {'route-id': route_id})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Route {route_id} released.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -344,16 +344,16 @@ def release_route(route_id):
 @click.argument('point')
 @click.argument('state')
 def set_point(point, state):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/controller/set-point", 
                                      data = {'point': point, 'state': state})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Point {point} set to {state}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -365,16 +365,16 @@ def set_point(point, state):
 @click.argument('signal')
 @click.argument('state')
 def set_signal(signal, state):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/controller/set-signal", 
                                      data = {'signal': signal, 'state': state})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Signal {signal} set to {state}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -386,16 +386,16 @@ def set_signal(signal, state):
 @click.argument('peripheral')
 @click.argument('state')
 def set_peripheral(peripheral, state):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/controller/set-peripheral", 
                                      data = {'peripheral': peripheral, 'state': state})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Peripheral {peripheral} set to {state}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -405,16 +405,16 @@ def set_peripheral(peripheral, state):
 
 @click.command(help="Get the interlocker in use")
 def get_interlocker():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/controller/get-interlocker")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo("Interlocker in use: " + response_json.get("interlocker", None))
-            elif (response.status_code == requests.codes.not_found):
+            elif (response.status_code == 404):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -425,17 +425,17 @@ def get_interlocker():
 @click.command(help="Set an interlocker to use")
 @click.argument('interlocker')
 def set_interlocker(interlocker):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/controller/set-interlocker", 
                                      data = {'interlocker': interlocker})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Interlocker set to {interlocker}.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -446,17 +446,17 @@ def set_interlocker(interlocker):
 @click.command(help="Unset an interlocker from use")
 @click.argument('interlocker')
 def unset_interlocker(interlocker):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/controller/unset-interlocker", 
                                      data = {'interlocker': interlocker})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Interlocker {interlocker} has been unset.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -467,19 +467,19 @@ def unset_interlocker(interlocker):
 @click.command(help="Upload an interlocker")
 @click.argument('filepath', type=click.Path(exists=True))
 def upload_interlocker(filepath):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/upload/interlocker",
                                      files = {'file': open(filepath, 'r')})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo("Interlocker has been uploaded.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 log_common_feedback_err_msg(response.text, internal_err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -490,18 +490,18 @@ def upload_interlocker(filepath):
 @click.command(help="Delete an interlocker")
 @click.argument('interlocker-name')
 def delete_interlocker(interlocker_name):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/upload/remove-interlocker",
                                      data = {'interlocker-name': interlocker_name})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Interlocker {interlocker_name} deleted.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.not_found or
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 404 or
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -521,7 +521,7 @@ def driver():
 @click.option('--engine', '-e', help="The train engine behaviour to use",
               default="libtrain_engine_default (unremovable)")
 def grab(train, engine):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global session_id, grab_id, server
@@ -529,17 +529,17 @@ def grab(train, engine):
             try:
                 response = requests.post(server + "/driver/grab-train",
                                          data = {'train': train, 'engine': engine})
-                if (response.status_code == requests.codes.ok):
+                if (response.status_code == 200):
                     response_json: dict = json.loads(response.text)
                     update_session_and_grab_id(response_json["session-id"], response_json["grab-id"])
                     click.echo("Grabbed train " + train)
                     click.echo(f"   Debug information: session-id ({response_json["session-id"]})")
                     click.echo(f"   Debug information: grab-id ({response_json["grab-id"]})")
-                elif (response.status_code == requests.codes.bad_request or 
-                        response.status_code == requests.codes.not_found or
-                        response.status_code == requests.codes.conflict):
+                elif (response.status_code == 400 or 
+                        response.status_code == 404 or
+                        response.status_code == 409):
                     log_common_feedback_err_msg(response.text)
-                elif (response.status_code == requests.codes.internal_server_error):
+                elif (response.status_code == 500):
                     log_common_feedback_err_msg(response.text, internal_err=True)
                 else:
                     log_not_running_or_unknown_err(response.status_code)
@@ -557,7 +557,7 @@ def grab(train, engine):
 @click.command(help="Release your train")
 def release():
     global session_id, grab_id, server
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -565,11 +565,11 @@ def release():
         try:
             response = requests.post(server + "/driver/release-train",
                                      data = {'session-id': session_id, 'grab-id': grab_id})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo("Released grabbed train.")
                 update_session_and_grab_id(0, -1)
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -582,7 +582,7 @@ def release():
 @click.argument('destination')
 def request_route(source, destination):
     global session_id, grab_id, server
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -591,12 +591,12 @@ def request_route(source, destination):
             response = requests.post(server + "/driver/request-route",
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'source': source, 'destination': destination})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 route_id = response_json["granted-route-id"]
                 click.echo(f"Route {route_id} from {source} to {destination} has been granted.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -608,7 +608,7 @@ def request_route(source, destination):
 @click.argument('route-id')
 def request_route_id(route_id):
     global session_id, grab_id, server
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -617,12 +617,12 @@ def request_route_id(route_id):
             response = requests.post(server + "/driver/request-route-by-id",
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'route-id': route_id})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Route {route_id} has been granted.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 log_common_feedback_err_msg(response.text, internal_err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -635,18 +635,18 @@ def request_route_id(route_id):
 @click.argument('route-id')
 def direction(train, route_id):
     global server
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         try:
             response = requests.post(server + "/driver/direction",
                                      data = {'session-id': session_id, 'train': train,
                                              'route-id': route_id})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(f"Direction: {response_json["direction"]}.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.not_found):
+            elif (response.status_code == 400 or 
+                    response.status_code == 404):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -659,7 +659,7 @@ def direction(train, route_id):
 @click.argument('route-id')
 def drive_route(mode, route_id):
     global session_id, grab_id, server
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -670,10 +670,10 @@ def drive_route(mode, route_id):
             response = requests.post(server + "/driver/drive-route",
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'mode': mode, 'route-id': route_id})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(f"Driving route {route_id} completed, server msg: {response_json.get("msg", "")}")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -688,7 +688,7 @@ def drive_route(mode, route_id):
 @click.argument('speed', type=click.IntRange(0, 126))
 def set_dcc_speed(backwards, speed, track_output):
     global session_id, grab_id, server, default_track_output
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -701,9 +701,9 @@ def set_dcc_speed(backwards, speed, track_output):
             response = requests.post(server + "/driver/set-dcc-train-speed",
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'speed': speed, 'track-output': track_output})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"DCC train speed set to {speed} on track-output {track_output}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -718,7 +718,7 @@ def set_dcc_speed(backwards, speed, track_output):
 @click.argument('speed', type=click.IntRange(0, 9))
 def set_calibrated_speed(backwards, speed, track_output):
     global session_id, grab_id, server, default_track_output
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -731,9 +731,9 @@ def set_calibrated_speed(backwards, speed, track_output):
             response = requests.post(server + "/driver/set-calibrated-train-speed",
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'speed': speed, 'track-output': track_output})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Calibrated train speed set to {speed} on track-output {track_output}.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -746,7 +746,7 @@ def set_calibrated_speed(backwards, speed, track_output):
               default="")
 def emergency_stop(track_output):
     global session_id, grab_id, server, default_track_output
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -757,9 +757,9 @@ def emergency_stop(track_output):
             response = requests.post(server + "/driver/set-train-emergency-stop",
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'track-output': track_output})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo("Train emergency stopped.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -774,7 +774,7 @@ def emergency_stop(track_output):
 @click.argument('state', type=click.Choice(['off', 'on']))
 def set_train_peripheral(peripheral, state, track_output):
     global session_id, grab_id, server, default_track_output
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     elif (session_id == 0 and grab_id == -1):
         click.echo("No train grabbed!")
@@ -790,9 +790,9 @@ def set_train_peripheral(peripheral, state, track_output):
                                      data = {'session-id': session_id, 'grab-id': grab_id,
                                              'peripheral': peripheral, 'state': mapping.get(state),
                                              'track-output': track_output})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Train peripheral {peripheral} set to {state}")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -803,16 +803,16 @@ def set_train_peripheral(peripheral, state, track_output):
 @click.command(help="Upload a train engine")
 @click.argument('filepath', type=click.Path(exists=True))
 def upload_engine(filepath):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/upload/engine",
                                      files = {'file': open(filepath, 'r')})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo("Train engine uploaded.")
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 response_json: dict = json.loads(response.text)
                 click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
                 # If the verification failed, the feedback can be quite long.
@@ -821,9 +821,9 @@ def upload_engine(filepath):
                     click.echo("Verification of at least one property failed. " 
                                "Now printing info on all properties:")
                     click.echo(json.dumps(response_json["verifiedproperties"], indent=4, default=str))
-            elif (response.status_code == requests.codes.conflict):
+            elif (response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 log_common_feedback_err_msg(response.text, internal_err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -834,18 +834,18 @@ def upload_engine(filepath):
 @click.command(help="Delete a train engine")
 @click.argument('engine-name')
 def delete_engine(engine_name):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/upload/remove-engine",
                                      data = {'engine-name': engine_name})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(f"Train engine {engine_name} deleted.")
-            elif (response.status_code == requests.codes.bad_request or 
-                    response.status_code == requests.codes.not_found or
-                    response.status_code == requests.codes.conflict):
+            elif (response.status_code == 400 or 
+                    response.status_code == 404 or
+                    response.status_code == 409):
                 log_common_feedback_err_msg(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -861,13 +861,13 @@ def monitor():
 
 @click.command(help="Get the name of the platform/railway that is being run")
 def get_platform_name():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/platform-name")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(f"Platform name: {response_json["platform-name"]}")
             else:
@@ -878,13 +878,13 @@ def get_platform_name():
 
 @click.command(help="Get a list of trains")
 def get_trains():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/trains")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 if (response.text == ""):
                     click.echo("No trains available.")
                 else:
@@ -899,21 +899,21 @@ def get_trains():
 @click.command(help="Get the state of a train")
 @click.argument('train')
 def get_train_state(train):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/train-state",
                                      data = {'train': train})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.not_found):
+            elif (response.status_code == 404):
                 click.echo(f"Error, train {train} was not found.", err=True)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -923,16 +923,16 @@ def get_train_state(train):
 
 @click.command(help="Get the state of all trains")
 def get_trains_states():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/train-states")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -943,19 +943,19 @@ def get_trains_states():
 @click.command(help="Get a list of peripherals of a train")
 @click.argument('train')
 def get_train_peripherals(train):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/train-peripherals",
                                      data = {'train': train})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -965,16 +965,16 @@ def get_train_peripherals(train):
 
 @click.command(help="Get a list of train engines")
 def get_engine_list():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/engines")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -984,16 +984,16 @@ def get_engine_list():
 
 @click.command(help="Get a list of interlockers")
 def get_interlocker_list():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/interlockers")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1003,16 +1003,16 @@ def get_interlocker_list():
 
 @click.command(help="Get a list of track outputs with their state")
 def get_track_outputs():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/track-outputs")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1022,16 +1022,16 @@ def get_track_outputs():
 
 @click.command(help="Get a list of points")
 def get_points():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/points")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1041,16 +1041,16 @@ def get_points():
 
 @click.command(help="Get a list of signals")
 def get_signals():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/signals")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1061,18 +1061,18 @@ def get_signals():
 @click.command(help="Get detailed information on a point")
 @click.argument('point')
 def get_point_details(point):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/point-details", data = {'point': point})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1083,18 +1083,18 @@ def get_point_details(point):
 @click.command(help="Get detailed information on a signal")
 @click.argument('signal')
 def get_signal_details(signal):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/signal-details", data = {'signal': signal})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1105,20 +1105,20 @@ def get_signal_details(signal):
 @click.command(help="Get the aspects of a point")
 @click.argument('point')
 def get_point_aspects(point):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/point-aspects", data = {'point': point})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.not_found):
+            elif (response.status_code == 404):
                 click.echo(f"Error, point {point} was not found.")
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1129,20 +1129,20 @@ def get_point_aspects(point):
 @click.command(help="Get the aspects of a signal")
 @click.argument('signal')
 def get_signal_aspects(signal):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/signal-aspects", data = {'signal': signal})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.not_found):
+            elif (response.status_code == 404):
                 click.echo(f"Error, signal {signal} was not found.")
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1152,16 +1152,16 @@ def get_signal_aspects(signal):
 
 @click.command(help="Get a list of segments")
 def get_segments():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/segments")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1171,16 +1171,16 @@ def get_segments():
 
 @click.command(help="Get a list of reversers")
 def get_reversers():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/reversers")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message " 
                            "or unable to get reverser state update.", err=True)
             else:
@@ -1191,16 +1191,16 @@ def get_reversers():
 
 @click.command(help="Get a list of peripherals")
 def get_peripherals():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/peripherals")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1210,13 +1210,13 @@ def get_peripherals():
 
 @click.command(help="Get whether train engines will be verified upon upload")
 def get_verification_option():
-    if(parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/verification-option")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
             else:
@@ -1227,13 +1227,13 @@ def get_verification_option():
 
 @click.command(help="Get the url to the verification server")
 def get_verification_url():
-    if(parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/verification-url")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
             else:
@@ -1244,16 +1244,16 @@ def get_verification_url():
 
 @click.command(help="Get a list of granted routes")
 def get_granted_routes():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/granted-routes")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1264,20 +1264,20 @@ def get_granted_routes():
 @click.command(help="Get the details of a route")
 @click.argument('route-id')
 def get_route(route_id):
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.post(server + "/monitor/route", data = {'route-id': route_id})
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 response_json: dict = json.loads(response.text)
                 click.echo(json.dumps(response_json, indent=4, default=str))
-            elif (response.status_code == requests.codes.bad_request):
+            elif (response.status_code == 400):
                 log_common_feedback_err_msg(response.text)
-            elif (response.status_code == requests.codes.not_found):
+            elif (response.status_code == 404):
                 click.echo(f"Route with ID {route_id} was not found.", err=True)
-            elif (response.status_code == requests.codes.internal_server_error):
+            elif (response.status_code == 500):
                 click.echo("Internal error, server was unable to build a reply message.", err=True)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1287,13 +1287,13 @@ def get_route(route_id):
 
 @click.command(help="Get debug information")
 def get_debug_info():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/debug")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
@@ -1303,13 +1303,13 @@ def get_debug_info():
 
 @click.command(help="Get extra debug information")
 def get_debug_info_extra():
-    if (parse_config()):
+    if (not parse_config()):
         click.echo("Corrupt config, please run the config command.", err=True)
     else:
         global server
         try:
             response = requests.get(server + "/monitor/debug-extra")
-            if (response.status_code == requests.codes.ok):
+            if (response.status_code == 200):
                 click.echo(response.text)
             else:
                 log_not_running_or_unknown_err(response.status_code)
