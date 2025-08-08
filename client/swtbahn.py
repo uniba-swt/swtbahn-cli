@@ -98,9 +98,9 @@ def parse_config():
         session_id = config['session_id']
         grab_id = config['grab_id']
         server = "http://" + hostname + ":" + str(port)
-        return False
-    except Exception as e:
         return True
+    except Exception as e:
+        return False
 
 # -----------------------
 # --- logging helpers ---
