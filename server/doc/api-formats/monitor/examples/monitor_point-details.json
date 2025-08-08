@@ -1,8 +1,0 @@
-{
-	"id": "point1",
-	"aspects": ["normal", "reverse"],
-	"state": "unknown",
-	"segment": "seg5",
-	"occupied": false,
-	"target_state_reached": true
-}
