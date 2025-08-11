@@ -126,7 +126,7 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 		data: { 'route-id': routeId },
 		dataType: 'text',
 		success: (responseText) => {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			const noConflicts = Array.isArray(responseJson.granted_conflicting_route_ids) &&
 				responseJson.granted_conflicting_route_ids.length === 0;
 			const isClear = responseJson.clear === true;
@@ -141,7 +141,7 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 		},
 		error: (jqXHR) => {
 			if ('msg' in jqXHR.responseText) {
-				responseJson = JSON.parse(responseText);
+				const responseJson = JSON.parse(responseText);
 				console.warn("/monitor/route error with returned message:", responseJson.msg);
 			} else {
 				console.warn("/monitor/route error with no message, status:", jqXHR.status);
@@ -410,7 +410,7 @@ class Driver {
 			data: { 'train': this.trainId },
 			dataType: 'text',
 			success: (responseText) => {
-				responseJson = JSON.parse(responseText);
+				const responseJson = JSON.parse(responseText);
 				if (responseJson.on_track && Array.isArray(responseJson.occupied_blocks) 
 					&& responseJson.occupied_blocks.length > 0) {
 					this.currentBlock = responseJson.occupied_blocks[0];
@@ -418,7 +418,7 @@ class Driver {
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/monitor/train-state error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/monitor/train-state error with no message, status:", jqXHR.status);
@@ -442,7 +442,7 @@ class Driver {
 			data: { 'train': trainId },
 			dataType: 'text',
 			success: (responseText) => {
-				responseJson = JSON.parse(responseText);
+				const responseJson = JSON.parse(responseText);
 				if (responseJson.grabbed === false && responseJson.on_track === true) {
 					successCallback();
 				} else {
@@ -451,7 +451,7 @@ class Driver {
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/monitor/train-state error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/monitor/train-state error with no message, status:", jqXHR.status);
@@ -529,7 +529,7 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseText) => {
-				responseJson = JSON.parse(responseText);
+				const responseJson = JSON.parse(responseText);
 				this.sessionId = responseJson['session-id'];
 				this.grabId = responseJson['grab-id'];
 				setResponseSuccess('#serverResponse', 
@@ -540,7 +540,7 @@ class Driver {
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/driver/grab-train error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/driver/grab-train error with no message, status:", jqXHR.status);
@@ -567,12 +567,12 @@ class Driver {
 			},
 			dataType: 'text',
 			success: (responseText) => {
-				responseJson = JSON.parse(responseText);
+				const responseJson = JSON.parse(responseText);
 				this.drivingIsForwards = responseJson.direction === "forwards";
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/driver/direction error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/driver/direction error with no message, status:", jqXHR.status);
@@ -602,7 +602,7 @@ class Driver {
 			dataType: 'text',
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/driver/set-dcc-train-speed error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/driver/set-dcc-train-speed error with no message, status:", jqXHR.status);
@@ -629,7 +629,7 @@ class Driver {
 				data: { 'train': this.trainId },
 				dataType: 'text',
 				success: (responseText) => {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					if (!(responseJson.on_track) || !Array.isArray(responseJson.occupied_segments)) {
 						return;
 					}
@@ -696,7 +696,7 @@ class Driver {
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/driver/release-train error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/driver/release-train error with no message, status:", jqXHR.status);
@@ -732,7 +732,7 @@ class Driver {
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/driver/request-route-by-id error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/driver/request-route-by-id error with no message, status:", jqXHR.status);
@@ -793,7 +793,7 @@ class Driver {
 			},
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/driver/drive-route error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/driver/drive-route error with no message, status:", jqXHR.status);
@@ -825,7 +825,7 @@ class Driver {
 			dataType: 'text',
 			error: (jqXHR) => {
 				if ('msg' in jqXHR.responseText) {
-					responseJson = JSON.parse(responseText);
+					const responseJson = JSON.parse(responseText);
 					console.warn("/controller/release-route error with returned message:", responseJson.msg);
 				} else {
 					console.warn("/controller/release-route error with no message, status:", jqXHR.status);

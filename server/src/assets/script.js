@@ -41,7 +41,7 @@ function showErrorInElem(elementID, textToShow) {
 function getErrorMessage(jqXHR, customCodes = {}) {
 	try {
 		if (jqXHR.responseText.length > 0) {
-			respJson = JSON.parse(jqXHR.responseText);
+			const respJson = JSON.parse(jqXHR.responseText);
 			if (respJson.msg) {
 				return respJson.msg;
 			}
@@ -88,7 +88,7 @@ function updateTrainIsForwards() {
 		data: { 'train': trainId },
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			trainIsForwards = responseJson.direction === 'forwards';
 		}
 	});
@@ -102,7 +102,7 @@ function updateTrainGrabbedState() {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			responseJson['trains'].forEach((train) => {
 				const trainId = train.id;
 				const isGrabbed = train.grabbed;
@@ -124,7 +124,7 @@ function updateGrantedRoutes(htmlElement) {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			htmlElement.empty();
 			if (!responseJson['granted-routes'] || responseJson['granted-routes'].length === 0) {
 				htmlElement.html('<li>No granted routes</li>');
@@ -213,7 +213,7 @@ function grabTrain () {
 		data: { 'train': trainId, 'engine': trainEngine },
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			sessionId = responseJson['session-id'];
 			grabId = responseJson['grab-id'];
 			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
@@ -282,7 +282,7 @@ function requestRoute (source, destination) {
 		},
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			showInfoInElem("#routeResponse", 
 			               'Route ' + responseJson['granted-route-id'] + ' granted');
 			$('#routeId').val(responseJson['granted-route-id']);
@@ -322,7 +322,7 @@ function driveRouteIntern (routeId, mode) {
 		},
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			showInfoInElem("#routeResponse", responseJson['msg']);
 			$('#routeId').val("None");
 		},
@@ -510,7 +510,7 @@ function refreshEnginesList() {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			var engineList = responseJson['engines'];
 
 			var selectedGrabEngine = $("#grabEngine");
@@ -584,7 +584,7 @@ function refreshInterlockersList() {
 		crossDomain: true,
 		dataType: 'text',
 		success: function (responseText) {
-			responseJson = JSON.parse(responseText);
+			const responseJson = JSON.parse(responseText);
 			var interlockerList = responseJson['interlockers'];
 
 			var selectAvailableInterlockers = $("#availableInterlockers");
