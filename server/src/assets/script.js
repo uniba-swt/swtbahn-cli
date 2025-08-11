@@ -246,7 +246,7 @@ function releaseTrain () {
 	});
 }
 
-function setTrainSpeedDCC () {
+function setTrainSpeedDCC (speed) {
 	$('#driveTrainResponse').text('Waiting');
 	$.ajax({
 		type: 'POST',
@@ -482,7 +482,7 @@ function uploadEngine (file) {
 			showInfoInElem("#uploadResponse", 'Engine ' + file.name + ' ready for use');
 		},
 		error: function (jqXHR) {
-			console.log("Upload Failed");
+			console.log("Engine Upload Failed");
 			try {
 				var resJson = JSON.parse(jqXHR.responseText, null, 2);
 				var msg = "Server Message: " + resJson["msg"];
@@ -706,16 +706,16 @@ $(document).ready(
 		});
 
 		$('#speedMinus').click(function () {
-			speed = $('#dccSpeed').val();
-			position = speeds.indexOf(speed);
+			var speed = $('#dccSpeed').val();
+			var position = speeds.indexOf(speed);
 			if (position > 0) {
 				$('#dccSpeed:text').val(speeds[position - 1]);
 			}
 		});
 
 		$('#speedPlus').click(function () {
-			speed = $('#dccSpeed').val();
-			position = speeds.indexOf(speed);
+			var speed = $('#dccSpeed').val();
+			var position = speeds.indexOf(speed);
 			if (position < speeds.length - 1) {
 				$('#dccSpeed:text').val(speeds[position + 1]);
 			}
@@ -723,43 +723,47 @@ $(document).ready(
 
 		$('#swapDirection').click(function () {
 			trainIsForwards = !trainIsForwards;
-			enteredSpeed = $('#dccSpeed').val();
+			var enteredSpeed = $('#dccSpeed').val();
 			if (lastSetSpeed == 0) {
 				// This is done to trigger the train head/rear-lights to switch
+				// even if train is currently set to speed 0.
 				$('#dccSpeed').val(1);
 				$('#driveTrainButton').click();
 				$('#dccSpeed').val(0);
 				setTimeout(function () {
 					$('#driveTrainButton').click();
+					// after swapping direction, reinstate speed displayed in `#dccSpeed` before swapping.
 					$('#dccSpeed').val(enteredSpeed);
 				}, 100 /* milliseconds */);
 			} else {
 				$('#dccSpeed').val(Math.abs(lastSetSpeed));
 				$('#driveTrainButton').click();
+				// after swapping direction, reinstate speed displayed in `#dccSpeed` before swapping.
 				$('#dccSpeed').val(enteredSpeed);
 			}
 		});
 
 		$('#driveTrainButton').click(function () {
-			speed = $('#dccSpeed').val();
+			var speed = $('#dccSpeed').val();
 			speed = trainIsForwards ? speed : -speed;
 			if (sessionId != 0 && grabId != -1) {
-				setTrainSpeedDCC();
+				setTrainSpeedDCC(speed);
 			} else {
 				showErrorInElem("#driveTrainResponse", "No train grabbed!");
 			}
 		});
 
 		$('#stopTrainButton').click(function () {
-			enteredSpeed = $('#dccSpeed').val();
+			var enteredSpeed = $('#dccSpeed').val();
 			$('#dccSpeed').val(0);
 			$('#driveTrainButton').click();
+			// after stopping, reinstate speed displayed in `#dccSpeed` before stopping.
 			$('#dccSpeed').val(enteredSpeed);
 		});
 
 		$('#requestRouteButton').click(function () {
-			source = $('#signalIdFrom').val();
-			destination = $('#signalIdTo').val();
+			let source = $('#signalIdFrom').val();
+			let destination = $('#signalIdTo').val();
 			if (sessionId != 0 && grabId != -1) {
 				getInterlockerThenRequestRoute(source, destination);
 			} else {
@@ -792,7 +796,7 @@ $(document).ready(
 			// Create zip file that contains the logs
 			// then trigger download of that file.
 			try {
-				logList = "";
+				let logList = "";
 				verificationObj["verifiedproperties"].forEach(element => {
 					logList += atob(element["verificationlog"]) + "\n\n";
 				});

@@ -33,7 +33,7 @@ function tryLoadDestinationsAndFlagMap() {
 		.then(data => {
 			if (data !== undefined && data["platform-name"]) {
 				console.log("Platform name received from server:", data["platform-name"]);
-				platform = data["platform-name"].toLowerCase();
+				let platform = data["platform-name"].toLowerCase();
 				allPossibleDestinations = eval("allPossibleDestinations_" + platform);
 				signalFlagMap = eval("signalFlagMap_" + platform);
 			}
@@ -468,7 +468,6 @@ class Driver {
 
 		const trainAvailabilityTimeout = 1000;
 		this.trainAvailabilityInterval = setInterval(() => {
-			console.log("Checking available trains ... ");
 
 			// Enable a train if it is on the tracks and has not been grabbed
 			$('.selectTrainButton').each((index, obj) => {
@@ -856,8 +855,7 @@ class Driver {
 
 		const destinationSignal = route['destSignalID'];
 		const pRouteDetails = route[destinationSignal];
-		console.log("driveToPromise - pRouteDetails:");
-		console.log(pRouteDetails);
+		console.log("driveToPromise: driving a route to signal: ", destinationSignal);
 
 		// Note: this.routeDetails is set to pRouteDetails in this.requestRouteIdPromise success handler!
 		this.requestRouteIdPromise(pRouteDetails)                      // 1. Ensure that the chosen destination is still available
