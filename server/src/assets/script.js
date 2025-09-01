@@ -7,6 +7,8 @@ var verificationObj = {};
 var trainIsForwards = true;
 var lastSetSpeed = 0;			// Only needed when swapping train direction
 
+var customCode_500ServerUnableReplyMsg = {500: "Server unable to build reply message"};
+
 const speeds = [
 	"0",
 	"10",
@@ -42,6 +44,7 @@ function getErrorMessage(jqXHR, customCodes = {}) {
 	try {
 		if (jqXHR.responseText.length > 0) {
 			const respJson = JSON.parse(jqXHR.responseText);
+			// If response has a "msg" field, that's the error msg (by convention in swtbahn-cli)
 			if (respJson.msg) {
 				return respJson.msg;
 			}
@@ -49,8 +52,6 @@ function getErrorMessage(jqXHR, customCodes = {}) {
 	} catch (parseError) {
 		console.log("Unable to parse jqXHR to JSON.");
 	}
-	// Apparently sometimes we have .responseText, sometimes we don't. I don't know why.
-	// 
 
 	// Check if customCodes contains the status code
 	if (customCodes.hasOwnProperty(jqXHR.status)) {
@@ -117,7 +118,6 @@ function updateTrainGrabbedState() {
 }
 
 function updateGrantedRoutes(htmlElement) {
-	// Called from client.html - TODO: Test if the return is needed.
 	return $.ajax({
 		type: 'GET',
 		url: '/monitor/granted-routes',
@@ -527,8 +527,8 @@ function refreshEnginesList() {
 			showInfoInElem("#refreshRemoveEngineResponse", "Refreshed list of train engines");
 		},
 		error: function (jqXHR) {
-			///TODO: Add a custom code for 500 - Server unable to build reply msg
-			showErrorInElem("#refreshRemoveEngineResponse", getErrorMessage(jqXHR, {}));
+			showErrorInElem("#refreshRemoveEngineResponse", 
+			                getErrorMessage(jqXHR, customCode_500ServerUnableReplyMsg));
 		}
 	});
 }
@@ -597,7 +597,8 @@ function refreshInterlockersList() {
 		},
 		error: function (jqXHR) {
 			showErrorInElem("#refreshRemoveInterlockerResponse", 
-			                'Unable to refresh list of interlockers: ' + getErrorMessage(jqXHR));
+			                'Unable to refresh list of interlockers: ' 
+			                + getErrorMessage(jqXHR, customCode_500ServerUnableReplyMsg));
 		}
 	});
 }
