@@ -64,7 +64,7 @@ port specifies on which port the server listens)
 used when you started the server. The <default-track-output> is the name of the
 track output which should be used if no track output is explicitly specified
 when issuing a command.  
-  For example: `./swtbahn.py config 141.13.106.27 2048 master`  
+  For example: `./swtbahn config 141.13.106.27 2048 master`  
 This will create a config file in the current working directory. Dont use the
 client from a different working directory for the current session, otherwise it
 won't find the configuration file. If you really want to use two logically
@@ -75,11 +75,11 @@ different working directories which will lead to distinct configs.
 not started by `admin startup`, all the other commands won't work.  
 
     For example:  
-    `./swtbahn.py admin startup`  
-    `./swtbahn.py monitor get_segments`  
-    `./swtbahn.py monitor get_trains`  
-    `./swtbahn.py driver grab cargo`  
-    `./swtbahn.py driver set_dcc_speed -b 5`  
+    `./swtbahn admin startup`  
+    `./swtbahn monitor get_segments`  
+    `./swtbahn monitor get_trains`  
+    `./swtbahn driver grab cargo`  
+    `./swtbahn driver set_dcc_speed -b 5`  
 4. If you're done, you should shut the system down gracefully by invoking
 `swtbahn admin shutdown`
 
