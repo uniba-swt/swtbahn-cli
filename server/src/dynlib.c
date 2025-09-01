@@ -162,7 +162,7 @@ dynlib_status dynlib_load(dynlib_data *library, const char filepath[], dynlib_ty
 	}
 	
 	if (status == DYNLIB_LOAD_SUCCESS) {
-		syslog_server(LOG_NOTICE, "Loaded dynamic library %s\n", library->filepath);
+		syslog_server(LOG_NOTICE, "Loaded dynamic library %s", library->filepath);
 	}
 	
 	return status;
