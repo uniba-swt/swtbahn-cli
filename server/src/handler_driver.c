@@ -670,8 +670,8 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	struct timespec tva, tvb;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
 	syslog_server(LOG_INFO, 
-	              "Drive route - route: %s train: %s - end of route (%s) reached detected at %d.%.9ld", 
-	              route->id, train_id, dest_segment, tva.tv_sec, tva.tv_nsec);
+	              "Drive route - route: %s train: %s - end of route (%s) reached detected at %ld.%06ld", 
+	              route->id, train_id, dest_segment, tva.tv_sec, tva.tv_nsec/1000);
 	
 	// Driving stops
 	if (train_get_grab_id(train_id) == grab_id) {
@@ -680,16 +680,16 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
 		syslog_server(LOG_NOTICE, 
-		              "Drive route - route: %s train: %s - driving stops (commanded at %d.%.9ld)", 
-		              route_id, train_id);
+		              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld)", 
+		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
 	} else {
 		bidib_set_train_speed(train_id, 0, "master");
 		clock_gettime(CLOCK_MONOTONIC, &tvb);
 		bidib_flush();
 		syslog_server(LOG_WARNING, 
-		              "Drive route - route: %s train: %s - driving stops (commanded at %d.%.9ld) "
+		              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld) "
 		              "directly via bidib, train was released during route driving!", 
-		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec);
+		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
 	}
 	
 	// Release the route
