@@ -130,21 +130,6 @@ bool train_grabbed(const char *train) {
 	return grabbed;
 }
 
-struct timespec get_delta_timespec_(const struct timespec *time_a, const struct timespec *time_b) {
-	if (time_a != NULL && time_b != NULL) {
-		long delta_nanos = time_b->tv_nsec - time_a->tv_nsec;
-		long delta_seconds = time_b->tv_sec - time_a->tv_sec;
-		if (time_b->tv_nsec < time_a->tv_nsec) {
-			delta_nanos += 1000000000;
-			delta_seconds--;
-		}
-		struct timespec diff = {.tv_sec = delta_seconds, .tv_nsec = delta_nanos};
-		return diff;
-	}
-	struct timespec empty_diff = {.tv_sec = 0, .tv_nsec = 0};
-	return empty_diff;
-}
-
 static bool train_position_is_at(const char *train_id, const char *segment) {
 	if (train_id == NULL || segment == NULL) {
 		syslog_server(LOG_ERR, "Train position is at - invalid (NULL) parameters");
@@ -1093,7 +1078,6 @@ o_con_status handler_request_route_by_id(void *_, onion_request *req, onion_resp
 }
 
 o_con_status handler_driving_direction(void *_, onion_request *req, onion_response *res) {
-	///TODO: Full documentation
 	// Notes regarding documentation:
 	// The driving direction is determined based on the route specified *and* the trains position 
 	// and the trains orientation. The position of the train is relevant as a Kehrschleife/
