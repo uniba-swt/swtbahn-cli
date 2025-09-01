@@ -163,7 +163,7 @@ o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *
 		
 		syslog_server(LOG_NOTICE, "Request: Upload engine - engine file: %s - start", filename);
 		
- 		if (engine_file_exists(filename)) {
+		if (engine_file_exists(filename)) {
 			send_common_feedback(res, CUSTOM_HTTP_CODE_CONFLICT, "engine file already exists");
 			syslog_server(LOG_ERR, 
 			              "Request: Upload engine - engine file: %s - "

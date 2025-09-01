@@ -615,7 +615,7 @@ function removeInterlocker (interlockerName) {
 			console.log("Removed interlocker success, now refreshing interlocker list");
 			refreshInterlockersList();
 			showInfoInElem("#refreshRemoveInterlockerResponse", 
-							'Interlocker ' + interlockerName + ' removed');
+			               'Interlocker ' + interlockerName + ' removed');
 		},
 		error: function (jqXHR) {
 			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
