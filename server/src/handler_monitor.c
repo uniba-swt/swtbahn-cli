@@ -1090,7 +1090,6 @@ static GString *get_peripherals_json() {
 		append_start_of_obj(g_peripherals, true);
 		append_field_str_value(g_peripherals, "id", per_query.ids[i], true);
 		append_field_str_value(g_peripherals, "state-id", per_state_query.data.state_id, true);
-		///TODO: Check if this works correctly; data.state_value is uint8, not unsigned int.
 		append_field_uint_value(g_peripherals, "state-value", per_state_query.data.state_value, false);
 		append_end_of_obj(g_peripherals, false);
 		bidib_free_peripheral_state_query(per_state_query);
