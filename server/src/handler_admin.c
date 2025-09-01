@@ -48,6 +48,15 @@ static pthread_mutex_t start_stop_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t poll_bidib_messages_thread;
 typedef onion_connection_status o_con_status;
 
+typedef enum {
+	STARTUP_SUCCESS,
+	ERR_BIDIB_START_FAIL,
+	ERR_DIRECTORIES_CLEARING_FAIL,
+	ERR_CONFIG_LOAD_FAIL,
+	ERR_DYN_CONTAINERS_START_FAIL,
+	ERR_LOAD_DEFAULT_INTERLOCKER_FAIL
+} e_startup_result_code;
+
 /**
  * @brief Constructs a hex-string from a bidib message into `dest`.
  * 
@@ -102,44 +111,41 @@ static void *poll_bidib_messages(void *_) {
  * 
  * @return true if startup succeeded, otherwise returns false
  */
-static bool startup_server(void) {
-	///TODO: Change this to return enum/code for what went wrong to give better feedback
-	///      to a client calling startup.
-	
+static e_startup_result_code startup_server(void) {
 	const int err_serial = bidib_start_serial(serial_device, config_directory, 0);
 	if (err_serial) {
 		syslog_server(LOG_ERR, "Startup server - Could not start BiDiB serial connection");
-		return false;
+		return ERR_BIDIB_START_FAIL;
 	}
 	
 	const int succ_clear_dir = clear_engine_dir() + clear_interlocker_dir();
 	if (!succ_clear_dir) {
 		syslog_server(LOG_ERR, 
 		              "Startup server - Could not clear the engine and interlocker directories");
-		return false;
+		return ERR_DIRECTORIES_CLEARING_FAIL;
 	}
 
 	const int succ_config = bahn_data_util_initialise_config(config_directory);
 	if (!succ_config) {
 		syslog_server(LOG_ERR, "Startup server - Could not initialise interlocking tables");
-		return false;
+		return ERR_CONFIG_LOAD_FAIL;
 	}
 
 	const int err_dyn_containers = dyn_containers_start();
 	if (err_dyn_containers) {
 		syslog_server(LOG_ERR, "Startup server - Could not start shared library containers");
-		return false;
+		return ERR_DYN_CONTAINERS_START_FAIL;
 	}
 	
 	const bool err_interlocker = load_default_interlocker_instance();
 	if (err_interlocker) {
 		syslog_server(LOG_ERR, "Startup server - Could not load default interlocker instance");
-		return false;
+		return ERR_LOAD_DEFAULT_INTERLOCKER_FAIL;
 	}
 	
 	running = true;
 	pthread_create(&poll_bidib_messages_thread, NULL, poll_bidib_messages, NULL);
-	return true;
+	return STARTUP_SUCCESS;
 }
 
 /**
@@ -177,15 +183,41 @@ o_con_status handler_startup(void *_, onion_request *req, onion_response *res) {
 		session_id = time(NULL);
 		syslog_server(LOG_NOTICE, "Request: Startup server - session-id: %ld - start", session_id);
 		
-		if (startup_server()) {
-			pthread_mutex_unlock(&start_stop_mutex);
-			onion_response_set_code(res, HTTP_OK);
-			syslog_server(LOG_NOTICE, 
-			              "Request: Startup server - session-id: %ld - finish", 
-			              session_id);
-		} else {
-			pthread_mutex_unlock(&start_stop_mutex);
-			send_common_feedback(res, HTTP_INTERNAL_ERROR, "unable to start the server");
+		e_startup_result_code startup_code = startup_server();
+		pthread_mutex_unlock(&start_stop_mutex);
+		char *reason_str;
+		switch (startup_code) {
+			case STARTUP_SUCCESS:
+				reason_str = "";
+				onion_response_set_code(res, HTTP_OK);
+				syslog_server(LOG_NOTICE, 
+				              "Request: Startup server - session-id: %ld - finish", 
+				              session_id);
+				break;
+			case ERR_BIDIB_START_FAIL:
+				reason_str = "unable to start the server, failed to start (lib)bidib";
+				break;
+			case ERR_DIRECTORIES_CLEARING_FAIL:
+				reason_str = "unable to start the server, "
+				             "failed to clear engine/interlocker directories";
+				break;
+			case ERR_CONFIG_LOAD_FAIL:
+				reason_str = "unable to start the server, failed to load config "
+				             "and/or failed to initialize the interlocking table";
+				break;
+			case ERR_DYN_CONTAINERS_START_FAIL:
+				reason_str = "unable to start the server, failed to start dynamic containers";
+				break;
+			case ERR_LOAD_DEFAULT_INTERLOCKER_FAIL:
+				reason_str = "unable to start the server, "
+				             "failed to load default interlocker instance";
+				break;
+			default:
+				reason_str = "unable to start the server";
+				break;
+		}
+		if (startup_code != STARTUP_SUCCESS) {
+			send_common_feedback(res, HTTP_INTERNAL_ERROR, reason_str);
 			syslog_server(LOG_ERR, 
 			              "Request: Startup server - session-id: %ld - "
 			              "unable to start the server - abort", 
