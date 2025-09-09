@@ -682,6 +682,10 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 		syslog_server(LOG_NOTICE, 
 		              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld)", 
 		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
+		// Give train engine container some time to actuate before moving on to releasing
+		// -> cleaner log, i.e., for log analysis tools it doesn't look like we are releasing
+		//                 the route while the train is still driving if we wait a little here.
+		usleep(TRAIN_DRIVE_TIME_STEP*5);
 	} else {
 		bidib_set_train_speed(train_id, 0, "master");
 		clock_gettime(CLOCK_MONOTONIC, &tvb);
