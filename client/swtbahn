@@ -177,7 +177,7 @@ def startup():
             elif (response.status_code == 500):
                 log_common_feedback_err_msg(response.text, internal_err=True)
             else:
-                log_not_running_or_unknown_err(response.status_code)
+                click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 
