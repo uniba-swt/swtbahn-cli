@@ -80,7 +80,7 @@ static int set_interlocker(const char *interlocker_name) {
 	}
 	
 	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
-		// Look for not already used interlocker instance slot (indicated by is_valid).
+		// Look for not already used interlocker instance slot (indicated by is_valid being false).
 		if (!interlocker_instances[i].is_valid) {
 			if (dyn_containers_set_interlocker_instance(&interlocker_instances[i], interlocker_name)) {
 				syslog_server(LOG_ERR, 

@@ -298,13 +298,7 @@ o_con_status handler_set_verification_option(void *_, onion_request *req, onion_
 			              "Request: Set verification option - invalid verification-option (%s)",
 			              data_verification_option);
 		} else {
-			if (strcmp("true", data_verification_option) == 0 
-				|| strcmp("True", data_verification_option) == 0 
-				|| strcmp("TRUE", data_verification_option) == 0) {
-				verification_enabled = true;
-			} else {
-				verification_enabled = false;
-			}
+			verification_enabled = strcasecmp("true", data_verification_option) == 0;
 			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Set verification option - new state: %s - done", 

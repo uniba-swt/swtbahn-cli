@@ -68,6 +68,7 @@ bool send_some_gstring_and_free(onion_response *res, int status_code, GString *g
 	if (res == NULL) {
 		if (gstr != NULL) {
 			g_string_free(gstr, true);
+			gstr = NULL;
 		}
 		return false;
 	}

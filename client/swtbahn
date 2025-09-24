@@ -108,10 +108,8 @@ def parse_config():
 
 def log_common_feedback_err_msg(response_text:str, internal_err=False):
     response_json: dict = json.loads(response_text)
-    if (internal_err):
-        click.echo("Internal error, server msg: " + response_json.get("msg", ""), err=True)
-    else:
-        click.echo("Error, server msg: " + response_json.get("msg", ""), err=True)
+    click.echo(("Internal error" if internal_err else "Error") + ", server msg: " 
+                + response_json.get("msg", ""), err=True)
 
 def log_not_running_or_unknown_err(status_code:int):
     if (status_code == 503):
@@ -179,7 +177,7 @@ def startup():
             elif (response.status_code == 500):
                 log_common_feedback_err_msg(response.text, internal_err=True)
             else:
-                click.echo(f"Unknown error, reply status code: {response.status_code}", err=True)
+                log_not_running_or_unknown_err(response.status_code)
         except requests.exceptions.RequestException as e:
             click.echo(e, err=True)
 

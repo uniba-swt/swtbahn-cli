@@ -1255,7 +1255,7 @@ static GString* get_route_json(const char *route_id) {
 	g_string_assign(g_route, "");
 	
 	append_start_of_obj(g_route, false);
-	append_field_bare_value_from_str(g_route, "id", route->id, true);
+	append_field_literal_value_from_str(g_route, "id", route->id, true);
 	append_field_str_value(g_route, "source_signal", route->source, true);
 	append_field_str_value(g_route, "destination_signal", route->destination, true);
 	append_field_str_value(g_route, "orientation", route->orientation, true);
@@ -1279,11 +1279,11 @@ static GString* get_route_json(const char *route_id) {
 	// integer representation would be more memory/bandwidth efficient though,
 	// as the list of conflicts is often very long for larger platforms.
 	append_field_strlist_value_from_garray_strs(g_route, "conflicting_route_ids", 
-	                                             route->conflicts, true);
+	                                            route->conflicts, true);
 	
 	GArray *g_conflicts = get_granted_route_conflicts(route_id, false);
-	append_field_barelist_value_from_garray_strs(g_route, "granted_conflicting_route_ids", 
-	                                             g_conflicts, true);
+	append_field_literallist_value_from_garray_strs(g_route, "granted_conflicting_route_ids", 
+	                                                g_conflicts, true);
 	if (g_conflicts == NULL) {
 		syslog_server(LOG_WARNING, 
 		              "Get route json - route: %s - g_conflicts null, conflicts will be empty", 

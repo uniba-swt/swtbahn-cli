@@ -61,8 +61,9 @@ GString* append_field_str_value_from_int(GString *dest, const char *field, int v
 
 /**
  * @brief Adds a json field with an identifier and a value.
- * Example. Input: field=`myval`, value_str=`barevaluehello`.
- * Resulting addition to `dest`: `\n"myval": barevaluehello`.
+ * Example. Input: field=`myval`, value_str=`somevaluehello`.
+ * Resulting addition to `dest`: `\n"myval": somevaluehello`.
+ * Note that the value is NOT surrounded by `"`s.
  * 
  * @param dest String to be added to
  * @param field name of the json field to add
@@ -70,8 +71,8 @@ GString* append_field_str_value_from_int(GString *dest, const char *field, int v
  * @param add_trailing_comma if true, adds comma after the field and value
  * @return GString* modified "dest" string
  */
-GString* append_field_bare_value_from_str(GString *dest, const char *field, const char *value_str, 
-                                          bool add_trailing_comma);
+GString* append_field_literal_value_from_str(GString *dest, const char *field, const char *value_str, 
+                                             bool add_trailing_comma);
 
 /**
  * @brief Adds a json field with a list of strings as the value of the field.
@@ -113,13 +114,13 @@ GString* append_field_strlist_value_from_garray_strs(GString *dest, const char *
  * 
  * @param dest String to be added to
  * @param field name of the json field to add
- * @param g_strarray list of strings to add as the field value (as bare values)
+ * @param g_strarray list of strings to add as the field value (as literal values)
  * @param add_trailing_comma if true, adds comma after the field and value
  * @return GString* modified "dest" string
  */
-GString* append_field_barelist_value_from_garray_strs(GString *dest, const char *field, 
-                                                      const GArray* g_strarray, 
-                                                      bool add_trailing_comma);
+GString* append_field_literallist_value_from_garray_strs(GString *dest, const char *field, 
+                                                         const GArray* g_strarray, 
+                                                         bool add_trailing_comma);
 
 /**
  * @brief Adds a json field with an empty list as the value of the field.

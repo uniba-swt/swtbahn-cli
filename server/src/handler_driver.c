@@ -740,8 +740,6 @@ static int grab_train(const char *train, const char *engine) {
 	increment_next_grab_id(); // increment for next "grab" action
 	grabbed_trains[grab_id].name = g_string_new(train);
 	
-	/// TODO: Discuss: is there a more elegant way to determine the track output 
-	///       than to hardcode `master`?
 	strcpy(grabbed_trains[grab_id].track_output, "master");
 	
 	if (dyn_containers_set_train_engine_instance(&grabbed_trains[grab_id], train, engine)) {

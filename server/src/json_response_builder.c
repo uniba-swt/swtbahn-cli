@@ -48,9 +48,9 @@ GString* append_field_str_value_from_int(GString *dest, const char *field,
 	return dest;
 }
 
-GString* append_field_bare_value_from_str(GString *dest, const char *field, 
-                                          const char *value_str, bool add_trailing_comma) {
-	if (dest == NULL || field == NULL) {
+GString* append_field_literal_value_from_str(GString *dest, const char *field, 
+                                             const char *value_str, bool add_trailing_comma) {
+	if (dest == NULL || field == NULL || value_str == NULL) {
 		return NULL;
 	}
 	g_string_append_printf(dest, "\n\"%s\": %s%s", 
@@ -79,9 +79,9 @@ GString* append_field_strlist_value(GString *dest, const char *field,
 }
 
 static GString* append_field_value_garray_strs_base(GString *dest, const char *field, 
-                                             const GArray* g_strarray, 
-                                             bool add_value_quote_marks, 
-                                             bool add_trailing_comma) {
+                                                    const GArray* g_strarray, 
+                                                    bool add_value_quote_marks, 
+                                                    bool add_trailing_comma) {
 	if (dest == NULL || field == NULL) {
 		return NULL;
 	}
@@ -108,9 +108,9 @@ GString* append_field_strlist_value_from_garray_strs(GString *dest, const char *
 	return append_field_value_garray_strs_base(dest, field, g_strarray, true, add_trailing_comma);
 }
 
-GString* append_field_barelist_value_from_garray_strs(GString *dest, const char *field, 
-                                                      const GArray* g_strarray, 
-                                                      bool add_trailing_comma) {
+GString* append_field_literallist_value_from_garray_strs(GString *dest, const char *field, 
+                                                         const GArray* g_strarray, 
+                                                         bool add_trailing_comma) {
 	return append_field_value_garray_strs_base(dest, field, g_strarray, false, add_trailing_comma);
 }
 

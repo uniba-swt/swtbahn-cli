@@ -230,12 +230,16 @@ As an example, when a request is made to set point10 to the normal state, the re
 > _Intervening log messages from internal processing_   
 > LOG_NOTICE: `Request: Set point - point: point10 state: normal - finish`   
 
-If the above request was instead made with an unsupported state, e.g., `foobar`, then the request handler would generate the following log messages to say that the processing was stopped because of invalid parameters: 
+If the above request was instead made with an unsupported state, e.g., `foobar`, then the request handler would generate the following log messages to say that the processing was stopped because of invalid parameter values: 
 
 > LOG_NOTICE: `Request: Set point - point: point10 state: foobar - start`   
 > _Intervening log messages from internal processing_   
-> LOG_ERR: `Request: Set point - point: point10 state: foobar - invalid parameters - abort`   
+> LOG_ERR: `Request: Set point - point: point10 state: foobar - invalid parameter values - abort`   
 
-If the above request forgot to specify the state, i.e., the state parameter is `null`, then the request handler would only generate the following log message to say that the parameter validation failed:
+If the above request forgot to specify the state, i.e., the state parameter is `null`, then the request handler would only generate the following log message to say that the parameter is missing:
 
->  LOG_ERR: `Request: Set point - invalid parameters`
+> LOG_ERR: `Request: Set point - missing parameter state`
+
+And if sending this info to the client failed, the following would be logged:
+
+> LOG_ERR: `Request: Set point - missing parameter state - but sending msg to client failed`
