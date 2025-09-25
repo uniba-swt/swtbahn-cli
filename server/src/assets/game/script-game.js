@@ -85,7 +85,7 @@ function setDestinationButtonUnavailable(routeIndex, route, destinationSignal) {
 // e.g., when disabling the destination buttons or ending the game.
 function updatePossibleDestinations(blockId) {
 	// Show the form that contains all the destination buttons
-	$('#destinationsForm').show();
+	$('#destinationsFormContainer').show();
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
@@ -860,7 +860,7 @@ class Driver {
 		// Note: this.routeDetails is set to pRouteDetails in this.requestRouteIdPromise success handler!
 		this.requestRouteIdPromise(pRouteDetails)                      // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
-			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
+			.then(() => $('#destinationsFormContainer').hide())        // 3. Prevent the driver from choosing another destination
 			.then(() => disableAllDestinationButtons())
 			.then(() => Mutex.unlock(lock))
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
@@ -923,7 +923,7 @@ function startGameLogic() {
 // Update the user interface for driving when the user decides to release their train
 function endGameLogic() {
 	$('#endGameButton').hide();
-	$('#destinationsForm').hide();
+	$('#destinationsFormContainer').hide();
 	driver.clearUpdatePossibleDestinationsInterval();
 	driver.clearDestinationReachedInterval();
 	driver.resetTrainSession();
@@ -994,7 +994,7 @@ function initialise() {
 
 	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
-	$('#destinationsForm').hide();
+	$('#destinationsFormContainer').hide();
 	clearChosenDestination();
 	driver.disableDestinationReached();
 
