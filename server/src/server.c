@@ -101,17 +101,17 @@ static onion_connection_status handler_assets(void *_, onion_request *req, onion
 	GString *full_filename = g_string_new(global_path);
 	onion_low_free(global_path);
 	g_string_append(full_filename, filename);
-
+	
 	onion_connection_status status = 
-	    onion_shortcut_response_file(full_filename->str, req, res);
-	g_string_free(full_filename, TRUE);
+			onion_shortcut_response_file(full_filename->str, req, res);
+	g_string_free(full_filename, true);
 	return status;
 }
 
 static int eval_args(int argc, char **argv) {
 	if (argc == 5) {
 		if (strnlen(argv[1], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1 ||
-		    strnlen(argv[2], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1) {
+				strnlen(argv[2], INPUT_MAX_LEN + 1) == INPUT_MAX_LEN + 1) {
 			printf("Serial device and config directory must not exceed %d characters\n",
 			       INPUT_MAX_LEN);
 			return 1;
@@ -128,7 +128,7 @@ static int eval_args(int argc, char **argv) {
 		}
 	} else {
 		printf("Four arguments expected: <serial device> <config directory> "
-			   "<IP address> <port>\n");
+		       "<IP address> <port>\n");
 		return 1;
 	}
 }
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
 	if (eval_args(argc, argv)) {
 		return 1;
 	}
-
+	
 	openlog("swtbahn", 0, LOG_LOCAL0);
 	syslog_server(LOG_NOTICE, "SWTbahn server started");
 	///TODO: Consider making configurable a max_thread count to limit 
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 	
 	// --- home page ---
 	onion_url_add_with_data(urls, "", onion_shortcut_internal_redirect, "assets/index.html", NULL);
-
+	
 	// --- admin functions ---
 	onion_url_add(urls, "admin/startup", handler_startup);
 	onion_url_add(urls, "admin/shutdown", handler_shutdown);
@@ -173,32 +173,36 @@ int main(int argc, char **argv) {
 	
 	// --- train driver functions ---
 	onion_url_add(urls, "driver/grab-train", handler_grab_train);
-	onion_url_add(urls, "driver/release-train", handler_release_train);	
+	onion_url_add(urls, "driver/release-train", handler_release_train);
 	onion_url_add(urls, "driver/request-route", handler_request_route);
-	onion_url_add(urls, "driver/request-route-id", handler_request_route_id);
+	/// NOTE: Changed path from request-route-id to request-route-by-id
+	onion_url_add(urls, "driver/request-route-by-id", handler_request_route_by_id);
 	onion_url_add(urls, "driver/direction", handler_driving_direction);
 	onion_url_add(urls, "driver/drive-route", handler_drive_route);
 	onion_url_add(urls, "driver/set-dcc-train-speed", handler_set_dcc_train_speed);
 	onion_url_add(urls, "driver/set-calibrated-train-speed", handler_set_calibrated_train_speed);
 	onion_url_add(urls, "driver/set-train-emergency-stop", handler_set_train_emergency_stop);
 	onion_url_add(urls, "driver/set-train-peripheral", handler_set_train_peripheral);
-
+	
 	// --- upload functions ---
 	onion_url_add(urls, "upload/engine", handler_upload_engine);
-	onion_url_add(urls, "upload/refresh-engines", handler_get_engines);
 	onion_url_add(urls, "upload/remove-engine", handler_remove_engine);
 	onion_url_add(urls, "upload/interlocker", handler_upload_interlocker);
-	onion_url_add(urls, "upload/refresh-interlockers", handler_get_interlockers);
 	onion_url_add(urls, "upload/remove-interlocker", handler_remove_interlocker);
-
+	
 	// --- monitor functions ---
 	onion_url_add(urls, "monitor/platform-name", handler_get_platform_name);
 	onion_url_add(urls, "monitor/trains", handler_get_trains);
 	onion_url_add(urls, "monitor/train-state", handler_get_train_state);
+	onion_url_add(urls, "monitor/train-states", handler_get_train_states);
 	onion_url_add(urls, "monitor/train-peripherals", handler_get_train_peripherals);
+	onion_url_add(urls, "monitor/engines", handler_get_engines);
+	onion_url_add(urls, "monitor/interlockers", handler_get_interlockers);
 	onion_url_add(urls, "monitor/track-outputs", handler_get_track_outputs);
 	onion_url_add(urls, "monitor/points", handler_get_points);
 	onion_url_add(urls, "monitor/signals", handler_get_signals);
+	onion_url_add(urls, "monitor/point-details", handler_get_point_details);
+	onion_url_add(urls, "monitor/signal-details", handler_get_signal_details);
 	onion_url_add(urls, "monitor/point-aspects", handler_get_point_aspects);
 	onion_url_add(urls, "monitor/signal-aspects", handler_get_signal_aspects);
 	onion_url_add(urls, "monitor/segments", handler_get_segments);
@@ -209,10 +213,11 @@ int main(int argc, char **argv) {
 	onion_url_add(urls, "monitor/granted-routes", handler_get_granted_routes);
 	onion_url_add(urls, "monitor/route", handler_get_route);
 	onion_url_add(urls, "monitor/debug", handler_get_debug_info);
-	onion_url_add(urls, "monitor/debug_extra", handler_get_debug_info_extra);
+	/// NOTE: Changed path from debug_extra to debug-extra
+	onion_url_add(urls, "monitor/debug-extra", handler_get_debug_info_extra);
 	
 	load_cached_verifier_url();
-
+	
 	onion_listen(o);
 	onion_free(o);
 	if (running) {
@@ -221,9 +226,9 @@ int main(int argc, char **argv) {
 	cache_verifier_url();
 	free_verifier_url();
 	
-	syslog_server(LOG_NOTICE, "%s", "SWTbahn server stopped");
+	syslog_server(LOG_NOTICE, "SWTbahn server stopped");
 	closelog();
-
+	
 	return 0;
 }
 

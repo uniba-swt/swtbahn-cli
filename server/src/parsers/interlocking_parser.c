@@ -52,7 +52,7 @@ bool init_parser(const char *config_dir, const char *table_file,
     *fh = fopen(full_path, "r");
 
     if (*fh == NULL) {
-        syslog_server(LOG_ERR, "%Interlocking parser: Failed to open %s", full_path);
+        syslog_server(LOG_ERR, "Interlocking parser: Failed to open %s", full_path);
         return false;
     }
 
@@ -117,7 +117,10 @@ e_sequence_level decrease_sequence_level(e_sequence_level level) {
 }
 
 void free_route_key(void *pointer) {
-    free(pointer);
+    if (pointer != NULL) {
+        free(pointer);
+        pointer = NULL;
+    }
 }
 
 void free_route(void *item) {
@@ -126,33 +129,27 @@ void free_route(void *item) {
         return;
     }
     if (route->id != NULL) {
-        log_debug("free route: %s", route->id);
         free(route->id);
         route->id = NULL;
     }
     if (route->source != NULL) {
-        log_debug("\tfree route source");
         free(route->source);
         route->source = NULL;
     }
     if (route->destination != NULL) {
-        log_debug("\tfree route destination");
         free(route->destination);
         route->destination = NULL;
     }
     if (route->orientation != NULL) {
-        log_debug("\tfree route orientation");
         free(route->orientation);
         route->orientation = NULL;
     }
     if (route->train != NULL) {
-        log_debug("\tfree route train");
         free(route->train);
         route->train = NULL;
     }
 
     if (route->path != NULL) {
-        log_debug("\tfree route path");
         for (int i = 0; i < route->path->len; ++i) {
             free(g_array_index(route->path, char *, i));
         }
@@ -160,7 +157,6 @@ void free_route(void *item) {
     }
 
     if (route->sections != NULL) {
-        log_debug("\tfree route sections");
         for (int i = 0; i < route->sections->len; ++i) {
             free(g_array_index(route->sections, char *, i));
         }
@@ -168,13 +164,11 @@ void free_route(void *item) {
     }
 
     if (route->points != NULL) {
-        log_debug("\tfree route points");
-        //differently allocated than other g_arrays.
+        // differently allocated than other g_arrays.
         g_array_free(route->points, true);
     }
 
     if (route->signals != NULL) {
-        log_debug("\tfree route signals");
         for (int i = 0; i < route->signals->len; ++i) {
             free(g_array_index(route->signals, char *, i));
         }
@@ -182,7 +176,6 @@ void free_route(void *item) {
     }
 
     if (route->conflicts != NULL) {
-        log_debug("\tfree route conflicts");
         for (int i = 0; i < route->conflicts->len; ++i) {
             free(g_array_index(route->conflicts, char *, i));
         }
@@ -197,7 +190,6 @@ void free_interlocking_point(void *item) {
         return;
     }
     if (point->id != NULL) {
-        log_debug("free interlocking point: %s", point->id);
         free(point->id);
         point->id = NULL;
     }
@@ -218,7 +210,7 @@ GHashTable *parse(yaml_parser_t *parser) {
     char *last_scalar = NULL;
     do {
         if (!yaml_parser_parse(parser, &event)) {
-            syslog_server(LOG_ERR, "Parser error %d\n", (*parser).error);
+            syslog_server(LOG_ERR, "Parser error %d", (*parser).error);
             break;
         }
 
@@ -426,7 +418,7 @@ GHashTable *parse(yaml_parser_t *parser) {
 GHashTable *parse_interlocking_table(const char *config_dir) {
     if (config_dir == NULL) {
         syslog_server(LOG_ERR, "Interlocking parser: config directory is missing");
-        return false;
+        return NULL;
     }
 
     // init
@@ -434,7 +426,7 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
     yaml_parser_t parser;
     if (!init_parser(config_dir, INTERLOCKING_TABLE_FILENAME, &fh, &parser)) {
         syslog_server(LOG_ERR, "Interlocking parser: Interlocking table file is missing");
-        return false;
+        return NULL;
     }
 
     // parse
@@ -446,7 +438,7 @@ GHashTable *parse_interlocking_table(const char *config_dir) {
 
     // success
     if (routes != NULL) {
-        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %d routes", 
+        syslog_server(LOG_INFO, "Interlocking parser: Interlocking table loaded successfully: %u routes", 
                       g_hash_table_size(routes));
         return routes;
     }

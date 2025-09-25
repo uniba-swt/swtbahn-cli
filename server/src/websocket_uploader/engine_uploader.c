@@ -35,11 +35,12 @@ typedef struct {
 	bool started;
 	bool finished;
 	bool success;
+	bool message_is_json_str;
 	GString* file_path;
 	GString* message;
 } ws_verif_data;
 
-
+///TODO: Protect against concur access with a mutex
 char *verifier_url = NULL;
 
 static const char cache_file_verifier_url[] = "verifier_url_cache.txt";
@@ -197,6 +198,7 @@ void process_verification_result_msg(struct mg_ws_message *ws_msg, ws_verif_data
 			              "engine does not satisfy all its properties");
 			ws_data_ptr->message  = g_string_new("");
 			g_string_append_printf(ws_data_ptr->message,"%s", ws_msg->data.ptr);
+			ws_data_ptr->message_is_json_str = true;
 		}
 		ws_data_ptr->success = false;
 		ws_data_ptr->finished = true;
@@ -303,7 +305,7 @@ void websocket_verification_callback(struct mg_connection *ws_connection,
 
 verif_result verify_engine_model(const char* f_filepath) {
 	struct mg_mgr event_manager;
-	ws_verif_data ws_verif_data = {false, false, false, g_string_new(f_filepath), NULL};
+	ws_verif_data ws_verif_data = {false, false, false, false, g_string_new(f_filepath), NULL};
 	
 	if (verifier_url == NULL) {
 		syslog_server(LOG_ERR, 
@@ -311,6 +313,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 		              "no verifier URL has been set, abort");
 		verif_result result_data;
 		result_data.success = false;
+		result_data.message_is_json_str = false;
 		result_data.message = g_string_new("No verifier server URL has been set, "
 		                                   "thus no verification was possible");
 		return result_data;
@@ -337,7 +340,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 			ws_verif_data.success = false;
 			syslog_server(LOG_WARNING, 
 			              "Websocket engine uploader: Verify engine model - "
-			              "verification did not start within %d ms, abort", 
+			              "verification did not start within %u ms, abort", 
 			              (poll_counter * websocket_single_poll_length_ms));
 		}
 	}
@@ -353,6 +356,7 @@ verif_result verify_engine_model(const char* f_filepath) {
 	mg_mgr_free(&event_manager);
 	verif_result result_data;
 	result_data.success = ws_verif_data.success;
+	result_data.message_is_json_str = ws_verif_data.message_is_json_str;
 	result_data.message = ws_verif_data.message;
 	
 	// Free string allocated for filepath of model file
@@ -371,12 +375,12 @@ void set_verifier_url(const char *upd_verifier_url) {
 		verifier_url = NULL;
 	}
 	verifier_url = strdup(upd_verifier_url);
-	syslog_server(LOG_NOTICE,  "Set verifier URL - verifier URL set to: %s", verifier_url);
+	syslog_server(LOG_NOTICE, "Set verifier URL - verifier URL set to: %s", verifier_url);
 }
 
 
 const char * get_verifier_url() {
-   return verifier_url;
+	return verifier_url;
 }
 
 
@@ -412,7 +416,7 @@ void load_cached_verifier_url() {
 			              "Load cached verifier URL - loaded URL %s from cache", 
 			              verifier_url);
 		} else {
-			syslog_server(LOG_NOTICE,  "Load cached verifier URL - no content in cache file");
+			syslog_server(LOG_NOTICE, "Load cached verifier URL - no content in cache file");
 		}
 	} else {
 		syslog_server(LOG_NOTICE, 
@@ -434,7 +438,7 @@ void cache_verifier_url() {
 		syslog_server(LOG_ERR, "Cache verifier URL - cache file opening failed");
 		return;
 	}
-
+	
 	// Write the content to the file
 	fputs(verifier_url, file);
 	syslog_server(LOG_INFO, "Cache verifier URL - cached URL %s", verifier_url);

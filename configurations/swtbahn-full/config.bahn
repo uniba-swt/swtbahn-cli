@@ -4,7 +4,7 @@ module SWTbahnFull
         # Long partition
         master 0xDA000D6800B4F0
             features 
-                0x03:0x14  # seckack on, 200ms
+                0x03:0x14  # secack on, 200ms
                 0x6E:0x00  # track output default off
             end
         onecontrol1 0x45000D8D00C1F1
@@ -16,6 +16,9 @@ module SWTbahnFull
 
         # Short partition
         slave 0x42000D6700EAEB
+            features 
+                0x03:0x14  # secack on, 200ms
+            end
         onecontrol3 0x45000D8D00BDF1
         onecontrol4 0x45000D8D0003F2
         lightcontrol5 0x45000D6B002AEF
@@ -162,7 +165,7 @@ module SWTbahnFull
     end
     
     reversers master
-    	reverser 30051 block14
+        reverser 30051 block14
     end
 
     signals lightcontrol1

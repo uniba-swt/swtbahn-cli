@@ -7,6 +7,80 @@ var verificationObj = {};
 var trainIsForwards = true;
 var lastSetSpeed = 0;			// Only needed when swapping train direction
 
+var customCode_500ServerUnableReplyMsg = {500: "Server unable to build reply message"};
+
+const speeds = [
+	"0",
+	"10",
+	"20",
+	"30",
+	"40",
+	"50",
+	"60",
+	"70",
+	"80",
+	"90",
+	"100",
+	"110",
+	"120",
+	"126"
+]
+
+// Helpers
+
+function showInfoInElem(elementID, textToShow) {
+	$(elementID).parent().removeClass('alert-danger');
+	$(elementID).parent().addClass('alert-success');
+	$(elementID).text(textToShow);
+}
+
+function showErrorInElem(elementID, textToShow) {
+	$(elementID).parent().removeClass('alert-success');
+	$(elementID).parent().addClass('alert-danger');
+	$(elementID).text(textToShow);
+}
+
+function getErrorMessage(jqXHR, customCodes = {}) {
+	try {
+		if (jqXHR.responseText.length > 0) {
+			const respJson = JSON.parse(jqXHR.responseText);
+			// If response has a "msg" field, that's the error msg (by convention in swtbahn-cli)
+			if (respJson.msg) {
+				return respJson.msg;
+			}
+		}
+	} catch (parseError) {
+		console.log("Unable to parse jqXHR to JSON.");
+	}
+
+	// Check if customCodes contains the status code
+	if (customCodes.hasOwnProperty(jqXHR.status)) {
+		return customCodes[jqXHR.status];
+	}
+
+	// Fallback to default messages
+	switch (jqXHR.status) {
+		case 405:
+			return "Method not allowed";
+		case 503:
+			return "SWTbahn not running";
+		default:
+			return `${jqXHR.status} - Error message not defined`;
+	}
+}
+
+//From https://github.com/eligrey/FileSaver.js/wiki/FileSaver.js-Example
+function SaveAsFile(content, filename, contentTypeOptions) {
+	try {
+		var b = new Blob([content], { type: contentTypeOptions });
+		saveAs(b, filename);
+	} catch (e) {
+		console.log("SaveAsFile Failed to save the file. Error msg: " + e);
+	}
+}
+
+// State Updates
+
 function updateTrainIsForwards() {
 	$.ajax({
 		type: 'POST',
@@ -14,504 +88,716 @@ function updateTrainIsForwards() {
 		crossDomain: true,
 		data: { 'train': trainId },
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			trainIsForwards = responseData.includes('direction: forwards');
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			trainIsForwards = responseJson.direction === 'forwards';
 		}
 	});
 }
 
 function updateTrainGrabbedState() {
+	// Called from client.html - TODO: Test if the return is needed.
 	return $.ajax({
-		type: 'POST',
+		type: 'GET',
 		url: '/monitor/trains',
 		crossDomain: true,
-		data: null,
 		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
-			const trains = responseData.split(/\r?\n|\r|\n/g);
-			trains.forEach((train) => {
-				const trainId = train.match(/^\w+_\w+/g)[0];
-				const isGrabbed = train.includes('yes');
-				
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			responseJson['trains'].forEach((train) => {
+				const trainId = train.id;
+				const isGrabbed = train.grabbed;
 				if (isGrabbed) {
 					$(`#releaseTrainButton_${trainId}`).show();
 				} else {
 					$(`#releaseTrainButton_${trainId}`).hide();
 				}
 			});
-		},
-		error: (responseData, textStatus, errorThrown) => {
-			// Do nothing
 		}
 	});
 }
 
 function updateGrantedRoutes(htmlElement) {
 	return $.ajax({
-		type: 'POST',
+		type: 'GET',
 		url: '/monitor/granted-routes',
 		crossDomain: true,
-		data: null,
 		dataType: 'text',
-		success: (responseData, textStatus, jqXHR) => {
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
 			htmlElement.empty();
-			
-			if (responseData.includes('No granted routes')) {
+			if (!responseJson['granted-routes'] || responseJson['granted-routes'].length === 0) {
 				htmlElement.html('<li>No granted routes</li>');
 				return;
-			}			
-			
-			const routes = responseData.split(/\r?\n|\r|\n/g);
-			routes.forEach((route) => {
-				const routeId = route.match(/\d+/g)[0];
-				const trainId = route.match(/\w+_\w+$/g)[0];
-				
+			}
+			responseJson['granted-routes'].forEach((route) => {
+				const routeId = route['id'];
+				const trainId = route.train;
 				const routeText = `route ${routeId} granted to ${trainId}`;
 				const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
 				htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
 			});
-			
 			$('.grantedRoute').click(function (event) {
 				adminReleaseRoute(event.currentTarget.value);
 			});
-		},
-		error: (responseData, textStatus, errorThrown) => {
-			// Do nothing
 		}
 	});
 }
 
-// Admin control of granted routes
+// Connectivity 
+
+function pingServer () {
+	$('#pingResponse').text('Waiting');
+	$.ajax({
+		type: 'GET',
+		url: '/',
+		crossDomain: true,
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#pingResponse", "OK");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#pingResponse", "Error");
+		}
+	});
+}
+
+// Startup/Shutdown
+
+function startupServer () {
+	$('#startupShutdownResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/admin/startup',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#startupShutdownResponse", "Success");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#startupShutdownResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function shutdownServer () {
+	$('#startupShutdownResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/admin/shutdown',
+		crossDomain: true,
+		data: null,
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#startupShutdownResponse", "Success");
+			// Reset SessionId and GrabId on shutdown
+			sessionId = 0;
+			grabId = -1;
+			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#startupShutdownResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+// Train Driver
+
+function grabTrain () {
+	$('#grabTrainResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/driver/grab-train',
+		crossDomain: true,
+		data: { 'train': trainId, 'engine': trainEngine },
+		dataType: 'text',
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			sessionId = responseJson['session-id'];
+			grabId = responseJson['grab-id'];
+			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
+			showInfoInElem("#grabTrainResponse", "Grabbed");
+			updateTrainIsForwards();
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#grabTrainResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function releaseTrain () {
+	$('#grabTrainResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/driver/release-train',
+		crossDomain: true,
+		data: { 'session-id': sessionId, 'grab-id': grabId },
+		dataType: 'text',
+		success: function (_responseText) {
+			sessionId = 0;
+			grabId = -1;
+			$('#sessionGrabId').text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
+			showInfoInElem("#grabTrainResponse", "Released");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#grabTrainResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function setTrainSpeedDCC (speed) {
+	$('#driveTrainResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/driver/set-dcc-train-speed',
+		crossDomain: true,
+		data: {
+			'session-id': sessionId,
+			'grab-id': grabId,
+			'speed': speed,
+			'track-output': trackOutput
+		},
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#driveTrainResponse", 'DCC train speed set to ' + speed);
+			lastSetSpeed = speed;
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#driveTrainResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function requestRoute (source, destination) {
+	$.ajax({
+		type: 'POST',
+		url: '/driver/request-route',
+		crossDomain: true,
+		data: {
+			'session-id': sessionId,
+			'grab-id': grabId,
+			'source': source,
+			'destination': destination
+		},
+		dataType: 'text',
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			showInfoInElem("#routeResponse", 
+			               'Route ' + responseJson['granted-route-id'] + ' granted');
+			$('#routeId').val(responseJson['granted-route-id']);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function getInterlockerThenRequestRoute (source, destination) {
+	$('#routeResponse').text('Waiting');
+	$.ajax({
+		type: 'GET',
+		url: '/controller/get-interlocker',
+		crossDomain: true,
+		dataType: 'text',
+		success: function (_responseText) {
+			requestRoute(source, destination);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function driveRouteIntern (routeId, mode) {
+	$.ajax({
+		type: 'POST',
+		url: '/driver/drive-route',
+		crossDomain: true,
+		data: {
+			'session-id': sessionId,
+			'grab-id': grabId,
+			'route-id': routeId,
+			'mode': mode
+		},
+		dataType: 'text',
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			showInfoInElem("#routeResponse", responseJson['msg']);
+			$('#routeId').val("None");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function driveRoute(routeId, mode) {
+	if (isNaN(routeId)) {
+		showErrorInElem("#routeResponse", 'Route "' + routeId + '" is not a number!');
+	} else if (sessionId != 0 && grabId != -1) {
+		driveRouteIntern(routeId, mode);
+	} else {
+		showErrorInElem("#routeResponse", "No train grabbed!");
+	}
+}
+
+// Admin
+
 function adminReleaseRoute(routeId) {
 	$('#routeId').val(routeId);
 	$('#releaseRouteButton').click();
 }
 
+function adminSetTrainSpeed (trainId, speed) {
+	$.ajax({
+		type: 'POST',
+		url: '/admin/set-dcc-train-speed',
+		crossDomain: true,
+		data: {
+			'train': trainId,
+			'speed': speed,
+			'track-output': trackOutput
+		},
+		dataType: 'text',
+		success: function (_responseText) {
+			console.log("adminSetTrainSpeed succeeded.");
+		},
+		error: function (jqXHR) {
+			console.log(`adminSetTrainSpeed failed: ${jqXHR.status} - ${getErrorMessage(jqXHR)}`);
+		}
+	});
+}
+
+function adminReleaseTrain (trainId) {
+	return $.ajax({
+		type: 'POST',
+		url: '/admin/release-train',
+		crossDomain: true,
+		data: {
+			'train': trainId
+		},
+		dataType: 'text',
+		success: function (_responseText) {
+			console.log("adminReleaseTrain succeeded.");
+		},
+		error: function (jqXHR) {
+			console.log("adminReleaseTrain failed.");
+			console.log(`adminReleaseTrain failed: ${jqXHR.status} - ${getErrorMessage(jqXHR)}`);
+		}
+	});
+}
+
+// Controller
+
+function releaseRoute (routeId) {
+	$.ajax({
+		type: 'POST',
+		url: '/controller/release-route',
+		crossDomain: true,
+		data: { 'route-id': routeId },
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#routeResponse", 'Route ' + routeId + ' released');
+			$('#routeId').val("None");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#routeResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function setPoint (pointId, pointPosition) {
+	$('#setPointResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/controller/set-point',
+		crossDomain: true,
+		data: { 'point': pointId, 'state': pointPosition },
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#setPointResponse", 'Point ' + pointId + ' set to ' + pointPosition);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#setPointResponse", getErrorMessage(jqXHR, {404: "Unknown Point"}));
+		}
+	});
+}
+
+function setSignal (signalId, signalAspect) {
+	$('#setSignalResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/controller/set-signal',
+		crossDomain: true,
+		data: { 'signal': signalId, 'state': signalAspect },
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#setSignalResponse", 'Signal ' + signalId + ' set to ' + signalAspect);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#setSignalResponse", getErrorMessage(jqXHR, {404: "Unknown Signal"}));
+		}
+	});
+}
+
+function setPeripheralState (peripheralId, peripheralAspect) {
+	$('#setPeripheralResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/controller/set-peripheral',
+		crossDomain: true,
+		data: { 'peripheral': peripheralId, 'state': peripheralAspect },
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#setPeripheralResponse", 
+			               'Peripheral ' + peripheralId + ' set to ' + peripheralAspect);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#setPeripheralResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+// Engine and Interlocker
+
+function uploadEngine (file) {
+	$('#uploadResponse').text('Waiting');
+	var formData = new FormData();
+	formData.append('file', file);
+	$.ajax({
+		type: 'POST',
+		url: '/upload/engine',
+		crossDomain: true,
+		data: formData,
+		processData: false,
+		contentType: false,
+		cache: false,
+		dataType: 'text',
+		success: function (_responseText) {
+			console.log("Upload Success, refreshing engines");
+			refreshEnginesList();
+			$('#verificationLogDownloadButton').hide();
+			$('#clearVerificationMsgButton').hide();
+			showInfoInElem("#uploadResponse", 'Engine ' + file.name + ' ready for use');
+		},
+		error: function (jqXHR) {
+			console.log("Engine Upload Failed");
+			try {
+				var resJson = JSON.parse(jqXHR.responseText, null, 2);
+				var msg = "Server Message: " + resJson["msg"];
+				msg += "\nList of Properties:"
+				resJson["verifiedproperties"].forEach(element => {
+					msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
+				});
+				verificationObj = resJson;
+				showErrorInElem("#uploadResponse", msg);
+				$('#verificationLogDownloadButton').show();
+			} catch (e) {
+				console.log("Unable to parse server's reply in upload-engine failure case: " + e);
+				showErrorInElem("#uploadResponse", getErrorMessage(jqXHR));
+			}
+			$('#clearVerificationMsgButton').show();
+		}
+	});
+}
+
+function refreshEnginesList() {
+	$('#refreshRemoveEngineResponse').text('Waiting');
+	$.ajax({
+		type: 'GET',
+		url: '/monitor/engines',
+		crossDomain: true,
+		dataType: 'text',
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			var engineList = responseJson['engines'];
+
+			var selectedGrabEngine = $("#grabEngine");
+			var selectAvailableEngines = $("#availableEngines");
+
+			selectedGrabEngine.empty();
+			selectAvailableEngines.empty();
+
+			$.each(engineList, function (key, value) {
+				selectedGrabEngine.append(new Option(value));
+				selectAvailableEngines.append(new Option(value));
+			});
+
+			showInfoInElem("#refreshRemoveEngineResponse", "Refreshed list of train engines");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveEngineResponse", 
+			                getErrorMessage(jqXHR, customCode_500ServerUnableReplyMsg));
+		}
+	});
+}
+
+function removeEngine (engineName) {
+	$('#refreshRemoveEngineResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/upload/remove-engine',
+		crossDomain: true,
+		data: { 'engine-name': engineName },
+		dataType: 'text',
+		success: function (_responseText) {
+			console.log("Engine removal successful, now auto-updating available engines.");
+			refreshEnginesList();
+			showInfoInElem("#refreshRemoveEngineResponse", 'Engine ' + engineName + ' removed');
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveEngineResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function uploadInterlocker(file) {
+	var formData = new FormData();
+	formData.append('file', file);
+	$('#uploadResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/upload/interlocker',
+		crossDomain: true,
+		data: formData,
+		processData: false,
+		contentType: false,
+		cache: false,
+		dataType: 'text',
+		success: function (_responseText) {
+			console.log("Successfuly uploaded interlocker, now refreshing interlocker list.");
+			refreshInterlockersList();
+			showInfoInElem("#uploadResponse", 'Interlocker ' + file.name + ' ready for use');
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#uploadResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function refreshInterlockersList() {
+	$('#refreshRemoveInterlockerResponse').text('Waiting');
+	$.ajax({
+		type: 'GET',
+		url: '/monitor/interlockers',
+		crossDomain: true,
+		dataType: 'text',
+		success: function (responseText) {
+			const responseJson = JSON.parse(responseText);
+			var interlockerList = responseJson['interlockers'];
+
+			var selectAvailableInterlockers = $("#availableInterlockers");
+			selectAvailableInterlockers.empty();
+			$.each(interlockerList, function (key, value) {
+				selectAvailableInterlockers.append(new Option(value));
+			});
+
+			showInfoInElem("#refreshRemoveInterlockerResponse", "Refreshed list of interlockers");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", 
+			                'Unable to refresh list of interlockers: ' 
+			                + getErrorMessage(jqXHR, customCode_500ServerUnableReplyMsg));
+		}
+	});
+}
+
+function removeInterlocker (interlockerName) {
+	$('#refreshRemoveInterlockerResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/upload/remove-interlocker',
+		crossDomain: true,
+		data: { 'interlocker-name': interlockerName },
+		dataType: 'text',
+		success: function (_responseText) {
+			console.log("Removed interlocker success, now refreshing interlocker list");
+			refreshInterlockersList();
+			showInfoInElem("#refreshRemoveInterlockerResponse", 
+			               'Interlocker ' + interlockerName + ' removed');
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function setInterlocker (interlockerName) {
+	$('#refreshRemoveInterlockerResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/controller/set-interlocker',
+		crossDomain: true,
+		data: { 'interlocker': interlockerName },
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#refreshRemoveInterlockerResponse", 
+			               'Interlocker ' + interlockerName + ' is set');
+			console.log("Set Interlocker Success, now refreshing interlocker list");
+			refreshInterlockersList();
+			showInfoInElem("#interlockerInUse", interlockerName);
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+function unsetInterlocker (interlockerName) {
+	$('#refreshRemoveInterlockerResponse').text('Waiting');
+	$.ajax({
+		type: 'POST',
+		url: '/controller/unset-interlocker',
+		crossDomain: true,
+		data: { 'interlocker': interlockerName },
+		dataType: 'text',
+		success: function (_responseText) {
+			showInfoInElem("#refreshRemoveInterlockerResponse", 
+			               'Interlocker ' + interlockerName + ' is unset');
+			console.log("Unset interlocker success, refreshing interlocker list");
+			refreshInterlockersList();
+			showErrorInElem("#interlockerInUse", "No interlocker is set");
+		},
+		error: function (jqXHR) {
+			showErrorInElem("#refreshRemoveInterlockerResponse", getErrorMessage(jqXHR));
+		}
+	});
+}
+
+// Init
 
 $(document).ready(
 	function () {
 		$('#verificationLogDownloadButton').hide();
 		$('#clearVerificationMsgButton').hide();
-		
-		// Configuration
+
 		$('#pingButton').click(function () {
-			$('#pingResponse').text('Waiting');
-			$.ajax({
-				type: 'POST',
-				url: '/',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#pingResponse').parent().removeClass('alert-danger');
-					$('#pingResponse').parent().addClass('alert-success');
-					$('#pingResponse').text('OK');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#pingResponse').parent().removeClass('alert-success');
-					$('#pingResponse').parent().addClass('alert-danger');
-					$('#pingResponse').text('Error');
-				}
-			});
+			pingServer();
 		});
 
+		// Startup/Shutdown
+
 		$('#startupButton').click(function () {
-			$('#startupShutdownResponse').text('Waiting');
-			$.ajax({
-				type: 'POST',
-				url: '/admin/startup',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#startupShutdownResponse').parent().removeClass('alert-danger');
-					$('#startupShutdownResponse').parent().addClass('alert-success');
-					$('#startupShutdownResponse').text('OK');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#startupShutdownResponse').parent().removeClass('alert-success');
-					$('#startupShutdownResponse').parent().addClass('alert-danger');
-					$('#startupShutdownResponse').text('System already running!');
-				}
-			});
+			startupServer();
 		});
 
 		$('#shutdownButton').click(function () {
-			$('#startupShutdownResponse').text('Waiting');
-			$.ajax({
-				type: 'POST',
-				url: '/admin/shutdown',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#startupShutdownResponse').parent().removeClass('alert-danger');
-					$('#startupShutdownResponse').parent().addClass('alert-success');
-					$('#startupShutdownResponse').text('OK');
-					
-					sessionId = 0;
-					grabId = -1;
-					$('#sessionGrabId')
-						.text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#startupShutdownResponse').parent().removeClass('alert-success');
-					$('#startupShutdownResponse').parent().addClass('alert-danger');
-					$('#startupShutdownResponse').text('System not running!');
-				}
-			});
+			shutdownServer();
 		});
 
-
 		// Train Driver
+
 		$('#grabTrainButton').click(function () {
-			$('#grabTrainResponse').text('Waiting');
 			trainId = $('#grabTrainId option:selected').text();
 			trainEngine = $('#grabEngine option:selected').text();
 			if (sessionId == 0 && grabId == -1) {
-				$.ajax({
-					type: 'POST',
-					url: '/driver/grab-train',
-					crossDomain: true,
-					data: { 'train': trainId, 'engine': trainEngine },
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						responseDataSplit = responseData.split(',');
-						sessionId = responseDataSplit[0];
-						grabId = responseDataSplit[1];
-						$('#sessionGrabId')
-							.text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
-						$('#grabTrainResponse').text('Grabbed');
-						$('#grabTrainResponse').parent().removeClass('alert-danger');
-						$('#grabTrainResponse').parent().addClass('alert-success');
-						updateTrainIsForwards();
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#grabTrainResponse')
-							.text('System not running or train not available!');
-						$('#grabTrainResponse').parent().addClass('alert-danger');
-						$('#grabTrainResponse').parent().removeClass('alert-success');
-					}
-				});
+				grabTrain();
 			} else {
-				$('#grabTrainResponse').text('You can only grab one train!');
-				$('#grabTrainResponse').parent().addClass('alert-danger');
-				$('#grabTrainResponse').parent().removeClass('alert-success');
+				showErrorInElem("#grabTrainResponse", "You can only grab one train.");
 			}
 		});
 
 		$('#releaseTrainButton').click(function () {
-			$('#grabTrainResponse').text('Waiting');
 			if (sessionId != 0 && grabId != -1) {
-				$.ajax({
-					type: 'POST',
-					url: '/driver/release-train',
-					crossDomain: true,
-					data: { 'session-id': sessionId, 'grab-id': grabId },
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						sessionId = 0;
-						grabId = -1;
-						$('#sessionGrabId')
-							.text('Session ID: ' + sessionId + ', Grab ID: ' + grabId);
-						$('#grabTrainResponse').text('Released grabbed train');
-						$('#grabTrainResponse').parent().removeClass('alert-danger');
-						$('#grabTrainResponse').parent().addClass('alert-success');
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#grabTrainResponse').parent().addClass('alert-danger');
-						$('#grabTrainResponse').parent().removeClass('alert-success');
-						$('#grabTrainResponse').text('System not running or train still moving!');
-					}
-				});
+				releaseTrain();
 			} else {
-				$('#grabTrainResponse').parent().addClass('alert-danger');
-				$('#grabTrainResponse').parent().removeClass('alert-success');
-				$('#grabTrainResponse').text('No grabbed train!');
+				showErrorInElem("#grabTrainResponse", "No train grabbed!");
 			}
 		});
 
-		const speeds = [
-			"0",
-			"10",
-			"20",
-			"30",
-			"40",
-			"50",
-			"60",
-			"70",
-			"80",
-			"90",
-			"100",
-			"110",
-			"120",
-			"126"
-		]
-
 		$('#speedMinus').click(function () {
-			speed = $('#dccSpeed').val();
-			position = speeds.indexOf(speed);
+			var speed = $('#dccSpeed').val();
+			var position = speeds.indexOf(speed);
 			if (position > 0) {
 				$('#dccSpeed').val(speeds[position - 1]);
 			}
 		});
 
 		$('#speedPlus').click(function () {
-			speed = $('#dccSpeed').val();
-			position = speeds.indexOf(speed);
+			var speed = $('#dccSpeed').val();
+			var position = speeds.indexOf(speed);
 			if (position < speeds.length - 1) {
 				$('#dccSpeed').val(speeds[position + 1]);
 			}
 		});
-		
+
 		$('#swapDirection').click(function () {
 			trainIsForwards = !trainIsForwards;
-			enteredSpeed = $('#dccSpeed').val();
+			var enteredSpeed = $('#dccSpeed').val();
 			if (lastSetSpeed == 0) {
+				// This is done to trigger the train head/rear-lights to switch
+				// even if train is currently set to speed 0.
 				$('#dccSpeed').val(1);
 				$('#driveTrainButton').click();
 				$('#dccSpeed').val(0);
-				setTimeout(function() {
+				setTimeout(function () {
 					$('#driveTrainButton').click();
+					// after swapping direction, reinstate speed displayed in `#dccSpeed` before swapping.
 					$('#dccSpeed').val(enteredSpeed);
 				}, 100 /* milliseconds */);
 			} else {
 				$('#dccSpeed').val(Math.abs(lastSetSpeed));
 				$('#driveTrainButton').click();
+				// after swapping direction, reinstate speed displayed in `#dccSpeed` before swapping.
 				$('#dccSpeed').val(enteredSpeed);
 			}
 		});
 
 		$('#driveTrainButton').click(function () {
-			$('#driveTrainResponse').text('Waiting');
-			speed = $('#dccSpeed').val();
+			var speed = $('#dccSpeed').val();
 			speed = trainIsForwards ? speed : -speed;
 			if (sessionId != 0 && grabId != -1) {
-				$.ajax({
-					type: 'POST',
-					url: '/driver/set-dcc-train-speed',
-					crossDomain: true,
-					data: {
-						'session-id': sessionId,
-						'grab-id': grabId,
-						'speed': speed,
-						'track-output': trackOutput
-					},
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						$('#driveTrainResponse').text('DCC train speed set to ' + speed);
-						$('#driveTrainResponse').parent().removeClass('alert-danger');
-						$('#driveTrainResponse').parent().addClass('alert-success');
-						lastSetSpeed = speed;
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#driveTrainResponse')
-							.text('System not running or invalid track output!');
-						$('#driveTrainResponse').parent().addClass('alert-danger');
-						$('#driveTrainResponse').parent().removeClass('alert-success');
-					}
-				});
+				setTrainSpeedDCC(speed);
 			} else {
-				$('#driveTrainResponse').text('You must have a grabbed train!');
-				$('#driveTrainResponse').parent().addClass('alert-danger');
-				$('#driveTrainResponse').parent().removeClass('alert-success');
+				showErrorInElem("#driveTrainResponse", "No train grabbed!");
 			}
 		});
 
 		$('#stopTrainButton').click(function () {
-			enteredSpeed = $('#dccSpeed').val();
+			var enteredSpeed = $('#dccSpeed').val();
 			$('#dccSpeed').val(0);
 			$('#driveTrainButton').click();
+			// after stopping, reinstate speed displayed in `#dccSpeed` before stopping.
 			$('#dccSpeed').val(enteredSpeed);
 		});
 
 		$('#requestRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			source = $('#signalIdFrom').val();
-			destination = $('#signalIdTo').val();
+			let source = $('#signalIdFrom').val();
+			let destination = $('#signalIdTo').val();
 			if (sessionId != 0 && grabId != -1) {
-				$.ajax({
-					type: 'POST',
-					url: '/controller/get-interlocker',
-					crossDomain: true,
-					data: null,
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						$.ajax({
-							type: 'POST',
-							url: '/driver/request-route',
-							crossDomain: true,
-							data: {
-								'session-id': sessionId,
-								'grab-id': grabId,
-								'source': source,
-								'destination': destination
-							},
-							dataType: 'text',
-							success: function (responseData, textStatus, jqXHR) {
-								$('#routeResponse').text('Route ' + responseData + ' granted');
-								$('#routeResponse').parent().removeClass('alert-danger');
-								$('#routeResponse').parent().addClass('alert-success');
-
-								$('#routeId').val(responseData);
-							},
-							error: function (responseData, textStatus, errorThrown) {
-								$('#routeResponse').text(responseData.responseText);
-								$('#routeResponse').parent().removeClass('alert-success');
-								$('#routeResponse').parent().addClass('alert-danger');
-							}
-						});
-
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#routeResponse').parent().removeClass('alert-success');
-						$('#routeResponse').parent().addClass('alert-danger');
-						$('#routeResponse').text("No interlocker set!");
-					}
-				});
+				getInterlockerThenRequestRoute(source, destination);
 			} else {
-				$('#routeResponse').parent().removeClass('alert-success');
-				$('#routeResponse').parent().addClass('alert-danger');
-				$('#routeResponse').text('You must have a grabbed train!');
+				showErrorInElem("#routeResponse", "No train grabbed!");
 			}
 		});
-
-
-		/* $('#requestRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			source = $('#signalIdFrom').val();
-			destination = $('#signalIdTo').val();
-			if (sessionId != 0 && grabId != -1) {
-				ajaxGetInterlocker()
-					.then(ajaxRequestRoute);
-			} else {
-				$('#routeResponse').parent().removeClass('alert-success');
-				$('#routeResponse').parent().addClass('alert-danger');
-				$('#routeResponse').text('You must have a grabbed train!');
-			}
-		});
-
-		function ajaxGetInterlocker(){
-			return $.ajax({
-				type: 'POST',
-				url: '/controller/get-interlocker',
-				crossDomain: true,
-				data: {
-					'session-id': sessionId,
-					'grab-id': grabId,
-					'source': source,
-					'destination': destination
-				},
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#requestRouteButton').removeClass('btn-outline-danger');
-					$('#requestRouteButton').addClass('btn-outline-primary');
-
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#routeResponse').parent().removeClass('alert-success');
-					$('#routeResponse').parent().addClass('alert-danger');
-					$('#routeResponse').text("No interlocker set!");
-				}
-			});
-		}
-
-		function ajaxRequestRoute(responseData, textStatus, jqXHR){
-			return $.ajax({
-				type: 'POST',
-				url: '/driver/request-route',
-				crossDomain: true,
-				data: {
-					'session-id': sessionId,
-					'grab-id': grabId,
-					'source': source,
-					'destination': destination
-				},
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					routeId = responseData;
-					$('routeId').val(routeId);
-					$('#routeResponse').parent().removeClass('alert-danger');
-					$('#routeResponse').parent().addClass('alert-success');
-					$('#routeResponse').text('Route ' + responseData + ' granted');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#routeResponse').parent().removeClass('alert-success');
-					$('#routeResponse').parent().addClass('alert-danger');
-					$('#routeResponse').text(responseData.responseText);
-				}
-			});
-		} */
-
-		//From https://github.com/eligrey/FileSaver.js/wiki/FileSaver.js-Example
-		function SaveAsFile(content, filename, contentTypeOptions) {
-			try {
-				var b = new Blob([content], {type:contentTypeOptions});
-				saveAs(b, filename);
-			} catch (e) {
-				console.log("SaveAsFile Failed to save the file. Error msg: " + e);
-			}
-	  	}
-		
-		function driveRoute(routeId, mode) {
-			if (isNaN(routeId)) {
-				$('#routeResponse').parent().removeClass('alert-success');
-				$('#routeResponse').parent().addClass('alert-danger');
-				$('#routeResponse').text('Route \"' + routeId + '\" is not a number!');
-				
-				return;
-			}
-			
-			if (sessionId != 0 && grabId != -1) {
-				$.ajax({
-					type: 'POST',
-					url: '/driver/drive-route',
-					crossDomain: true,
-					data: { 
-						'session-id': sessionId, 
-						'grab-id': grabId, 
-						'route-id': routeId,
-						'mode': mode
-					},
-					dataType: 'text',
-					success: function (responseData, textStatus, jqXHR) {
-						$('#routeResponse').text(responseData);
-						$('#routeResponse').parent().removeClass('alert-danger');
-						$('#routeResponse').parent().addClass('alert-success');
-						
-						$('#routeId').val("None");
-					},
-					error: function (responseData, textStatus, errorThrown) {
-						$('#routeResponse').text('Route could not be driven!');
-						$('#routeResponse').parent().removeClass('alert-success');
-						$('#routeResponse').parent().addClass('alert-danger');
-					}
-				});
-			} else {
-				$('#routeResponse').parent().removeClass('alert-success');
-				$('#routeResponse').parent().addClass('alert-danger');
-				$('#routeResponse').text('You must have a grabbed train!');
-			}
-		}
 
 		$('#automaticDriveRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
 			var routeId = $('#routeId').val();
 			driveRoute(routeId, "automatic");
 		});
-		
+
+		$('#manualDriveRouteButton').click(function () {
+			$('#routeResponse').text('Waiting');
+			var routeId = $('#routeId').val();
+			driveRoute(routeId, "manual");
+		});
+
+		// Verification 
+
 		$('#clearVerificationMsgButton').click(function () {
 			$('#verificationLogDownloadButton').hide();
 			$('#clearVerificationMsgButton').hide();
 			$('#uploadResponse').text('');
 			$('#uploadResponse').parent().removeClass('alert-danger');
 		});
-		
+
 		$('#verificationLogDownloadButton').click(function () {
-			//Create zip file that contains the logs
-			//then trigger download of that file.
+			// Create zip file that contains the logs
+			// then trigger download of that file.
 			try {
-				logList = "";
+				let logList = "";
 				verificationObj["verifiedproperties"].forEach(element => {
 					logList += atob(element["verificationlog"]) + "\n\n";
 				});
@@ -521,179 +807,31 @@ $(document).ready(
 			}
 		});
 
-		$('#manualDriveRouteButton').click(function () {
-			$('#routeResponse').text('Waiting');
-			var routeId = $('#routeId').val();
-			driveRoute(routeId, "manual");
-		});
-		
-
 		// Custom Engines
 		$('#uploadEngineButton').click(function () {
-			$('#uploadResponse').text('Waiting');
 			var files = $('#selectUploadFile').prop('files');
 			if (files.length != 1) {
-				$('#uploadResponse').parent().removeClass('alert-success');
-				$('#uploadResponse').parent().addClass('alert-danger');
-				$('#uploadResponse').text('Select an SCCharts file!');
-				return;
+				showErrorInElem("#uploadResponse", "No SCCharts file selected!");
+			} else {
+				uploadEngine(files[0]);
 			}
-			
-			var file = files[0];
-			var formData = new FormData();
-			formData.append('file', file);
-			$.ajax({
-				type: 'POST',
-				url: '/upload/engine',
-				crossDomain: true,
-				data: formData,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					console.log("Upload Success");
-					refreshEnginesList();
-					$('#uploadResponse').parent().removeClass('alert-danger');
-					$('#uploadResponse').parent().addClass('alert-success');
-					$('#uploadResponse').text('Engine ' + file.name + ' ready for use');
-					$('#verificationLogDownloadButton').hide();
-					$('#clearVerificationMsgButton').hide();
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					console.log("Upload Failed");
-					try {
-						var resJson = JSON.parse(responseData.responseText.toString(), null, 2);
-						var msg = "Server Message: " + resJson["message"];
-						msg += "\nList of Properties:"
-						resJson["verifiedproperties"].forEach(element => {
-							msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
-						});
-						verificationObj = resJson;
-						$('#uploadResponse').text(msg);
-						$('#verificationLogDownloadButton').show();
-					} catch (e) {
-						console.log("Unable to parse server's reply in upload-engine failure case: " + e);
-						$('#uploadResponse').text(responseData.responseText.toString());
-					}
-					$('#uploadResponse').parent().removeClass('alert-success');
-					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#clearVerificationMsgButton').show();
-				}
-			});
 		});
-		
-		
-
-		function refreshEnginesList() {
-			$.ajax({
-				type: 'POST',
-				url: '/upload/refresh-engines',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					var engineList = responseData.split(",");
-
-					var selectGrabEngines = $("#grabEngine");
-					var selectAvailableEngines = $("#availableEngines");
-
-					selectGrabEngines.empty();
-					selectAvailableEngines.empty();
-
-					$.each(engineList, function (key, value) {
-						selectGrabEngines.append(new Option(value));
-						selectAvailableEngines.append(new Option(value));
-					});
-
-					$('#refreshRemoveEngineResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveEngineResponse').parent().addClass('alert-success');
-					$('#refreshRemoveEngineResponse').text('Refreshed list of train engines');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
-					$('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveEngineResponse').text('Unable to refresh list of train engines');
-				}
-			});
-		}
 
 		$('#refreshEnginesButton').click(function () {
-			$('#refreshRemoveEngineResponse').text('Waiting');
 			refreshEnginesList();
 		});
 
 		$('#removeEngineButton').click(function () {
-			$('#refreshRemoveEngineResponse').text('Waiting');
 			var engineName = $('#availableEngines option:selected').text();
 			if (engineName.search("unremovable") != -1) {
-				$('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
-				$('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
-				$('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' is unremovable!');
-				return;
+				showErrorInElem("#refreshRemoveEngineResponse", 'Engine ' + engineName + ' is unremovable!');
+			} else {
+				removeEngine(engineName);
 			}
-			
-			$.ajax({
-				type: 'POST',
-				url: '/upload/remove-engine',
-				crossDomain: true,
-				data: { 'engine-name': engineName },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					refreshEnginesList();
-					$('#refreshRemoveEngineResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveEngineResponse').parent().addClass('alert-success');
-					$('#refreshRemoveEngineResponse').text('Engine ' + engineName + ' removed');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#refreshRemoveEngineResponse').parent().removeClass('alert-success');
-					$('#refreshRemoveEngineResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveEngineResponse').text(responseData.responseText);
-				}
-			});
 		});
 
-
 		// Admin control of grabbed trains and train speed
-
-		function adminSetTrainSpeed(trainId, speed) {
-			return $.ajax({
-				type: 'POST',
-				url: '/admin/set-dcc-train-speed',
-				crossDomain: true,
-				data: {
-					'train': trainId,
-					'speed': speed,
-					'track-output': trackOutput
-				},
-				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					// Do nothing
-				},
-				error: (responseData, textStatus, errorThrown) => {
-					// Do nothing
-				}
-			});
-		}
-		
-		function adminReleaseTrain(trainId) {
-			return $.ajax({
-				type: 'POST',
-				url: '/admin/release-train',
-				crossDomain: true,
-				data: {
-					'train': trainId
-				},
-				dataType: 'text',
-				success: (responseData, textStatus, jqXHR) => {
-					// Do nothing
-				},
-				error: (responseData, textStatus, errorThrown) => {
-					// Do nothing
-				}
-			});
-		}
-
+		///TODO: Move this when merging in the the 134-/135-branches.
 		const trainIds = [
 			'cargo_db',
 			'cargo_green',
@@ -703,344 +841,125 @@ $(document).ready(
 			'regional_odeg',
 			'regional_brengdirect'
 		];
-		
+
 		trainIds.forEach((trainId) => {
 			$(`#driveTrainButton_${trainId}`).click(function () {
 				const speed = $(`#dccSpeed_${trainId}`).val();
 				adminSetTrainSpeed(trainId, speed);
 			});
-			
+
 			$(`#releaseTrainButton_${trainId}`).click(function () {
 				adminReleaseTrain(trainId);
 			});
 		});
-		
 
-		// Controller
-		
+		// Controller 
+
 		$('#releaseRouteButton').click(function () {
 			$('#routeResponse').text('Waiting');
 			var routeId = $('#routeId').val();
 			if (isNaN(routeId)) {
-				$('#routeResponse').parent().removeClass('alert-success');
-				$('#routeResponse').parent().addClass('alert-danger');
-				$('#routeResponse').text('Route \"' + routeId + '\" is not a number!');
-				
-				return;
+				showErrorInElem("#routeResponse", 'Route \"' + routeId + '\" is not a number!');
+			} else {
+				releaseRoute(routeId);
 			}
-			
-			$.ajax({
-				type: 'POST',
-				url: '/controller/release-route',
-				crossDomain: true,
-				data: { 'route-id': routeId },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#routeResponse').parent().removeClass('alert-danger');
-					$('#routeResponse').parent().addClass('alert-success');
-					$('#routeResponse').text('Route ' + routeId + ' released');
-				
-					$('#routeId').val("None");
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#routeResponse').parent().removeClass('alert-success');
-					$('#routeResponse').parent().addClass('alert-danger');
-					$('#routeResponse')
-						.text('System not running or invalid track output!');
-				}
-			});
 		});
-		
-		function setPointAjax(pointId, pointPosition) {
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-point',
-				crossDomain: true,
-				data: { 'point': pointId, 'state': pointPosition },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setPointResponse')
-						.text('Point ' + pointId + ' set to ' + pointPosition);
-					$('#setPointResponse').parent().removeClass('alert-danger');
-					$('#setPointResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setPointResponse').text('System not running or invalid position!');
-					$('#setPointResponse').parent().removeClass('alert-success');
-					$('#setPointResponse').parent().addClass('alert-danger');
-				}
-			});
-		}
 
 		$('#setPointButton').click(function () {
-			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = $("#pointPosition option:selected").text();
-			setPointAjax(pointId, pointPosition);
+			setPoint(pointId, pointPosition);
 		});
-		
+
 		$('#setPointButtonNormal').click(function () {
-			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = 'normal';
-			setPointAjax(pointId, pointPosition);
+			setPoint(pointId, pointPosition);
 		});
 
 		$('#setPointButtonReverse').click(function () {
-			$('#setPointResponse').text('Waiting');
 			var pointId = $('#pointId').val();
 			var pointPosition = 'reverse';
-			setPointAjax(pointId, pointPosition);
+			setPoint(pointId, pointPosition);
 		});
 
-		function setSignalAjax(signalId, signalAspect) {
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-signal',
-				crossDomain: true,
-				data: { 'signal': signalId, 'state': signalAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setSignalResponse')
-						.text('Signal ' + signalId + ' set to ' + signalAspect);
-					$('#setSignalResponse').parent().removeClass('alert-danger');
-					$('#setSignalResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setSignalResponse').text('System not running or invalid aspect!');
-					$('#setSignalResponse').parent().removeClass('alert-success');
-					$('#setSignalResponse').parent().addClass('alert-danger');
-				}
-			});
-		}
-
 		$('#setSignalButton').click(function () {
-			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = $("#signalAspect option:selected").text();
-			setSignalAjax(signalId, signalAspect);
+			setSignal(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonRed').click(function () {
-			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_stop';
-			setSignalAjax(signalId, signalAspect);
+			setSignal(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonYellow').click(function () {
-			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_caution';
-			setSignalAjax(signalId, signalAspect);
+			setSignal(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonGreen').click(function () {
-			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_go';
-			setSignalAjax(signalId, signalAspect);
+			setSignal(signalId, signalAspect);
 		});
 
 		$('#setSignalButtonWhite').click(function () {
-			$('#setSignalResponse').text('Waiting');
 			var signalId = $('#signalId').val();
 			var signalAspect = 'aspect_shunt';
-			setSignalAjax(signalId, signalAspect);
+			setSignal(signalId, signalAspect);
 		});
-		
+
 		$('#setPeripheralStateButton').click(function () {
-			$('#setPeripheralResponse').text('Waiting');
 			var peripheralId = $('#peripheralId').val();
 			var peripheralAspect = $('#peripheralState').val();
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-peripheral',
-				crossDomain: true,
-				data: { 'peripheral': peripheralId, 'state': peripheralAspect },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					$('#setPeripheralResponse')
-						.text('Peripheral ' + peripheralId + ' set to ' + peripheralAspect);
-					$('#setPeripheralResponse').parent().removeClass('alert-danger');
-					$('#setPeripheralResponse').parent().addClass('alert-success');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#setPeripheralResponse').text('System not running or invalid aspect!');
-					$('#setPeripheralResponse').parent().removeClass('alert-success');
-					$('#setPeripheralResponse').parent().addClass('alert-danger');
-				}
-			});
+			setPeripheralState(peripheralId, peripheralAspect);
 		});
-
 
 		// Custom Interlockers
+
 		$('#uploadInterlockerButton').click(function () {
-			$('#uploadResponse').text('Waiting');
 			var files = $('#selectUploadFile').prop('files');
 			if (files.length != 1) {
-				$('#uploadResponse').parent().removeClass('alert-success');
-				$('#uploadResponse').parent().addClass('alert-danger');
-				$('#uploadResponse').text('Select a BahnDSL file!');
-				return;
+				showErrorInElem("#uploadResponse", "No BahnDSL file selected!");
+			} else {
+				uploadInterlocker(files[0]);
 			}
-			var file = files[0];
-			var formData = new FormData();
-			formData.append('file', file);
-			$.ajax({
-				type: 'POST',
-				url: '/upload/interlocker',
-				crossDomain: true,
-				data: formData,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					refreshInterlockersList();
-					$('#uploadResponse').parent().removeClass('alert-danger');
-					$('#uploadResponse').parent().addClass('alert-success');
-					$('#uploadResponse')
-						.text('Interlocker ' + file.name + ' ready for use');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#uploadResponse').parent().removeClass('alert-success');
-					$('#uploadResponse').parent().addClass('alert-danger');
-					$('#uploadResponse').text(responseData.responseText);
-				}
-			});
 		});
 
-		function refreshInterlockersList() {
-			$.ajax({
-				type: 'POST',
-				url: '/upload/refresh-interlockers',
-				crossDomain: true,
-				data: null,
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					var interlockerList = responseData.split(",");
-
-					var selectAvailableInterlockers = $("#availableInterlockers");
-
-					selectAvailableInterlockers.empty();
-
-					$.each(interlockerList, function (key, value) {
-						selectAvailableInterlockers.append(new Option(value));
-					});
-
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
-					$('#refreshRemoveInterlockerResponse').text('Refreshed list of interlockers');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text('Unable to refresh list of interlockers');
-				}
-			});
-
-		}
 		$('#refreshInterlockersButton').click(function () {
-			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			refreshInterlockersList();
 		});
 
 		$('#removeInterlockerButton').click(function () {
-			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			var interlockerName = $('#availableInterlockers option:selected').text();
 			if (interlockerName.search("unremovable") != -1) {
-				$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
-				$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-				$('#refreshRemoveInterlockerResponse').text('Interlocker ' + interlockerName + ' is unremovable!');
-				return;
+				showErrorInElem("#refreshRemoveInterlockerResponse", 
+				                'Interlocker ' + interlockerName + ' is unremovable!');
+			} else {
+				removeInterlocker(interlockerName);
 			}
-			$.ajax({
-				type: 'POST',
-				url: '/upload/remove-interlocker',
-				crossDomain: true,
-				data: { 'interlocker-name': interlockerName },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					refreshInterlockersList();
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
-					$('#refreshRemoveInterlockerResponse')
-						.text('Interlocker ' + interlockerName + ' removed');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text(responseData.responseText);
-				}
-			});
 		});
 
 		$('#setInterlockerButton').click(function () {
-			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			var interlockerName = $('#availableInterlockers option:selected').text();
-			$.ajax({
-				type: 'POST',
-				url: '/controller/set-interlocker',
-				crossDomain: true,
-				data: { 'interlocker': interlockerName },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					refreshInterlockersList();
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
-					$('#refreshRemoveInterlockerResponse')
-						.text('Interlocker ' + interlockerName + ' is set');
-
-					$('#interlockerInUse').parent().removeClass('alert-danger');
-					$('#interlockerInUse').parent().addClass('alert-success');
-					$('#interlockerInUse').text(interlockerName);
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text('Unable to set interlocker');
-				}
-			});
+			setInterlocker(interlockerName);
 		});
 
 		$('#unsetInterlockerButton').click(function () {
-			$('#refreshRemoveInterlockerResponse').text('Waiting');
 			var interlockerName = $('#interlockerInUse').text();
-			$.ajax({
-				type: 'POST',
-				url: '/controller/unset-interlocker',
-				crossDomain: true,
-				data: { 'interlocker': interlockerName },
-				dataType: 'text',
-				success: function (responseData, textStatus, jqXHR) {
-					refreshInterlockersList();
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-success');
-					$('#refreshRemoveInterlockerResponse')
-						.text('Interlocker ' + interlockerName + ' is unset');
-					
-					$('#interlockerInUse').parent().removeClass('alert-success');
-					$('#interlockerInUse').parent().addClass('alert-danger');
-					$('#interlockerInUse').text('No interlocker set!');
-				},
-				error: function (responseData, textStatus, errorThrown) {
-					$('#refreshRemoveInterlockerResponse').parent().removeClass('alert-success');
-					$('#refreshRemoveInterlockerResponse').parent().addClass('alert-danger');
-					$('#refreshRemoveInterlockerResponse').text('Unable to unset interlocker');
-				}
-			});
+			unsetInterlocker(interlockerName);
 		});
 
 		// File chooser button for Driver and Controller
+
 		$('#selectUploadFile').change(function () {
 			$('#selectUploadFileResponse').text(this.files[0].name);
-
-			$('#uploadResponse').text('Selected ' + this.files[0].name);
-			$('#uploadResponse').parent().removeClass('alert-danger');
-			$('#uploadResponse').parent().addClass('alert-success');
+			showInfoInElem("#uploadResponse", 'Selected ' + this.files[0].name);
 		});
-		
 	}
 );
 

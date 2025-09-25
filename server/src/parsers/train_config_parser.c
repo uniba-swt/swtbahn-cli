@@ -47,8 +47,10 @@ e_train_mapping_level train_mapping = TRAIN_ROOT;
 e_train_sequence_level train_sequence = TRAIN_SEQ_NONE;
 
 void free_train_id_key(void *pointer) {
-    log_debug("free key: %s", (char *) pointer);
-    free(pointer);
+    if (pointer != NULL) {
+        free(pointer);
+        pointer = NULL;
+    }
 }
 
 void free_train(void *pointer) {
@@ -57,24 +59,20 @@ void free_train(void *pointer) {
         return;
     }
     if (train->id != NULL) {
-        log_debug("free train: %s", train->id);
         free(train->id);
         train->id = NULL;
     }
     if (train->type != NULL) {
-        log_debug("\tfree train type");
         free(train->type);
         train->type = NULL;
     }
     if (train->peripherals != NULL) {
-        log_debug("\tfree train peripherals");
         for (int i = 0; i < train->peripherals->len; ++i) {
             free(g_array_index(train->peripherals, char *, i));
         }
         g_array_free(train->peripherals, true);
     }
     if (train->calibration != NULL) {
-        log_debug("\tfree train calibration");
         g_array_free(train->calibration, true);
     }
     free(train);
@@ -84,8 +82,7 @@ void nullify_train_config_table(void) {
     tb_trains = NULL;
 }
 
-void train_yaml_sequence_start(char *scalar) {	
-    log_debug("train_yaml_sequence_start: %s", scalar);
+void train_yaml_sequence_start(char *scalar) {
     if (train_mapping == TRAIN_ROOT && str_equal(scalar, "trains")) {
         train_sequence = TRAINS;
         if (tb_trains == NULL) {
@@ -104,7 +101,6 @@ void train_yaml_sequence_start(char *scalar) {
 }
 
 void train_yaml_sequence_end(char *scalar) {
-    log_debug("train_yaml_sequence_end: %s", scalar);
     switch (train_sequence) {
         case PERIPHERALS:
         case CALIBRATIONS:
@@ -115,7 +111,6 @@ void train_yaml_sequence_end(char *scalar) {
     }
 }
 void train_yaml_mapping_start(char *scalar) {
-    log_debug("train_yaml_mapping_start: %s", scalar);
     switch (train_sequence) {
         case TRAINS:
             train_mapping = TRAIN;
@@ -138,8 +133,6 @@ void train_yaml_mapping_start(char *scalar) {
 }
 
 void train_yaml_mapping_end(char *scalar) {
-    log_debug("train_yaml_mapping_end: %s", scalar);
-
     // insert mapping to hash table
     if (train_mapping == TRAIN) {
         log_debug("train_yaml_mapping_end: insert train: %s", cur_train->id);
@@ -160,7 +153,6 @@ void train_yaml_mapping_end(char *scalar) {
 }
 
 void train_yaml_scalar(char *last_scalar, char *cur_scalar) {
-
     if (train_sequence == CALIBRATIONS) {
         int cal = (int)strtol(cur_scalar, NULL, 10);
         g_array_append_val(cur_train->calibration, cal);

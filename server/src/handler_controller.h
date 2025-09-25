@@ -32,6 +32,8 @@
 #include <onion/onion.h>
 #include <glib.h>
 
+typedef onion_connection_status o_con_status;
+
 #define INTERLOCKER_COUNT_MAX           4
 #define INTERLOCKER_INSTANCE_COUNT_MAX  4
 
@@ -48,27 +50,44 @@ void release_all_interlockers(void);
 
 /**
  * Loads the default interlocker
- * @return 0 if successful, otherwise 1
+ * @return false if successful, otherwise true
  */
-const int load_default_interlocker_instance();
+bool load_default_interlocker_instance();
+
+/**
+ * Checks if there exists at least one route that is currently granted
+ * and conflicts with the route specified via route_id.
+ * Shall only be called with interlocker_mutex locked.
+ * 
+ * @param route_id id of route for which conflicts shall be checked
+ * @return true if at least one conflict with a granted route exists and route_id is a valid route
+ * @return false otherwise
+ */
+bool get_route_has_granted_conflicts(const char *route_id);
 
 /**
  * Finds conflicting routes that have been granted.
+ * Shall only be called with interlocker_mutex locked.
+ * The caller is responsible for freeing the returned array and its contents.
  * 
- * @param ID of route for which conflicts should be checked
- * @return GArray of granted route conflicts
+ * @param route_id id of route for which conflicts shall be checked
+ * @param include_conflict_train_info whether the train to which a conflicting route is granted
+ * shall be added for each element
+ * @return GArray of granted route conflicts, described by strings. 
+ * returns NULL if inputs are invalid or internal error occured.
  */
-GArray *get_granted_route_conflicts(const char *route_id);
+GArray *get_granted_route_conflicts(const char *route_id, bool include_conflict_train_info);
 
 /**
  * Determines whether a route is physically ready for use:
  * All route signals are in the Stop aspect and all blocks 
  * are unoccupied.
+ * Shall only be called with interlocker_mutex locked.
  * 
  * @param ID of route for which clearance should be checked
  * @return true if clear, otherwise false
  */
-const bool get_route_is_clear(const char *route_id);
+bool get_route_is_clear(const char *route_id);
 
 /**
  * Determines whether conflicting routes that have
@@ -84,6 +103,7 @@ bool route_has_no_sectional_conflicts(const char *route_id);
 /**
   * Finds and grants a requested train route using an external algorithm.
   * A requested route is defined by a pair of source and destination signals. 
+  * The caller is responsible for freeing the returned string.
   * 
   * @param name of requesting train
   * @param name of the source signal
@@ -108,8 +128,10 @@ const char *grant_route_id(const char *train_id,
   * Releases the requested route id.
   * 
   * @param ID of the requested route
+  * @return true if the release succeeded
+  * @return false if the release failed
   */ 
-void release_route(const char *route_id);
+bool release_route(const char *route_id);
 
 /**
  * Requests the reverser state to be updated and waits
@@ -118,28 +140,21 @@ void release_route(const char *route_id);
  * 
  * @return true if the update was successful, otherwise false
  */
-const bool reversers_state_update(void);
+bool reversers_state_update(void);
 
-onion_connection_status handler_release_route(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_release_route(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_point(void *_, onion_request *req,
-                                          onion_response *res);
+o_con_status handler_set_point(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_signal(void *_, onion_request *req,
-                                           onion_response *res);
+o_con_status handler_set_signal(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_peripheral(void *_, onion_request *req,
-                                               onion_response *res);
+o_con_status handler_set_peripheral(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_interlocker(void *_, onion_request *req,
-                                                onion_response *res);
+o_con_status handler_get_interlocker(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_interlocker(void *_, onion_request *req,
-                                                onion_response *res);
+o_con_status handler_set_interlocker(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_unset_interlocker(void *_, onion_request *req,
-                                                  onion_response *res);
+o_con_status handler_unset_interlocker(void *_, onion_request *req, onion_response *res);
 
 #endif  // HANDLER_CONTROLLER_H
 

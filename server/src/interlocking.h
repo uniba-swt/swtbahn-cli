@@ -85,30 +85,36 @@ bool interlocking_table_initialise(const char *config_dir);
 void free_interlocking_table(void);
 
 /**
- * Return all the route IDs in the interlocking table.
+ * Return all the route IDs in the interlocking table. 
+ * The strings containing the route IDs are shallow copies of the ones in the interlocking table.
+ * That means, the caller has to free the GArray but not the contained strings!
  * 
- * @return array of route IDs. Caller is responsible for freeing the GArray
+ * @return array of route IDs. Caller is responsible for freeing the GArray, 
+ * but not the contained strings(!)
  */
-GArray *interlocking_table_get_all_route_ids(void);
+GArray *interlocking_table_get_all_route_ids_shallowcpy(void);
 
 /**
- * Return the array of route ID for a given source and destination signal.
+ * Search for the first route granted to the specified train and return its id.
+ * The caller is NOT responsible for freeing the returned string.
+ * 
+ * @param train_id 
+ * @return int id of the first route found that is granted to train. 
+ *         NULL if no routes are granted to this train or the train is unknown/invalid.
+ */
+const char *interlocking_table_get_route_id_of_train(const char *train_id);
+
+/**
+ * Return the array of route IDs for a given source and destination signal.
+ * The caller is NOT responsible for freeing the array or its contents.
  * 
  * @return array if it exists, otherwise NULL
  */
 GArray *interlocking_table_get_route_ids(const char *source_id, const char *destination_id);
 
 /**
- * Return the first route between the source and destination signals.
- *
- * @param source_id
- * @param destination_id
- * @return
- */
-int interlocking_table_get_route_id(const char *source_id, const char *destination_id);
-
-/**
- * Return the route (pointer to a struct) for a given route_id
+ * Return (pointer to) the route for a given route_id.
+ * The caller is NOT responsible for freeing the memory pointed to by the route pointer.
  *
  * @param route_id route
  * @return the route pointer if it exists, otherwise NULL

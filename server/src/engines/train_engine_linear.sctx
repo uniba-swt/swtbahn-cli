@@ -1,0 +1,78 @@
+//#code.naming prefix
+
+// Invariant properties
+@Invariant 
+  "nominal_speed < 127", 
+  "Nominal speed shall never exceed the train's maximum speed step of 126."
+  
+@Invariant 
+  "nominal_speed >= 0", 
+  "Nominal speed shall never be negative."
+
+
+scchart train_engine_linear {
+  @AssumeRange -130, 130
+  input int requested_speed
+  input bool requested_forwards
+  
+  @AssumeRange -130, 130
+  output int nominal_speed = 0
+  output bool nominal_forwards = true
+  
+  signal pure new_request
+  
+  const int speed_increment = 1
+  const int nominal_speed_min = 0
+  const int nominal_speed_max = 126
+  
+  region Detect "Detect request changes" {
+    initial state Check
+    if (pre(requested_speed) != requested_speed) || (pre(requested_forwards) != requested_forwards)
+      do new_request
+      go to Check 
+  }
+  
+  region Controller {
+    initial state Handle "Handle new request" {
+      initial state Difference "Determine speed difference"
+      immediate if !nominal_forwards && requested_forwards
+        go to DriveForward
+      immediate if nominal_forwards && !requested_forwards
+        go to DriveBackward
+      go to SameDirection
+      
+    
+      state DriveForward "Change direction to drive forward"
+      if nominal_speed > 0
+        do nominal_speed -= speed_increment
+        go to DriveForward
+      immediate if nominal_speed == 0
+        do nominal_forwards = true
+        go to SameDirection
+      
+      
+      state DriveBackward "Change direction to drive backward"
+      if nominal_speed > 0
+        do nominal_speed -= speed_increment
+        go to DriveBackward
+      immediate if nominal_speed == 0
+        do nominal_forwards = false
+        go to SameDirection
+      
+
+      state SameDirection "Same direction"
+      if nominal_speed < requested_speed && nominal_speed < nominal_speed_max
+        do nominal_speed += speed_increment
+        go to SameDirection
+      if nominal_speed > requested_speed && nominal_speed > nominal_speed_min
+        do nominal_speed -= speed_increment
+        go to SameDirection
+      go to Wait
+      
+            
+      state Wait
+
+    } if new_request abort to Handle 
+  }
+  
+}

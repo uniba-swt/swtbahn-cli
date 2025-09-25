@@ -72,6 +72,8 @@ bool parse_config_data(const char *config_dir, t_config_data *config_data) {
 }
 
 void free_config_data(t_config_data config_data) {
+    syslog_server(LOG_NOTICE, "Config data freeing start");
+    
     if (config_data.module_name != NULL) {
         free(config_data.module_name);
         config_data.module_name = NULL;

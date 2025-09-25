@@ -66,8 +66,10 @@ e_track_mapping_level track_mapping = TRACK_ROOT;
 e_track_sequence_level track_sequence = TRACK_SEQ_NONE;
 
 void free_track_id_key(void *pointer) {
-    log_debug("free key: %s", (char *) pointer);
-    free(pointer);
+    if (pointer != NULL) {
+        free(pointer);
+        pointer = NULL;
+    }
 }
 
 void free_segment(void *pointer) {
@@ -76,7 +78,6 @@ void free_segment(void *pointer) {
         return;
     }
     if (segment->id != NULL) {
-        log_debug("free segment: %s", segment->id);
         free(segment->id);
         segment->id = NULL;
     }
@@ -89,24 +90,20 @@ void free_signal(void *pointer) {
         return;
     }
     if (signal->id != NULL) {
-        log_debug("free signal: %s", signal->id);
         free(signal->id);
         signal->id = NULL;
     }
     if (signal->aspects != NULL) {
-        log_debug("\tfree signal aspects");
         for (int i = 0; i < signal->aspects->len; ++i) {
             free(g_array_index(signal->aspects, char *, i));
         }
         g_array_free(signal->aspects, true);
     }
     if (signal->initial != NULL) {
-        log_debug("\tfree signal initial");
         free(signal->initial);
         signal->initial = NULL;
     }
     if (signal->type != NULL) {
-        log_debug("\tfree signal type");
         free(signal->type);
         signal->type = NULL;
     }
@@ -120,27 +117,22 @@ void free_point(void *pointer) {
         return;
     }
     if (point->id != NULL) {
-        log_debug("free point: %s", point->id);
         free(point->id);
         point->id = NULL;
     }
     if (point->initial != NULL) {
-        log_debug("\tfree point initial");
         free(point->initial);
         point->initial = NULL;
     }
     if (point->normal_aspect != NULL) {
-        log_debug("\tfree point normal aspect");
         free(point->normal_aspect);
         point->normal_aspect = NULL;
     }
     if (point->reverse_aspect != NULL) {
-        log_debug("\tfree point reverse aspect");
         free(point->reverse_aspect);
         point->reverse_aspect = NULL;
     }
     if (point->segment != NULL) {
-        log_debug("\tfree point segment");
         free(point->segment);
         point->segment = NULL;
     }
@@ -153,25 +145,21 @@ void free_peripheral(void *pointer) {
         return;
     }
     if (peripheral->id != NULL) {
-        log_debug("free peripheral: %s", peripheral->id);
         free(peripheral->id);
         peripheral->id = NULL;
     }
 
     if (peripheral->aspects != NULL) {
-        log_debug("\tfree peripheral aspects");
         for (int i = 0; i < peripheral->aspects->len; ++i) {
             free(g_array_index(peripheral->aspects, char *, i));
         }
         g_array_free(peripheral->aspects, true);
     }
     if (peripheral->initial != NULL) {
-        log_debug("\tfree peripheral initial");
         free(peripheral->initial);
         peripheral->initial = NULL;
     }
     if (peripheral->type != NULL) {
-        log_debug("\tfree peripheral type");
         free(peripheral->type);
         peripheral->type = NULL;
     }

@@ -37,10 +37,12 @@
 static const char *config_directory = "../../configurations/swtbahn-full/";
 
 static void test_setup(void) {
+	// Probably not necessary as no test calls track_state_get_value -> investigate
 	bahn_data_util_init_cached_track_state();
 }
 
 static void test_teardown(void) {
+	// Probably not necessary as no test calls track_state_get_value -> investigate
 	bahn_data_util_free_cached_track_state();
 }
 

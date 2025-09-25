@@ -76,8 +76,8 @@ e_extras_sequence_level extras_sequence = EXTRAS_SEQ_NONE;
 
 void free_extras_id_key(void *pointer) {
     if (pointer != NULL) {
-        log_debug("free key: %s", (char *) pointer);
         free(pointer);
+        pointer = NULL;
     }
 }
 void free_block(void *pointer) {
@@ -86,18 +86,15 @@ void free_block(void *pointer) {
         return;
     }
     if (block->id != NULL) {
-        log_debug("free block: %s", block->id);
         free(block->id);
         block->id = NULL;
     }
     if (block->direction != NULL) {
-        log_debug("\tfree block direction");
         free(block->direction);
         block->direction = NULL;
     }
 
     if (block->main_segments != NULL) {
-        log_debug("\tfree block main segments");
         for (int i = 0; i < block->main_segments->len; ++i) {
             free(g_array_index(block->main_segments, char *, i));
         }
@@ -105,7 +102,6 @@ void free_block(void *pointer) {
     }
 
     if (block->overlaps != NULL) {
-        log_debug("\tfree block overlaps");
         for (int i = 0; i < block->overlaps->len; ++i) {
             free(g_array_index(block->overlaps, char *, i));
         }
@@ -113,7 +109,6 @@ void free_block(void *pointer) {
     }
 
     if (block->signals != NULL) {
-        log_debug("\tfree block signals");
         for (int i = 0; i < block->signals->len; ++i) {
             free(g_array_index(block->signals, char *, i));
         }
@@ -121,7 +116,6 @@ void free_block(void *pointer) {
     }
 
     if (block->train_types != NULL) {
-        log_debug("\tfree block train types");
         for (int i = 0; i < block->train_types->len; ++i) {
             free(g_array_index(block->train_types, char *, i));
         }
@@ -137,17 +131,14 @@ void free_reverser(void *pointer) {
         return;
     }
     if (reverser->id != NULL) {
-        log_debug("free reverser: %s", reverser->id);
         free(reverser->id);
         reverser->id = NULL;
     }
     if (reverser->board != NULL) {
-        log_debug("\tfree reverser board");
         free(reverser->board);
         reverser->board = NULL;
     }
     if (reverser->block != NULL) {
-        log_debug("\tfree reverser block");
         free(reverser->block);
         reverser->block = NULL;
     }
@@ -160,12 +151,10 @@ void free_crossing(void *pointer) {
         return;
     }
     if (crossing->id != NULL) {
-        log_debug("free crossing: %s", crossing->id);
         free(crossing->id);
         crossing->id = NULL;
     }
     if (crossing->main_segment != NULL) {
-        log_debug("\tfree crossing main segment");
         free(crossing->main_segment);
         crossing->main_segment = NULL;
     }
@@ -178,17 +167,14 @@ void free_signal_type(void *pointer) {
         return;
     }
     if (signal_type->id != NULL) {
-        log_debug("free signal type: %s", signal_type->id);
         free(signal_type->id);
         signal_type->id = NULL;
     }
     if (signal_type->initial != NULL) {
-        log_debug("\tfree signal type initial");
         free(signal_type->initial);
         signal_type->initial = NULL;
     }
     if (signal_type->aspects != NULL) {
-        log_debug("\tfree signal type aspects");
         for (int i = 0; i < signal_type->aspects->len; ++i) {
             free(g_array_index(signal_type->aspects, char *, i));
         }
@@ -203,27 +189,22 @@ void free_composite_signal(void *pointer) {
         return;
     }
     if (composite_signal->id != NULL) {
-        log_debug("free composite signal: %s", composite_signal->id);
         free(composite_signal->id);
         composite_signal->id = NULL;
     }
     if (composite_signal->distant != NULL) {
-        log_debug("\tfree composite signal distant");
         free(composite_signal->distant);
         composite_signal->distant = NULL;
     }
     if (composite_signal->entry != NULL) {
-        log_debug("\tfree composite signal entry");
         free(composite_signal->entry);
         composite_signal->entry = NULL;
     }
     if (composite_signal->exit != NULL) {
-        log_debug("\tfree composite signal exit");
         free(composite_signal->exit);
         composite_signal->exit = NULL;
     }
     if (composite_signal->block != NULL) {
-        log_debug("\tfree composite signal block");
         free(composite_signal->block);
         composite_signal->block = NULL;
     }
@@ -236,17 +217,14 @@ void free_peripheral_type(void *pointer) {
         return;
     }
     if (peripheral_type->id != NULL) {
-        log_debug("free peripheral type: %s", peripheral_type->id);
         free(peripheral_type->id);
         peripheral_type->id = NULL;
     }
     if (peripheral_type->initial != NULL) {
-        log_debug("\tfree peripheral type initial");
         free(peripheral_type->initial);
         peripheral_type->initial = NULL;
     }
     if (peripheral_type->aspects != NULL) {
-        log_debug("\tfree peripheral type aspects");
         for (int i = 0; i < peripheral_type->aspects->len; ++i) {
             free(g_array_index(peripheral_type->aspects, char *, i));
         }
@@ -265,7 +243,6 @@ void nullify_extras_config_tables(void) {
 }
 
 void extras_yaml_sequence_start(char *scalar) {
-    log_debug("extras_yaml_sequence_start: %s", scalar);
     switch (extras_mapping) {
         case EXTRAS_ROOT:
             if (str_equal(scalar, "blocks") || str_equal(scalar, "platforms")) {
@@ -327,7 +304,6 @@ void extras_yaml_sequence_start(char *scalar) {
 }
 
 void extras_yaml_sequence_end(char *scalar) {
-    log_debug("extras_yaml_sequence_end: %s", scalar);
     // decrease sequence level
     switch (extras_sequence) {
         case BLOCKS:
@@ -356,7 +332,6 @@ void extras_yaml_sequence_end(char *scalar) {
 }
 
 void extras_yaml_mapping_start(char *scalar) {
-    log_debug("extras_yaml_mapping_start: %s", scalar);
     switch (extras_sequence) {
         case BLOCKS:
             extras_mapping = BLOCK;
@@ -435,8 +410,6 @@ void extras_yaml_mapping_start(char *scalar) {
 }
 
 void extras_yaml_mapping_end(char *scalar) {
-    log_debug("extras_yaml_mapping_end: %s", scalar);
-
     // insert mapping to hash table
     switch (extras_mapping) {
         case BLOCK:
@@ -496,11 +469,9 @@ void extras_yaml_scalar(char *last_scalar, char *cur_scalar) {
         g_array_append_val(cur_block->train_types, cur_scalar);
         return;
     } else if (extras_sequence == SIGNAL_TYPE_ASPECTS) {
-        log_debug("insert aspect to signal type: %s, %s", cur_signal_type->id, cur_scalar);
         g_array_append_val(cur_signal_type->aspects, cur_scalar);
         return;
     } else if (extras_sequence == PERIPHERAL_TYPE_ASPECTS) {
-        log_debug("insert aspect to peripheral type: %s, %s", cur_peripheral_type->id, cur_scalar);
         g_array_append_val(cur_peripheral_type->aspects, cur_scalar);
         return;
     }

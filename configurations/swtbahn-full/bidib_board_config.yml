@@ -21,6 +21,9 @@ boards:
     unique-id: 0x45000D6B0031EF
   - id: slave
     unique-id: 0x42000D6700EAEB
+    features:
+      - number: 0x03
+        value: 0x14
   - id: onecontrol3
     unique-id: 0x45000D8D00BDF1
   - id: onecontrol4
