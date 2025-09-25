@@ -29,13 +29,15 @@
 <body>
 	
 	<!-- Header, visible in both train selection and driving/destination choosing views -->
-	<div class="bahn-header fontSizeScale">
+	<div class="bahn-header">
 		<img id="bahn-logo" src="../swtbahn-logo.png">
-		<button id="endGameButton" type="button" class="btn btn-outline-primary">
-			<span lang="de">Beenden</span>
-			<span lang="en">End Trip</span>
-		</button>
-		<div id="tippsAndLang-container" class="btn-group">
+		<div id="endGame-container" class="bahnHeaderButtonContainer">
+			<button id="endGameButton" type="button" class="btn btn-outline-primary">
+				<span lang="de">Beenden</span>
+				<span lang="en">End Trip</span>
+			</button>
+		</div>
+		<div id="tippsAndLang-container" class="btn-group bahnHeaderButtonContainer">
 			<input id="changeTips" type="checkbox" class="btn-check">
 			<label id="tipsLabel" class="btn btn-outline-primary" for="changeTips">
 				<span lang="de">Tipps</span>
@@ -244,7 +246,7 @@
 		<!-- Destination Choosing -->
 		<div class="controlContainer" id="destinationsFormContainer">
 			<form id="destinationsForm">
-				<label class="fontSizeScale col-form-label-lg me-md-5"><b>
+				<label class="col-form-label-lg me-md-5"><b>
 					<span lang="de">
 						<span class='easy'>Klicke auf das Symbol, zu dem du fahren möchtest:</span>
 						<span class='normal'>Mögliche Ziele:</span>
@@ -301,16 +303,16 @@
 		<div class="controlContainer">
 			<form id="drivingForm">
 				<div class="row">
-					<label class="fontSizeScale col-auto col-form-label-lg"><b>
+					<label class="col-auto col-form-label-lg"><b>
 						<span lang="de">Fahrzeit:</span>
 						<span lang="en">Driving Time:</span>
 					</b></label>
-					<label class="fontSizeScale col-auto col-form-label-lg">
+					<label class="col-auto col-form-label-lg">
 						<span id="timerMinute">00</span>:<span id="timerSecond">00</span>
 					</label>
 				</div>
 				<div id="chosenDestination" class="row">
-					<label class="fontSizeScale col-auto col-form-label-lg"><b>
+					<label class="col-auto col-form-label-lg"><b>
 						<span lang="de">Ziel:</span>
 						<span lang="en">Destination:</span>
 					</b></label>
@@ -318,7 +320,7 @@
 						<use id="destination" href="#flagDef" class="flagThemeBlank"></use>
 					</svg>
 				</div>
-				<label class="fontSizeScale col-form-label-lg">
+				<label class="col-form-label-lg">
 					<span lang="de">
 						<span class="easy">Bitte fahren Sie Ihren Zug zum Ziel und halten Sie kurz vor dem Ziel an</span>
 					</span>
@@ -326,26 +328,26 @@
 						<span class="easy">Please drive your train to the destination and then stop</span>
 					</span>
 				</label>
-				<label class="fontSizeScale col-auto col-form-label-lg"><b>
+				<label class="col-auto col-form-label-lg"><b>
 					<span lang="de">Geschwindigkeitssteuerung:</span>
 					<span lang="en">Speed control:</span>
 				</b></label>
 				<div class="input-group row">
 					<div class="col">
-						<div class="btn-group" role="group">
-							<button id="stop" type="button" class="btn btn-danger btn-lg" value="0">
+						<div id="speedButtonContainer" class="btn-group" role="group">
+							<button id="stop" type="button" class="btn btn-danger speedButton" value="0">
 								<span lang="de">Stop</span>
 								<span lang="en">Stop</span>
 							</button>
-							<button id="slow" type="button" class="btn btn-warning btn-lg" value="20">
+							<button id="slow" type="button" class="btn btn-warning speedButton" value="20">
 								<span lang="de">Langsam</span>
 								<span lang="en">Slow</span>
 							</button>
-							<button id="normal" type="button" class="btn btn-secondary btn-lg" value="40">
+							<button id="normal" type="button" class="btn btn-secondary speedButton" value="40">
 								<span lang="de">Normal</span>
 								<span lang="en">Normal</span>
 							</button>
-							<button id="fast" type="button" class="btn btn-success btn-lg" value="60">
+							<button id="fast" type="button" class="btn btn-success speedButton" value="60">
 								<span lang="de">Schnell</span>
 								<span lang="en">Fast</span>
 							</button>

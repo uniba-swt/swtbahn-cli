@@ -4,25 +4,23 @@ body {
   line-height: 1.4;
 }
 
-.fontSizeScale {
-  font-size: calc(.6em + 1.05vw) !important;
-}
-
 /* ==================== Page Header Element Styling ==================== */
 #bahn-logo {
   max-width: 35%;
   width: auto;
   max-height: inherit;
+  margin-right: 0.5rem;
 }
 
-#endGameButton {
-  font-size: inherit !important;
-  margin-right: 5px;
+.bahnHeaderButtonContainer {
+  padding-top: 0.25rem;
+}
+
+#endGame-container {
+  margin-right: 2vw;
   margin-left: auto;
-}
-
-#tipsLabel {
-  font-size: inherit !important;
+  /*to behave the same as the tipps and language div*/
+	display: inline-flex; 
 }
 
 .bahn-header {
@@ -37,8 +35,20 @@ body {
 }
 
 @media (orientation: landscape) {
-  .bahn-header {
-    max-height: 7vh !important;
+  /*
+  Limit the height of the header for screens 
+  that are not too narrow in aspect ratio, e.g., iPads. 
+  Modern Smartphones have a slender aspect ratio
+  that causes 8vh to be quite small, too small for normal text.
+  */
+  @media (max-aspect-ratio: 1.8) {
+    .bahn-header {
+      max-height: 8vh !important;
+    }
+    
+    .bahnHeaderButtonContainer {
+      max-height: 8vh !important;
+    }
   }
 }
 
@@ -83,9 +93,15 @@ body {
     padding: 0.5rem 0.5rem;
   }
   
-  .card-img-top {
-    object-fit: cover;
-    height: 11vh;
+  @media (max-aspect-ratio: 1.8) {
+    /* For non-slender screens (i.e., iPads, but not modern smartphones),
+       limit the size of the train image, in order to fit all trains on the
+       screen.
+    */
+    .card-img-top {
+      object-fit: cover;
+      height: 11vh;
+    }
   }
 }
 
@@ -179,6 +195,19 @@ body {
     height: auto;
     margin-right: 4%;
     margin-bottom: 4%;
+  }
+  
+  .controlContainer {
+    width: 100%;
+  }
+  
+  #speedButtonContainer {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .speedButton {
+    max-width: 25%;
   }
 }
 
