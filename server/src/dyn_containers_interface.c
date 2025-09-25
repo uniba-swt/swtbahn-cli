@@ -44,7 +44,7 @@ pthread_mutex_t dyn_containers_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t dyn_containers_thread;
 static pthread_t dyn_containers_actuate_thread;
 
-t_dyn_containers_interface *dyn_containers_interface;
+t_dyn_containers_interface *dyn_containers_interface = NULL;
 #define MICROSECOND 1
 static const int let_period_us = 10000 * MICROSECOND;	// 0.01 seconds
 
@@ -55,14 +55,16 @@ static const key_t shm_key = 1234;
 long long dyn_containers_actuate_reaction_counter = 0;
 
 
-void dyn_containers_reset_interface(
-        t_dyn_containers_interface * const dyn_containers_interface) {
+static void dyn_containers_reset_interface(t_dyn_containers_interface *dyn_containers_interface) {
+	if (dyn_containers_interface == NULL) {
+		return;
+	}
 	dyn_containers_interface->running = false;
 	dyn_containers_interface->terminate = false;
-
+	
 	dyn_containers_interface->let_period_us = let_period_us;
 	
-	for (size_t i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
 		dyn_containers_interface->train_engines_io[i] = 
 		(struct t_train_engine_io) {
 			.input_load = false, 
@@ -73,7 +75,7 @@ void dyn_containers_reset_interface(
 			.output_name = ""
 		};
 	}
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		dyn_containers_interface->train_engine_instances_io[i] = 
 		(struct t_train_engine_instance_io) {
 			.input_grab = false,
@@ -92,7 +94,7 @@ void dyn_containers_reset_interface(
 		};
 	}
 	
-	for (size_t i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
 		dyn_containers_interface->interlockers_io[i] = 
 		(struct t_interlocker_io) {
 			.input_load = false,
@@ -101,7 +103,7 @@ void dyn_containers_reset_interface(
 			.output_in_use = false
 		};
 	}
-	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
 		dyn_containers_interface->interlocker_instances_io[i] = 
 		(struct t_interlocker_instance_io) {
 			.input_grab = false,
@@ -112,12 +114,51 @@ void dyn_containers_reset_interface(
 			.input_src_signal_id = "",
 			.input_dst_signal_id = "",
 			.input_train_id = "",
-
+			
 			.output_in_use = false,
 			.output_terminated = false,
 			.output_interlocker_type = -1
 		};
 	}
+}
+
+static void dyn_actuate_specific_engine(int index_in_grabbed_trains) {
+	int i = index_in_grabbed_trains;
+	if (i >= TRAIN_ENGINE_INSTANCE_COUNT_MAX) {
+		return;
+	} else if (!grabbed_trains[i].is_valid || grabbed_trains[i].name == NULL) {
+		return;
+	}
+	
+	const int dyn_cont_eng_instance = grabbed_trains[i].dyn_containers_engine_instance;
+	
+	struct t_train_engine_instance_io *eng_instance = 
+			&dyn_containers_interface->train_engine_instances_io[dyn_cont_eng_instance];
+	if (eng_instance->output_in_use) {
+		if (eng_instance->output_nominal_speed != eng_instance->output_nominal_speed_pre
+				|| eng_instance->output_nominal_forwards != eng_instance->output_nominal_forwards_pre) {
+			if (bidib_set_train_speed(grabbed_trains[i].name->str, 
+				                      eng_instance->output_nominal_forwards
+				                       ? eng_instance->output_nominal_speed 
+				                         : -eng_instance->output_nominal_speed, 
+				                      grabbed_trains[i].track_output)) {
+				syslog_server(LOG_ERR, 
+				              "Dyn containers actuate - train: %s - unable to set train speed",
+				              grabbed_trains[i].name->str);
+			} else {
+				bidib_flush();
+				syslog_server(LOG_NOTICE, 
+				              "Dyn containers actuate - train: %s speed: %d - set train speed",
+				              grabbed_trains[i].name->str, 
+				              eng_instance->output_nominal_forwards 
+				               ? eng_instance->output_nominal_speed 
+				                 : -eng_instance->output_nominal_speed);
+				eng_instance->output_nominal_speed_pre = eng_instance->output_nominal_speed;
+				eng_instance->output_nominal_forwards_pre = eng_instance->output_nominal_forwards;
+			}
+		}
+	}
+	
 }
 
 // Execute the outputs of the train engines and interlockers via the BiDiB library
@@ -130,63 +171,30 @@ static void *dyn_containers_actuate(void *_) {
 	do {
 		pthread_mutex_lock(&grabbed_trains_mutex);
 		pthread_mutex_lock(&dyn_containers_mutex);
-
-		for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-			if (grabbed_trains[i].is_valid && grabbed_trains[i].name != NULL) {
-				const int dyn_containers_engine_instance = 
-				   grabbed_trains[i].dyn_containers_engine_instance;
-				        
-				struct t_train_engine_instance_io * const engine_instance = 
-				    &dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
-				if (engine_instance->output_in_use) {
-					if (engine_instance->output_nominal_speed != engine_instance->output_nominal_speed_pre
-							|| engine_instance->output_nominal_forwards != engine_instance->output_nominal_forwards_pre) {
-						if (bidib_set_train_speed(grabbed_trains[i].name->str, 
-												  engine_instance->output_nominal_forwards
-												  ? engine_instance->output_nominal_speed 
-												  : -engine_instance->output_nominal_speed, 
-												  grabbed_trains[i].track_output)) {
-							syslog_server(LOG_ERR, 
-							              "Dyn containers actuate - train: %s - invalid parameters",
-							              grabbed_trains[i].name->str);
-						} else {
-							bidib_flush();
-							syslog_server(LOG_NOTICE, 
-							              "Dyn containers actuate - train: %s speed: %d - set train speed",
-							              grabbed_trains[i].name->str, 
-							              engine_instance->output_nominal_forwards 
-							              ? engine_instance->output_nominal_speed 
-							              : -engine_instance->output_nominal_speed);
-							engine_instance->output_nominal_speed_pre = engine_instance->output_nominal_speed;
-							engine_instance->output_nominal_forwards_pre = engine_instance->output_nominal_forwards;
-						}
-					}
-				}
-			}
+		
+		for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+			dyn_actuate_specific_engine(i);
 		}
 		
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		pthread_mutex_unlock(&grabbed_trains_mutex);
-
+		
 		dyn_containers_actuate_reaction_counter++;
 		usleep(let_period_us);
 	} while (running);
-
+	
 	dyn_containers_interface->terminate = true;
 	
-	// TODO: Ensure that all trains really stop
+	/// TODO: Ensure that all trains really stop
 	
 	pthread_exit(NULL);
 }
 
 int dyn_containers_start(void) {
-	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, 
-	                          &dyn_containers_interface);
+	dyn_containers_shm_create(&shm_config, shm_permissions, shm_key, &dyn_containers_interface);
 	dyn_containers_reset_interface(dyn_containers_interface);
-	pthread_create(&dyn_containers_thread, NULL, 
-	               forec_dyn_containers, NULL);
-	pthread_create(&dyn_containers_actuate_thread, NULL, 
-	               dyn_containers_actuate, NULL);
+	pthread_create(&dyn_containers_thread, NULL, forec_dyn_containers, NULL);
+	pthread_create(&dyn_containers_actuate_thread, NULL, dyn_containers_actuate, NULL);
 	return 0;
 }
 
@@ -199,45 +207,38 @@ void dyn_containers_stop(void) {
 	syslog_server(LOG_NOTICE, "Closed dynamic library containers");
 }
 
-const bool dyn_containers_is_running(void) {
-	return dyn_containers_interface->running;
+bool dyn_containers_is_running(void) {
+	return dyn_containers_interface != NULL && dyn_containers_interface->running;
 }
 
 // General function to obtain a shared memory segment based on a given key
-void dyn_containers_shm_create(t_dyn_shm_config * const shm_config, 
-        const int shm_permissions, const key_t shm_key, 
-        t_dyn_containers_interface ** const shm_payload) {
+void dyn_containers_shm_create(t_dyn_shm_config *shm_config, int shm_permissions, key_t shm_key, 
+                               t_dyn_containers_interface **shm_payload) {
 	// Create our shared memory segment with the given shmKey.
 	shm_config->size = 1 * sizeof(t_dyn_containers_interface);
 	shm_config->permissions = shm_permissions;
 	shm_config->key = shm_key;
-	shm_config->shmid = shmget(shm_config->key, shm_config->size, 
-	                           shm_config->permissions);
+	shm_config->shmid = shmget(shm_config->key, shm_config->size, shm_config->permissions);
 	
 	if (shm_config->shmid == -1) {
 		int error_number = errno;
-		syslog_server(LOG_ERR, 
-		              "Error getting shared memory segment: errono %d", 
-		              error_number);
+		syslog_server(LOG_ERR, "Error getting shared memory segment: errono %d", error_number);
 		return;
 	}
-
+	
 	// Attach the shared memory segment to our data space
 	*shm_payload = shmat(shm_config->shmid, NULL, 0);
 	if (shm_payload == (void *) -1) {
-		syslog_server(LOG_ERR, 
-		              "Error attaching shared memory segment to process' data space");
+		syslog_server(LOG_ERR, "Error attaching shared memory segment to process' data space");
 		return;
-	}	
+	}
 }
 
 // Detaches the shared memory segment from our data space
-void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) {
+void dyn_containers_shm_detach(t_dyn_containers_interface **shm_payload) {
 	if (shmdt(*shm_payload) == -1) {
 		int error_number = errno;
-		syslog_server(LOG_ERR, 
-		              "Error detaching shared memory segment: errono %d", 
-		              error_number);
+		syslog_server(LOG_ERR, "Error detaching shared memory segment: errono %d", error_number);
 		return;
 	}
 	
@@ -245,24 +246,29 @@ void dyn_containers_shm_detach(t_dyn_containers_interface ** const shm_payload) 
 }
 
 // Deletes the shared memory segment from our data space
-void dyn_containers_shm_delete(t_dyn_shm_config * const shm_config) {
+void dyn_containers_shm_delete(t_dyn_shm_config *shm_config) {
+	if (shm_config == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Error deleting shared memory segment: invalid (NULL) shm_config");
+		return;
+	}
 	shm_config->shmid = shmctl(shm_config->shmid, IPC_RMID, NULL);
 	if (shm_config->shmid == -1) {
 		int error_number = errno;
-		syslog_server(LOG_ERR, 
-		              "Error deleting shared memory segment: errono %d", 
-		              error_number);
+		syslog_server(LOG_ERR, "Error deleting shared memory segment: errono %d", error_number);
 		return;
 	}
 }
 
 // Finds the first available slot for a train engine
-// Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_free_engine_slot(void) {
+// Shall only be called while the dyn_containers_mutex is locked
+int dyn_containers_get_free_engine_slot(void) {
+	if (dyn_containers_interface == NULL) {
+		return -1;
+	}
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
-		struct t_train_engine_io * const train_engine_io = 
-		    &dyn_containers_interface->train_engines_io[i];
-		if (!train_engine_io->output_in_use) {
+		struct t_train_engine_io *tr_eng_io = &dyn_containers_interface->train_engines_io[i];
+		if (!tr_eng_io->output_in_use) {
 			return i;
 		}
 	}
@@ -270,112 +276,118 @@ const int dyn_containers_get_free_engine_slot(void) {
 }
 
 // Finds the slot of a train engine
-// Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_engine_slot(const char name[]) {
+// Shall only be called while the dyn_containers_mutex is locked
+int dyn_containers_get_engine_slot(const char name[]) {
+	if (dyn_containers_interface == NULL) {
+		return -1;
+	}
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
-		struct t_train_engine_io * const train_engine_io = 
-		    &dyn_containers_interface->train_engines_io[i];
-		if (train_engine_io->output_in_use && 
-		    strcmp(train_engine_io->output_name, name) == 0) {
+		struct t_train_engine_io *tr_eng_io = &dyn_containers_interface->train_engines_io[i];
+		if (tr_eng_io->output_in_use && strcmp(tr_eng_io->output_name, name) == 0) {
 			return i;
 		}
 	}
 	return -1;
 }
 
-
 // Loads train engine into specified slot
-// Can only be called while the dyn_containers_mutex is locked
-void dyn_containers_set_engine(const int engine_slot, const char filepath[]) {
-	struct t_train_engine_io * const train_engine_io = 
-	    &dyn_containers_interface->train_engines_io[engine_slot];
-	train_engine_io->input_load = true;
-	train_engine_io->input_unload = false;
-	strcpy(train_engine_io->input_filepath, filepath);
+// Shall only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_engine(int engine_slot, const char filepath[]) {
+	if (dyn_containers_interface == NULL) {
+		return;
+	}
+	struct t_train_engine_io *tr_eng_io = &dyn_containers_interface->train_engines_io[engine_slot];
+	tr_eng_io->input_load = true;
+	tr_eng_io->input_unload = false;
+	strcpy(tr_eng_io->input_filepath, filepath);
 	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_NOTICE, 
-				  "Waiting for train engine %s to be dynamically loaded into slot %d", 
-				  filepath, engine_slot);
-	while (!train_engine_io->output_in_use) {
+	              "Waiting for train engine %s to be dynamically loaded into slot %d", 
+	              filepath, engine_slot);
+	while (!tr_eng_io->output_in_use) {
 		usleep(let_period_us);
 	}
 	pthread_mutex_lock(&dyn_containers_mutex);
-	train_engine_io->input_load = false;
+	tr_eng_io->input_load = false;
 	syslog_server(LOG_NOTICE, 
-				  "Train engine %s has been dynamically loaded into engine slot %d", 
-				  filepath, engine_slot);
+	              "Train engine %s has been dynamically loaded into engine slot %d", 
+	              filepath, engine_slot);
 }
 
 // Unloads train engine at specified slot
-// Can only be called while the dyn_containers_mutex is locked
-bool dyn_containers_free_engine(const int engine_slot) {
+// Shall only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_engine(int engine_slot) {
+	if (dyn_containers_interface == NULL) {
+		return false;
+	}
 	// Check that no instance of the train engine is in use
-	for (size_t i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		struct t_train_engine_instance_io * const engine_instance = 
-			&dyn_containers_interface->train_engine_instances_io[i];
-		if (engine_instance->output_in_use && 
-		    engine_instance->output_train_engine_type == engine_slot) {
+	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
+		struct t_train_engine_instance_io *eng_instance = 
+				&dyn_containers_interface->train_engine_instances_io[i];
+		if (eng_instance->output_in_use && eng_instance->output_train_engine_type == engine_slot) {
 			return false;
 		}
 	}
-
+	
 	// Unload the train engine
-	struct t_train_engine_io * const train_engine_io = 
-	    &dyn_containers_interface->train_engines_io[engine_slot];
-	train_engine_io->input_load = false;
-	train_engine_io->input_unload = true;
-	strcpy(train_engine_io->input_filepath, "");
+	struct t_train_engine_io *tr_eng_io = &dyn_containers_interface->train_engines_io[engine_slot];
+	tr_eng_io->input_load = false;
+	tr_eng_io->input_unload = true;
+	strcpy(tr_eng_io->input_filepath, "");
 	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_NOTICE, 
-				  "Waiting for train engine %s at slot %d to be unloaded", 
-				  train_engine_io->input_filepath, engine_slot);
-	while (train_engine_io->output_in_use) {
+	              "Waiting for train engine %s at slot %d to be unloaded", 
+	              tr_eng_io->input_filepath, engine_slot);
+	while (tr_eng_io->output_in_use) {
 		usleep(let_period_us);
 	}
 	pthread_mutex_lock(&dyn_containers_mutex);
-	train_engine_io->input_unload = false;
-	syslog_server(LOG_NOTICE, 
-				  "Unloaded train engine at slot %d", 
-				  engine_slot);
+	tr_eng_io->input_unload = false;
+	syslog_server(LOG_NOTICE, "Unloaded train engine at slot %d", engine_slot);
 	return true;
 }
 
-GString *dyn_containers_get_train_engines(void) {
-	GString *train_engine_names = g_string_new(NULL);
-	int i = 0;
-	for (i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
-		struct t_train_engine_io * const train_engine_io = 
-		    &dyn_containers_interface->train_engines_io[i];
-		if (!train_engine_io->output_in_use) {
+GArray *dyn_containers_get_train_engines_arr(void) {
+	if (dyn_containers_interface == NULL) {
+		return NULL;
+	}
+	GArray *train_engine_names = g_array_new(FALSE, FALSE, sizeof(char *));
+	pthread_mutex_lock(&dyn_containers_mutex);
+	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; ++i) {
+		const struct t_train_engine_io *tr_eng_io = &dyn_containers_interface->train_engines_io[i];
+		if (!tr_eng_io->output_in_use) {
 			continue;
 		}
-		// Copy string
-		if (i != 0) {
-			g_string_append(train_engine_names, ",");
+		char *name = strdup(tr_eng_io->output_name);
+		if (name != NULL) {
+			g_array_append_val(train_engine_names, name);
+		} else {
+			syslog_server(LOG_ERR, "dyn_containers_get_train_engines_arr unable to allocate memory");
 		}
-		g_string_append(train_engine_names, train_engine_io->output_name);
 	}
+	pthread_mutex_unlock(&dyn_containers_mutex);
 	return train_engine_names;
 }
 
-int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train, 
-                                             const char *train, const char *engine) {	
-	if (engine == NULL) {
-		syslog_server(LOG_ERR, "Could not set train engine because engine was NULL");
+int dyn_containers_set_train_engine_instance(t_train_data *grabbed_train, 
+                                             const char *train, const char *engine) {
+	if (engine == NULL || grabbed_train == NULL) {
+		syslog_server(LOG_ERR, "Set train engine instance: invalid (NULL) parameters");
+		return 1;
+	} else if (dyn_containers_interface == NULL) {
 		return 1;
 	}
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	int train_engine_type = -1;
 	for (int i = 0; i < TRAIN_ENGINE_COUNT_MAX; i++) {
-		struct t_train_engine_io * const train_engine_io = 
-		    &dyn_containers_interface->train_engines_io[i];
+		struct t_train_engine_io *train_engine_io = &dyn_containers_interface->train_engines_io[i];
 		if (strcmp(train_engine_io->output_name, engine) == 0) {
 			train_engine_type = i;
 			break;
 		}
 	}
-
+	
 	if (train_engine_type == -1) {
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		syslog_server(LOG_ERR, "Engine %s could not be found", engine);
@@ -383,21 +395,21 @@ int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train,
 	}
 	
 	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
-		struct t_train_engine_instance_io * const train_engine_instance_io = 
-		    &dyn_containers_interface->train_engine_instances_io[i];
-		if (!train_engine_instance_io->output_in_use) {
-			train_engine_instance_io->input_grab = true;
-			train_engine_instance_io->input_train_engine_type = train_engine_type;
-			train_engine_instance_io->input_requested_speed = 0;
-			train_engine_instance_io->input_requested_forwards = true;
+		struct t_train_engine_instance_io *tr_eng_instance_io = 
+				&dyn_containers_interface->train_engine_instances_io[i];
+		if (!tr_eng_instance_io->output_in_use) {
+			tr_eng_instance_io->input_grab = true;
+			tr_eng_instance_io->input_train_engine_type = train_engine_type;
+			tr_eng_instance_io->input_requested_speed = 0;
+			tr_eng_instance_io->input_requested_forwards = true;
 			pthread_mutex_unlock(&dyn_containers_mutex);
-
+			
 			do {
 				usleep(let_period_us);
-			} while (!train_engine_instance_io->output_in_use);
+			} while (!tr_eng_instance_io->output_in_use);
 			
 			pthread_mutex_lock(&dyn_containers_mutex);
-			train_engine_instance_io->input_grab = false;
+			tr_eng_instance_io->input_grab = false;
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			
 			grabbed_train->dyn_containers_engine_instance = i;
@@ -405,53 +417,58 @@ int dyn_containers_set_train_engine_instance(t_train_data * const grabbed_train,
 			return 0;
 		}
 	}
-
+	
 	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_ERR, "No engine instances available for train %s", train);
 	return 1;
 }
 
-void dyn_containers_free_train_engine_instance(const int dyn_containers_engine_instance) {
+void dyn_containers_free_train_engine_instance(int dyn_containers_engine_instance) {
 	if (dyn_containers_interface == NULL) {
 		return;
 	}
 	
-	struct t_train_engine_instance_io * const train_engine_instance_io = 
+	struct t_train_engine_instance_io *tr_eng_instance_io = 
 		&dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
-
-	pthread_mutex_lock(&dyn_containers_mutex);
-	train_engine_instance_io->input_release = true;
-	pthread_mutex_unlock(&dyn_containers_mutex);
-
-	do {
-		usleep(let_period_us);
-	} while (train_engine_instance_io->output_in_use);
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
-	train_engine_instance_io->input_release = false;
+	tr_eng_instance_io->input_release = true;
 	pthread_mutex_unlock(&dyn_containers_mutex);
-
-	syslog_server(LOG_NOTICE, "Train instance %d released", dyn_containers_engine_instance);
+	
+	do {
+		usleep(let_period_us);
+	} while (tr_eng_instance_io->output_in_use);
+	
+	pthread_mutex_lock(&dyn_containers_mutex);
+	tr_eng_instance_io->input_release = false;
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	
+	syslog_server(LOG_NOTICE, "Train engine instance %d released", dyn_containers_engine_instance);
 }
 
-void dyn_containers_set_train_engine_instance_inputs(const int dyn_containers_engine_instance, 
-                                                     const int requested_speed, 
-                                                     const char requested_forwards) {
-	struct t_train_engine_instance_io * const train_engine_instance_io = 
-		&dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
-
+void dyn_containers_set_train_engine_instance_inputs(int dyn_containers_engine_instance, 
+                                                     int requested_speed, 
+                                                     bool requested_forwards) {
+	if (dyn_containers_interface == NULL) {
+		return;
+	}
+	struct t_train_engine_instance_io *tr_eng_instance_io = 
+			&dyn_containers_interface->train_engine_instances_io[dyn_containers_engine_instance];
+	
 	pthread_mutex_lock(&dyn_containers_mutex);
-	train_engine_instance_io->input_requested_speed = requested_speed;
-	train_engine_instance_io->input_requested_forwards = requested_forwards;
+	tr_eng_instance_io->input_requested_speed = requested_speed;
+	tr_eng_instance_io->input_requested_forwards = requested_forwards;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }
 
 // Finds the first available slot for a interlocker
-// Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_free_interlocker_slot(void) {
+// Shall only be called while the dyn_containers_mutex is locked
+int dyn_containers_get_free_interlocker_slot(void) {
+	if (dyn_containers_interface == NULL) {
+		return -1;
+	}
 	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
-		struct t_interlocker_io * const interlocker_io =
-			&dyn_containers_interface->interlockers_io[i];
+		struct t_interlocker_io *interlocker_io = &dyn_containers_interface->interlockers_io[i];
 		if (!interlocker_io->output_in_use) {
 			return i;
 		}
@@ -460,13 +477,14 @@ const int dyn_containers_get_free_interlocker_slot(void) {
 }
 
 // Finds the slot of a interlocker
-// Can only be called while the dyn_containers_mutex is locked
-const int dyn_containers_get_interlocker_slot(const char name[]) {
+// Shall only be called while the dyn_containers_mutex is locked
+int dyn_containers_get_interlocker_slot(const char name[]) {
+	if (dyn_containers_interface == NULL) {
+		return -1;
+	}
 	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
-		struct t_interlocker_io * const interlocker_io =
-			&dyn_containers_interface->interlockers_io[i];
-		if (interlocker_io->output_in_use &&
-			strcmp(interlocker_io->output_name, name) == 0) {
+		const struct t_interlocker_io *interlocker_io = &dyn_containers_interface->interlockers_io[i];
+		if (interlocker_io->output_in_use && strcmp(interlocker_io->output_name, name) == 0) {
 			return i;
 		}
 	}
@@ -474,10 +492,13 @@ const int dyn_containers_get_interlocker_slot(const char name[]) {
 }
 
 // Loads interlocker into specified slot
-// Can only be called while the dyn_containers_mutex is locked
-void dyn_containers_set_interlocker(const int interlocker_slot, const char filepath[]) {
-	struct t_interlocker_io * const interlocker_io =
-		&dyn_containers_interface->interlockers_io[interlocker_slot];
+// Shall only be called while the dyn_containers_mutex is locked
+void dyn_containers_set_interlocker(int interlocker_slot, const char filepath[]) {
+	if (dyn_containers_interface == NULL) {
+		return;
+	}
+	struct t_interlocker_io *interlocker_io =
+			&dyn_containers_interface->interlockers_io[interlocker_slot];
 	interlocker_io->input_load = true;
 	interlocker_io->input_unload = false;
 	strcpy(interlocker_io->input_filepath, filepath);
@@ -496,45 +517,67 @@ void dyn_containers_set_interlocker(const int interlocker_slot, const char filep
 }
 
 // Unloads interlocker at specified slot
-// Can only be called while the dyn_containers_mutex is locked
-bool dyn_containers_free_interlocker(const int interlocker_slot) {
+// Shall only be called while the dyn_containers_mutex is locked
+bool dyn_containers_free_interlocker(int interlocker_slot) {
+	if (dyn_containers_interface == NULL) {
+		return false;
+	}
 	// Check that no instance of the interlocker is in use
-	for (size_t i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
-		struct t_interlocker_instance_io * const interlocker_instance =
-			&dyn_containers_interface->interlocker_instances_io[i];
+	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
+		struct t_interlocker_instance_io *interlocker_instance =
+				&dyn_containers_interface->interlocker_instances_io[i];
 		if (interlocker_instance->output_in_use &&
 			interlocker_instance->output_interlocker_type == interlocker_slot) {
 			return false;
 		}
 	}
-
+	
 	// Unload the interlocker
-	struct t_interlocker_io * const interlocker_io = 
-	    &dyn_containers_interface->interlockers_io[interlocker_slot];
+	struct t_interlocker_io *interlocker_io = 
+			&dyn_containers_interface->interlockers_io[interlocker_slot];
 	interlocker_io->input_load = false;
 	interlocker_io->input_unload = true;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 	syslog_server(LOG_NOTICE, 
-				  "Waiting for interlocker %s at slot %d to be unloaded", 
-				  interlocker_io->input_filepath, interlocker_slot);
+	              "Waiting for interlocker %s at slot %d to be unloaded", 
+	              interlocker_io->input_filepath, interlocker_slot);
 	strcpy(interlocker_io->input_filepath, "");
 	while (interlocker_io->output_in_use) {
 		usleep(let_period_us);
 	}
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_io->input_unload = false;
-	syslog_server(LOG_NOTICE, 
-				  "Unloaded interlocker at slot %d", 
-				  interlocker_slot);
+	syslog_server(LOG_NOTICE, "Unloaded interlocker at slot %d", interlocker_slot);
 	return true;
+}
+
+GArray *dyn_containers_get_interlockers_arr(void) {
+	if (dyn_containers_interface == NULL) {
+		return NULL;
+	}
+	GArray *interlocker_names = g_array_new(FALSE, FALSE, sizeof(char *));
+	pthread_mutex_lock(&dyn_containers_mutex);
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; ++i) {
+		const struct t_interlocker_io *interlocker_io =
+				&dyn_containers_interface->interlockers_io[i];
+		if (!interlocker_io->output_in_use) {
+			continue;
+		}
+		char *name = strdup(interlocker_io->output_name);
+		if (name != NULL) {
+			g_array_append_val(interlocker_names, name);
+		} else {
+			syslog_server(LOG_ERR, "dyn_containers_get_interlockers_arr unable to allocate memory");
+		}
+	}
+	pthread_mutex_unlock(&dyn_containers_mutex);
+	return interlocker_names;
 }
 
 GString *dyn_containers_get_interlockers(void) {
 	GString *interlocker_names = g_string_new(NULL);
-	int i = 0;
-	for (i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
-		struct t_interlocker_io * const interlocker_io =
-			&dyn_containers_interface->interlockers_io[i];
+	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
+		struct t_interlocker_io *interlocker_io = &dyn_containers_interface->interlockers_io[i];
 		if (!interlocker_io->output_in_use) {
 			continue;
 		}
@@ -547,24 +590,29 @@ GString *dyn_containers_get_interlockers(void) {
 	return interlocker_names;
 }
 
-int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlocker_instance,
+int dyn_containers_set_interlocker_instance(t_interlocker_data *interlocker_instance,
                                             const char *interlocker) {
 	if (interlocker == NULL) {
-		syslog_server(LOG_ERR, "Could not set interlocker because it was NULL");
+		syslog_server(LOG_ERR, "Set interlocker instance: invalid (NULL) interlocker");
+		return 1;
+	} else if (interlocker_instance == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Set interlocker instance: invalid (NULL) interlocker_instance");
+		return 1;
+	} else if (dyn_containers_interface == NULL) {
 		return 1;
 	}
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	int interlocker_type = -1;
 	for (int i = 0; i < INTERLOCKER_COUNT_MAX; i++) {
-		struct t_interlocker_io * const interlocker_io = 
-		    &dyn_containers_interface->interlockers_io[i];
+		struct t_interlocker_io *interlocker_io = &dyn_containers_interface->interlockers_io[i];
 		if (strcmp(interlocker_io->output_name, interlocker) == 0) {
 			interlocker_type = i;
 			break;
 		}
 	}
-
+	
 	if (interlocker_type == -1) {
 		pthread_mutex_unlock(&dyn_containers_mutex);
 		syslog_server(LOG_ERR, "Interlocker %s could not be found", interlocker);
@@ -572,14 +620,14 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlock
 	}
 	
 	for (int i = 0; i < INTERLOCKER_INSTANCE_COUNT_MAX; i++) {
-		struct t_interlocker_instance_io * const interlocker_instance_io = 
-		    &dyn_containers_interface->interlocker_instances_io[i];
+		struct t_interlocker_instance_io *interlocker_instance_io = 
+				&dyn_containers_interface->interlocker_instances_io[i];
 		if (!interlocker_instance_io->output_in_use) {
 			interlocker_instance_io->input_grab = true;
 			interlocker_instance_io->input_interlocker_type = interlocker_type;
 			interlocker_instance_io->input_reset = false;
 			pthread_mutex_unlock(&dyn_containers_mutex);
-
+			
 			do {
 				usleep(let_period_us);
 			} while (!interlocker_instance_io->output_in_use);
@@ -589,7 +637,9 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlock
 			pthread_mutex_unlock(&dyn_containers_mutex);
 			
 			interlocker_instance->dyn_containers_interlocker_instance = i;
-			syslog_server(LOG_NOTICE, "Interlocker %d in use by instance %d", interlocker_type, *interlocker_instance);
+			syslog_server(LOG_NOTICE, 
+			              "Interlocker %d in use by instance %d", 
+			              interlocker_type, i);
 			return 0;
 		}
 	}
@@ -599,18 +649,22 @@ int dyn_containers_set_interlocker_instance(t_interlocker_data * const interlock
 	return 1;
 }
 
-void dyn_containers_free_interlocker_instance(t_interlocker_data * const interlocker_instance) {
-	if (dyn_containers_interface == NULL) {
+void dyn_containers_free_interlocker_instance(t_interlocker_data *interlocker_instance) {
+	if (interlocker_instance == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Free interlocker instance: invalid (NULL) interlocker_instance");
+		return;
+	} else if (dyn_containers_interface == NULL) {
 		return;
 	}
+	const int inst_index = interlocker_instance->dyn_containers_interlocker_instance;
+	struct t_interlocker_instance_io *interlocker_instance_io = 
+			&dyn_containers_interface->interlocker_instances_io[inst_index];
 	
-	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
-
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_release = true;
 	pthread_mutex_unlock(&dyn_containers_mutex);
-
+	
 	do {
 		usleep(let_period_us);
 	} while (interlocker_instance_io->output_in_use);
@@ -618,28 +672,48 @@ void dyn_containers_free_interlocker_instance(t_interlocker_data * const interlo
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_release = false;
 	pthread_mutex_unlock(&dyn_containers_mutex);
-
-	syslog_server(LOG_NOTICE, "Interlocker instance %d released", 
+	
+	syslog_server(LOG_NOTICE, 
+	              "Interlocker instance %d released", 
 	              interlocker_instance->dyn_containers_interlocker_instance);
 }
 
-void dyn_containers_set_interlocker_instance_reset(t_interlocker_data * const interlocker_instance,
-                                                   const bool reset) {
-	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
-
+void dyn_containers_set_interlocker_instance_reset(t_interlocker_data *interlocker_instance,
+                                                   bool reset) {
+	if (interlocker_instance == NULL) {
+		syslog_server(LOG_ERR, 
+		              "Set interlocker instance reset: invalid (NULL) interlocker_instance");
+		return;
+	} else if (dyn_containers_interface == NULL) {
+		return;
+	}
+	const int inst_index = interlocker_instance->dyn_containers_interlocker_instance;
+	struct t_interlocker_instance_io *interlocker_instance_io = 
+			&dyn_containers_interface->interlocker_instances_io[inst_index];
+	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_reset = reset;
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }
 
-void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data * const interlocker_instance, 
+void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data *interlocker_instance, 
                                                     const char *src_signal_id, 
                                                     const char *dst_signal_id,
                                                     const char *train_id) {
-	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
-
+	if (interlocker_instance == NULL 
+		|| src_signal_id == NULL 
+		|| dst_signal_id == NULL 
+		|| train_id == NULL) {
+		
+		syslog_server(LOG_ERR, "Set interlocker instance outputs: invalid (NULL) parameters");
+		return;
+	} else if (dyn_containers_interface == NULL) {
+		return;
+	}
+	const int inst_index = interlocker_instance->dyn_containers_interlocker_instance;
+	struct t_interlocker_instance_io *interlocker_instance_io = 
+			&dyn_containers_interface->interlocker_instances_io[inst_index];
+	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io->input_reset = true;
 	strncpy(interlocker_instance_io->input_src_signal_id, src_signal_id, NAME_MAX);
@@ -648,10 +722,17 @@ void dyn_containers_set_interlocker_instance_inputs(t_interlocker_data * const i
 	pthread_mutex_unlock(&dyn_containers_mutex);
 }
 
-void dyn_containers_get_interlocker_instance_outputs(t_interlocker_data * const interlocker_instance, 
+void dyn_containers_get_interlocker_instance_outputs(t_interlocker_data *interlocker_instance, 
                                                      struct t_interlocker_instance_io *interlocker_instance_io_copy) {
-	struct t_interlocker_instance_io * const interlocker_instance_io = 
-		&dyn_containers_interface->interlocker_instances_io[interlocker_instance->dyn_containers_interlocker_instance];
+	if (interlocker_instance == NULL || interlocker_instance_io_copy == NULL) {
+		syslog_server(LOG_ERR, "Get interlocker instance outputs: invalid (NULL) parameters");
+		return;
+	} else if (dyn_containers_interface == NULL) {
+		return;
+	}
+	const int inst_index = interlocker_instance->dyn_containers_interlocker_instance;
+	struct t_interlocker_instance_io *interlocker_instance_io = 
+		&dyn_containers_interface->interlocker_instances_io[inst_index];
 	
 	pthread_mutex_lock(&dyn_containers_mutex);
 	interlocker_instance_io_copy->output_in_use = interlocker_instance_io->output_in_use;

@@ -929,7 +929,7 @@ thread interlockerInstance0(void) {
 
 				// Reset the interlocker so that it can execute its algorithm from the start
 				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_0.interlocker_type], &interlockerInstanceData[instance]);
-				forec_intern_output_interlocker_instance_0.has_reset = true;		
+				forec_intern_output_interlocker_instance_0.has_reset = true;
 		
 				if (interlockerInstanceData[instance].route_id == NULL) {
 					interlockerInstanceData[instance].route_id = "";
@@ -1023,7 +1023,7 @@ thread interlockerInstance1(void) {
 
 				// Reset the interlocker so that it can execute its algorithm from the start
 				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_1.interlocker_type], &interlockerInstanceData[instance]);
-				forec_intern_output_interlocker_instance_1.has_reset = true;		
+				forec_intern_output_interlocker_instance_1.has_reset = true;
 		
 				if (interlockerInstanceData[instance].route_id == NULL) {
 					interlockerInstanceData[instance].route_id = "";
@@ -1116,7 +1116,7 @@ thread interlockerInstance2(void) {
 
 				// Reset the interlocker so that it can execute its alglorithm from the start
 				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_2.interlocker_type], &interlockerInstanceData[instance]);
-				forec_intern_output_interlocker_instance_2.has_reset = true;		
+				forec_intern_output_interlocker_instance_2.has_reset = true;
 		
 				if (interlockerInstanceData[instance].route_id == NULL) {
 					interlockerInstanceData[instance].route_id = "";
@@ -1209,7 +1209,7 @@ thread interlockerInstance3(void) {
 
 				// Reset the interlocker so that it can execute its alglorithm from the start
 				dynlib_interlocker_reset(&interlockers[forec_intern_output_interlocker_instance_3.interlocker_type], &interlockerInstanceData[instance]);
-				forec_intern_output_interlocker_instance_3.has_reset = true;		
+				forec_intern_output_interlocker_instance_3.has_reset = true;
 		
 				if (interlockerInstanceData[instance].route_id == NULL) {
 					interlockerInstanceData[instance].route_id = "";
@@ -1331,7 +1331,7 @@ void copyInterlockerInputs(t_forec_intern_input_interlocker *internal,
 
 void copyInterlockerOutputs(struct t_interlocker_io *external, 
                             t_forec_intern_output_interlocker *internal) {
-	external->output_in_use = internal->in_use;	
+	external->output_in_use = internal->in_use;
 	strncpy(external->output_name, internal->name, name_max);
 }
 
@@ -1468,7 +1468,7 @@ void printout(const char *threadName, const dynlib_status status, const dynlib_d
 			break;
 		case (DYNLIB_COMPILE_SHARED_BAHNDSL_ERR):
 			syslog_server(LOG_ERR, "%s: Could not compile BahnDSL file into shared library '%s'", threadName, library->filepath);
-			break;			
+			break;
 		case (DYNLIB_COMPILE_SHARED_SCCHARTS_ERR):
 			syslog_server(LOG_ERR, "%s: Could not compile C file into shared library '%s'", threadName, library->filepath);
 			break;

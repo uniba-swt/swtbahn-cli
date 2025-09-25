@@ -32,28 +32,20 @@
 
 #include <onion/onion.h>
 
+typedef onion_connection_status o_con_status;
+
 bool clear_engine_dir(void);
 
 bool clear_interlocker_dir(void);
 
 
-onion_connection_status handler_upload_engine(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_upload_engine(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_get_engines(void *_, onion_request *req,
-                                               onion_response *res);
+o_con_status handler_remove_engine(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_remove_engine(void *_, onion_request *req,
-                                              onion_response *res);
+o_con_status handler_upload_interlocker(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_upload_interlocker(void *_, onion_request *req,
-                                                   onion_response *res);
-
-onion_connection_status handler_get_interlockers(void *_, onion_request *req,
-                                                     onion_response *res);
-
-onion_connection_status handler_remove_interlocker(void *_, onion_request *req,
-                                                   onion_response *res);
+o_con_status handler_remove_interlocker(void *_, onion_request *req, onion_response *res);
 
 
 #endif  // HANDLER_UPLOAD_H

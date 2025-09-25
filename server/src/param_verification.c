@@ -35,7 +35,7 @@ int params_check_session_id(const char *data_session_id) {
 	int client_session_id;
 	char *end_client_session_id;
 	if (data_session_id != NULL) {
-	    client_session_id = strtol(data_session_id, &end_client_session_id, 10);
+		client_session_id = strtol(data_session_id, &end_client_session_id, 10);
 		if (*end_client_session_id == '\0') {
 			return client_session_id;
 		}
@@ -47,8 +47,8 @@ int params_check_grab_id(const char *data_grab_id, int max_trains) {
 	int grab_id;
 	char *end_grab_id;
 	if (data_grab_id == NULL ||
-	    (grab_id = strtol(data_grab_id, &end_grab_id, 10)) < 0 ||
-	    grab_id >= max_trains || *end_grab_id != '\0') {
+			(grab_id = strtol(data_grab_id, &end_grab_id, 10)) < 0 ||
+			grab_id >= max_trains || *end_grab_id != '\0') {
 		return -1;
 	}
 	return grab_id;
@@ -58,7 +58,7 @@ int params_check_speed(const char *data_speed) {
 	int speed;
 	char *end_speed;
 	if (data_speed == NULL || (speed = strtol(data_speed, &end_speed, 10)) < -126 ||
-	    speed > 126 || *end_speed != '\0') {
+			speed > 126 || *end_speed != '\0') {
 		return 999;
 	}
 	return speed;
@@ -68,7 +68,7 @@ int params_check_calibrated_speed(const char *data_speed) {
 	int speed;
 	char *end_speed;
 	if (data_speed == NULL || (speed = strtol(data_speed, &end_speed, 10)) < -9 ||
-	    speed > 9 || *end_speed != '\0') {
+			speed > 9 || *end_speed != '\0') {
 		return 999;
 	}
 	return speed;
@@ -78,7 +78,7 @@ int params_check_state(const char *data_state) {
 	int state;
 	char *end_state;
 	if (data_state == NULL || (state = strtol(data_state, &end_state, 10)) < 0 ||
-	    state > 1 || *end_state != '\0') {
+			state > 1 || *end_state != '\0') {
 		return -1;
 	}
 	return state;
@@ -88,7 +88,7 @@ const char *params_check_route_id(const char *data_route_id) {
 	int route_id;
 	char *end_route_id;
 	if (data_route_id == NULL || (route_id = strtol(data_route_id, &end_route_id, 10)) < 0 ||
-	    *end_route_id != '\0') {
+			*end_route_id != '\0') {
 		return "";
 	}
 	return data_route_id;
@@ -116,7 +116,7 @@ bool params_check_is_bool_string(const char *string) {
 	if (string == NULL || *string == '\0' || isspace(*string)) {
 		return false;
 	} else if (strcmp("false", string) == 0 || strcmp("False", string) == 0 || strcmp("FALSE", string) == 0
-		       || strcmp("true", string) == 0 || strcmp("True", string) == 0 || strcmp("TRUE", string) == 0) {
+				|| strcmp("true", string) == 0 || strcmp("True", string) == 0 || strcmp("TRUE", string) == 0) {
 		return true;
 	} else {
 		return false;

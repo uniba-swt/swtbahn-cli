@@ -1,0 +1,42 @@
+//#code.naming prefix
+
+// Invariant properties
+@Invariant 
+  "nominal_speed < 127", 
+  "Nominal speed shall never exceed the train's maximum speed step of 126."
+  
+@Invariant 
+  "nominal_speed >= 0", 
+  "Nominal speed shall never be negative."
+
+
+scchart train_engine_default {
+  @AssumeRange -130, 130
+  input int requested_speed
+  input bool requested_forwards
+  
+  @AssumeRange -130, 130
+  output int nominal_speed = 0
+  output bool nominal_forwards = true
+  
+  const int nominal_speed_min = 0
+  const int nominal_speed_max = 126
+
+  initial state UpdateSpeed "Update Speed"
+  if (requested_forwards != nominal_forwards && nominal_speed != 0)
+    do nominal_speed = 0
+    go to UpdateSpeed
+  if (requested_speed < nominal_speed_min)
+    do nominal_speed = nominal_speed_min
+    go to UpdateDirection
+  if (requested_speed > nominal_speed_max) 
+    do nominal_speed = nominal_speed_max 
+    go to UpdateDirection
+  do nominal_speed = requested_speed 
+  go to UpdateDirection 
+  
+  
+  state UpdateDirection "Update Direction"
+  immediate do nominal_forwards = requested_forwards
+  go to UpdateSpeed
+}

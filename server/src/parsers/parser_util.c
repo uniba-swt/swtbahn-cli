@@ -82,7 +82,7 @@ void parse_yaml_content(yaml_parser_t *parser,
 
     do {
         if (!yaml_parser_parse(parser, &event)) {
-            syslog_server(LOG_ERR, "Error parsing: %d\n", (*parser).error);
+            syslog_server(LOG_ERR, "Error parsing: %d", (*parser).error);
             break;
         }
 

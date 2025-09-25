@@ -30,16 +30,51 @@
 
 #include <stdbool.h>
 
+/**
+ * @brief Initialize the interlocking table and load/parse config files from the config-directory.
+ * 
+ * @param config_dir directory containing the config files
+ * @return true if initialization succeeded, otherwise false
+ */
 bool bahn_data_util_initialise_config(const char *config_dir);
 
+/**
+ * @brief Free all loaded config data (incl. interlocking table)
+ * 
+ */
 void bahn_data_util_free_config();
 
+/**
+ * @brief Returns true if str1 is (lexic.) equal to str2.
+ * Returns false if either parameter is NULL.
+ * 
+ */
 bool string_equals(const char *str1, const char *str2);
 
+/**
+ * @brief Initialize the cached-track-state, has to be called before one or more calls to 
+ * `track_state_get_value`.
+ * 
+ */
 void bahn_data_util_init_cached_track_state();
 
+/**
+ * @brief Frees the cached-track-state, has to be called after one or more calls to 
+ * `track_state_get_value` (invalidates/frees any strings returned by track_state_get_value).
+ * 
+ */
 void bahn_data_util_free_cached_track_state();
 
+/**
+ * @brief Get the route ids of routes that start at a specific source signal and end at a specific
+ * destination signal. Resulting list/array of route ids is written to out-param `route_ids`.
+ * Caller is responsible to ensure `route_ids` is big enough to hold all ids.
+ * 
+ * @param src_signal_id source signal
+ * @param dst_signal_id destination signal
+ * @param route_ids out-parameter, ids of routes...
+ * @return int amount of routes found and written to route_ids.
+ */
 int interlocking_table_get_routes(const char *src_signal_id, const char *dst_signal_id, char *route_ids[]);
 
 char *config_get_scalar_string_value(const char *type, const char *id, const char *prop_name);
@@ -51,6 +86,8 @@ float config_get_scalar_float_value(const char *type, const char *id, const char
 bool config_get_scalar_bool_value(const char *type, const char *id, const char *prop_name);
 
 int config_get_array_string_value(const char *type, const char *id, const char *prop_name, char *data[]);
+
+int config_get_array_int_value(const char *type, const char *id, const char *prop_name, int data[]);
 
 int config_get_array_float_value(const char *type, const char *id, const char *prop_name, float data[]);
 
@@ -68,9 +105,13 @@ bool is_type_segment(const char *id);
 
 bool is_type_signal(const char *id);
 
+bool is_type_point(const char *id);
+
 int train_state_get_speed(const char *train_id);
 
 bool train_state_set_speed(const char *train_id, int speed);
+
+bool train_known(const char *train_id);
 
 char *config_get_point_position(const char *route_id, const char *point_id);
 

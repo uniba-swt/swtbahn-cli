@@ -30,28 +30,23 @@
 
 #include <onion/onion.h>
 
+typedef onion_connection_status o_con_status;
+
 void shutdown_server(void);
 
-onion_connection_status handler_startup(void *_, onion_request *req,
-                                        onion_response *res);
+o_con_status handler_startup(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_shutdown(void *_, onion_request *req,
-                                         onion_response *res);
+o_con_status handler_shutdown(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_track_output(void *_, onion_request *req,
-                                                 onion_response *res);
+o_con_status handler_set_track_output(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_verification_option(void *_, onion_request *req,
-                                                        onion_response *res);
+o_con_status handler_set_verification_option(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_set_verification_url(void *_, onion_request *req,
-                                                     onion_response *res);
+o_con_status handler_set_verification_url(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_admin_release_train(void *_, onion_request *req,
-                                                    onion_response *res);
+o_con_status handler_admin_release_train(void *_, onion_request *req, onion_response *res);
 
-onion_connection_status handler_admin_set_dcc_train_speed(void *_, onion_request *req,
-                                                          onion_response *res);
+o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onion_response *res);
 
 
 #endif  // HANDLER_ADMIN_H

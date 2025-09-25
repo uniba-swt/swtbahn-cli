@@ -80,13 +80,13 @@ static const char* crossing2[7] = {"signal9", "signal14", "signal15", "signal24"
 
 // Don't forget to update this when changing the entry signal arrays above!
 // -> If we ever get constexpr or consteval, shall compute this value at compile-time
-static const size_t longest_entry_signals_array_len = 14;
+static const unsigned int longest_entry_signals_array_len = 14;
 
 static const char** entry_signals_mapping[44] = {block1, block2, block3, block4, block5, block6, block7, block8and15, block9, block10, block11, block12to13, block14, block16to17, block18, block19to22, p1, p2, p3, p4, p5, p6to7, p8to9, p10, p11, p12, p13, p14, p15to16, p17, p18a, p18b, p19, p20to21, p22, p23, p24, p25, p26, p27, p28, p29, crossing1, crossing2};
 
-// Returns size_t between 0 and 43 (both inclusive) if segment_id is valid; returns
-// 65535 (minimum max of size_t) if segment_id unknown or NULL
-size_t entry_signals_lookup(const char* segment_id);
+// Returns unsigned int between 0 and 43 (both inclusive) if segment_id is valid; returns
+// 65535 if segment_id unknown or NULL
+unsigned int entry_signals_lookup(const char* segment_id);
 
 // If any signal controlling entry into the railway network section in which segment_id lies
 // is in a permissive aspect (GO, SHUNT), return true.
@@ -97,7 +97,7 @@ bool is_any_entry_signal_permissive(const char* segment_id);
 // and the last path item of type signal whose index is lower than path_segment_index is occupied.
 // If route has no path elements, or if path_segment_index is larger than the length of the
 // route, returns false.
-bool is_any_segment_after_preceding_signal_until_segment_occupied(const t_interlocking_route *route, size_t path_segment_index);
+bool is_any_segment_after_preceding_signal_until_segment_occupied(const t_interlocking_route *route, unsigned int path_segment_index);
 
 
 
@@ -111,20 +111,21 @@ bool is_route_conflict_safe_sectional(const char *granted_route_id, const char *
 	}
 	bool encountered_signal = true;
 	// Search backwards in granted route to minimize duplicate lookups
-	for (size_t gr_i = granted_route->path->len; gr_i > 0; --gr_i) {
+	for (unsigned int gr_i = granted_route->path->len; gr_i > 0; --gr_i) {
 		const char* gr_path_item = g_array_index(granted_route->path, char*, gr_i - 1);
 		if (gr_path_item == NULL) {
 			continue;
 		}
 		if (is_type_signal(gr_path_item)) {
 			// Further optimization: Only set encountered_signal to true if this is NOT a distant signal.
+			// -> but distant signals are currently (Jan. 2025) not contained in route def., so doesnt matter.
 			encountered_signal = true;
 			continue;
 		}
 		if (!is_type_segment(gr_path_item)) {
 			continue;
 		}
-		for (size_t re_i = 0; re_i < requested_route->path->len; ++re_i) {
+		for (unsigned int re_i = 0; re_i < requested_route->path->len; ++re_i) {
 			const char* re_path_item = g_array_index(requested_route->path, char*, re_i);
 			if (re_path_item == NULL) {
 				continue;
@@ -146,7 +147,7 @@ bool is_route_conflict_safe_sectional(const char *granted_route_id, const char *
 }
 
 
-bool is_any_segment_after_preceding_signal_until_segment_occupied(const t_interlocking_route *route, size_t path_segment_index) {
+bool is_any_segment_after_preceding_signal_until_segment_occupied(const t_interlocking_route *route, unsigned int path_segment_index) {
 	if (route == NULL || route->path == NULL || route->path->len == 0) {
 		return false;
 	}
@@ -154,8 +155,8 @@ bool is_any_segment_after_preceding_signal_until_segment_occupied(const t_interl
 		return false;
 	}
 	// Loop from index to start checking at, decrementing until first signal is encountered.
-	for (long long i = path_segment_index; i >= 0; --i) {
-		const char* path_item = g_array_index(route->path, char*, (size_t) i);
+	for (long i = (long) path_segment_index; i >= 0; --i) {
+		const char* path_item = g_array_index(route->path, char*, i);
 		if (is_type_segment(path_item)) {
 			// return true if segment is occupied, otherwise continue searching.
 			if (is_segment_occupied(path_item)) {
@@ -174,7 +175,7 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 		return false;
 	}
 	// Query for the entry signals relevant for segment_id
-	size_t entry_signals_lookup_index = entry_signals_lookup(segment_id);
+	unsigned int entry_signals_lookup_index = entry_signals_lookup(segment_id);
 	if (entry_signals_lookup_index >= 65535) {
 		return false;
 	}
@@ -183,7 +184,7 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 		return false;
 	}
 	// Check state of each entry signal
-	for (size_t sig_i = 0; sig_i < longest_entry_signals_array_len; ++sig_i) {
+	for (unsigned int sig_i = 0; sig_i < longest_entry_signals_array_len; ++sig_i) {
 		const char* entry_signal_item = entry_signals_for_segment[sig_i];
 		if (strcmp(entry_signal_item, "_end_") == 0) {
 			// End of entry_signals_for_segment
@@ -208,7 +209,7 @@ bool is_any_entry_signal_permissive(const char* segment_id) {
 }
 
 
-size_t entry_signals_lookup(const char* segment_id) {
+unsigned int entry_signals_lookup(const char* segment_id) {
 	if (segment_id == NULL) {
 		return 65535;
 	} else if (strcmp(segment_id,"seg1") == 0 || strcmp(segment_id,"seg2") == 0 || strcmp(segment_id,"seg3") == 0) { // block 1
