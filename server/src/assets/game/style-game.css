@@ -1,10 +1,11 @@
 body {
   font-family: UB Scala Sans, sans-serif;
   margin: 0 20px;
+  line-height: 1.4;
 }
 
 .fontSizeScale {
-  font-size: calc(.75em + 1.15vw) !important;
+  font-size: calc(.6em + 1.05vw) !important;
 }
 
 /* ==================== Page Header Element Styling ==================== */
@@ -27,11 +28,18 @@ body {
 .bahn-header {
   margin-left: 10%;
   margin-right: 10%;
+  margin-top: 0.75rem;
   width: auto;
   display: flex;
   align-items:center;
   justify-content: space-between;
   max-height: 10vh;
+}
+
+@media (orientation: landscape) {
+  .bahn-header {
+    max-height: 7vh !important;
+  }
 }
 
 
@@ -58,12 +66,12 @@ body {
   #trainSelection {
     flex-direction: row;
     flex-wrap: wrap;
-    width: 95%;
+    width: 100%;
   }
   
   .trainCard {
     /* Optimized for iPad in landscape mode to fit all cards/trains */
-    max-width: 21%;
+    max-width: 22%;
     min-width: 15%;
   }
   
@@ -72,7 +80,12 @@ body {
        Default padding is 1rem, this is a bit too much for an iPad to fit all trains 
        without scrolling.
     */
-    padding: 0.75rem 0.75rem;
+    padding: 0.5rem 0.5rem;
+  }
+  
+  .card-img-top {
+    object-fit: cover;
+    height: 11vh;
   }
 }
 
@@ -143,8 +156,8 @@ body {
   }
   
   svg.flag {
-    max-width: 12%;
-    min-width: 8%;
+    max-width: 13%;
+    min-width: 10%;
     height: auto;
     margin-right: 3%;
     margin-bottom: 3%;

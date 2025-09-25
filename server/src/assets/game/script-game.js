@@ -158,7 +158,7 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 }
 
 function setChosenTrain(trainId) {
-	const imageName = `train-${trainId.replace("_", "-")}.jpg`
+	const imageName = `img/train-${trainId.replace("_", "-")}.jpg`
 	$("#chosenTrain").attr("src", imageName);
 }
 

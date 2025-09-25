@@ -26,46 +26,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
-<svg id="svgDef">
-	<style>
-		rect {
-			stroke-width: 18px;
-			stroke: var(--flag-stroke);
-			fill: var(--flag-fill);
-		}
-
-		circle.topLeft {
-			fill: var(--flag-topLeft-fill);
-		}
-
-		circle.topRight {
-			fill: var(--flag-topRight-fill);
-		}
-
-		circle.centre {
-			fill: var(--flag-centre-fill);
-		}
-
-		circle.bottomLeft {
-			fill: var(--flag-bottomLeft-fill);
-		}
-
-		circle.bottomRight {
-			fill: var(--flag-bottomRight-fill);
-		}
-	</style>
-
-	<symbol id="flagDef">
-		<rect width="100" height="100"></rect>
-		<circle class="topLeft" cx="25" cy="25" r="10"></circle>
-		<circle class="topRight" cx="75" cy="25" r="10"></circle>
-		<circle class="centre" cx="50" cy="50" r="10"></circle>
-		<circle class="bottomLeft" cx="25" cy="75" r="10"></circle>
-		<circle class="bottomRight" cx="75" cy="75" r="10"></circle>
-	</symbol>
-</svg>
-
 <body>
+	
 	<!-- Header, visible in both train selection and driving/destination choosing views -->
 	<div class="bahn-header fontSizeScale">
 		<img id="bahn-logo" src="../swtbahn-logo.png">
@@ -89,7 +51,7 @@
 
 	<!-- Train Selection View Elements -->
 	<div id="trainSelection">
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-cargo-db.jpg" class="card-img-top" alt="Train Cargo DB">
 			<div class="card-body">
 				<h5 class="card-title">Cargo DB</h5>
@@ -116,7 +78,7 @@
 			</div>
 		</div>
 
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-cargo-bayern.jpg" class="card-img-top" alt="Train Cargo Bayern">
 			<div class="card-body">
 				<h5 class="card-title">Cargo Bayern</h5>
@@ -143,7 +105,7 @@
 			</div>
 		</div>
 
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-cargo-green.jpg" class="card-img-top" alt="Train Cargo Green">
 			<div class="card-body">
 				<h5 class="card-title">Cargo Green</h5>
@@ -170,7 +132,7 @@
 			</div>
 		</div>
 
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-cargo-g1000bb.jpg" class="card-img-top" alt="Train G1000BB">
 			<div class="card-body">
 				<h5 class="card-title">Cargo G1000BB</h5>
@@ -195,7 +157,7 @@
 			</div>
 		</div>
 
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-perso-sbb.jpg" class="card-img-top" alt="Train Perso SBB">
 			<div class="card-body">
 				<h5 class="card-title">Perso SBB</h5>
@@ -220,7 +182,7 @@
 			</div>
 		</div>
 
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-regional-odeg.jpg" class="card-img-top" alt="Train Regional ODEG">
 			<div class="card-body">
 				<h5 class="card-title">Regional ODEG</h5>
@@ -247,7 +209,7 @@
 			</div>
 		</div>
 
-		<div class="card mb-3 mx-3 trainCard unavailableTrain">
+		<div class="card mb-2 mx-2 trainCard unavailableTrain">
 			<img src="img/train-regional-brengdirect.jpg" class="card-img-top" alt="Train Regional BrengDirect">
 			<div class="card-body">
 				<h5 class="card-title">Regional Brengdirect</h5>
@@ -415,7 +377,44 @@
 			</div>
 		</div>
 	</div>
+	
+	<svg id="svgDef">
+		<style>
+			rect {
+				stroke-width: 18px;
+				stroke: var(--flag-stroke);
+				fill: var(--flag-fill);
+			}
 
+			circle.topLeft {
+				fill: var(--flag-topLeft-fill);
+			}
+
+			circle.topRight {
+				fill: var(--flag-topRight-fill);
+			}
+
+			circle.centre {
+				fill: var(--flag-centre-fill);
+			}
+
+			circle.bottomLeft {
+				fill: var(--flag-bottomLeft-fill);
+			}
+
+			circle.bottomRight {
+				fill: var(--flag-bottomRight-fill);
+			}
+		</style>
+
+		<symbol id="flagDef">
+			<rect width="100" height="100"></rect>
+			<circle class="topLeft" cx="25" cy="25" r="10"></circle>
+			<circle class="topRight" cx="75" cy="25" r="10"></circle>
+			<circle class="centre" cx="50" cy="50" r="10"></circle>
+			<circle class="bottomLeft" cx="25" cy="75" r="10"></circle>
+			<circle class="bottomRight" cx="75" cy="75" r="10"></circle>
+		</symbol>
+	</svg>
 </body>
-
 </html>
