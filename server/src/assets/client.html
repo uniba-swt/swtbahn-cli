@@ -107,8 +107,9 @@
 					<span id="driveTrainResponse" class="alignedSpanForLine"></span>
 				</div>
 
-				<!-- For the list of signals to select from, the IDs of distant and composite signals
-				     have been removed, as no route starts or ends from/at them -->
+				<!-- TODO: Remove signals dynamically based on platform.
+				           Removing composite signals per se causes this to not work on swtbahn-standard!
+				 -->
 				<div class="d-flex justify-content-between mb-2">
 					<div class="input-group">
 						<span class="input-group-text col-4">From</span>
@@ -602,13 +603,13 @@
 </body>
 
 <script type="text/javascript">
-	const trainStatusTimeout = 500;
+	const trainStatusTimeout = 2000;
 	const trainStatusInterval = setInterval(() => {
 		updateTrainGrabbedState();
 	}, trainStatusTimeout);
 
 
-	const grantedRoutesTimeout = 500;
+	const grantedRoutesTimeout = 2000;
 	const grantedRoutesInterval = setInterval(() => {
 		updateGrantedRoutes($('#grantedRoutes'));
 	}, grantedRoutesTimeout);

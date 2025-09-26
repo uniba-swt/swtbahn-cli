@@ -96,7 +96,7 @@ function updateTrainIsForwards() {
 }
 
 function updateTrainGrabbedState() {
-	// Called from client.html - TODO: Test if the return is needed.
+	// Called from client.html
 	return $.ajax({
 		type: 'GET',
 		url: '/monitor/trains',
@@ -115,6 +115,48 @@ function updateTrainGrabbedState() {
 			});
 		}
 	});
+}
+
+function getSignalsWithCallbacks(successCallback, errorCallback) {
+	return $.ajax({
+		type: 'GET',
+		url: '/monitor/signals',
+		crossDomain: true,
+		dataType: 'text',
+		success: (responseText) => {
+			successCallback(responseText);
+		},
+		error: (jqXHR) => {
+			errorCallback(jqXHR.responseText, jqXHR.status);
+		}
+	});
+}
+
+function addSignalOptionsForASelect(htmlSelectElems, forRoutes) {
+	getSignalsWithCallbacks(
+		// success callback
+		(responseText) => {
+			const responseJson = JSON.parse(responseText);
+			// clear the existing 
+			for (selectElem in htmlSelectElems) {
+				selectElem.replaceChildren();
+			}
+			// add select options for signal select
+			for (sig in responseJson.signals) {
+				if (!sig.id.includes("platform")) {
+					console.log(`Adding select elem for signal with id ${sig.id}`);
+					for (selectElem in htmlSelectElems) {
+						let optElem = document.createElement("option");
+						optElem.text = sig.id;
+						selectElem.add(optElem);
+					}
+				}
+			}
+		},
+		(responseText, status) => {
+			console.log(`Error reading signals of the SWTbahn platform, code ${status}, text ${responseText}`);
+		}
+	);
 }
 
 function updateGrantedRoutes(htmlElement) {
