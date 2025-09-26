@@ -117,6 +117,53 @@ function updateTrainGrabbedState() {
 	});
 }
 
+function getPointsWithCallbacks(successCallback, errorCallback) {
+	return $.ajax({
+		type: 'GET',
+		url: '/monitor/points',
+		crossDomain: true,
+		dataType: 'text',
+		success: (responseText) => {
+			successCallback(responseText);
+		},
+		error: (jqXHR) => {
+			errorCallback(jqXHR);
+		}
+	});
+}
+
+function addPointOptionsForSelectElems(htmlSelectElemIDs) {
+	return getPointsWithCallbacks(
+		// success callback
+		(responseText) => {
+			let responseJson = JSON.parse(responseText);
+			// Filter by existance
+			htmlSelectElemIDs = htmlSelectElemIDs.filter(selectElemID => $(selectElemID).length);
+			// clear the existing options
+			htmlSelectElemIDs.forEach(selectElemID => {
+				$(selectElemID).get(0).replaceChildren();
+			});
+			responseJson.points.sort((a, b) => {
+				let numA = parseInt(a.id.replace(/[^0-9]/g, ''));
+				let numB = parseInt(b.id.replace(/[^0-9]/g, ''));
+				return numA > numB;
+			});
+			// add option for each point for each select
+			for (const point of responseJson.points) {
+				htmlSelectElemIDs.forEach(selectElemID => {
+					let optElem = document.createElement("option");
+					optElem.text = point.id;
+					$(selectElemID).get(0).add(optElem);
+				});
+			}
+		},
+		(responseText, status) => {
+			console.log(`Error reading points of the SWTbahn platform, code ${jqXHR.status}, text ${jqXHR.responseText}`);
+			showErrorInElem("#loadAccessoriesResponse", getErrorMessage(jqXHR));
+		}
+	);
+}
+
 function getSignalsWithCallbacks(successCallback, errorCallback) {
 	return $.ajax({
 		type: 'GET',
@@ -127,34 +174,52 @@ function getSignalsWithCallbacks(successCallback, errorCallback) {
 			successCallback(responseText);
 		},
 		error: (jqXHR) => {
-			errorCallback(jqXHR.responseText, jqXHR.status);
+			errorCallback(jqXHR);
 		}
 	});
 }
 
-function addSignalOptionsForASelect(htmlSelectElems, forRoutes) {
-	getSignalsWithCallbacks(
+function addSignalOptionsForSelectElems(htmlSelectElemIDsNormal, htmlSelectElemIDsForRoutes) {
+	return getSignalsWithCallbacks(
 		// success callback
 		(responseText) => {
-			const responseJson = JSON.parse(responseText);
-			// clear the existing 
-			for (selectElem in htmlSelectElems) {
-				selectElem.replaceChildren();
-			}
-			// add select options for signal select
-			for (sig in responseJson.signals) {
-				if (!sig.id.includes("platform")) {
-					console.log(`Adding select elem for signal with id ${sig.id}`);
-					for (selectElem in htmlSelectElems) {
+			let responseJson = JSON.parse(responseText);
+			// Filter by existance
+			htmlSelectElemIDsNormal = htmlSelectElemIDsNormal.filter(selectElemID => $(selectElemID).length);
+			htmlSelectElemIDsForRoutes = htmlSelectElemIDsForRoutes.filter(selectElemID => $(selectElemID).length);
+
+			// clear the existing options
+			htmlSelectElemIDsNormal.forEach(selectElemID => $(selectElemID).get(0).replaceChildren());
+			htmlSelectElemIDsForRoutes.forEach(selectElemID => $(selectElemID).get(0).replaceChildren());
+
+			responseJson.signals.sort((a, b) => {
+				let numA = parseInt(a.id.replace(/[^0-9]/g, ''));
+				let numB = parseInt(b.id.replace(/[^0-9]/g, ''));
+				numA = a.id.includes("platform") ? numA + 100 : numA;
+				numB = b.id.includes("platform") ? numB + 100 : numB;
+				return numA > numB;
+			});
+
+			// add option for each signal for each select
+			for (const sig of responseJson.signals) {
+				// Omit the platformlights and distant signals for route signal dropdowns
+				if (!sig.id.includes("platform") && !sig.id.includes("b")) {
+					htmlSelectElemIDsForRoutes.forEach(selectElemID => {
 						let optElem = document.createElement("option");
 						optElem.text = sig.id;
-						selectElem.add(optElem);
-					}
+						$(selectElemID).get(0).add(optElem);
+					});
 				}
+				htmlSelectElemIDsNormal.forEach(selectElemID => {
+					let optElem = document.createElement("option");
+					optElem.text = sig.id;
+					$(selectElemID).get(0).add(optElem);
+				});
 			}
 		},
-		(responseText, status) => {
-			console.log(`Error reading signals of the SWTbahn platform, code ${status}, text ${responseText}`);
+		(jqXHR) => {
+			console.log(`Error reading signals of the SWTbahn platform, code ${jqXHR.status}, text ${jqXHR.responseText}`);
+			showErrorInElem("#loadAccessoriesResponse", getErrorMessage(jqXHR));
 		}
 	);
 }
@@ -527,11 +592,14 @@ function uploadEngine (file) {
 			console.log("Engine Upload Failed");
 			try {
 				var resJson = JSON.parse(jqXHR.responseText, null, 2);
+				console.log(resJson);
 				var msg = "Server Message: " + resJson["msg"];
-				msg += "\nList of Properties:"
-				resJson["verifiedproperties"].forEach(element => {
-					msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
-				});
+				if (resJson.verifiedproperties) {
+					msg += "\nList of Properties:"
+					resJson.verifiedproperties.forEach(element => {
+						msg += "\n-" + element["property"]["name"] + ": " + element["verificationmessage"]
+					});
+				}
 				verificationObj = resJson;
 				showErrorInElem("#uploadResponse", msg);
 				$('#verificationLogDownloadButton').show();
@@ -726,6 +794,20 @@ $(document).ready(
 
 		$('#shutdownButton').click(function () {
 			shutdownServer();
+		});
+
+		// Loading Accessories
+
+		$('#loadAccessoriesButton').click(function () {
+			// IDs match where expected to across the 3 html's (client, controller, driver).
+			// The add...Options function takes care of omitting IDs that don't exist on the
+			// current page.
+			const signalDropDownIDs = ['#signalId'];
+			const signalDropDownIDsForRoutes = ['#signalIdFrom', '#signalIdTo'];
+			const pointDropDownIDs = ['#pointId'];
+			addSignalOptionsForSelectElems(signalDropDownIDs, signalDropDownIDsForRoutes)
+				.then(() => addPointOptionsForSelectElems(pointDropDownIDs))
+				.then(() => showInfoInElem('#loadAccessoriesResponse', 'Loaded'));
 		});
 
 		// Train Driver
