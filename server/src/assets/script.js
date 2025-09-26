@@ -176,7 +176,7 @@ function updateGrantedRoutes(htmlElement) {
 				const routeId = route['id'];
 				const trainId = route.train;
 				const routeText = `route ${routeId} granted to ${trainId}`;
-				const releaseButton = `<button class="grantedRoute" value=${routeId}>Release</button>`;
+				const releaseButton = `<button class="grantedRoute btn smallerLineHeight btn-outline-primary" value=${routeId}>Release</button>`;
 				htmlElement.append(`<li>${routeText} ${releaseButton}</li>`);
 			});
 			$('.grantedRoute').click(function (event) {

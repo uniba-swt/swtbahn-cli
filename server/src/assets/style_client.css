@@ -30,10 +30,28 @@
   padding-bottom: 0.375rem;
 }
 
-.smallerBtn {
+.smallerLineHeight {
   line-height: 1;
 }
 
 .w-45 {
   width: 45%;
+}
+
+.overviewSpeedInput {
+  /*I don't know exactly why, but input elements don't align well with buttons
+    by default. So the top/bot padding is a bit funky to align them well.
+  */
+  padding: .285rem .75rem;
+  background-clip: padding-box;
+  border: 1px solid #dee2e6;
+  border-radius: .375rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.overviewTrainLineElem {
+  vertical-align: middle;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
 }
