@@ -10,12 +10,14 @@ function update_verification_url_display() {
 		url: '/monitor/verification-url',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
-			var ret = responseData.replace("verification-url: ", '');
-			$('#verificationUrlInUse').text(ret);
+		success: function (responseText) {
+			let respJson = JSON.parse(responseText);
+			$('#verificationUrlInUse').text(respJson["verification-url"]);
 		},
-		error: function (responseData, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			$('#verificationUrlInUse').text("Unknown");
+			console.log("Getting the verification URL failed. jqXHR:");
+			console.log(jqXHR);
 		}
 	});
 }
@@ -27,25 +29,21 @@ function update_verification_toggle() {
 		url: '/monitor/verification-option',
 		crossDomain: true,
 		dataType: 'text',
-		success: function (responseData, textStatus, jqXHR) {
+		success: function (responseText) {
 			try {
 				// Mark toggle initialized
 				toggleInit = true;
-				if (responseData === "verification-enabled: true") {
-					current_toggle_pos = true;
-					$('#verificationToggle').prop('checked', true);
-				} else if (responseData === "verification-enabled: false") {
-					current_toggle_pos = false;
-					$('#verificationToggle').prop('checked', false);
-				}
+				let respJson = JSON.parse(responseText);
+				current_toggle_pos = respJson["verification-enabled"];
+				$('#verificationToggle').prop('checked', current_toggle_pos);
 			} catch (error) {
 				console.log("Failed to update Verification Toggle. Error Msg: " + error);
 			}
 		},
-		error: function (responseData, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			// Mark as initialized on error as well, as else nothing about the toggle will work
 			toggleInit = true;
-			console.log("Update Verification Toggle error case, server response: " + responseData);
+			console.log("Update Verification Toggle error case, server response: " + jqXHR);
 		}
 	});
 }
@@ -69,9 +67,10 @@ function register_set_verification_server_url_button_onclick() {
 				$('#setVerificationServerUrlResponse').parent().removeClass('alert-danger');
 				$('#setVerificationServerUrlResponse').parent().addClass('alert-success');
 			},
-			error: function (responseData, textStatus, errorThrown) {
+			error: function (jqXHR) {
 				info_str = "Failed to set verification server url to " + verif_url + ".";
 				console.log(info_str);
+				console.log(jqXHR);
 				$('#setVerificationServerUrlResponse').parent().show();
 				$('#setVerificationServerUrlResponse').text(info_str);
 				$('#setVerificationServerUrlResponse').parent().removeClass('alert-success');
@@ -102,7 +101,7 @@ function register_verification_toggle_onchange() {
 			crossDomain: true,
 			data: { 'verification-option': toggleState },
 			dataType: 'text',
-			success: function (responseData, textStatus, jqXHR) {
+			success: function (responseText) {
 				info_str = (toggleState ? "Enabled" : "Disabled") + " verification.";
 				console.log(info_str);
 				$('#verificationSettingResponse').parent().show();
@@ -111,9 +110,10 @@ function register_verification_toggle_onchange() {
 				$('#verificationSettingResponse').parent().addClass('alert-success');
 				current_toggle_pos = toggleState;
 			},
-			error: function (responseData, textStatus, errorThrown) {
+			error: function (jqXHR) {
 				info_str = "Failed to " + (toggleState ? "enable" : "disable") + " verification.";
 				console.log(info_str);
+				console.log(jqXHR);
 				$('#verificationSettingResponse').parent().show();
 				$('#verificationSettingResponse').text(info_str);
 				$('#verificationSettingResponse').parent().removeClass('alert-success');

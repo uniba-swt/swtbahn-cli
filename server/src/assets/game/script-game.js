@@ -4,8 +4,10 @@ var serverAddress = "";      // The base address of the server.
 var language = "";           // User interface language.
 var isEasyMode = false;      // User interface verbosity.
 
+
+
 /**************************************************
- * Destination related information and UI elements
+ * Destination related information/functionality
  */
 
 const numberOfDestinationsMax = 12;           // Maximum destinations to display
@@ -51,7 +53,6 @@ function getDestinations(blockId) {
 	return allPossibleDestinations[blockId];
 }
 
-
 function disableAllDestinationButtons() {
 	driver.clearUpdatePossibleDestinationsInterval();
 
@@ -60,7 +61,6 @@ function disableAllDestinationButtons() {
 		$(`#${destinationNamePrefix}${i}`).attr("class", "flagThemeBlank");
 	}
 }
-
 
 function setDestinationButton(routeIndex, route, destinationSignal) {
 	// "Clean" the "a" or "b" suffix of composite signal if present
@@ -85,7 +85,7 @@ function setDestinationButtonUnavailable(routeIndex, route, destinationSignal) {
 // e.g., when disabling the destination buttons or ending the game.
 function updatePossibleDestinations(blockId) {
 	// Show the form that contains all the destination buttons
-	$('#destinationsForm').show();
+	$('#destinationsFormContainer').show();
 	disableAllDestinationButtons();
 
 	// Set up a timer interval to periodically update the availability
@@ -104,7 +104,6 @@ function updatePossibleDestinations(blockId) {
 			let route = {};
 			route[destinationSignal] = routesFromCurrentBlock[destinationSignal];
 			route['destSignalID'] = destinationSignal;
-			///TODO: check if this works (changed/simplified)
 			const routeId = route[destinationSignal]["route-id"];
 			updateDestinationAvailabilityPromise(
 				routeId,
@@ -157,13 +156,22 @@ function updateDestinationAvailabilityPromise(routeId, available, unavailable) {
 	});
 }
 
+function clearChosenDestination() {
+	$('#destination').attr("class", "flagThemeBlank");
+}
+
+function setChosenDestination(destination) {
+	destination = destination.replace(/(a|b)$/, '');
+	$('#destination').attr("class", signalFlagMap[destination]);
+}
+
 function setChosenTrain(trainId) {
-	const imageName = `train-${trainId.replace("_", "-")}.jpg`
+	const imageName = `img/train-${trainId.replace("_", "-")}.jpg`
 	$("#chosenTrain").attr("src", imageName);
 }
 
 /**************************************************
- * Train speed UI elements
+ * Train speed UI elements/functionality
  */
 
 const speedButtons = [
@@ -172,6 +180,22 @@ const speedButtons = [
 	"normal",
 	"fast"
 ];
+
+/* Per-train speed factors -> necessary as a dcc speed setting means different
+   real-world speeds for different trains. "Slow" being dcc speed 20 causes the slower
+   trains to get stuck as they are not fast enough to get through double-slip switches.
+   Ideally the server would have this in the config, but that'd be a lot of work to 
+   implement/add, so for this client it's just defined here.
+*/ 
+const trainSpeedFactors = new Map([
+	["cargo_db", 1.0],
+	["cargo_bayern", 1.2],
+	["cargo_green", 1.1],
+	["cargo_g1000bb", 2.0],
+	["perso_sbb", 0.85],
+	["regional_odeg", 2.0],
+	["regional_brengdirect", 2.0],
+])
 
 function disableSpeedButtons() {
 	$('#drivingForm').hide();
@@ -189,14 +213,6 @@ function enableSpeedButtons(destination) {
 	drivingTimer.start();
 }
 
-function clearChosenDestination() {
-	$('#destination').attr("class", "flagThemeBlank");
-}
-
-function setChosenDestination(destination) {
-	destination = destination.replace(/(a|b)$/, '');
-	$('#destination').attr("class", signalFlagMap[destination]);
-}
 
 
 /**************************************************
@@ -223,10 +239,9 @@ function speak(text) {
 		// Don't speak if text is not truthy, i.e., undefined, null, or empty.
 		return;
 	}
-	///TODO: Check if this works, it was `var msg` before.
 	let speakMsg = new SpeechSynthesisUtterance(text);
-	//speakMsg.lang = (language == 'en') ? "en-US" : "de-DE";
 	///NOTE: At the moment, all voice messages are in german or "german-ish" (like "Sorry")
+	//speakMsg.lang = (language == 'en') ? "en-US" : "de-DE";
 	speakMsg.lang = "de-DE";
 	for (const voice of window.speechSynthesis.getVoices()) {
 		if (voice.lang == "de-DE") {
@@ -860,7 +875,7 @@ class Driver {
 		// Note: this.routeDetails is set to pRouteDetails in this.requestRouteIdPromise success handler!
 		this.requestRouteIdPromise(pRouteDetails)                      // 1. Ensure that the chosen destination is still available
 			.then(() => this.updateDrivingDirectionPromise())          // 2. Obtain the physical driving direction
-			.then(() => $('#destinationsForm').hide())                 // 3. Prevent the driver from choosing another destination
+			.then(() => $('#destinationsFormContainer').hide())        // 3. Prevent the driver from choosing another destination
 			.then(() => disableAllDestinationButtons())
 			.then(() => Mutex.unlock(lock))
 			.then(() => this.setTrainSpeedPromise(1))                  // 4. Update the train lights to indicate the physical driving direction
@@ -923,7 +938,7 @@ function startGameLogic() {
 // Update the user interface for driving when the user decides to release their train
 function endGameLogic() {
 	$('#endGameButton').hide();
-	$('#destinationsForm').hide();
+	$('#destinationsFormContainer').hide();
 	driver.clearUpdatePossibleDestinationsInterval();
 	driver.clearDestinationReachedInterval();
 	driver.resetTrainSession();
@@ -994,7 +1009,7 @@ function initialise() {
 
 	// Hide the train driving buttons (destination selections).
 	$('#endGameButton').hide();
-	$('#destinationsForm').hide();
+	$('#destinationsFormContainer').hide();
 	clearChosenDestination();
 	driver.disableDestinationReached();
 
@@ -1037,7 +1052,9 @@ function initialise() {
 	speedButtons.forEach(speed => {
 		const speedButton = $(`#${speed}`);
 		speedButton.click(function () {
-			driver.setTrainSpeedPromise(speedButton.val());
+			let speedButtonVal = speedButton.val();
+			let speedAdjusted = Math.round(speedButtonVal * trainSpeedFactors.get(driver.trainId));
+			driver.setTrainSpeedPromise(speedAdjusted);
 			if (!driver.isDestinationReached) {
 				$('#endGameButton').hide();
 

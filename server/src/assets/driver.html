@@ -30,313 +30,304 @@
 
 	<div class="row row-cols-1 row-cols-lg-2 g-4">
 		<div class="col">
-			<div class="card">
+			<div class="card stdCardPadMarg">
 				<div class="card-body">
-					<h3 class="card-title">System</h3>
-
-					<div>
-						<button id="pingButton" type="button" class="btn btn-outline-primary btn-block">Ping SWTbahn Server</button>
-					</div>
-					<br />
-					<div class="alert alert-info" role="alert">
-						<span id="pingResponse"></span>
-					</div>
-
-					<br />
-
+					<h4 class="card-title">System</h4>
 					<div class="d-flex justify-content-between">
-						<button id="startupButton" type="button" class="btn btn-outline-primary" style="width: 49%">Startup</button>
-						<button id="shutdownButton" type="button" class="btn btn-outline-primary" style="width: 49%">Shutdown</button>
+						<button id="pingButton" class="btn btn-outline-primary halfWJustifyHelper">
+							Ping the SWTbahn Server
+						</button>
+						<div class="alert alert-info halfWJustifyHelper btnPaddingReplicate">
+							<span id="pingResponse" class="alignedSpanForLine">&nbsp;</span>
+						</div>
 					</div>
-					<br />
-					<div class="alert alert-info" role="alert">
-						<span id="startupShutdownResponse"></span>
-					</div>
-
-					<br />
-
-					<div class="alert alert-dark" role="alert">
-						<span id="sessionGrabId">Session ID: 0, Grab ID: -1</span>
-					</div>
-
-					<br />
-					<br />
-
-					<h3 class="card-title">Custom Engine</h3>
-
 					<div class="d-flex justify-content-between">
+						<button id="startupButton" class="btn btn-primary thirdWJustifyHelper">Startup</button>
+						<button id="shutdownButton" class="btn btn-danger thirdWJustifyHelper">Shutdown</button>
+						<div class="alert alert-info thirdWJustifyHelper btnPaddingReplicate">
+							<span id="startupShutdownResponse" class="alignedSpanForLine">&nbsp;</span>
+						</div>
+					</div>
+					<hr class="mx-3 my-3" />
+					<div class="d-flex justify-content-between tooltipLoad">
+						<button id="loadAccessoriesButton" class="btn btn-outline-primary halfWJustifyHelper">
+							Load signals
+						</button>
+						<div class="alert alert-info halfWJustifyHelper btnPaddingReplicate">
+							<span id="loadAccessoriesResponse" class="alignedSpanForLine">&nbsp;</span>
+						</div>
+						<span class="tooltiptext tooltip-top">
+							Replaces the default signals selectable in dropdowns on this page with the ones available on the platform being used.
+							Works only when server is running.
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="card stdCardPadMarg">
+				<div class="card-body">
+					<h4 class="card-title">Custom Engine</h4>
+
+					<div class="d-flex justify-content-between mb-2">
 						<label id="selectUploadFileResponse" for="selectUploadFile" class="btn btn-outline-primary" style="width: 49%; margin: 0px">Select an SCCharts file (*.sctx)</label>
 						<input id="selectUploadFile" type="file" accept=".sctx" hidden />
 						<button id="uploadEngineButton" type="button" class="btn btn-outline-primary" style="width: 49%">Upload</button>
 					</div>
-					<br />
-					<div class="alert alert-info" role="alert">
-						<pre id="uploadResponse"></pre>
+					<div class="alert alert-info btnPaddingReplicate">
+						<pre id="uploadResponse">&nbsp;</pre>
 						<button id=verificationLogDownloadButton type="button" class="btn btn-outline-secondary">Download Logs</button>
 						<button id=clearVerificationMsgButton type="button" class="btn btn-outline-secondary">Clear Message</button>
 					</div>
-
-					<br />
-
+					<hr class="mx-3 my-3" />
 					<label class="form-label" for="availableEngines">Available Engines:</label>
-					<div class="input-group">
+					<div class="input-group mb-2">
 						<span class="input-group-text" for="availableEngines">Engine</span>
 						<select class="form-select" id="availableEngines">
 							<option>libtrain_engine_default (unremovable)</option>
 							<option>libtrain_engine_linear (unremovable)</option>
 						</select>
 					</div>
-
-					<br />
-
-					<div class="d-flex justify-content-between">
+					<div class="d-flex justify-content-between mb-2">
 						<button id="refreshEnginesButton" type="button" class="btn btn-outline-primary" style="width: 49%">Refresh</button>
-						<button id="removeEngineButton" type="button" class="btn btn-outline-primary" style="width: 49%">Remove</button>
+						<button id="removeEngineButton" type="button" class="btn btn-outline-danger" style="width: 49%">Remove</button>
 					</div>
-					<br />
-					<div class="alert alert-info" role="alert">
-						<span id="refreshRemoveEngineResponse"></span>
+					<div class="alert alert-info btnPaddingReplicate">
+						<span id="refreshRemoveEngineResponse">&nbsp;</span>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="col">
-			<div class="card">
+			<div class="card stdCardPadMarg">
 				<div class="card-body">
-					<h3 class="card-title">Train Driver</h3>
+					<h4 class="card-title">Train Driver</h4>
 					<p class="card-text">
 						Grab an available train to drive it around the track.
 					</p>
+					<div class="input-group mb-1">
+						<span class="input-group-text col-2" for="grabTrainId">Train</span>
+						<select id="grabTrainId" class="form-select">
+							<option>cargo_db</option>
+							<option>cargo_bayern</option>
+							<option>cargo_green</option>
+							<option>cargo_g1000bb</option>
+							<option>perso_sbb</option>
+							<option>regional_odeg</option>
+							<option>regional_brengdirect</option>
+						</select>
+					</div>
 
-					<div class="form-group">
-						<div class="input-group mb-3">
-							<span class="input-group-text col-2" for="grabTrainId">Train</span>
-							<select class="form-select" id="grabTrainId">
-								<option>cargo_db</option>
-								<option>cargo_bayern</option>
-								<option>cargo_green</option>
-								<option>regional_odeg</option>
-								<option>regional_brengdirect</option>
+					<div class="input-group mb-1">
+						<span class="input-group-text col-2" for="grabEngine">Engine</span>
+						<select id="grabEngine" class="form-select">
+							<option>libtrain_engine_default (unremovable)</option>
+							<option>libtrain_engine_linear (unremovable)</option>
+						</select>
+					</div>
+
+					<div class="d-flex justify-content-between mb-2">
+						<button id="grabTrainButton" type="button" class="btn btn-outline-primary w-25">Grab</button>
+						<button id="releaseTrainButton" type="button" class="btn btn-outline-primary w-25">Release Train</button>
+						<span id="sessionGrabId" class="input-group-text">Session ID: 0, Grab ID: -1</span>
+					</div>
+					<div class="alert alert-info btnPaddingReplicate mb-4">
+						<span id="grabTrainResponse" class="alignedSpanForLine">&nbsp;</span>
+					</div>
+
+					<div class="input-group mb-2">
+						<span class="input-group-text">DCC Speed</span>
+						<input id="dccSpeed" type="number" class="form-control" min="0" max="126" value="0" />
+						<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
+						<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
+					</div>
+					<div class="d-flex justify-content-between mb-2">
+						<button id="driveTrainButton" type="button" class="btn btn-outline-primary w-25" >Drive</button>
+						<button id="stopTrainButton" type="button" class="btn btn-outline-danger w-25" >Stop</button>
+						<button id="swapDirection" type="button" class="btn btn-outline-info w-25" >Swap Direction</button>
+					</div>
+					<div class="alert alert-info btnPaddingReplicate mb-4">
+						<span id="driveTrainResponse" class="alignedSpanForLine">&nbsp;</span>
+					</div>
+
+					<div class="d-flex justify-content-between mb-2">
+						<div class="input-group">
+							<span class="input-group-text col-4">From</span>
+							<select id="signalIdFrom" class="form-select">
+								<option>signal1</option>
+								<option>signal2</option>
+								<option>signal3</option>
+								<option>signal4</option>
+								<option>signal4a</option>
+								<option>signal4b</option>
+								<option>signal5</option>
+								<option>signal6</option>
+								<option>signal7</option>
+								<option>signal7a</option>
+								<option>signal7b</option>
+								<option>signal8</option>
+								<option>signal9</option>
+								<option>signal10</option>
+								<option>signal11</option>
+								<option>signal12</option>
+								<option>signal13</option>
+								<option>signal14</option>
+								<option>signal15</option>
+								<option>signal16</option>
+								<option>signal17</option>
+								<option>signal18</option>
+								<option>signal18a</option>
+								<option>signal18b</option>
+								<option>signal19</option>
+								<option>signal20</option>
+								<option>signal21</option>
+								<option>signal22</option>
+								<option>signal22a</option>
+								<option>signal22b</option>
+								<option>signal23</option>
+								<option>signal24</option>
+								<option>signal25</option>
+								<option>signal26</option>
+								<option>signal27</option>
+								<option>signal28</option>
+								<option>signal29</option>
+								<option>signal30</option>
+								<option>signal31</option>
+								<option>signal32</option>
+								<option>signal33</option>
+								<option>signal34</option>
+								<option>signal35</option>
+								<option>signal35a</option>
+								<option>signal35b</option>
+								<option>signal36</option>
+								<option>signal37</option>
+								<option>signal38</option>
+								<option>signal39</option>
+								<option>signal40</option>
+								<option>signal41</option>
+								<option>signal42</option>
+								<option>signal43</option>
+								<option>signal44</option>
+								<option>signal45</option>
+								<option>signal46</option>
+								<option>signal46a</option>
+								<option>signal46b</option>
+								<option>signal47</option>
+								<option>signal48</option>
+								<option>signal48a</option>
+								<option>signal48b</option>
+								<option>signal49</option>
+								<option>signal50</option>
+								<option>signal50a</option>
+								<option>signal50b</option>
+								<option>signal51</option>
+								<option>signal52</option>
+								<option>signal53</option>
+								<option>signal53a</option>
+								<option>signal53b</option>
+							</select>
+						</div>
+						<div class="input-group">
+							<span class="input-group-text col-3">To</span>
+							<select id="signalIdTo" class="form-select">
+								<option>signal1</option>
+								<option>signal2</option>
+								<option>signal3</option>
+								<option>signal4</option>
+								<option>signal4a</option>
+								<option>signal4b</option>
+								<option>signal5</option>
+								<option>signal6</option>
+								<option>signal7</option>
+								<option>signal7a</option>
+								<option>signal7b</option>
+								<option>signal8</option>
+								<option>signal9</option>
+								<option>signal10</option>
+								<option>signal11</option>
+								<option>signal12</option>
+								<option>signal13</option>
+								<option>signal14</option>
+								<option>signal15</option>
+								<option>signal16</option>
+								<option>signal17</option>
+								<option>signal18</option>
+								<option>signal18a</option>
+								<option>signal18b</option>
+								<option>signal19</option>
+								<option>signal20</option>
+								<option>signal21</option>
+								<option>signal22</option>
+								<option>signal22a</option>
+								<option>signal22b</option>
+								<option>signal23</option>
+								<option>signal24</option>
+								<option>signal25</option>
+								<option>signal26</option>
+								<option>signal27</option>
+								<option>signal28</option>
+								<option>signal29</option>
+								<option>signal30</option>
+								<option>signal31</option>
+								<option>signal32</option>
+								<option>signal33</option>
+								<option>signal34</option>
+								<option>signal35</option>
+								<option>signal35a</option>
+								<option>signal35b</option>
+								<option>signal36</option>
+								<option>signal37</option>
+								<option>signal38</option>
+								<option>signal39</option>
+								<option>signal40</option>
+								<option>signal41</option>
+								<option>signal42</option>
+								<option>signal43</option>
+								<option>signal44</option>
+								<option>signal45</option>
+								<option>signal46</option>
+								<option>signal46a</option>
+								<option>signal46b</option>
+								<option>signal47</option>
+								<option>signal48</option>
+								<option>signal48a</option>
+								<option>signal48b</option>
+								<option>signal49</option>
+								<option>signal50</option>
+								<option>signal50a</option>
+								<option>signal50b</option>
+								<option>signal51</option>
+								<option>signal52</option>
+								<option>signal53</option>
+								<option>signal53a</option>
+								<option>signal53b</option>
 							</select>
 						</div>
 
 						<div class="input-group">
-							<span class="input-group-text col-2" for="grabEngine">Engine</span>
-							<select class="form-select" id="grabEngine">
-								<option>libtrain_engine_default (unremovable)</option>
-								<option>libtrain_engine_linear (unremovable)</option>
-							</select>
+							<span class="input-group-text col-5">Route ID</span>
+							<input id="routeId" type="text" class="form-control" readonly value="None" />
 						</div>
-
-						<br />
-
-						<div class="d-flex justify-content-between">
-							<button id="grabTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Grab</button>
-							<button id="releaseTrainButton" type="button" class="btn btn-outline-primary" style="width: 49%">Release</button>
-						</div>
-						<br />
-						<div class="alert alert-info" role="alert">
-							<span id="grabTrainResponse"></span>
-						</div>
-					</div>
-
-					<br />
-
-					<div class="input-group">
-						<span class="input-group-text">DCC Speed</span>
-						<input type="text" class="form-control" id="dccSpeed" readonly value="0" />
-						<button id="speedPlus" type="button" class="btn btn-outline-primary">+</button>
-						<button id="speedMinus" type="button" class="btn btn-outline-primary">–</button>
-					</div>
-
-					<br />
-
-					<div class="d-flex justify-content-between">
-						<button id="swapDirection" type="button" class="btn btn-outline-primary" style="width: 32%">Swap Direction</button>
-						<button id="driveTrainButton" type="button" class="btn btn-outline-primary" style="width: 32%">Drive</button>
-						<button id="stopTrainButton" type="button" class="btn btn-outline-primary" style="width: 32%">Stop</button>
-					</div>
-					<br />
-					<div class="alert alert-info" role="alert">
-						<span id="driveTrainResponse"></span>
-					</div>
-
-					<div class="input-group mb-2">
-						<span class="input-group-text col-2">From</span>
-						<select class="form-select" id="signalIdFrom">
-							<option>signal1</option>
-							<option>signal2</option>
-							<option>signal3</option>
-							<option>signal4</option>
-							<option>signal4a</option>
-							<option>signal4b</option>
-							<option>signal5</option>
-							<option>signal6</option>
-							<option>signal7</option>
-							<option>signal7a</option>
-							<option>signal7b</option>
-							<option>signal8</option>
-							<option>signal9</option>
-							<option>signal10</option>
-							<option>signal11</option>
-							<option>signal12</option>
-							<option>signal13</option>
-							<option>signal14</option>
-							<option>signal15</option>
-							<option>signal16</option>
-							<option>signal17</option>
-							<option>signal18</option>
-							<option>signal18a</option>
-							<option>signal18b</option>
-							<option>signal19</option>
-							<option>signal20</option>
-							<option>signal21</option>
-							<option>signal22</option>
-							<option>signal22a</option>
-							<option>signal22b</option>
-							<option>signal23</option>
-							<option>signal24</option>
-							<option>signal25</option>
-							<option>signal26</option>
-							<option>signal27</option>
-							<option>signal28</option>
-							<option>signal29</option>
-							<option>signal30</option>
-							<option>signal31</option>
-							<option>signal32</option>
-							<option>signal33</option>
-							<option>signal34</option>
-							<option>signal35</option>
-							<option>signal35a</option>
-							<option>signal35b</option>
-							<option>signal36</option>
-							<option>signal37</option>
-							<option>signal38</option>
-							<option>signal39</option>
-							<option>signal40</option>
-							<option>signal41</option>
-							<option>signal42</option>
-							<option>signal43</option>
-							<option>signal44</option>
-							<option>signal45</option>
-							<option>signal46</option>
-							<option>signal46a</option>
-							<option>signal46b</option>
-							<option>signal47</option>
-							<option>signal48</option>
-							<option>signal48a</option>
-							<option>signal48b</option>
-							<option>signal49</option>
-							<option>signal50</option>
-							<option>signal50a</option>
-							<option>signal50b</option>
-							<option>signal51</option>
-							<option>signal52</option>
-							<option>signal53</option>
-							<option>signal53a</option>
-							<option>signal53b</option>
-						</select>
-					</div>
-
-					<div class="input-group mb-2">
-						<span class="input-group-text col-2">To</span>
-						<select class="form-select" id="signalIdTo">
-							<option>signal1</option>
-							<option>signal2</option>
-							<option>signal3</option>
-							<option>signal4</option>
-							<option>signal4a</option>
-							<option>signal4b</option>
-							<option>signal5</option>
-							<option>signal6</option>
-							<option>signal7</option>
-							<option>signal7a</option>
-							<option>signal7b</option>
-							<option>signal8</option>
-							<option>signal9</option>
-							<option>signal10</option>
-							<option>signal11</option>
-							<option>signal12</option>
-							<option>signal13</option>
-							<option>signal14</option>
-							<option>signal15</option>
-							<option>signal16</option>
-							<option>signal17</option>
-							<option>signal18</option>
-							<option>signal18a</option>
-							<option>signal18b</option>
-							<option>signal19</option>
-							<option>signal20</option>
-							<option>signal21</option>
-							<option>signal22</option>
-							<option>signal22a</option>
-							<option>signal22b</option>
-							<option>signal23</option>
-							<option>signal24</option>
-							<option>signal25</option>
-							<option>signal26</option>
-							<option>signal27</option>
-							<option>signal28</option>
-							<option>signal29</option>
-							<option>signal30</option>
-							<option>signal31</option>
-							<option>signal32</option>
-							<option>signal33</option>
-							<option>signal34</option>
-							<option>signal35</option>
-							<option>signal35a</option>
-							<option>signal35b</option>
-							<option>signal36</option>
-							<option>signal37</option>
-							<option>signal38</option>
-							<option>signal39</option>
-							<option>signal40</option>
-							<option>signal41</option>
-							<option>signal42</option>
-							<option>signal43</option>
-							<option>signal44</option>
-							<option>signal45</option>
-							<option>signal46</option>
-							<option>signal46a</option>
-							<option>signal46b</option>
-							<option>signal47</option>
-							<option>signal48</option>
-							<option>signal48a</option>
-							<option>signal48b</option>
-							<option>signal49</option>
-							<option>signal50</option>
-							<option>signal50a</option>
-							<option>signal50b</option>
-							<option>signal51</option>
-							<option>signal52</option>
-							<option>signal53</option>
-							<option>signal53a</option>
-							<option>signal53b</option>
-						</select>
-					</div>
-
-					<div class="input-group mb-3">
-						<span class="input-group-text col-2">Route ID</span>
-						<input type="text" class="form-control" id="routeId" readonly value="None" />
 					</div>
 
 					<div class="d-flex justify-content-between mb-2">
-						<button id="requestRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Request</button>
-						<button id="releaseRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Release</button>
+						<button id="requestRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+							Request Route
+						</button>
+						<button id="releaseRouteButton" type="button" class="btn btn-outline-danger w-45 m-auto">
+							Release Route
+						</button>
 					</div>
-				
-					<div class="d-flex justify-content-between">
-						<button id="automaticDriveRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Automatic Drive Route</button>
-						<button id="manualDriveRouteButton" type="button" class="btn btn-outline-primary"
-							style="width: 49%">Manual Drive Route</button>
+
+					<div class="d-flex justify-content-between mb-2">
+						<button id="automaticDriveRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+							Automatic Drive Route
+						</button>
+						<button id="manualDriveRouteButton" type="button" class="btn btn-outline-primary w-45 m-auto">
+							Manual Drive Route
+						</button>
 					</div>
-					</br>
-					<div class="alert alert-info" role="alert">
-						<span id="routeResponse"></span>
+					<div class="alert alert-info btnPaddingReplicate">
+						<span id="routeResponse" class="alignedSpanForLine">&nbsp;</span>
 					</div>
 				</div>
 			</div>

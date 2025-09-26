@@ -20,7 +20,7 @@ trains:
       - id: cabin_light
         bit: 0
         initial: 1
-    weight: 100.0g
+    weight: 77.0g
     length: 13.0cm
     type: cargo
   - id: cargo_bayern
@@ -43,7 +43,7 @@ trains:
       - id: cabin_light
         bit: 0
         initial: 1
-    weight: 100.0g
+    weight: 72.0g
     length: 13.0cm
     type: cargo
   - id: cargo_green
@@ -63,7 +63,7 @@ trains:
       - id: head_light
         bit: 4
         initial: 1
-    weight: 100.0g
+    weight: 80.0g
     length: 13.0cm
     type: cargo
   - id: regional_odeg
@@ -86,7 +86,7 @@ trains:
       - id: cabin_light
         bit: 0
         initial: 1
-    weight: 100.0g
+    weight: 194.0g
     length: 25.0cm
     type: passenger
   - id: regional_brengdirect
@@ -109,6 +109,46 @@ trains:
       - id: cabin_light
         bit: 0
         initial: 1
-    weight: 100.0g
-    length: 23.0cm
+    weight: 236.0g
+    length: 35.0cm
+    type: passenger
+  - id: cargo_g1000bb
+    dcc-address: 0x0050
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4
+        initial: 1
+    weight: 35.0g
+    length: 10.0cm
+    type: cargo
+  - id: perso_sbb
+    dcc-address: 0x004F
+    dcc-speed-steps: 126
+    calibration:
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+      - 75
+      - 90
+      - 105
+      - 120
+    peripherals:
+      - id: head_light
+        bit: 4
+        initial: 1
+    weight: 81.0g
+    length: 12.0cm
     type: passenger
