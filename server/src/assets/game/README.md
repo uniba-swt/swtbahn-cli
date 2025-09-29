@@ -67,11 +67,13 @@ The source files of the SWTbahn Game client are organised in a model-view-contro
 manner:
 
 - Model and Controller
-  - `destinations-swtbahn-full.js`
-  - `destinations-swtbahn-standard.js`
-  - `destinations-swtbahn-ultraloop.js`
-  - `flags-swtbahn-full.js`
+  - `destinations-swtbahn-full.json`
+  - `destinations-swtbahn-standard.json`
+  - `flags-swtbahn-full.json`
+  - `flags-swtbahn-standard.json`
   - `script-game.js`
+  - `script-game-mutex.js`
+  - `script-game-timer.js`
 - View
   - `driver-game.html`
   - `style-game.css`

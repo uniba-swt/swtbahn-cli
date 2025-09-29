@@ -19,7 +19,7 @@ body {
 #endGame-container {
   margin-right: 2vw;
   margin-left: auto;
-  /*to behave the same as the tipps and language div*/
+  /*to behave the same as the tips and language div*/
 	display: inline-flex; 
 }
 
