@@ -1,14 +1,70 @@
 body {
   font-family: UB Scala Sans, sans-serif;
   margin: 0 20px;
+  line-height: 1.4;
 }
+
+/* ==================== Page Header Element Styling ==================== */
+#bahn-logo {
+  max-width: 35%;
+  width: auto;
+  max-height: inherit;
+  margin-right: 0.5rem;
+}
+
+.bahnHeaderButtonContainer {
+  padding-top: 0.25rem;
+}
+
+#endGame-container {
+  margin-right: 2vw;
+  margin-left: auto;
+  /*to behave the same as the tips and language div*/
+	display: inline-flex; 
+}
+
+.bahn-header {
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 0.75rem;
+  width: auto;
+  display: flex;
+  align-items:center;
+  justify-content: space-between;
+  max-height: 10vh;
+}
+
+@media (orientation: landscape) {
+  /*
+  Limit the height of the header for screens 
+  that are not too narrow in aspect ratio, e.g., iPads. 
+  Modern Smartphones have a slender aspect ratio
+  that causes 8vh to be quite small, too small for normal text.
+  */
+  @media (max-aspect-ratio: 1.8) {
+    .bahn-header {
+      max-height: 8vh !important;
+    }
+    
+    .bahnHeaderButtonContainer {
+      max-height: 8vh !important;
+    }
+  }
+}
+
+
+
+/* ==================== Train Selection page styling ==================== */
 
 #trainSelection {
   display: flex;
-  flex-direction: row;
   justify-content: center;
   align-items: center;
   height: 100%;
+  /* flex direction is part of the screen orientation sensitive media queries */
+  
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .unavailableTrain {
@@ -16,8 +72,152 @@ body {
   background-color: MistyRose;
 }
 
+@media (orientation: landscape) {
+  #trainSelection {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .trainCard {
+    /* Optimized for iPad in landscape mode to fit all cards/trains */
+    max-width: 22%;
+    min-width: 15%;
+  }
+  
+  .trainCard .card-body {
+    /* Adjust bootstrap padding of card-body here, to fit more trains onto screen.
+       Default padding is 1rem, this is a bit too much for an iPad to fit all trains 
+       without scrolling.
+    */
+    padding: 0.5rem 0.5rem;
+  }
+  
+  @media (max-aspect-ratio: 1.8) {
+    /* For non-slender screens (i.e., iPads, but not modern smartphones),
+       limit the size of the train image, in order to fit all trains on the
+       screen.
+    */
+    .card-img-top {
+      object-fit: cover;
+      height: 11vh;
+    }
+  }
+}
+
+@media (orientation: portrait) {
+  #trainSelection {
+    flex-direction: column;
+    width: 80%;
+  }
+}
+
+
+
+/* ==================== Driving/Destination Elements Styling ==================== */
+
+#trainGrabbedComponentsContainer {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Hide the SVG template for the destination flags */
+#svgDef {
+  height: 0px;
+  width: 0px;
+}
+
+#possibleDestinations svg.flag {
+  cursor: pointer;
+}
+
+@media (orientation: landscape) {
+  #trainGrabbedComponentsContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  #chosenTrainImgContainer {
+    /* The rules below are required to make the img cropping work */
+    width: 48%;
+    margin-right: -3%;
+    vertical-align: middle;
+    margin-top: auto;
+    margin-bottom: auto;
+    overflow:hidden;
+  }
+  
+  #chosenTrain {
+    /*Crop the image on its left hand side to allow a taller right flexbox for controls*/
+    position: relative;
+    margin-left: -15%;
+  }
+  
+  .controlContainer {
+    /* Allows a control container to appear on the right hand side, 
+       i.e., fit next to the image of the train. */
+    width: 55%;
+  }
+  
+  .currentDestination {
+    /* SVG with flag of current destination needs to appear somewhat differently 
+       in landscape view to appear appropriately sized. */
+    max-width: 18% !important;
+    margin-bottom: 0% !important;
+  }
+  
+  .possibleDestinations {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  svg.flag {
+    max-width: 13%;
+    min-width: 10%;
+    height: auto;
+    margin-right: 3%;
+    margin-bottom: 3%;
+  }
+}
+
+@media (orientation: portrait) {
+  #trainGrabbedComponentsContainer {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  
+  #chosenTrainImgContainer {
+    width: 100%;
+  }
+  
+  svg.flag {
+    width: 20%;
+    height: auto;
+    margin-right: 4%;
+    margin-bottom: 4%;
+  }
+  
+  .controlContainer {
+    width: 100%;
+  }
+  
+  #speedButtonContainer {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .speedButton {
+    max-width: 25%;
+  }
+}
+
+
+
+/* ==================== Other/General Styling ==================== */
+
 #serverAlertBox {
-  height: 70px;
+  min-height: 100px;
+  margin-top: 1.25em;
 }
 
 #serverAlert {
@@ -56,22 +256,6 @@ body {
 
 #serverModal .modal-footer {
   border-top: none;
-}
-
-/* Hide the SVG template for the destination flags */
-#svgDef {
-  height: 0px;
-  width: 0px;
-}
-
-svg.flag {
-  width: 20%;
-  height: auto;
-  padding-right: 5%;
-}
-
-#possibleDestinations svg.flag {
-  cursor: pointer;
 }
 
 /* Colour themes for the destination flags */

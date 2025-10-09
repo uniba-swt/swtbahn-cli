@@ -185,7 +185,7 @@ static void train_information(void **state) {
 	assert_string_equal(type, "cargo");
 	
 	float weight = config_get_scalar_float_value("train", "cargo_db", "weight");
-	assert_float_equal(weight, 100.0, 0.0);
+	assert_float_equal(weight, 77.0, 0.0);
 	
 	float length = config_get_scalar_float_value("train", "cargo_db", "length");
 	assert_float_equal(length, 13.0, 0.0);

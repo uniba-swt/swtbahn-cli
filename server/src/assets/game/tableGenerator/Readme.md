@@ -7,6 +7,7 @@ The scripts will automatically find the shortest possible route from a valid sta
 
 ## Requirements
 * Python3
+* Python3 libraries: see `requirements.txt` in the same directory as this readme.
 * Configuration files for the model railway: (have to be located at `swtbahn-cli/configurations/<platformname>/<configfileshere>`, as the script tries to access them via relative paths)
     * Interlocking table (`interlocking_table.yml`)
     * extra configuration (`extras_config.yaml`)

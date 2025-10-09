@@ -256,12 +256,6 @@ const allPossibleDestinations_swtbahnfull = {
     }
   },
   "block6": {
-    "signal44": {
-      "route-id": 127,
-      "orientation": "anticlockwise",
-      "block": "platform5",
-      "segment": "seg78"
-    },
     "signal22a": {
       "route-id": 126,
       "orientation": "anticlockwise",
