@@ -99,7 +99,7 @@ GArray *interlocking_table_get_all_route_ids_shallowcpy(void);
  * The caller is NOT responsible for freeing the returned string.
  * 
  * @param train_id 
- * @return int id of the first route found that is granted to train. 
+ * @return id of the first route found that is granted to train. 
  *         NULL if no routes are granted to this train or the train is unknown/invalid.
  */
 const char *interlocking_table_get_route_id_of_train(const char *train_id);

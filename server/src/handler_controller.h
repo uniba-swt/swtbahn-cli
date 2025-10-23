@@ -134,6 +134,12 @@ const char *grant_route_id(const char *train_id,
 bool release_route(const char *route_id);
 
 /**
+ * Releases all granted routes.
+ * 
+ */
+void release_all_granted_routes();
+
+/**
  * Requests the reverser state to be updated and waits
  * for the update to complete. The waiting is bounded by 
  * a maximum number of retries.

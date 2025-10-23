@@ -405,6 +405,11 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_flush();
 	}
 	
+	/// TODO: Discuss - at this point we could add a wait of ~2s and then check if the points are
+	///       in their required position. 
+	///       Benefit: Detect hardware failures, thus preventing a potential short circuit later.
+	///       Drawback: Latency increases.
+	
 	// Set the signals to their required aspects
 	for (unsigned int i = 0; i < route->signals->len - 1; i++) {
 		const char *signal = g_array_index(route->signals, char *, i);
@@ -414,11 +419,6 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 		bidib_set_signal(signal, signal_aspect);
 		bidib_flush();
 	}
-	
-	/// TODO: Discuss - at this point we could add a wait of ~2s and then check if the points are
-	///       in their required position. 
-	///       Benefit: Detect hardware failures, thus preventing a potential short circuit later.
-	///       Drawback: Latency increases.
 	
 	pthread_mutex_unlock(&interlocker_mutex);
 	
@@ -430,20 +430,16 @@ const char *grant_route_id(const char *train_id, const char *route_id) {
 
 ///TODO: This should not unconditionally set all route signals to stop, because that would
 //       prevent sectional route release from working correctly
-bool release_route(const char *route_id) {
-	if (route_id == NULL) {
-		syslog_server(LOG_ERR, "Release route - invalid (NULL) route_id");
+static bool release_route_intern(t_interlocking_route *route) {
+	// Shall only be called with interlocker_mutex locked.
+	if (route == NULL) {
+		syslog_server(LOG_ERR, "Release route - invalid (NULL) parameters");
 		return false;
-	}
-	pthread_mutex_lock(&interlocker_mutex);
-	t_interlocking_route *route = get_route(route_id);
-	bool ret = false;
-	if (route != NULL && route->train != NULL) {
+	} else if (route->train != NULL) {
 		syslog_server(LOG_INFO, 
 		              "Release route - route: %s - currently granted to train %s, "
 		              "now setting all route signals to aspect_stop", 
-		              route_id, route->train);
-		
+		              route->id, route->train);
 		const char *signal_aspect = "aspect_stop";
 		for (int signal_index = 0; signal_index < route->signals->len; signal_index++) {
 			const char *signal_id = g_array_index(route->signals, char *, signal_index);
@@ -451,23 +447,55 @@ bool release_route(const char *route_id) {
 			if (bidib_set_signal(signal_id, signal_aspect)) {
 				syslog_server(LOG_ERR, 
 				              "Release route - route: %s - unable to set signal to aspect %s", 
-				              route_id, signal_aspect);
+				              route->id, signal_aspect);
 			} else {
 				bidib_flush();
 			}
 		}
-		
-		free(route->train);
+		// Ref to be able to set route->train to NULL (effectively releasing the route from the train)
+		// and still release the train id string after logging.
+		char *train_id_route_ptr = route->train;
 		route->train = NULL;
-		syslog_server(LOG_NOTICE, "Release route - route: %s - released", route_id);
-		ret = true;
-	} else if (route == NULL) {
-		syslog_server(LOG_ERR, "Release route - route: %s - does not exist", route_id);
+		syslog_server(LOG_NOTICE, 
+		              "Release route - route: %s - released (from train %s)", 
+		              route->id, train_id_route_ptr);
+		free(train_id_route_ptr);
+		return true;
 	} else {
-		syslog_server(LOG_ERR, "Release route - route: %s - is not granted to any train", route_id);
+		syslog_server(LOG_ERR, "Release route - route: %s - is not granted to any train", route->id);
+		return false;
 	}
+}
+
+bool release_route(const char *route_id) {
+	if (route_id == NULL) {
+		syslog_server(LOG_ERR, "Release route - invalid (NULL) route_id");
+		return false;
+	}
+	pthread_mutex_lock(&interlocker_mutex);
+	t_interlocking_route *route = get_route(route_id);
+	bool ret = release_route_intern(route);
 	pthread_mutex_unlock(&interlocker_mutex);
 	return ret;
+}
+
+void release_all_granted_routes() {
+	pthread_mutex_lock(&interlocker_mutex);
+	GArray *route_ids = interlocking_table_get_all_route_ids_shallowcpy();
+	if (route_ids != NULL) {
+		for (unsigned int i = 0; i < route_ids->len; i++) {
+			const char *route_id = g_array_index(route_ids, char *, i);
+			if (route_id != NULL) {
+				t_interlocking_route *route = get_route(route_id);
+				if (route != NULL && route->train != NULL) {
+					release_route_intern(route);
+				}
+			}
+		}
+	}
+	// free the GArray but not the contained strings, as it was created by shallow copy.
+	g_array_free(route_ids, true);
+	pthread_mutex_unlock(&interlocker_mutex);
 }
 
 bool reversers_state_update(void) {

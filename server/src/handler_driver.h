@@ -60,8 +60,29 @@ bool release_train(int grab_id);
 void release_all_grabbed_trains(void);
 
 /**
+ * @brief Set the dcc speed for train with id train_id.
+ * If the train is grabbed, sets the speed via the dynamic container/engine.
+ * If the train is not grabbed, sets the speed directly via bidib.
+ * 
+ * @param train_id id of the train
+ * @param speed speed in range [0..126]
+ * @param req_forwards true for driving forwards, false for driving backwards
+ * @param track_output the track output to set the speed for. NULL will use track output "master"
+ * @return true parameters valid
+ * @return false otherwise.
+ */
+bool set_dcc_speed_for_train(const char *train_id, int speed, bool req_forwards, const char *track_output);
+
+/**
+ * @brief Stops all trains.
+ * For trains that are currently grabbed, sets the speed to 0 via the dynamic container.
+ * For trains that are not grabbed, sets the speed to 0 directly via libbidib.
+ */
+void stop_all_trains();
+
+/**
  * @brief For a given grab-id, return the associated train name (a heap-allocated string) if applicable.
- * Caller must free the returned string.
+ * Caller shall free the returned string.
  * @param grab_id Grab-id with which the desired train is grabbed
  * @return char* the name of the train grabbed by grab-id; NULL if not grabbed or otherwise invalid.
  */

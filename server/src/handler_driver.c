@@ -595,15 +595,22 @@ static bool monitor_train_on_route(const char *train_id, t_interlocking_route *r
 		usleep(TRAIN_DRIVE_TIME_STEP);
 	}
 	
-	syslog_server(LOG_INFO,
-	              "Monitor train on route - route: %s train: %s - Finished, set %u signals to stop", 
-	              route->id, train_id, signals_set_to_stop);
+	if (signals_set_to_stop >= signals_to_set_to_stop_count) {
+		syslog_server(LOG_INFO,
+		              "Monitor train on route - route: %s train: %s - Finished, set %u signals to stop", 
+		              route->id, train_id, signals_set_to_stop);
+	} else {
+		syslog_server(LOG_INFO,
+		              "Monitor train on route - route: %s train: %s - Exiting due to route "
+		              "release or shutdown, set %u signals to stop until exit", 
+		              route->id, train_id, signals_set_to_stop);
+	}
 	free_route_signal_info_array(&signal_info_array);
 	free_route_repeated_segment_flags(&repeated_segment_flags);
 	return true;
 }
 
-static bool drive_route(const int grab_id, const char* train_id, const char *route_id, bool is_automatic) {
+static bool drive_route(const char* train_id, const char *route_id, bool is_automatic) {
 	if (train_id == NULL || route_id == NULL) {
 		syslog_server(LOG_ERR, "Drive route - invalid (NULL) parameters");
 		return false;
@@ -623,81 +630,76 @@ static bool drive_route(const int grab_id, const char* train_id, const char *rou
 	              "Drive route - route: %s train: %s - %s driving starts", 
 	              route_id, train_id, is_automatic ? "automatic" : "manual");
 	
-	pthread_mutex_lock(&grabbed_trains_mutex);
-	const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
 	const bool requested_forwards = is_forward_driving(route, train_id);
 	if (is_automatic) {
-		dyn_containers_set_train_engine_instance_inputs(engine_instance,
-		                                                DRIVING_SPEED_SLOW, 
-		                                                requested_forwards);
+		set_dcc_speed_for_train(train_id, DRIVING_SPEED_SLOW, requested_forwards, NULL);
 	}
-	pthread_mutex_unlock(&grabbed_trains_mutex);
 	
 	// Set the signals along the route to Stop as the train drives past them
 	// This will return as soon as the train has passed all but the destination signal
 	const bool result = monitor_train_on_route(train_id, route);
 	
-	// If driving is automatic, slow train down at the end of the route
+	if (!result) {
+		syslog_server(LOG_WARNING, 
+		              "Drive route - route: %s train: %s - "
+		              "monitor train on route returned false, will stop route driving early",
+		              route_id, train_id);
+	}
+	
+	// If driving is automatic, slow train down once train is near the end of the route
 	if (is_automatic && result) {
 		// Assumes that all routes have a path with a length of at least 2.
 		const char *pre_dest_segment = g_array_index(route->path, char *, route->path->len - 2);
-		while (running && !train_position_is_at(train_id, pre_dest_segment)
+		bool pre_dest_seg_reached = train_position_is_at(train_id, pre_dest_segment);
+		while (running && !pre_dest_seg_reached
 		               && drive_route_params_valid(train_id, route)) {
 			usleep(TRAIN_DRIVE_TIME_STEP);
+			pre_dest_seg_reached = train_position_is_at(train_id, pre_dest_segment);
 		}
 		
-		if (train_get_grab_id(train_id) == grab_id) {
+		if (pre_dest_seg_reached) {
 			syslog_server(LOG_NOTICE, 
 			              "Drive route - route: %s train: %s - slowing down for end of route", 
 			              route_id, train_id);
-			pthread_mutex_lock(&grabbed_trains_mutex);
-			dyn_containers_set_train_engine_instance_inputs(engine_instance, 
-			                                                DRIVING_SPEED_STOPPING,
-			                                                requested_forwards);
-			pthread_mutex_unlock(&grabbed_trains_mutex);
+			set_dcc_speed_for_train(train_id, DRIVING_SPEED_STOPPING, requested_forwards, NULL);
 		}
 	}
 	
-	// Wait for train to reach the end of the route
-	const char *dest_segment = g_array_index(route->path, char *, route->path->len - 1);
-	while (running && result && !is_segment_occupied(dest_segment) 
-	                         && drive_route_params_valid(train_id, route)) {
+	// Wait for train to drive past the destination signal -> if this happens, stop the train.
+	// Train driving past the destination signal is determined by the segment behind the 
+	// destination signal becoming occupied.
+	const char *dest_overlap_segment = g_array_index(route->path, char *, route->path->len - 1);
+	bool dest_signal_reached = is_segment_occupied(dest_overlap_segment);
+	while (result && running && !dest_signal_reached && drive_route_params_valid(train_id, route)) {
 		usleep(TRAIN_DRIVE_TIME_STEP);
+		dest_signal_reached = is_segment_occupied(dest_overlap_segment);
 	}
 
-	// Logging timestamp before trying to acquire the mutex for grabbed trains, 
-	// such that we can roughly measure the time it takes to acquire the mutex
 	struct timespec tva, tvb;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
-	syslog_server(LOG_INFO, 
-	              "Drive route - route: %s train: %s - end of route (%s) reached detected at %ld.%06ld", 
-	              route->id, train_id, dest_segment, tva.tv_sec, tva.tv_nsec/1000);
-	
-	// Driving stops
-	if (train_get_grab_id(train_id) == grab_id) {
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		clock_gettime(CLOCK_MONOTONIC, &tvb);
-		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, requested_forwards);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
-		syslog_server(LOG_NOTICE, 
-		              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld)", 
-		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
-		// Give train engine container some time to actuate before moving on to releasing
-		// -> cleaner log, i.e., for log analysis tools it doesn't look like we are releasing
-		//                 the route while the train is still driving if we wait a little here.
-		usleep(TRAIN_DRIVE_TIME_STEP*5);
+	if (dest_signal_reached) {
+		syslog_server(LOG_INFO, 
+		              "Drive route - route: %s train: %s - end of route (%s) reached detected at %ld.%06ld", 
+		              route->id, train_id, dest_overlap_segment, tva.tv_sec, tva.tv_nsec/1000);
 	} else {
-		bidib_set_train_speed(train_id, 0, "master");
-		clock_gettime(CLOCK_MONOTONIC, &tvb);
-		bidib_flush();
-		syslog_server(LOG_WARNING, 
-		              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld) "
-		              "directly via bidib, train was released during route driving!", 
-		              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
+		syslog_server(LOG_NOTICE, 
+		              "Drive route - route: %s train: %s - route driving stops before end of "
+		              "route was reached (monitoring train failed, system "
+		              "shutdown or route released), at %ld.%06ld", 
+		              route->id, train_id, tva.tv_sec, tva.tv_nsec/1000);
 	}
 	
-	// Release the route
+	set_dcc_speed_for_train(train_id, 0, requested_forwards, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &tvb);
+	syslog_server(LOG_NOTICE, 
+	              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld)", 
+	              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
+	
+	// Release the route if still granted to the train
 	if (drive_route_params_valid(train_id, route)) {
+		syslog_server(LOG_NOTICE, 
+		              "Drive route - route: %s train: %s - releasing the route", 
+		              route_id, train_id);
 		release_route(route_id);
 	}
 	
@@ -761,6 +763,19 @@ bool release_train(int grab_id) {
 	bool success = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	if (grabbed_trains[grab_id].is_valid) {
+		// Release any route currently granted to the train.
+		pthread_mutex_lock(&interlocker_mutex);
+		const char *route_id = 
+				interlocking_table_get_route_id_of_train(grabbed_trains[grab_id].name->str);
+		pthread_mutex_unlock(&interlocker_mutex);
+		if (route_id != NULL) {
+			syslog_server(LOG_INFO, 
+			              "Release train - grab-id: %d train: %s - releasing the "
+			              "route (%s) granted to the train", 
+			              grab_id, grabbed_trains[grab_id].name->str, route_id);
+			release_route(route_id);
+		}
+		
 		grabbed_trains[grab_id].is_valid = false;
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
 		syslog_server(LOG_NOTICE, 
@@ -778,6 +793,40 @@ void release_all_grabbed_trains(void) {
 	for (int i = 0; i < TRAIN_ENGINE_INSTANCE_COUNT_MAX; i++) {
 		release_train(i);
 	}
+}
+
+bool set_dcc_speed_for_train(const char *train_id, int speed, bool req_forwards, const char *track_output) {
+	if (train_id == NULL || speed < 0 || speed > 126) {
+		return false;
+	}
+	int grab_id = train_get_grab_id(train_id);
+	if (grab_id != -1) {
+		pthread_mutex_lock(&grabbed_trains_mutex);
+		// Train is grabbed -> set speed via dynamic container
+		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+		if (track_output != NULL && strlen(track_output) <= 32) {
+			strcpy(grabbed_trains[grab_id].track_output, track_output);
+		}
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, speed, req_forwards);
+		pthread_mutex_unlock(&grabbed_trains_mutex);
+	} else {
+		speed = req_forwards ? speed : (speed * -1);
+		if (bidib_set_train_speed(train_id, speed, (track_output != NULL ? track_output : "master")) == 0) {
+			bidib_flush();
+		} else {
+			return false;
+		}
+	}
+	return true;
+}
+
+void stop_all_trains() {
+	t_bidib_id_list_query train_ids_query = bidib_get_trains();
+	for (size_t i = 0; i < train_ids_query.length; i++) {
+		const char *train_id = train_ids_query.ids[i];
+		set_dcc_speed_for_train(train_id, 0, true, NULL);
+	}
+	bidib_free_id_list_query(train_ids_query);
 }
 
 char *train_id_from_grab_id(int grab_id) {
@@ -897,10 +946,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		              grab_id, train_id);
 		
 		// Set train speed to 0
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
+		set_dcc_speed_for_train(train_id, 0, true, NULL);
 		
 		// Wait until the train has stopped moving
 		///NOTE: There is a potential race condition with set-dcc-speed:
@@ -1175,7 +1221,7 @@ o_con_status handler_drive_route(void *_, onion_request *req, onion_response *re
 		              route_id, train_id, mode);
 		
 		const bool is_automatic = (strcmp(mode, "automatic") == 0);
-		if (drive_route(grab_id, train_id, route_id, is_automatic)) {
+		if (drive_route(train_id, route_id, is_automatic)) {
 			send_common_feedback(res, HTTP_OK, "Route driving completed");
 			syslog_server(LOG_NOTICE, 
 			              "Request: Drive route - route: %s train: %s drive mode: %s - finish", 
@@ -1240,7 +1286,7 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 			// which has a length of 32.
 			send_common_feedback(res, HTTP_BAD_REQUEST, 
 			                     "invalid track output (currently no track output longer than "
-			                     "32 chars, incl. nul terminator, is supported for this endpoint)");
+			                     "32 chars, incl. null terminator, is supported for this endpoint)");
 			syslog_server(LOG_ERR, 
 			              "Request: Set dcc train speed - train: %s speed: %d - "
 			              "invalid track output (%s)",
@@ -1252,9 +1298,8 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set dcc train speed - train: %s speed: %d - start",
 		              grabbed_trains[grab_id].name->str, speed);
-		strcpy(grabbed_trains[grab_id].track_output, data_track_output);
-		const int eng_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-		dyn_containers_set_train_engine_instance_inputs(eng_instance, abs(speed), speed >= 0);
+		set_dcc_speed_for_train(grabbed_trains[grab_id].name->str, 
+		                        abs(speed), speed >= 0, data_track_output);
 		
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set dcc train speed - train: %s speed: %d - finish",

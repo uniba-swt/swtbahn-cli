@@ -149,15 +149,20 @@ static e_startup_result_code startup_server(void) {
 }
 
 /**
- * @brief Stops the server/system. I.e., releases all grabbed trains, releases all interlockers,
- * stops the dynamic containers, frees the loaded config memory, joins with the thread
- * polling bidib messages, and stops bidib.
+ * @brief Stops the server/system. 
+ * I.e., stops all trains, releases all routes, releases all grabbed trains, 
+ * releases all interlockers, stops the dynamic containers, frees the loaded config memory, 
+ * joins with the thread polling bidib messages, and stops bidib.
  * 
  * Shall only be called with start_stop_mutex acquired.
  */
 void shutdown_server(void) {
 	session_id = 0;
 	syslog_server(LOG_NOTICE, "Shutdown server");
+	stop_all_trains();
+	syslog_server(LOG_INFO, "Shutdown server - Stopped all trains");
+	release_all_granted_routes();
+	syslog_server(LOG_INFO, "Shutdown server - Released all granted routes");
 	release_all_grabbed_trains();
 	syslog_server(LOG_INFO, "Shutdown server - Released all grabbed trains");
 	release_all_interlockers();
@@ -348,10 +353,7 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s - start", data_train);
 		
 		// Ensure that the train has stopped moving
-		pthread_mutex_lock(&grabbed_trains_mutex);
-		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
-		dyn_containers_set_train_engine_instance_inputs(engine_instance, 0, true);
-		pthread_mutex_unlock(&grabbed_trains_mutex);
+		set_dcc_speed_for_train(data_train, 0, true, NULL);
 		
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		while (train_state_query.data.set_speed_step != 0) {
@@ -400,24 +402,17 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 		syslog_server(LOG_NOTICE, 
 		              "Request: Admin set dcc train speed - train: %s speed: %d - start", 
 		              data_train, speed);
-		// Does not require lock on grabbed trains mutex as this bidib function is threadsafe.
-		///TODO: Directly setting the speed via bidib - i.e., not setting it via 
-		///      the dynamic containers - will cause an inconsistent state:
-		///      the train in the real world will stop, but the speed set in the dynamic container 
-		///      is not necessarily 0.
-		///      Todo for the future: set speed via dyn. container, check that speed is set to 0
-		//       with a timeout after which it is set to 0 directly via bidib as currently done.
-		if (bidib_set_train_speed(data_train, speed, data_track_output)) {
+		
+		if (set_dcc_speed_for_train(data_train, abs(speed), speed >= 0, data_track_output)) {
+			onion_response_set_code(res, HTTP_OK);
+			syslog_server(LOG_NOTICE, 
+			              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 
+			              data_train, speed);
+		} else {
 			send_common_feedback(res, HTTP_BAD_REQUEST, "invalid parameter values");
 			syslog_server(LOG_ERR, 
 			              "Request: Admin set dcc train speed - train: %s speed: %d - "
 			              "invalid parameter values - abort", 
-			              data_train, speed);
-		} else {
-			bidib_flush();
-			onion_response_set_code(res, HTTP_OK);
-			syslog_server(LOG_NOTICE, 
-			              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 
 			              data_train, speed);
 		}
 		return OCS_PROCESSED;
