@@ -142,7 +142,9 @@ static e_startup_result_code startup_server(void) {
 		syslog_server(LOG_ERR, "Startup server - Could not load default interlocker instance");
 		return ERR_LOAD_DEFAULT_INTERLOCKER_FAIL;
 	}
-	
+	// Sleep 1 second to make absolutely sure all feedback from setting the accessories to
+	// initial positions has arrived (such that it doesnt spill over into the log after startup).
+	sleep(1);
 	running = true;
 	pthread_create(&poll_bidib_messages_thread, NULL, poll_bidib_messages, NULL);
 	return STARTUP_SUCCESS;
