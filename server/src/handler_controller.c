@@ -434,8 +434,7 @@ static bool release_route_intern(t_interlocking_route *route) {
 		return false;
 	} else if (route->train != NULL) {
 		syslog_server(LOG_INFO, 
-		              "Release route - route: %s - currently granted to train %s, "
-		              "now setting all route signals to aspect_stop", 
+		              "Release route - route: %s - currently granted to train %s", 
 		              route->id, route->train);
 		const char *signal_aspect = "aspect_stop";
 		for (int signal_index = 0; signal_index < route->signals->len; signal_index++) {
