@@ -632,7 +632,7 @@ static bool drive_route(const char* train_id, const char *route_id, bool is_auto
 	
 	const bool requested_forwards = is_forward_driving(route, train_id);
 	if (is_automatic) {
-		set_dcc_speed_for_train(train_id, DRIVING_SPEED_SLOW, requested_forwards, NULL);
+		set_dcc_speed_for_train_maybe_grabbed(train_id, DRIVING_SPEED_SLOW, requested_forwards, NULL);
 	}
 	
 	// Set the signals along the route to Stop as the train drives past them
@@ -661,7 +661,7 @@ static bool drive_route(const char* train_id, const char *route_id, bool is_auto
 			syslog_server(LOG_NOTICE, 
 			              "Drive route - route: %s train: %s - slowing down for end of route", 
 			              route_id, train_id);
-			set_dcc_speed_for_train(train_id, DRIVING_SPEED_STOPPING, requested_forwards, NULL);
+			set_dcc_speed_for_train_maybe_grabbed(train_id, DRIVING_SPEED_STOPPING, requested_forwards, NULL);
 		}
 	}
 	
@@ -689,7 +689,7 @@ static bool drive_route(const char* train_id, const char *route_id, bool is_auto
 		              route->id, train_id, tva.tv_sec, tva.tv_nsec/1000);
 	}
 	
-	set_dcc_speed_for_train(train_id, 0, requested_forwards, NULL);
+	set_dcc_speed_for_train_maybe_grabbed(train_id, 0, requested_forwards, NULL);
 	clock_gettime(CLOCK_MONOTONIC, &tvb);
 	syslog_server(LOG_NOTICE, 
 	              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld)", 
@@ -795,7 +795,7 @@ void release_all_grabbed_trains(void) {
 	}
 }
 
-bool set_dcc_speed_for_train(const char *train_id, int speed, bool req_forwards, const char *track_output) {
+bool set_dcc_speed_for_train_maybe_grabbed(const char *train_id, int speed, bool req_forwards, const char *track_output) {
 	if (train_id == NULL || speed < 0 || speed > 126) {
 		return false;
 	}
@@ -820,11 +820,26 @@ bool set_dcc_speed_for_train(const char *train_id, int speed, bool req_forwards,
 	return true;
 }
 
+bool set_dcc_speed_for_grabbed_train(int grab_id, int speed, bool req_forwards, const char *track_output) {
+	if (speed < 0 || speed > 126) {
+		return false;
+	} else if (grab_id >= 0 && grab_id < TRAIN_ENGINE_INSTANCE_COUNT_MAX && grabbed_trains[grab_id].is_valid) {
+		// Train is grabbed -> set speed via dynamic container
+		const int engine_instance = grabbed_trains[grab_id].dyn_containers_engine_instance;
+		if (track_output != NULL && strlen(track_output) <= 32) {
+			strcpy(grabbed_trains[grab_id].track_output, track_output);
+		}
+		dyn_containers_set_train_engine_instance_inputs(engine_instance, speed, req_forwards);
+		return true;
+	}
+	return false;
+}
+
 void stop_all_trains() {
 	t_bidib_id_list_query train_ids_query = bidib_get_trains();
 	for (size_t i = 0; i < train_ids_query.length; i++) {
 		const char *train_id = train_ids_query.ids[i];
-		set_dcc_speed_for_train(train_id, 0, true, NULL);
+		set_dcc_speed_for_train_maybe_grabbed(train_id, 0, true, NULL);
 	}
 	bidib_free_id_list_query(train_ids_query);
 }
@@ -946,7 +961,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		              grab_id, train_id);
 		
 		// Set train speed to 0
-		set_dcc_speed_for_train(train_id, 0, true, NULL);
+		set_dcc_speed_for_train_maybe_grabbed(train_id, 0, true, NULL);
 		
 		// Wait until the train has stopped moving
 		///NOTE: There is a potential race condition with set-dcc-speed:
@@ -1298,8 +1313,7 @@ o_con_status handler_set_dcc_train_speed(void *_, onion_request *req, onion_resp
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set dcc train speed - train: %s speed: %d - start",
 		              grabbed_trains[grab_id].name->str, speed);
-		set_dcc_speed_for_train(grabbed_trains[grab_id].name->str, 
-		                        abs(speed), speed >= 0, data_track_output);
+		set_dcc_speed_for_grabbed_train(grab_id, abs(speed), speed >= 0, data_track_output);
 		
 		syslog_server(LOG_NOTICE, 
 		              "Request: Set dcc train speed - train: %s speed: %d - finish",

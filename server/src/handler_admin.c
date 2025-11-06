@@ -353,7 +353,7 @@ o_con_status handler_admin_release_train(void *_, onion_request *req, onion_resp
 		syslog_server(LOG_NOTICE, "Request: Admin release train - train: %s - start", data_train);
 		
 		// Ensure that the train has stopped moving
-		set_dcc_speed_for_train(data_train, 0, true, NULL);
+		set_dcc_speed_for_train_maybe_grabbed(data_train, 0, true, NULL);
 		
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(data_train);
 		while (train_state_query.data.set_speed_step != 0) {
@@ -403,7 +403,7 @@ o_con_status handler_admin_set_dcc_train_speed(void *_, onion_request *req, onio
 		              "Request: Admin set dcc train speed - train: %s speed: %d - start", 
 		              data_train, speed);
 		
-		if (set_dcc_speed_for_train(data_train, abs(speed), speed >= 0, data_track_output)) {
+		if (set_dcc_speed_for_train_maybe_grabbed(data_train, abs(speed), speed >= 0, data_track_output)) {
 			onion_response_set_code(res, HTTP_OK);
 			syslog_server(LOG_NOTICE, 
 			              "Request: Admin set dcc train speed - train: %s speed: %d - finish", 

@@ -61,6 +61,7 @@ void release_all_grabbed_trains(void);
 
 /**
  * @brief Set the dcc speed for train with id train_id.
+ * THIS LOCKS grabbed_trains_mutex, so shall not be called if that is already acquired.
  * If the train is grabbed, sets the speed via the dynamic container/engine.
  * If the train is not grabbed, sets the speed directly via bidib.
  * 
@@ -71,7 +72,9 @@ void release_all_grabbed_trains(void);
  * @return true parameters valid
  * @return false otherwise.
  */
-bool set_dcc_speed_for_train(const char *train_id, int speed, bool req_forwards, const char *track_output);
+bool set_dcc_speed_for_train_maybe_grabbed(const char *train_id, int speed, bool req_forwards, const char *track_output);
+
+bool set_dcc_speed_for_grabbed_train(int grab_id, int speed, bool req_forwards, const char *track_output);
 
 /**
  * @brief Stops all trains.
