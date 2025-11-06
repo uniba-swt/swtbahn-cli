@@ -50,7 +50,7 @@ function getErrorMessage(jqXHR, customCodes = {}) {
 			}
 		}
 	} catch (parseError) {
-		console.log("Unable to parse jqXHR to JSON.");
+		console.log("Unable to parse jqXHR to JSON. jqXHR text: " + jqXHR.responseText);
 	}
 
 	// Check if customCodes contains the status code
