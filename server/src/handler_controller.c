@@ -295,6 +295,10 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 		return g_string_new("no_interlocker");
 	}
 	
+	// The interlocker will call track_state_get_value (though this is not visible from just
+	// looking at this code here) - init the cache for that. 
+	bahn_data_util_init_cached_track_state();
+	
 	// Ask the interlocker to grant requested route.
 	// May take multiple ticks to process the request.
 	dyn_containers_set_interlocker_instance_inputs(&interlocker_instances[selected_interlocker_instance],
@@ -319,6 +323,7 @@ GString *grant_route(const char *train_id, const char *source_id, const char *de
 	
 	// Return the result
 	GString *g_route_id_copy = g_string_new(interlocker_instance_io.output_route_id);
+	bahn_data_util_free_cached_track_state();
 	pthread_mutex_unlock(&interlocker_mutex);
 	
 	if (g_route_id_copy->str != NULL && params_check_is_number(g_route_id_copy->str)) {
