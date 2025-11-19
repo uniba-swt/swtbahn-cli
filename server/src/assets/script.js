@@ -157,7 +157,7 @@ function addPointOptionsForSelectElems(htmlSelectElemIDs) {
 				});
 			}
 		},
-		(responseText, status) => {
+		(jqXHR) => {
 			console.log(`Error reading points of the SWTbahn platform, code ${jqXHR.status}, text ${jqXHR.responseText}`);
 			showErrorInElem("#loadAccessoriesResponse", getErrorMessage(jqXHR));
 		}
