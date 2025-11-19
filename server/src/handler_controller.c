@@ -538,6 +538,8 @@ o_con_status handler_release_route(void *_, onion_request *req, onion_response *
 		const char *data_route_id = onion_request_get_post(req, "route-id");
 		const char *route_id = params_check_route_id(data_route_id);
 		
+		/// NOTE: Not using code 404 here, though it is allowed in openAPI spec.
+		
 		if (handle_param_miss_check(res, "Release route", "route-id", data_route_id)) {
 			return OCS_PROCESSED;
 		} else if (strcmp(route_id, "") == 0) {

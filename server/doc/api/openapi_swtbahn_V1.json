@@ -286,8 +286,28 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Unknown Route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
+                    },
                     "405": {
                         "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
                     },
                     "503": {
                         "description": "SWTbahn not running"
@@ -870,7 +890,7 @@
                         }
                     },
                     "404": {
-                        "description": "Unknown route",
+                        "description": "Unknown route or train",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -919,7 +939,7 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid or missing parameter(s)",
+                        "description": "Invalid or missing parameter(s), or route driving failed",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -930,6 +950,16 @@
                     },
                     "405": {
                         "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/common_feedback"
+                                }
+                            }
+                        }
                     },
                     "503": {
                         "description": "SWTbahn not running"
