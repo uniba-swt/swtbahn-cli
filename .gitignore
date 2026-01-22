@@ -9,8 +9,6 @@ swtbahn-config.yml
 .idea
 **/cmake-build-debug/
 
-server/src/.vscode/
-
 **/.vscode
 **/.cache
 **.project
