@@ -68,13 +68,30 @@ void release_all_grabbed_trains(void);
  * @param train_id id of the train
  * @param speed speed in range [0..126]
  * @param req_forwards true for driving forwards, false for driving backwards
- * @param track_output the track output to set the speed for. NULL will use track output "master"
+ * @param track_output the track output to set the speed for. NULL will use the previously 
+ * set track_output.
  * @return true parameters valid
  * @return false otherwise.
  */
-bool set_dcc_speed_for_train_maybe_grabbed(const char *train_id, int speed, bool req_forwards, const char *track_output);
+bool set_dcc_speed_for_train_maybe_grabbed(const char *train_id, int speed, bool req_forwards, 
+                                           const char *track_output);
 
-bool set_dcc_speed_for_grabbed_train(int grab_id, int speed, bool req_forwards, const char *track_output);
+/**
+ * @brief Sets the dcc speed for train grabbed with specified grab_id.
+ * This shall only be called with grabbed_trains_mutex acquired/locked.
+ * If the speed and grab_id is valid, sets the speed via the dynamic container/engine.
+ * If the speed or grab_id is invalid, does nothing.
+ * 
+ * @param grab_id the grab_id with which a train is grabbed
+ * @param speed speed in range [0..126]
+ * @param req_forwards true for driving forwards, false for driving backwards
+ * @param track_output the track output to set the speed for. NULL will use the previously 
+ * set track_output.
+ * @return true parameters valid
+ * @return false otherwise.
+ */
+bool set_dcc_speed_for_grabbed_train(int grab_id, int speed, bool req_forwards, 
+                                     const char *track_output);
 
 /**
  * @brief Stops all trains.

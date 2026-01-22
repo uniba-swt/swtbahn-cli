@@ -674,7 +674,7 @@ static bool drive_route(const char* train_id, const char *route_id, bool is_auto
 		usleep(TRAIN_DRIVE_TIME_STEP);
 		dest_signal_reached = is_segment_occupied(dest_overlap_segment);
 	}
-
+	
 	struct timespec tva, tvb;
 	clock_gettime(CLOCK_MONOTONIC, &tva);
 	if (dest_signal_reached) {
@@ -695,8 +695,10 @@ static bool drive_route(const char* train_id, const char *route_id, bool is_auto
 	              "Drive route - route: %s train: %s - driving stops (commanded at %ld.%06ld)", 
 	              route_id, train_id, tvb.tv_sec, tvb.tv_nsec/1000);
 	
-	// Release the route if still granted to the train
+	// Release the route if still granted to the train, with a delay to let the train speed become 0
+	// before releasing (otherwise it looks like we release a route whilst train still moves).
 	if (drive_route_params_valid(train_id, route)) {
+		usleep(TRAIN_DRIVE_TIME_STEP * 5);
 		syslog_server(LOG_NOTICE, 
 		              "Drive route - route: %s train: %s - releasing the route", 
 		              route_id, train_id);
@@ -795,7 +797,8 @@ void release_all_grabbed_trains(void) {
 	}
 }
 
-bool set_dcc_speed_for_train_maybe_grabbed(const char *train_id, int speed, bool req_forwards, const char *track_output) {
+bool set_dcc_speed_for_train_maybe_grabbed(const char *train_id, int speed, bool req_forwards, 
+                                           const char *track_output) {
 	if (train_id == NULL || speed < 0 || speed > 126) {
 		return false;
 	}
