@@ -765,7 +765,10 @@ bool release_train(int grab_id) {
 	bool success = false;
 	pthread_mutex_lock(&grabbed_trains_mutex);
 	if (grabbed_trains[grab_id].is_valid) {
+		/*
 		// Release any route currently granted to the train.
+		// This is currently disabled, to be able to generate interesting logs for runtime
+		// verification. I.e., need a log where a train is released without releasing its route first.
 		pthread_mutex_lock(&interlocker_mutex);
 		const char *route_id = 
 				interlocking_table_get_route_id_of_train(grabbed_trains[grab_id].name->str);
@@ -777,6 +780,7 @@ bool release_train(int grab_id) {
 			              grab_id, grabbed_trains[grab_id].name->str, route_id);
 			release_route(route_id);
 		}
+		*/
 		
 		grabbed_trains[grab_id].is_valid = false;
 		dyn_containers_free_train_engine_instance(grabbed_trains[grab_id].dyn_containers_engine_instance);
