@@ -975,6 +975,7 @@ o_con_status handler_release_train(void *_, onion_request *req, onion_response *
 		///      If release is requested and a non-zero speed is set just barely after/during that, 
 		///      the effective speed will not become 0 (which we wait for in the loop below).
 		///TODO: Consider adding a timeout after which the train is directly set to stop via bidib.
+		///TODO: exit loop if server not running anymore
 		t_bidib_train_state_query train_state_query = bidib_get_train_state(train_id);
 		while (train_state_query.data.set_speed_step != 0) {
 			bidib_free_train_state_query(train_state_query);
